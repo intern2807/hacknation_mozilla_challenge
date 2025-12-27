@@ -286,18 +286,8 @@ browser.runtime.onMessage.addListener((message: unknown) => {
     updateConnectionUI(msg.state);
   }
 
-  if (msg.type === 'bridge_response' && msg.response) {
-    // Refresh server list if the response affects servers
-    const responseType = msg.response.type;
-    if (
-      responseType.includes('server') ||
-      responseType === 'list_servers_result' ||
-      responseType === 'connect_server_result' ||
-      responseType === 'disconnect_server_result'
-    ) {
-      loadServers();
-    }
-  }
+  // Note: We don't auto-refresh on bridge_response anymore to avoid loops.
+  // Each action (add/remove/connect/disconnect) explicitly calls loadServers() after completion.
 });
 
 // Initialize

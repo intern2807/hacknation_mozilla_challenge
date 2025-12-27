@@ -7,5 +7,5 @@ BRIDGE_DIR="$(dirname "$SCRIPT_DIR")"
 
 cd "$BRIDGE_DIR"
 
-# Use uv run which handles venv automatically
-exec uv run python -m harbor_bridge.main
+# Use the Python from the venv directly (uv creates this)
+exec "$BRIDGE_DIR/.venv/bin/python" -m harbor_bridge.main

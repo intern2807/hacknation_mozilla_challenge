@@ -1,0 +1,26 @@
+{
+  "manifest_version": 3,
+  "name": "Harbor",
+  "version": "0.0.1",
+  "description": "Native messaging bridge for Harbor",
+  "permissions": [
+    "nativeMessaging",
+    "storage",
+    "tabs"
+  ],
+  "background": {
+    "scripts": ["background.js"],
+    "type": "module"
+  },
+  "sidebar_action": {
+    "default_title": "Harbor",
+    "default_panel": "sidebar.html"
+  },
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "harbor@example.com",
+      "strict_min_version": "109.0"
+    }
+  }
+}
+

@@ -1,0 +1,8 @@
+{
+  "name": "com.harbor.bridge",
+  "description": "Harbor native messaging bridge",
+  "path": "__BRIDGE_LAUNCHER_PATH__",
+  "type": "stdio",
+  "allowed_extensions": ["__EXTENSION_ID__"]
+}
+

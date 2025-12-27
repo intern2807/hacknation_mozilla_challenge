@@ -1,0 +1,47 @@
+import { defineConfig } from 'vite';
+import { resolve } from 'path';
+import { readFileSync, writeFileSync } from 'fs';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+export default defineConfig({
+  build: {
+    outDir: 'dist',
+    emptyOutDir: true,
+    sourcemap: true,
+    rollupOptions: {
+      input: {
+        background: resolve(__dirname, 'src/background.ts'),
+        sidebar: resolve(__dirname, 'src/sidebar.ts'),
+      },
+      output: {
+        entryFileNames: '[name].js',
+        format: 'es',
+      },
+    },
+  },
+  publicDir: false,
+  plugins: [
+    {
+      name: 'copy-html-and-manifest',
+      writeBundle() {
+        // Copy sidebar.html
+        const sidebarHtml = readFileSync(
+          resolve(__dirname, 'src/sidebar.html'),
+          'utf-8'
+        );
+        writeFileSync(resolve(__dirname, 'dist/sidebar.html'), sidebarHtml);
+
+        // Copy manifest.json
+        const manifest = readFileSync(
+          resolve(__dirname, 'manifest.json'),
+          'utf-8'
+        );
+        writeFileSync(resolve(__dirname, 'dist/manifest.json'), manifest);
+      },
+    },
+  ],
+});

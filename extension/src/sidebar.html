@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Harbor</title>
+  <style>
+    :root {
+      --bg-primary: #1a1b26;
+      --bg-secondary: #24283b;
+      --bg-tertiary: #292e42;
+      --text-primary: #c0caf5;
+      --text-secondary: #9aa5ce;
+      --text-muted: #565f89;
+      --accent-green: #9ece6a;
+      --accent-red: #f7768e;
+      --accent-blue: #7aa2f7;
+      --accent-cyan: #7dcfff;
+      --accent-yellow: #e0af68;
+      --border: #3b4261;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'JetBrains Mono', 'SF Mono', 'Fira Code', monospace;
+      font-size: 12px;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      min-height: 100vh;
+      padding: 12px;
+    }
+
+    .container {
+      max-width: 400px;
+    }
+
+    header {
+      margin-bottom: 16px;
+    }
+
+    h1 {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--accent-cyan);
+      letter-spacing: 0.5px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    h1::before {
+      content: '⚓';
+    }
+
+    .card {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 12px;
+      margin-bottom: 12px;
+    }
+
+    .section-title {
+      font-size: 10px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+    }
+
+    .status-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .status-indicator {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .status-indicator.connected {
+      background: var(--accent-green);
+      box-shadow: 0 0 6px var(--accent-green);
+    }
+
+    .status-indicator.disconnected {
+      background: var(--accent-red);
+      box-shadow: 0 0 6px var(--accent-red);
+    }
+
+    .status-indicator.connecting {
+      background: var(--accent-yellow);
+      box-shadow: 0 0 6px var(--accent-yellow);
+      animation: pulse 1s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+
+    .status-text {
+      font-weight: 500;
+      font-size: 11px;
+    }
+
+    .status-text.connected { color: var(--accent-green); }
+    .status-text.disconnected { color: var(--accent-red); }
+    .status-text.connecting { color: var(--accent-yellow); }
+
+    .error-message {
+      margin-top: 8px;
+      padding: 8px;
+      background: rgba(247, 118, 142, 0.1);
+      border: 1px solid rgba(247, 118, 142, 0.3);
+      border-radius: 4px;
+      color: var(--accent-red);
+      font-size: 11px;
+      word-break: break-word;
+    }
+
+    .message-content {
+      background: var(--bg-tertiary);
+      border-radius: 4px;
+      padding: 8px;
+      overflow-x: auto;
+      max-height: 150px;
+      overflow-y: auto;
+    }
+
+    pre {
+      margin: 0;
+      font-family: inherit;
+      font-size: 10px;
+      line-height: 1.4;
+      color: var(--text-secondary);
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .no-message {
+      color: var(--text-muted);
+      font-style: italic;
+    }
+
+    .actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    button {
+      padding: 8px 12px;
+      border: none;
+      border-radius: 4px;
+      font-family: inherit;
+      font-size: 11px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    button:active {
+      transform: scale(0.98);
+    }
+
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .btn-primary {
+      background: var(--accent-blue);
+      color: var(--bg-primary);
+      flex: 1;
+    }
+
+    .btn-primary:hover:not(:disabled) {
+      background: #8fb0fc;
+    }
+
+    .btn-secondary {
+      background: var(--bg-tertiary);
+      color: var(--text-primary);
+      border: 1px solid var(--border);
+    }
+
+    .btn-secondary:hover:not(:disabled) {
+      background: var(--border);
+    }
+
+    .btn-small {
+      padding: 4px 8px;
+      font-size: 10px;
+    }
+
+    .btn-danger {
+      background: rgba(247, 118, 142, 0.2);
+      color: var(--accent-red);
+      border: 1px solid rgba(247, 118, 142, 0.3);
+    }
+
+    .btn-danger:hover:not(:disabled) {
+      background: rgba(247, 118, 142, 0.3);
+    }
+
+    .btn-success {
+      background: rgba(158, 206, 106, 0.2);
+      color: var(--accent-green);
+      border: 1px solid rgba(158, 206, 106, 0.3);
+    }
+
+    .btn-success:hover:not(:disabled) {
+      background: rgba(158, 206, 106, 0.3);
+    }
+
+    /* Form styles */
+    .form-group {
+      margin-bottom: 8px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 10px;
+      color: var(--text-muted);
+      margin-bottom: 4px;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      background: var(--bg-tertiary);
+      color: var(--text-primary);
+      font-family: inherit;
+      font-size: 11px;
+    }
+
+    input[type="text"]:focus {
+      outline: none;
+      border-color: var(--accent-blue);
+    }
+
+    input[type="text"]::placeholder {
+      color: var(--text-muted);
+    }
+
+    /* Server list styles */
+    .server-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .server-item {
+      background: var(--bg-tertiary);
+      border-radius: 4px;
+      padding: 10px;
+    }
+
+    .server-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 6px;
+    }
+
+    .server-label {
+      font-weight: 600;
+      font-size: 12px;
+      color: var(--text-primary);
+    }
+
+    .server-url {
+      font-size: 10px;
+      color: var(--text-muted);
+      word-break: break-all;
+      margin-bottom: 8px;
+    }
+
+    .server-actions {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .server-status {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 10px;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 20px;
+      color: var(--text-muted);
+      font-style: italic;
+    }
+
+    .json-key { color: var(--accent-cyan); }
+    .json-string { color: var(--accent-green); }
+    .json-value { color: var(--accent-blue); }
+
+    .collapsible-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .collapsible-header:hover .section-title {
+      color: var(--text-secondary);
+    }
+
+    .collapse-icon {
+      color: var(--text-muted);
+      font-size: 10px;
+    }
+
+    .collapsible-content {
+      margin-top: 8px;
+    }
+
+    .collapsible-content.collapsed {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Harbor</h1>
+    </header>
+
+    <!-- Bridge Connection Status -->
+    <div class="card">
+      <div class="section-title">Bridge Connection</div>
+      <div class="status-row">
+        <div id="status-indicator" class="status-indicator disconnected"></div>
+        <span id="status-text" class="status-text disconnected">Disconnected</span>
+      </div>
+      <div id="error-container" class="error-message" style="display: none;"></div>
+      <div class="actions" style="margin-top: 10px;">
+        <button id="send-hello" class="btn-primary">Send Hello</button>
+        <button id="reconnect" class="btn-secondary">Reconnect</button>
+      </div>
+    </div>
+
+    <!-- Servers Section -->
+    <div class="card">
+      <div class="section-title">MCP Servers</div>
+
+      <!-- Add Server Form -->
+      <div style="margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px solid var(--border);">
+        <div class="form-group">
+          <label for="server-label">Label</label>
+          <input type="text" id="server-label" placeholder="My MCP Server">
+        </div>
+        <div class="form-group">
+          <label for="server-url">Base URL</label>
+          <input type="text" id="server-url" placeholder="http://localhost:8765">
+        </div>
+        <button id="add-server" class="btn-primary" style="width: 100%; margin-top: 4px;">Add Server</button>
+      </div>
+
+      <!-- Server List -->
+      <div id="server-list" class="server-list">
+        <div class="empty-state">No servers configured</div>
+      </div>
+    </div>
+
+    <!-- Last Response -->
+    <div class="card">
+      <div class="collapsible-header" id="response-header">
+        <div class="section-title" style="margin-bottom: 0;">Last Response</div>
+        <span class="collapse-icon">▼</span>
+      </div>
+      <div id="response-content" class="collapsible-content">
+        <div class="message-content">
+          <pre id="last-message" class="no-message">No messages received</pre>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tools Response -->
+    <div class="card" id="tools-card" style="display: none;">
+      <div class="section-title">Tools Response</div>
+      <div class="message-content">
+        <pre id="tools-response"></pre>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="sidebar.js"></script>
+</body>
+</html>

@@ -107,9 +107,8 @@ export function dedupeServers(servers: CatalogServer[]): CatalogServer[] {
     const priority: Record<CatalogSourceId, number> = {
       official_registry: 0,
       github_awesome: 1,
-      mcpservers_org: 2,
     };
-    return priority[a.source] - priority[b.source];
+    return (priority[a.source] ?? 99) - (priority[b.source] ?? 99);
   });
 
   for (const server of sorted) {

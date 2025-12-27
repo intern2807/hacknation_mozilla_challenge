@@ -9,6 +9,7 @@ from dataclasses import asdict
 from typing import Any
 
 from harbor_bridge import __version__
+from harbor_bridge.catalog import get_catalog_manager
 from harbor_bridge.mcp_client import get_mcp_client
 from harbor_bridge.server_store import ServerStatus, ServerStore
 
@@ -432,6 +433,85 @@ async def handle_call_tool(message: dict[str, Any], store: ServerStore) -> dict[
         )
 
 
+# =============================================================================
+# Catalog handlers
+# =============================================================================
+
+
+async def handle_catalog_get(message: dict[str, Any], store: ServerStore) -> dict[str, Any]:
+    """Get the catalog of available MCP servers from all providers."""
+    request_id = message.get("request_id", "")
+    force = message.get("force", False)
+    query = message.get("query")
+
+    try:
+        manager = get_catalog_manager()
+        result = await manager.fetch_all(force_refresh=force, query=query)
+        return make_result_response(
+            "catalog_get",
+            request_id,
+            **result,
+        )
+    except Exception as e:
+        logger.exception("Failed to fetch catalog")
+        return make_error_response(
+            request_id,
+            "catalog_error",
+            f"Failed to fetch catalog: {e}",
+        )
+
+
+async def handle_catalog_refresh(message: dict[str, Any], store: ServerStore) -> dict[str, Any]:
+    """Force refresh the catalog from all providers."""
+    request_id = message.get("request_id", "")
+    query = message.get("query")
+
+    try:
+        manager = get_catalog_manager()
+        result = await manager.fetch_all(force_refresh=True, query=query)
+        return make_result_response(
+            "catalog_refresh",
+            request_id,
+            **result,
+        )
+    except Exception as e:
+        logger.exception("Failed to refresh catalog")
+        return make_error_response(
+            request_id,
+            "catalog_error",
+            f"Failed to refresh catalog: {e}",
+        )
+
+
+async def handle_catalog_search(message: dict[str, Any], store: ServerStore) -> dict[str, Any]:
+    """Search the catalog with a query."""
+    request_id = message.get("request_id", "")
+    query = message.get("query", "")
+
+    if not query:
+        return make_error_response(
+            request_id,
+            "invalid_request",
+            "Missing 'query' field for catalog search",
+        )
+
+    try:
+        manager = get_catalog_manager()
+        result = await manager.fetch_all(force_refresh=False, query=query)
+        return make_result_response(
+            "catalog_search",
+            request_id,
+            **result,
+        )
+    except Exception as e:
+        logger.exception("Failed to search catalog")
+        return make_error_response(
+            request_id,
+            "catalog_error",
+            f"Failed to search catalog: {e}",
+        )
+
+
 # Handler registry
 HANDLERS: dict[str, MessageHandler] = {
     "hello": handle_hello,
@@ -444,6 +524,10 @@ HANDLERS: dict[str, MessageHandler] = {
     "list_resources": handle_list_resources,
     "list_prompts": handle_list_prompts,
     "call_tool": handle_call_tool,
+    # Catalog handlers
+    "catalog_get": handle_catalog_get,
+    "catalog_refresh": handle_catalog_refresh,
+    "catalog_search": handle_catalog_search,
 }
 
 

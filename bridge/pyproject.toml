@@ -18,6 +18,9 @@ classifiers = [
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.12",
 ]
+dependencies = [
+    "aiohttp>=3.9.0",
+]
 
 [dependency-groups]
 dev = [

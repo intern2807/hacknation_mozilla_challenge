@@ -1,5 +1,4 @@
 import browser from 'webextension-polyfill';
-import { catalogManager } from './catalog/providers';
 
 const NATIVE_HOST_NAME = 'com.harbor.bridge';
 
@@ -274,23 +273,49 @@ browser.runtime.onMessage.addListener(
       });
     }
 
-    // Catalog messages
+    // Catalog messages - forward to native bridge
     if (msg.type === 'catalog_get') {
       const force = msg.force === true;
-      console.log('[catalog] Getting catalog, force:', force);
-      return catalogManager.getAll(force);
+      console.log('[catalog] Getting catalog via bridge, force:', force);
+      return sendToBridge({
+        type: 'catalog_get',
+        request_id: generateRequestId(),
+        force,
+      }).then(response => {
+        // Bridge returns catalog_get_result, extract the data
+        if (response && 'servers' in response) {
+          return response;
+        }
+        throw new Error(response?.error?.message || 'Failed to get catalog');
+      });
     }
 
     if (msg.type === 'catalog_refresh') {
-      console.log('[catalog] Forcing refresh');
-      return catalogManager.getAll(true);
+      console.log('[catalog] Forcing refresh via bridge');
+      return sendToBridge({
+        type: 'catalog_refresh',
+        request_id: generateRequestId(),
+      }).then(response => {
+        if (response && 'servers' in response) {
+          return response;
+        }
+        throw new Error(response?.error?.message || 'Failed to refresh catalog');
+      });
     }
 
     if (msg.type === 'catalog_search') {
       const query = (msg.query as string) || '';
-      const force = msg.force === true;
-      console.log('[catalog] Searching:', query, 'force:', force);
-      return catalogManager.search(query, force);
+      console.log('[catalog] Searching via bridge:', query);
+      return sendToBridge({
+        type: 'catalog_search',
+        request_id: generateRequestId(),
+        query,
+      }).then(response => {
+        if (response && 'servers' in response) {
+          return response;
+        }
+        throw new Error(response?.error?.message || 'Failed to search catalog');
+      });
     }
 
     // Proxy fetch requests from sidebar (for CORS)

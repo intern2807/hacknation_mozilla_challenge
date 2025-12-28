@@ -10,6 +10,7 @@ from typing import Any
 
 from harbor_bridge import __version__
 from harbor_bridge.catalog import get_catalog_manager
+from harbor_bridge.installer import get_installed_server_manager
 from harbor_bridge.mcp_client import get_mcp_client
 from harbor_bridge.server_store import ServerStatus, ServerStore
 
@@ -512,6 +513,148 @@ async def handle_catalog_search(message: dict[str, Any], store: ServerStore) -> 
         )
 
 
+# =============================================================================
+# Installer handlers
+# =============================================================================
+
+
+async def handle_check_runtimes(message: dict[str, Any], store: ServerStore) -> dict[str, Any]:
+    """Check available runtimes for installing servers."""
+    request_id = message.get("request_id", "")
+
+    try:
+        manager = get_installed_server_manager()
+        result = await manager.check_runtimes()
+        return make_result_response("check_runtimes", request_id, **result)
+    except Exception as e:
+        logger.exception("Failed to check runtimes")
+        return make_error_response(request_id, "runtime_error", str(e))
+
+
+async def handle_install_server(message: dict[str, Any], store: ServerStore) -> dict[str, Any]:
+    """Install a server from the catalog."""
+    request_id = message.get("request_id", "")
+    catalog_entry = message.get("catalog_entry", {})
+    package_index = message.get("package_index", 0)
+
+    if not catalog_entry:
+        return make_error_response(request_id, "invalid_request", "Missing catalog_entry")
+
+    try:
+        manager = get_installed_server_manager()
+        server = await manager.install(catalog_entry, package_index)
+        return make_result_response(
+            "install_server",
+            request_id,
+            server=server.to_dict(),
+        )
+    except Exception as e:
+        logger.exception("Failed to install server")
+        return make_error_response(request_id, "install_error", str(e))
+
+
+async def handle_uninstall_server(message: dict[str, Any], store: ServerStore) -> dict[str, Any]:
+    """Uninstall a server."""
+    request_id = message.get("request_id", "")
+    server_id = message.get("server_id", "")
+
+    if not server_id:
+        return make_error_response(request_id, "invalid_request", "Missing server_id")
+
+    try:
+        manager = get_installed_server_manager()
+        success = manager.uninstall(server_id)
+        return make_result_response("uninstall_server", request_id, success=success)
+    except Exception as e:
+        logger.exception("Failed to uninstall server")
+        return make_error_response(request_id, "uninstall_error", str(e))
+
+
+async def handle_list_installed(message: dict[str, Any], store: ServerStore) -> dict[str, Any]:
+    """List all installed servers with their status."""
+    request_id = message.get("request_id", "")
+
+    try:
+        manager = get_installed_server_manager()
+        statuses = manager.get_all_status()
+        return make_result_response("list_installed", request_id, servers=statuses)
+    except Exception as e:
+        logger.exception("Failed to list installed servers")
+        return make_error_response(request_id, "list_error", str(e))
+
+
+async def handle_start_installed(message: dict[str, Any], store: ServerStore) -> dict[str, Any]:
+    """Start an installed server."""
+    request_id = message.get("request_id", "")
+    server_id = message.get("server_id", "")
+
+    if not server_id:
+        return make_error_response(request_id, "invalid_request", "Missing server_id")
+
+    try:
+        manager = get_installed_server_manager()
+        proc = await manager.start(server_id)
+        return make_result_response("start_installed", request_id, process=proc.to_dict())
+    except ValueError as e:
+        return make_error_response(request_id, "start_error", str(e))
+    except Exception as e:
+        logger.exception("Failed to start server")
+        return make_error_response(request_id, "start_error", str(e))
+
+
+async def handle_stop_installed(message: dict[str, Any], store: ServerStore) -> dict[str, Any]:
+    """Stop a running installed server."""
+    request_id = message.get("request_id", "")
+    server_id = message.get("server_id", "")
+
+    if not server_id:
+        return make_error_response(request_id, "invalid_request", "Missing server_id")
+
+    try:
+        manager = get_installed_server_manager()
+        success = await manager.stop(server_id)
+        return make_result_response("stop_installed", request_id, success=success)
+    except Exception as e:
+        logger.exception("Failed to stop server")
+        return make_error_response(request_id, "stop_error", str(e))
+
+
+async def handle_set_server_secrets(message: dict[str, Any], store: ServerStore) -> dict[str, Any]:
+    """Set secrets (API keys) for a server."""
+    request_id = message.get("request_id", "")
+    server_id = message.get("server_id", "")
+    secrets = message.get("secrets", {})
+
+    if not server_id:
+        return make_error_response(request_id, "invalid_request", "Missing server_id")
+
+    try:
+        manager = get_installed_server_manager()
+        manager.set_secrets(server_id, secrets)
+        status = manager.get_status(server_id)
+        return make_result_response("set_server_secrets", request_id, status=status)
+    except Exception as e:
+        logger.exception("Failed to set secrets")
+        return make_error_response(request_id, "secrets_error", str(e))
+
+
+async def handle_get_server_status(message: dict[str, Any], store: ServerStore) -> dict[str, Any]:
+    """Get detailed status of an installed server."""
+    request_id = message.get("request_id", "")
+    server_id = message.get("server_id", "")
+
+    if not server_id:
+        return make_error_response(request_id, "invalid_request", "Missing server_id")
+
+    try:
+        manager = get_installed_server_manager()
+        status = manager.get_status(server_id)
+        return make_result_response("get_server_status", request_id, **status)
+    except Exception as e:
+        logger.exception("Failed to get server status")
+        return make_error_response(request_id, "status_error", str(e))
+
+
 # Handler registry
 HANDLERS: dict[str, MessageHandler] = {
     "hello": handle_hello,
@@ -528,6 +671,15 @@ HANDLERS: dict[str, MessageHandler] = {
     "catalog_get": handle_catalog_get,
     "catalog_refresh": handle_catalog_refresh,
     "catalog_search": handle_catalog_search,
+    # Installer handlers
+    "check_runtimes": handle_check_runtimes,
+    "install_server": handle_install_server,
+    "uninstall_server": handle_uninstall_server,
+    "list_installed": handle_list_installed,
+    "start_installed": handle_start_installed,
+    "stop_installed": handle_stop_installed,
+    "set_server_secrets": handle_set_server_secrets,
+    "get_server_status": handle_get_server_status,
 }
 
 

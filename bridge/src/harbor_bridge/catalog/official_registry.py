@@ -9,7 +9,7 @@ import logging
 from typing import Optional
 import aiohttp
 
-from .base import CatalogProvider, CatalogServer, ProviderResult, generate_server_id
+from .base import CatalogProvider, CatalogServer, PackageInfo, ProviderResult, generate_server_id
 
 logger = logging.getLogger(__name__)
 
@@ -179,12 +179,27 @@ class OfficialRegistryProvider(CatalogProvider):
                     if isinstance(tag, str):
                         tags.append(tag)
             
+            # Extract package info for installation
+            package_infos: list[PackageInfo] = []
+            for pkg in packages:
+                registry_type = pkg.get("registryType", "npm")
+                identifier = pkg.get("identifier", "")
+                env_vars = pkg.get("environmentVariables", [])
+                
+                if identifier:
+                    package_infos.append(PackageInfo(
+                        registry_type=registry_type,
+                        identifier=identifier,
+                        env_vars=env_vars,
+                    ))
+            
             return CatalogServer(
                 id=generate_server_id(self.id, endpoint_url, repository, name),
                 name=name,
                 source=self.id,
                 endpoint_url=endpoint_url,
                 installable_only=not endpoint_url,
+                packages=package_infos,
                 description=description,
                 homepage_url=homepage or repository,
                 repository_url=repository,

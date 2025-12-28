@@ -176,6 +176,7 @@ class CatalogManager:
                     "name": s.name,
                     "endpoint_url": s.endpoint_url,
                     "installable_only": s.installable_only,
+                    "packages": [p.to_dict() for p in s.packages],
                     "description": s.description,
                     "homepage_url": s.homepage_url,
                     "repository_url": s.repository_url,

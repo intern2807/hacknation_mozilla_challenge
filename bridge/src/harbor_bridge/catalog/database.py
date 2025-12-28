@@ -64,6 +64,7 @@ def get_db_connection() -> sqlite3.Connection:
             homepage_url TEXT DEFAULT '',
             repository_url TEXT DEFAULT '',
             tags TEXT DEFAULT '[]',  -- JSON array
+            packages TEXT DEFAULT '[]',  -- JSON array of package info
             
             -- Metadata
             first_seen_at REAL NOT NULL,
@@ -250,6 +251,8 @@ class CatalogDatabase:
             
             tags = server.get("tags", [])
             tags_json = json.dumps(tags)
+            packages = server.get("packages", [])
+            packages_json = json.dumps(packages)
             
             # Compute priority score
             priority = compute_priority_score(
@@ -268,10 +271,10 @@ class CatalogDatabase:
                 self.conn.execute("""
                     INSERT INTO servers (
                         id, name, source, endpoint_url, installable_only,
-                        description, homepage_url, repository_url, tags,
+                        description, homepage_url, repository_url, tags, packages,
                         first_seen_at, last_seen_at, last_updated_at,
                         is_featured, popularity_score, priority_score
-                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """, (
                     server_id,
                     server.get("name", ""),
@@ -282,6 +285,7 @@ class CatalogDatabase:
                     server.get("homepage_url", ""),
                     server.get("repository_url", ""),
                     tags_json,
+                    packages_json,
                     now, now, now,
                     1 if server.get("is_featured", False) else 0,
                     server.get("popularity_score", 0),
@@ -312,6 +316,7 @@ class CatalogDatabase:
                         homepage_url = ?,
                         repository_url = ?,
                         tags = ?,
+                        packages = ?,
                         last_seen_at = ?,
                         last_updated_at = CASE WHEN ? THEN ? ELSE last_updated_at END,
                         is_removed = 0,
@@ -328,6 +333,7 @@ class CatalogDatabase:
                     server.get("homepage_url", ""),
                     server.get("repository_url", ""),
                     tags_json,
+                    packages_json,
                     now,
                     bool(field_changes), now,
                     1 if server.get("is_featured", False) else 0,
@@ -434,12 +440,22 @@ class CatalogDatabase:
     
     def _row_to_dict(self, row: sqlite3.Row) -> dict:
         """Convert a database row to a server dict for the extension."""
+        # Handle packages column (might not exist in old DBs)
+        packages = []
+        try:
+            packages_str = row["packages"]
+            if packages_str:
+                packages = json.loads(packages_str)
+        except (KeyError, json.JSONDecodeError):
+            pass
+        
         return {
             "id": row["id"],
             "name": row["name"],
             "source": row["source"],
             "endpointUrl": row["endpoint_url"],
             "installableOnly": bool(row["installable_only"]),
+            "packages": packages,
             "description": row["description"],
             "homepageUrl": row["homepage_url"],
             "repositoryUrl": row["repository_url"],

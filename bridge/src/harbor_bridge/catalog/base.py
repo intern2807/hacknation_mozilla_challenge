@@ -16,6 +16,29 @@ import time
 
 
 @dataclass
+class PackageInfo:
+    """Package installation info for an MCP server."""
+    registry_type: str  # npm, pypi, oci
+    identifier: str     # Package identifier (e.g., "@modelcontextprotocol/server-github")
+    env_vars: list[dict] = field(default_factory=list)  # Required environment variables
+    
+    def to_dict(self) -> dict:
+        return {
+            "registryType": self.registry_type,
+            "identifier": self.identifier,
+            "environmentVariables": self.env_vars,
+        }
+    
+    @classmethod
+    def from_dict(cls, data: dict) -> "PackageInfo":
+        return cls(
+            registry_type=data.get("registryType", "npm"),
+            identifier=data.get("identifier", ""),
+            env_vars=data.get("environmentVariables", []),
+        )
+
+
+@dataclass
 class CatalogServer:
     """Normalized representation of an MCP server from any source."""
     
@@ -26,6 +49,9 @@ class CatalogServer:
     # Connection info
     endpoint_url: str = ""  # Remote MCP endpoint (empty if local-only)
     installable_only: bool = True  # True if no remote endpoint
+    
+    # Package info for installation
+    packages: list[PackageInfo] = field(default_factory=list)
     
     # Metadata
     description: str = ""
@@ -44,6 +70,7 @@ class CatalogServer:
             "source": self.source,
             "endpointUrl": self.endpoint_url,
             "installableOnly": self.installable_only,
+            "packages": [p.to_dict() for p in self.packages],
             "description": self.description,
             "homepageUrl": self.homepage_url,
             "repositoryUrl": self.repository_url,

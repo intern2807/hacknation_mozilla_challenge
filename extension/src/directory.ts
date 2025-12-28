@@ -215,6 +215,20 @@ function renderServers(): void {
       copyToClipboard(el.dataset.url!);
     });
   });
+
+  mainContent.querySelectorAll('.btn-install').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const el = btn as HTMLButtonElement;
+      try {
+        const server = JSON.parse(el.dataset.server!) as CatalogServer;
+        installServer(server);
+      } catch (err) {
+        console.error('Failed to parse server data:', err);
+        showToast('Failed to install server', 'error');
+      }
+    });
+  });
 }
 
 function renderServerCard(server: CatalogServer): string {
@@ -247,13 +261,24 @@ function renderServerCard(server: CatalogServer): string {
     `
     : `<p class="server-no-endpoint">No remote endpoint available</p>`;
 
-  const actionsHtml = server.endpointUrl
-    ? `
+  // Action buttons
+  let actionsHtml = '';
+  
+  if (server.endpointUrl) {
+    // Remote server - can add directly
+    actionsHtml += `
       <button class="btn btn-small btn-success btn-add" data-name="${escapeHtml(server.name)}" data-url="${escapeHtml(server.endpointUrl)}">
         + Add to Harbor
       </button>
-    `
-    : '';
+    `;
+  } else {
+    // Installable server - show install button
+    actionsHtml += `
+      <button class="btn btn-small btn-primary btn-install" data-server='${JSON.stringify(server).replace(/'/g, "\\'")}'>
+        📦 Install
+      </button>
+    `;
+  }
 
   const linkHtml = server.homepageUrl
     ? `<a href="${escapeHtml(server.homepageUrl)}" target="_blank" class="server-link" onclick="event.stopPropagation()">
@@ -262,7 +287,7 @@ function renderServerCard(server: CatalogServer): string {
     : '';
 
   return `
-    <div class="server-card">
+    <div class="server-card" data-server-id="${escapeHtml(server.id)}">
       <div class="server-card-header">
         <span class="server-name">${escapeHtml(server.name)}</span>
         <div class="server-badges">${badges.join('')}</div>
@@ -319,6 +344,37 @@ async function addToHarbor(name: string, url: string): Promise<void> {
   } catch (error) {
     console.error('[Directory] Failed to add server:', error);
     showToast('Failed to add server', 'error');
+  }
+}
+
+async function installServer(server: CatalogServer): Promise<void> {
+  try {
+    showToast(`Installing ${server.name}...`);
+    
+    // First check runtimes
+    const runtimesResponse = await browser.runtime.sendMessage({
+      type: 'check_runtimes',
+    }) as { type: string; runtimes?: unknown[]; canInstall?: Record<string, boolean>; error?: { message: string } };
+
+    if (runtimesResponse.type === 'error') {
+      showToast(`Error: ${runtimesResponse.error?.message}`, 'error');
+      return;
+    }
+
+    // Install the server
+    const installResponse = await browser.runtime.sendMessage({
+      type: 'install_server',
+      catalog_entry: server,
+    }) as { type: string; server?: unknown; error?: { message: string } };
+
+    if (installResponse.type === 'install_server_result' && installResponse.server) {
+      showToast(`Installed "${server.name}"! Check sidebar to configure.`, 'success');
+    } else if (installResponse.type === 'error') {
+      showToast(`Failed: ${installResponse.error?.message}`, 'error');
+    }
+  } catch (error) {
+    console.error('[Directory] Failed to install server:', error);
+    showToast('Failed to install server', 'error');
   }
 }
 

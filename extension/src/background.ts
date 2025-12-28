@@ -318,6 +318,71 @@ browser.runtime.onMessage.addListener(
       });
     }
 
+    // Installer messages - forward to native bridge
+    if (msg.type === 'check_runtimes') {
+      return sendToBridge({
+        type: 'check_runtimes',
+        request_id: generateRequestId(),
+      });
+    }
+
+    if (msg.type === 'install_server') {
+      return sendToBridge({
+        type: 'install_server',
+        request_id: generateRequestId(),
+        catalog_entry: msg.catalog_entry,
+        package_index: msg.package_index || 0,
+      });
+    }
+
+    if (msg.type === 'uninstall_server') {
+      return sendToBridge({
+        type: 'uninstall_server',
+        request_id: generateRequestId(),
+        server_id: msg.server_id,
+      });
+    }
+
+    if (msg.type === 'list_installed') {
+      return sendToBridge({
+        type: 'list_installed',
+        request_id: generateRequestId(),
+      });
+    }
+
+    if (msg.type === 'start_installed') {
+      return sendToBridge({
+        type: 'start_installed',
+        request_id: generateRequestId(),
+        server_id: msg.server_id,
+      });
+    }
+
+    if (msg.type === 'stop_installed') {
+      return sendToBridge({
+        type: 'stop_installed',
+        request_id: generateRequestId(),
+        server_id: msg.server_id,
+      });
+    }
+
+    if (msg.type === 'set_server_secrets') {
+      return sendToBridge({
+        type: 'set_server_secrets',
+        request_id: generateRequestId(),
+        server_id: msg.server_id,
+        secrets: msg.secrets,
+      });
+    }
+
+    if (msg.type === 'get_server_status') {
+      return sendToBridge({
+        type: 'get_server_status',
+        request_id: generateRequestId(),
+        server_id: msg.server_id,
+      });
+    }
+
     // Proxy fetch requests from sidebar (for CORS)
     if (msg.type === 'proxy_fetch') {
       console.log('[proxy_fetch] Received request for:', msg.url);

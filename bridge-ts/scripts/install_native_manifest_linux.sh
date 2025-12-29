@@ -51,3 +51,4 @@ echo "Manifest location: $MANIFEST_FILE"
 echo "Bridge executable: $LAUNCHER_SCRIPT"
 echo "Restart Firefox if it's already running."
 
+

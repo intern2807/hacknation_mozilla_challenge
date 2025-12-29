@@ -219,3 +219,4 @@ export function getCatalogManager(): CatalogManager {
   return _manager;
 }
 
+

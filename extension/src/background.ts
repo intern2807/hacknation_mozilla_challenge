@@ -1,6 +1,6 @@
 import browser from 'webextension-polyfill';
 
-const NATIVE_HOST_NAME = 'com.harbor.bridge';
+const NATIVE_HOST_NAME = 'harbor_bridge_host';
 
 interface HarborMessage {
   type: string;

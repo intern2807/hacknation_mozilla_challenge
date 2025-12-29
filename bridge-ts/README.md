@@ -95,3 +95,4 @@ All data is stored in `~/.harbor/`:
 - `installed_servers.json` - Installed server configs
 - `secrets/credentials.json` - API keys (restricted permissions)
 
+

@@ -839,8 +839,8 @@ const handleStartInstalled: MessageHandler = async (message, _store, _client, _c
                            errorMsg.includes('EACCES');
     const isMacOS = process.platform === 'darwin';
     
-    if (isBinary && isMacOS && isSecurityError && !useDocker) {
-      // Check if Docker is available as an alternative
+    if (isBinary && isMacOS && isSecurityError && !useDocker && !server.noDocker) {
+      // Check if Docker is available as an alternative (but not for servers that need host access)
       const dockerInfo = await installer.checkDockerAvailable();
       if (dockerInfo.available) {
         log(`[handleStartInstalled] Binary server failed with security error, Docker available as alternative`);
@@ -891,6 +891,29 @@ const handleSetServerSecrets: MessageHandler = async (message, _store, _client, 
   } catch (e) {
     log(`Failed to set secrets: ${e}`);
     return makeError(requestId, 'secrets_error', String(e));
+  }
+};
+
+/**
+ * Update server args (e.g., directory paths for filesystem server).
+ */
+const handleUpdateServerArgs: MessageHandler = async (message, _store, _client, _catalog, installer) => {
+  const requestId = message.request_id || '';
+  const serverId = message.server_id as string || '';
+  const args = (message.args || []) as string[];
+
+  if (!serverId) {
+    return makeError(requestId, 'invalid_request', 'Missing server_id');
+  }
+
+  try {
+    log(`[handleUpdateServerArgs] Updating args for ${serverId}: ${args.join(', ')}`);
+    installer.configure(serverId, { args });
+    const status = installer.getStatus(serverId);
+    return makeResult('update_server_args', requestId, { success: true, status });
+  } catch (e) {
+    log(`Failed to update server args: ${e}`);
+    return makeError(requestId, 'update_error', String(e));
   }
 };
 
@@ -952,7 +975,8 @@ const handleMcpConnect: MessageHandler = async (message, _store, _client, _catal
   
   // For binary packages on macOS, ALWAYS offer Docker option on first run
   // (Don't rely on quarantine attribute as it's unreliable after first spawn attempt)
-  if (server.packageType === 'binary' && !useDocker && !message.skip_security_check) {
+  // But NOT for servers that need host filesystem access (noDocker)
+  if (server.packageType === 'binary' && !useDocker && !message.skip_security_check && !server.noDocker) {
     const dockerPreference = await installer.shouldPreferDocker(serverId);
     const binaryPath = server.binaryPath || `~/.harbor/bin/${serverId}`;
     
@@ -1065,18 +1089,22 @@ TIP: Install Docker Desktop to bypass this in the future.`,
           errorLower.includes('code signature');
         
         if (isRecoverableError) {
-          // Check if Docker is available as a fallback
-          const dockerCheck = await installer.checkDockerAvailable();
-          if (dockerCheck.available) {
-            log(`[handleMcpConnect] Native connection failed but Docker available - offering fallback`);
-            return makeResult('mcp_connect', requestId, {
-              connected: false,
-              error: result.error,
-              docker_fallback_available: true,
-              docker_fallback_message: `This server couldn't start because of a missing dependency or permission issue.
+          // Check if Docker is available as a fallback (but not for servers that need host access)
+          if (!server.noDocker) {
+            const dockerCheck = await installer.checkDockerAvailable();
+            if (dockerCheck.available) {
+              log(`[handleMcpConnect] Native connection failed but Docker available - offering fallback`);
+              return makeResult('mcp_connect', requestId, {
+                connected: false,
+                error: result.error,
+                docker_fallback_available: true,
+                docker_fallback_message: `This server couldn't start because of a missing dependency or permission issue.
 
 Docker can run this server in an isolated container with all dependencies included - no additional setup needed.`,
-            });
+              });
+            }
+          } else {
+            log(`[handleMcpConnect] Server ${serverId} has noDocker flag - not offering Docker fallback`);
           }
         }
       }
@@ -1086,8 +1114,8 @@ Docker can run this server in an isolated container with all dependencies includ
   } catch (e) {
     log(`Failed to connect to MCP server: ${e}`);
     
-    // Also check for Docker fallback on exceptions
-    if (!useDocker && server.packageType !== 'http' && server.packageType !== 'sse') {
+    // Also check for Docker fallback on exceptions (but not for servers that need host access)
+    if (!useDocker && !server.noDocker && server.packageType !== 'http' && server.packageType !== 'sse') {
       const dockerCheck = await installer.checkDockerAvailable();
       if (dockerCheck.available) {
         return makeResult('mcp_connect', requestId, {
@@ -2541,8 +2569,11 @@ const handleInstallCuratedServer: MessageHandler = async (message, _store, _clie
       })) || [],
     }));
     
-    // Install the server
-    const server = await installer.install(catalogEntry, 0);
+    // Install the server (passing noDocker and requiredArgs if set)
+    const server = await installer.install(catalogEntry, 0, { 
+      noDocker: curated.noDocker,
+      requiredArgs: curated.requiredArgs,
+    });
     
     return makeResult('install_curated_server', requestId, { 
       success: true,
@@ -2639,11 +2670,15 @@ const handleInstallCurated: MessageHandler = async (message, _store, _client, _c
       })) || [],
     }));
     
-    // Install the server
-    const server = await installer.install(catalogEntry, 0);
+    // Install the server (passing noDocker and requiredArgs if set)
+    const server = await installer.install(catalogEntry, 0, { 
+      noDocker: curated.noDocker,
+      requiredArgs: curated.requiredArgs,
+    });
     
     // Check if server needs configuration
-    const needsConfig = curated.envVars?.some(e => e.required && e.isSecret) || false;
+    const needsConfig = curated.envVars?.some(e => e.required && e.isSecret) || 
+                        (curated.requiredArgs?.required === true);
     
     return makeResult('install_curated', requestId, { 
       server,
@@ -2823,7 +2858,113 @@ const handleInstallFromGitHub: MessageHandler = async (message, _store, _client,
 };
 
 /**
- * Check if Docker is available and get image status.
+ * Reconnect to orphaned Docker containers that are still running.
+ * This is called on extension startup to restore connections.
+ */
+const handleReconnectOrphanedContainers: MessageHandler = async (message, _store, _client, _catalog, installer, mcpManager) => {
+  const requestId = message.request_id || '';
+  
+  try {
+    const dockerExec = getDockerExec();
+    const info = await dockerExec.checkDocker();
+    
+    if (!info.available) {
+      return makeResult('reconnect_orphaned_containers', requestId, {
+        reconnected: [],
+        failed: [],
+        message: 'Docker not available',
+      });
+    }
+    
+    // Get running Harbor containers
+    const containers = dockerExec.listHarborContainers();
+    const runningContainers = containers.filter(c => c.status === 'running');
+    
+    if (runningContainers.length === 0) {
+      return makeResult('reconnect_orphaned_containers', requestId, {
+        reconnected: [],
+        failed: [],
+        message: 'No orphaned containers found',
+      });
+    }
+    
+    // Check which ones we're not connected to
+    const connectedServerIds = new Set(
+      mcpManager.getAllConnections().map(c => c.serverId)
+    );
+    
+    const orphaned = runningContainers.filter(c => !connectedServerIds.has(c.serverId));
+    
+    if (orphaned.length === 0) {
+      return makeResult('reconnect_orphaned_containers', requestId, {
+        reconnected: [],
+        failed: [],
+        message: 'All containers are connected',
+      });
+    }
+    
+    log(`[handleReconnectOrphanedContainers] Found ${orphaned.length} orphaned containers`);
+    
+    const reconnected: string[] = [];
+    const failed: Array<{ serverId: string; error: string }> = [];
+    
+    for (const container of orphaned) {
+      const serverId = container.serverId;
+      log(`[handleReconnectOrphanedContainers] Reconnecting ${serverId}...`);
+      
+      // Get the installed server config
+      const server = installer.getServer(serverId);
+      if (!server) {
+        log(`[handleReconnectOrphanedContainers] Server ${serverId} not found in installed servers`);
+        // Stop the orphan since we don't have its config
+        await dockerExec.stopContainer(serverId);
+        failed.push({ serverId, error: 'Server not installed' });
+        continue;
+      }
+      
+      try {
+        // Stop the old container first (we can't reattach to its stdio)
+        log(`[handleReconnectOrphanedContainers] Stopping old container for ${serverId}`);
+        await dockerExec.stopContainer(serverId);
+        
+        // Small delay to ensure container is fully stopped
+        await new Promise(resolve => setTimeout(resolve, 500));
+        
+        // Get secrets for this server
+        const secretStore = getSecretStore();
+        const envVars = secretStore.getAll(serverId);
+        
+        // Reconnect via Docker
+        log(`[handleReconnectOrphanedContainers] Starting fresh connection for ${serverId}`);
+        const result = await mcpManager.connect(server, envVars, { useDocker: true });
+        
+        if (result.success) {
+          reconnected.push(serverId);
+          log(`[handleReconnectOrphanedContainers] Successfully reconnected ${serverId}`);
+        } else {
+          failed.push({ serverId, error: result.error || 'Connection failed' });
+          log(`[handleReconnectOrphanedContainers] Failed to reconnect ${serverId}: ${result.error}`);
+        }
+      } catch (e) {
+        const errorMsg = e instanceof Error ? e.message : String(e);
+        failed.push({ serverId, error: errorMsg });
+        log(`[handleReconnectOrphanedContainers] Error reconnecting ${serverId}: ${errorMsg}`);
+      }
+    }
+    
+    return makeResult('reconnect_orphaned_containers', requestId, {
+      reconnected,
+      failed,
+      message: `Reconnected ${reconnected.length} of ${orphaned.length} orphaned containers`,
+    });
+  } catch (e) {
+    log(`Failed to reconnect orphaned containers: ${e}`);
+    return makeError(requestId, 'reconnect_error', String(e));
+  }
+};
+
+/**
+ * Check if Docker is available and get image/container status.
  */
 const handleCheckDocker: MessageHandler = async (message) => {
   const requestId = message.request_id || '';
@@ -2832,17 +2973,51 @@ const handleCheckDocker: MessageHandler = async (message) => {
     const dockerExec = getDockerExec();
     const info = await dockerExec.checkDocker();
     
-    // Also get image status if Docker is available
+    // Also get image status and containers if Docker is available
     let images: Record<string, { exists: boolean; size?: string }> = {};
+    let containers: Array<{
+      id: string;
+      name: string;
+      serverId: string;
+      image: string;
+      status: 'running' | 'stopped';
+      statusText: string;
+      uptime?: string;
+      cpu?: string;
+      memory?: string;
+    }> = [];
+    
     if (info.available) {
+      // Get image status
       const { getDockerImageManager } = await import('./installer/docker-images.js');
       const imageManager = getDockerImageManager();
       images = await imageManager.getImagesStatus();
+      
+      // Get running containers and their stats
+      const containerList = dockerExec.listHarborContainers();
+      const stats = dockerExec.getContainerStats();
+      
+      // Merge stats into container info
+      containers = containerList.map(container => {
+        const containerStats = stats.find(s => s.serverId === container.serverId);
+        return {
+          id: container.id,
+          name: container.name,
+          serverId: container.serverId,
+          image: container.image,
+          status: container.status,
+          statusText: container.statusText,
+          uptime: container.uptime,
+          cpu: containerStats?.cpu,
+          memory: containerStats?.memory,
+        };
+      });
     }
     
     return makeResult('check_docker', requestId, {
       ...info,
       images,
+      containers,
     });
   } catch (e) {
     log(`Failed to check Docker: ${e}`);
@@ -2957,6 +3132,7 @@ const HANDLERS: Record<string, MessageHandler> = {
   install_from_github: handleInstallFromGitHub,
   // Docker handlers
   check_docker: handleCheckDocker,
+  reconnect_orphaned_containers: handleReconnectOrphanedContainers,
   build_docker_images: handleBuildDockerImages,
   set_docker_mode: handleSetDockerMode,
   should_prefer_docker: handleShouldPreferDocker,
@@ -2972,6 +3148,7 @@ const HANDLERS: Record<string, MessageHandler> = {
   start_installed: handleStartInstalled,
   stop_installed: handleStopInstalled,
   set_server_secrets: handleSetServerSecrets,
+  update_server_args: handleUpdateServerArgs,
   get_server_status: handleGetServerStatus,
   // MCP stdio handlers (for locally installed servers)
   mcp_connect: handleMcpConnect,

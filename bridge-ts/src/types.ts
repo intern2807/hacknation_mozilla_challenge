@@ -128,6 +128,15 @@ export interface InstalledServer {
     description?: string;
     isSecret?: boolean;
   }>;
+  // Command-line argument configuration (if server needs args)
+  requiredArgs?: {
+    name: string;
+    description?: string;
+    type: 'path' | 'string' | 'number';
+    multiple?: boolean;
+    placeholder?: string;
+    required?: boolean;
+  };
   installedAt: number;
   catalogSource: string | null;
   homepageUrl: string | null;
@@ -141,6 +150,8 @@ export interface InstalledServer {
   // Docker execution settings
   useDocker?: boolean;
   dockerVolumes?: string[];
+  // If true, this server must NOT run in Docker (needs host filesystem access)
+  noDocker?: boolean;
 }
 
 // =============================================================================

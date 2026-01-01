@@ -547,6 +547,36 @@ async function openCredentialModal(serverId: string): Promise<void> {
     `;
   }).join('');
   
+  // Always show args configuration for ANY server
+  // This is fully generic - no per-server configuration needed
+  const currentArgs = server.args || [];
+  
+  fieldsHtml += `
+    <div class="args-config-section">
+      <div class="section-divider">
+        <span>⚙️ Command Arguments</span>
+      </div>
+      <div class="credential-description" style="margin-bottom: var(--space-2);">
+        Some servers require command-line arguments (e.g., directories, URLs).
+        ${server.homepageUrl ? `<a href="${escapeHtml(server.homepageUrl)}" target="_blank" rel="noopener">Check documentation →</a>` : ''}
+      </div>
+      <div id="args-list" class="directory-list">
+        ${currentArgs.length > 0 ? currentArgs.map((arg, i) => `
+          <div class="directory-item" data-index="${i}">
+            <input type="text" class="credential-input args-value" value="${escapeHtml(arg)}" placeholder="e.g., /path/to/dir or --option=value">
+            <button class="btn btn-sm btn-ghost remove-arg-btn" data-index="${i}">✕</button>
+          </div>
+        `).join('') : `
+          <div class="directory-item" data-index="0">
+            <input type="text" class="credential-input args-value" value="" placeholder="e.g., /path/to/dir or --option=value">
+            <button class="btn btn-sm btn-ghost remove-arg-btn" data-index="0">✕</button>
+          </div>
+        `}
+      </div>
+      <button class="btn btn-sm btn-secondary" id="add-arg-btn">+ Add Argument</button>
+    </div>
+  `;
+  
   // Add custom env var section
   fieldsHtml += `
     <div class="add-credential-section">
@@ -643,6 +673,54 @@ async function openCredentialModal(serverId: string): Promise<void> {
       }
     });
   });
+  
+  // Args configuration event handlers (fully generic for any server)
+  const addArgBtn = document.getElementById('add-arg-btn');
+  const argsList = document.getElementById('args-list');
+  
+  if (addArgBtn && argsList) {
+    const placeholder = 'e.g., /path/to/dir or --option=value';
+    
+    addArgBtn.addEventListener('click', () => {
+      const newIndex = argsList.children.length;
+      const newItem = document.createElement('div');
+      newItem.className = 'directory-item';
+      newItem.dataset.index = String(newIndex);
+      newItem.innerHTML = `
+        <input type="text" class="credential-input args-value" value="" placeholder="${escapeHtml(placeholder)}">
+        <button class="btn btn-sm btn-ghost remove-arg-btn" data-index="${newIndex}">✕</button>
+      `;
+      argsList.appendChild(newItem);
+      
+      // Add remove handler for the new button
+      newItem.querySelector('.remove-arg-btn')?.addEventListener('click', () => {
+        if (argsList.children.length > 1) {
+          newItem.remove();
+        } else {
+          // Don't remove the last one, just clear it
+          const input = newItem.querySelector('.args-value') as HTMLInputElement;
+          if (input) input.value = '';
+        }
+      });
+      
+      // Focus the new input
+      (newItem.querySelector('.args-value') as HTMLInputElement)?.focus();
+    });
+  }
+  
+  // Remove arg button handlers
+  credentialModalBody.querySelectorAll('.remove-arg-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const item = btn.closest('.directory-item');
+      if (item && argsList && argsList.children.length > 1) {
+        item.remove();
+      } else if (item) {
+        // Don't remove the last one, just clear it
+        const input = item.querySelector('.args-value') as HTMLInputElement;
+        if (input) input.value = '';
+      }
+    });
+  });
 
   credentialModal.style.display = 'flex';
 }
@@ -655,11 +733,13 @@ function closeCredentialModal(): void {
 async function saveCredentials(): Promise<void> {
   if (!currentCredentialServerId) return;
 
-  const inputs = credentialModalBody.querySelectorAll('.credential-input') as NodeListOf<HTMLInputElement>;
+  const inputs = credentialModalBody.querySelectorAll('.credential-input:not(.directory-path)') as NodeListOf<HTMLInputElement>;
   let hasErrors = false;
 
   for (const input of inputs) {
-    const key = input.dataset.key!;
+    const key = input.dataset.key;
+    if (!key) continue; // Skip inputs without a key (like the new credential inputs)
+    
     const value = input.value.trim();
     
     // Only save if a value was entered (don't overwrite with empty)
@@ -676,6 +756,27 @@ async function saveCredentials(): Promise<void> {
         console.error('Failed to save credential:', err);
         hasErrors = true;
       }
+    }
+  }
+  
+  // Save server args (generalized - any server can have args)
+  const argsInputs = credentialModalBody.querySelectorAll('.args-value') as NodeListOf<HTMLInputElement>;
+  if (argsInputs.length > 0) {
+    const args = Array.from(argsInputs)
+      .map(input => input.value.trim())
+      .filter(arg => arg.length > 0);
+    
+    // Always save args, even if empty (to clear previous args)
+    try {
+      await browser.runtime.sendMessage({
+        type: 'update_server_args',
+        server_id: currentCredentialServerId,
+        args: args,
+      });
+      console.log('[Sidebar] Saved server args:', args);
+    } catch (err) {
+      console.error('Failed to save server args:', err);
+      hasErrors = true;
     }
   }
 
@@ -1356,11 +1457,24 @@ async function stopLocalLLM(): Promise<void> {
 // Docker Status
 // =============================================================================
 
+interface DockerContainer {
+  id: string;
+  name: string;
+  serverId: string;
+  image: string;
+  status: 'running' | 'stopped';
+  statusText: string;
+  uptime?: string;
+  cpu?: string;
+  memory?: string;
+}
+
 interface DockerStatus {
   available: boolean;
   version?: string;
   error?: string;
   images?: Record<string, { exists: boolean; size?: string }>;
+  containers?: DockerContainer[];
 }
 
 let dockerStatus: DockerStatus | null = null;
@@ -1377,6 +1491,7 @@ async function checkDockerStatus(): Promise<void> {
         version: response.version,
         error: response.error,
         images: response.images,
+        containers: response.containers,
       };
       renderDockerStatus();
       updateRuntimeStatusDot();
@@ -1410,6 +1525,30 @@ function renderDockerStatus(): void {
         detailsHtml += `<br><span class="text-xs text-muted">Images: ${builtImages}</span>`;
       } else {
         detailsHtml += `<br><span class="text-xs text-muted">No images built yet</span>`;
+      }
+    }
+    
+    // Show running containers
+    if (dockerStatus.containers && dockerStatus.containers.length > 0) {
+      const runningContainers = dockerStatus.containers.filter(c => c.status === 'running');
+      
+      if (runningContainers.length > 0) {
+        detailsHtml += `<div style="margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--color-border-subtle);">`;
+        detailsHtml += `<div class="text-xs text-muted" style="margin-bottom: 4px;">Running Containers (${runningContainers.length}):</div>`;
+        
+        for (const container of runningContainers) {
+          detailsHtml += `
+            <div style="display: flex; align-items: center; gap: 6px; padding: 4px 0; font-size: 11px;">
+              <span style="width: 6px; height: 6px; background: var(--color-success); border-radius: 50%; flex-shrink: 0;"></span>
+              <span style="font-weight: 500; color: var(--text-primary);">${escapeHtml(container.serverId)}</span>
+              ${container.uptime ? `<span class="text-muted">· ${escapeHtml(container.uptime)}</span>` : ''}
+              ${container.cpu ? `<span class="text-muted">· CPU: ${escapeHtml(container.cpu)}</span>` : ''}
+              ${container.memory ? `<span class="text-muted">· ${escapeHtml(container.memory.split(' / ')[0])}</span>` : ''}
+            </div>
+          `;
+        }
+        
+        detailsHtml += `</div>`;
       }
     }
     
@@ -1614,6 +1753,13 @@ browser.runtime.onMessage.addListener((message) => {
   if (message.type === 'installed_servers_changed') {
     console.log('[Sidebar] Installed servers changed, refreshing...');
     loadInstalledServers();
+    checkDockerStatus(); // Refresh Docker container info too
+  }
+  
+  // Handle server connected/disconnected
+  if (message.type === 'mcp_server_connected' || message.type === 'mcp_server_disconnected') {
+    console.log('[Sidebar] Server connection changed, refreshing Docker status...');
+    setTimeout(() => checkDockerStatus(), 500); // Small delay for Docker to update
   }
   
   // Handle server progress updates (Docker startup, etc.)
@@ -1765,6 +1911,72 @@ async function init(): Promise<void> {
   
   // Initialize bridge activity panel
   initBridgeActivityPanel();
+  
+  // Check for orphaned Docker containers and reconnect them
+  await reconnectOrphanedContainers();
+}
+
+/**
+ * Reconnect to any Docker containers that are still running from a previous session.
+ */
+async function reconnectOrphanedContainers(): Promise<void> {
+  // Only proceed if Docker is available and has running containers
+  if (!dockerStatus?.available || !dockerStatus?.containers?.length) {
+    return;
+  }
+  
+  const runningContainers = dockerStatus.containers.filter(c => c.status === 'running');
+  if (runningContainers.length === 0) {
+    return;
+  }
+  
+  console.log(`[Sidebar] Found ${runningContainers.length} running Docker containers, attempting reconnection...`);
+  
+  // Show a notification to the user
+  for (const container of runningContainers) {
+    showServerProgress(container.serverId, '🔄 Reconnecting to running container...');
+  }
+  
+  try {
+    const response = await browser.runtime.sendMessage({
+      type: 'reconnect_orphaned_containers',
+    }) as { 
+      type: string; 
+      reconnected?: string[]; 
+      failed?: Array<{ serverId: string; error: string }>;
+      message?: string;
+    };
+    
+    console.log('[Sidebar] Reconnect response:', response);
+    
+    if (response.type === 'reconnect_orphaned_containers_result') {
+      // Clear progress for all containers
+      for (const container of runningContainers) {
+        clearServerProgress(container.serverId);
+      }
+      
+      // Show success/failure notifications
+      if (response.reconnected && response.reconnected.length > 0) {
+        console.log(`[Sidebar] Successfully reconnected: ${response.reconnected.join(', ')}`);
+      }
+      
+      if (response.failed && response.failed.length > 0) {
+        for (const fail of response.failed) {
+          console.warn(`[Sidebar] Failed to reconnect ${fail.serverId}: ${fail.error}`);
+        }
+      }
+      
+      // Refresh the server list and Docker status
+      await loadInstalledServers();
+      await checkDockerStatus();
+    }
+  } catch (err) {
+    console.error('[Sidebar] Failed to reconnect orphaned containers:', err);
+    // Clear progress on error
+    for (const container of runningContainers) {
+      clearServerProgress(container.serverId);
+    }
+  }
 }
 
 // Button handlers

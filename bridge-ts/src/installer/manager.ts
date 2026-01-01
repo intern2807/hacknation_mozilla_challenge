@@ -46,6 +46,7 @@ export class InstalledServerManager {
             autoStart: serverData.autoStart || false,
             args: serverData.args || [],
             requiredEnvVars: serverData.requiredEnvVars || [],
+            requiredArgs: serverData.requiredArgs,
             installedAt: serverData.installedAt || Date.now(),
             catalogSource: serverData.catalogSource || null,
             homepageUrl: serverData.homepageUrl || null,
@@ -59,6 +60,8 @@ export class InstalledServerManager {
             // Docker fields
             useDocker: serverData.useDocker || false,
             dockerVolumes: serverData.dockerVolumes || [],
+            // Server requires host access (no Docker)
+            noDocker: serverData.noDocker || false,
           };
           this.servers.set(server.id, server);
         }
@@ -83,7 +86,11 @@ export class InstalledServerManager {
 
   async install(
     catalogEntry: CatalogServer,
-    packageIndex: number = 0
+    packageIndex: number = 0,
+    options?: { 
+      noDocker?: boolean;
+      requiredArgs?: InstalledServer['requiredArgs'];
+    }
   ): Promise<InstalledServer> {
     const serverId = catalogEntry.id;
     const name = catalogEntry.name || serverId;
@@ -144,18 +151,21 @@ export class InstalledServerManager {
       autoStart: false,
       args: [],
       requiredEnvVars,
+      requiredArgs: options?.requiredArgs,
       installedAt: Date.now(),
       catalogSource: catalogEntry.source || null,
       homepageUrl: catalogEntry.homepageUrl || null,
       description: catalogEntry.description || null,
       binaryUrl,
       binaryPath,
+      // If noDocker is true, this server requires host filesystem access
+      noDocker: options?.noDocker,
     };
 
     this.servers.set(serverId, server);
     this.save();
 
-    log(`[InstalledServerManager] Installed server: ${name} (${packageType}:${packageId})`);
+    log(`[InstalledServerManager] Installed server: ${name} (${packageType}:${packageId})${options?.noDocker ? ' [noDocker]' : ''}`);
     return server;
   }
 

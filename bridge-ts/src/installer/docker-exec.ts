@@ -269,6 +269,117 @@ export class DockerExec {
       return false;
     }
   }
+
+  /**
+   * List all Harbor MCP containers (running and stopped).
+   */
+  listHarborContainers(): HarborContainer[] {
+    try {
+      // List containers with harbor-mcp prefix
+      const output = execSync(
+        `docker ps -a --filter "name=harbor-mcp-" --format "{{.ID}}|{{.Names}}|{{.Status}}|{{.Image}}|{{.CreatedAt}}|{{.Ports}}"`,
+        { encoding: 'utf-8', stdio: ['pipe', 'pipe', 'pipe'] }
+      ).trim();
+      
+      if (!output) {
+        return [];
+      }
+      
+      const containers: HarborContainer[] = [];
+      
+      for (const line of output.split('\n')) {
+        if (!line.trim()) continue;
+        
+        const [id, name, status, image, createdAt, ports] = line.split('|');
+        
+        // Extract server ID from container name (harbor-mcp-<serverId>)
+        const serverId = name.replace('harbor-mcp-', '');
+        
+        // Parse status to determine running state
+        const isRunning = status.toLowerCase().startsWith('up');
+        
+        // Parse uptime from status if running
+        let uptime: string | undefined;
+        if (isRunning) {
+          const uptimeMatch = status.match(/Up\s+(.+?)(?:\s+\(|$)/i);
+          uptime = uptimeMatch ? uptimeMatch[1].trim() : undefined;
+        }
+        
+        containers.push({
+          id: id.substring(0, 12),
+          name,
+          serverId,
+          image,
+          status: isRunning ? 'running' : 'stopped',
+          statusText: status,
+          uptime,
+          createdAt,
+          ports: ports || undefined,
+        });
+      }
+      
+      return containers;
+    } catch (e) {
+      log(`[Docker] Failed to list containers: ${e}`);
+      return [];
+    }
+  }
+
+  /**
+   * Get stats for running Harbor containers.
+   */
+  getContainerStats(): ContainerStats[] {
+    try {
+      const output = execSync(
+        `docker stats --no-stream --filter "name=harbor-mcp-" --format "{{.Name}}|{{.CPUPerc}}|{{.MemUsage}}|{{.NetIO}}"`,
+        { encoding: 'utf-8', timeout: 5000, stdio: ['pipe', 'pipe', 'pipe'] }
+      ).trim();
+      
+      if (!output) {
+        return [];
+      }
+      
+      const stats: ContainerStats[] = [];
+      
+      for (const line of output.split('\n')) {
+        if (!line.trim()) continue;
+        
+        const [name, cpu, memory, network] = line.split('|');
+        const serverId = name.replace('harbor-mcp-', '');
+        
+        stats.push({
+          serverId,
+          cpu: cpu || '0%',
+          memory: memory || '0B / 0B',
+          network: network || '0B / 0B',
+        });
+      }
+      
+      return stats;
+    } catch (e) {
+      log(`[Docker] Failed to get container stats: ${e}`);
+      return [];
+    }
+  }
+}
+
+export interface HarborContainer {
+  id: string;
+  name: string;
+  serverId: string;
+  image: string;
+  status: 'running' | 'stopped';
+  statusText: string;
+  uptime?: string;
+  createdAt: string;
+  ports?: string;
+}
+
+export interface ContainerStats {
+  serverId: string;
+  cpu: string;
+  memory: string;
+  network: string;
 }
 
 // Singleton instance

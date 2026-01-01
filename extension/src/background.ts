@@ -552,6 +552,15 @@ browser.runtime.onMessage.addListener(
         request_id: generateRequestId(),
       });
     }
+    
+    if (msg.type === 'update_server_args') {
+      return sendToBridge({
+        type: 'update_server_args',
+        request_id: generateRequestId(),
+        server_id: msg.server_id,
+        args: msg.args,
+      });
+    }
 
     // Curated servers messages
     if (msg.type === 'get_curated_servers') {
@@ -739,6 +748,21 @@ browser.runtime.onMessage.addListener(
       return sendToBridge({
         type: 'check_docker',
         request_id: generateRequestId(),
+      });
+    }
+    
+    if (msg.type === 'reconnect_orphaned_containers') {
+      console.log('[Background] Reconnecting orphaned Docker containers...');
+      return sendToBridge({
+        type: 'reconnect_orphaned_containers',
+        request_id: generateRequestId(),
+      }, DOCKER_TIMEOUT_MS).then(result => {
+        console.log('[Background] Reconnect result:', result);
+        // Notify sidebar to refresh after reconnection
+        if (result && result.type === 'reconnect_orphaned_containers_result') {
+          broadcastToExtension({ type: 'installed_servers_changed' });
+        }
+        return result;
       });
     }
     

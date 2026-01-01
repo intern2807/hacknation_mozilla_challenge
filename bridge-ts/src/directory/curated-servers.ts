@@ -29,6 +29,18 @@ export interface CuratedServerFull extends CuratedServer {
     isSecret?: boolean;
     required?: boolean;
   }>;
+  // Command-line arguments configuration
+  // If defined, the UI will prompt the user to configure these
+  requiredArgs?: {
+    name: string;           // Display name (e.g., "Allowed Directories")
+    description?: string;   // Help text
+    type: 'path' | 'string' | 'number';  // Input type for validation hints
+    multiple?: boolean;     // Can user add multiple values?
+    placeholder?: string;   // Example value
+    required?: boolean;     // Must have at least one?
+  };
+  // If true, this server must NOT run in Docker (needs host filesystem access, etc.)
+  noDocker?: boolean;
 }
 
 /**
@@ -49,6 +61,8 @@ const CURATED_SERVERS_FULL: CuratedServerFull[] = [
     requiresNative: true,
     requiresConfig: true,
     configHint: 'Choose which folders to allow access to',
+    // Filesystem server must NOT run in Docker - it needs host filesystem access
+    noDocker: true,
     install: {
       type: 'npm',
       package: '@modelcontextprotocol/server-filesystem',

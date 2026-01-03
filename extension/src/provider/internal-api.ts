@@ -519,7 +519,7 @@ export const agent = {
             type: 'chat_send_message',
             session_id: sessionId,
             message: task,
-            use_tool_router: true,
+            // use_tool_router defaults to false - LLM sees all tools and decides
           }) as { 
             type: string;
             response?: string;

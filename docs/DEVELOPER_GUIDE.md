@@ -698,7 +698,7 @@ const orchestrator = getChatOrchestrator();
 const session = createSession({
   enabledServers: ['memory-server', 'filesystem'],
   maxIterations: 10,
-  useToolRouter: true,
+  // useToolRouter: true,  // Optional - enable to filter tools by keywords
 });
 
 // Run orchestration

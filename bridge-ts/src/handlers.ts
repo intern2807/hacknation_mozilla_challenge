@@ -2407,7 +2407,7 @@ const handleChatSendMessage: MessageHandler = async (message, _store, _client, _
   const requestId = message.request_id || '';
   const sessionId = message.session_id as string || '';
   const userMessage = message.message as string || '';
-  const useToolRouter = message.use_tool_router !== false; // Default to true
+  const useToolRouter = message.use_tool_router === true; // Default to false - let LLM see all tools
 
   if (!sessionId) {
     return makeError(requestId, 'invalid_request', 'Missing session_id');

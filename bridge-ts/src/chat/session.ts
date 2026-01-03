@@ -65,7 +65,7 @@ export const DEFAULT_SESSION_CONFIG: SessionConfig = {
   maxIterations: 10,
   temperature: 0.7,
   maxTokens: 2048,
-  useToolRouter: true, // On by default
+  useToolRouter: false, // Off by default - let LLM see all tools and decide
 };
 
 /**

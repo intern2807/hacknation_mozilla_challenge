@@ -226,6 +226,62 @@ This will return the current UTC time.`;
       });
     });
 
+    describe('Format 5: Bare tool name (no parameters)', () => {
+      it('should parse bare tool name by itself', () => {
+        const content = `get_me`;
+        const toolMapping = { 'curated-github-docker__get_me': 'curated-github-docker' };
+        
+        const result = parseToolCall(orchestrator, content, toolMapping);
+        
+        expect(result).not.toBeNull();
+        expect(result?.name).toBe('curated-github-docker__get_me');
+        expect(result?.arguments).toEqual({});
+      });
+
+      it('should parse bare tool name with empty parens', () => {
+        const content = `get_me()`;
+        const toolMapping = { 'curated-github-docker__get_me': 'curated-github-docker' };
+        
+        const result = parseToolCall(orchestrator, content, toolMapping);
+        
+        expect(result).not.toBeNull();
+        expect(result?.name).toBe('curated-github-docker__get_me');
+        expect(result?.arguments).toEqual({});
+      });
+
+      it('should parse bare tool name with empty object parens', () => {
+        const content = `get_me({})`;
+        const toolMapping = { 'curated-github-docker__get_me': 'curated-github-docker' };
+        
+        const result = parseToolCall(orchestrator, content, toolMapping);
+        
+        expect(result).not.toBeNull();
+        expect(result?.name).toBe('curated-github-docker__get_me');
+        expect(result?.arguments).toEqual({});
+      });
+
+      it('should parse prefixed tool name by itself', () => {
+        const content = `curated-github-docker__get_me`;
+        const toolMapping = { 'curated-github-docker__get_me': 'curated-github-docker' };
+        
+        const result = parseToolCall(orchestrator, content, toolMapping);
+        
+        expect(result).not.toBeNull();
+        expect(result?.name).toBe('curated-github-docker__get_me');
+      });
+
+      it('should parse tool name embedded in short response', () => {
+        const content = `I'll call get_me now`;
+        const toolMapping = { 'curated-github-docker__get_me': 'curated-github-docker' };
+        
+        const result = parseToolCall(orchestrator, content, toolMapping);
+        
+        expect(result).not.toBeNull();
+        expect(result?.name).toBe('curated-github-docker__get_me');
+        expect(result?.arguments).toEqual({});
+      });
+    });
+
     describe('Real-world LLM Output Examples', () => {
       it('should parse Ollama-style output', () => {
         const content = `To answer the question "what time is it", I will use the "curated-time/get_current_time" function with no specified timezone. This will return the current time in the user's default or local timezone.

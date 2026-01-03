@@ -393,6 +393,11 @@ export class ChatOrchestrator {
     const result4 = this.tryParseLooseFormat(content, toolNames, toolMapping);
     if (result4) return result4;
     
+    // Format 5: Just tool name by itself (for tools with no required parameters)
+    // Handles cases like "get_me" or "get_me()" with no JSON
+    const result5 = this.tryParseBareToolName(content, toolNames, toolMapping);
+    if (result5) return result5;
+    
     log('[Orchestrator] parseToolCall: No valid tool call format found');
     return null;
   }
@@ -588,6 +593,72 @@ export class ChatOrchestrator {
         }
       }
     }
+    return null;
+  }
+  
+  /**
+   * Try to parse a bare tool name (with no parameters).
+   * Handles: "get_me", "get_me()", tool names embedded in text like "I'll call get_me now"
+   */
+  private tryParseBareToolName(
+    content: string, 
+    toolNames: string[], 
+    toolMapping: ToolMapping
+  ): ToolCall | null {
+    const contentTrimmed = content.trim();
+    const contentLower = contentTrimmed.toLowerCase();
+    
+    // Build list of names to check (both prefixed and short)
+    const namesToSearch: { searchName: string; prefixedName: string }[] = [];
+    for (const prefixedName of toolNames) {
+      namesToSearch.push({ searchName: prefixedName, prefixedName });
+      const shortName = prefixedName.split('__').pop();
+      if (shortName && shortName !== prefixedName) {
+        namesToSearch.push({ searchName: shortName, prefixedName });
+      }
+    }
+    
+    // Sort by name length (longer names first) to avoid partial matches
+    namesToSearch.sort((a, b) => b.searchName.length - a.searchName.length);
+    
+    for (const { searchName, prefixedName } of namesToSearch) {
+      const searchLower = searchName.toLowerCase();
+      
+      // Check for exact match (content is just the tool name)
+      if (contentLower === searchLower || 
+          contentLower === `${searchLower}()` || 
+          contentLower === `${searchLower}({})`) {
+        log(`[Orchestrator] Parsed bare tool name (exact): ${searchName} -> ${prefixedName}`);
+        return {
+          id: `text_call_${Date.now()}`,
+          name: prefixedName,
+          arguments: {},
+        };
+      }
+      
+      // Check for tool name at word boundaries in short content (< 100 chars suggests just calling a tool)
+      // Only do this check if content is short enough to be a tool call response
+      if (contentTrimmed.length < 100 && contentTrimmed.length > 0) {
+        // Simple check: look for the tool name as a standalone word
+        // Escape special regex characters in the tool name
+        const escaped = searchName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        try {
+          const pattern = new RegExp(`(?:^|\\s)${escaped}(?:\\s*\\(\\s*\\{?\\s*\\}?\\s*\\))?(?:\\s|$)`, 'i');
+          if (pattern.test(contentTrimmed)) {
+            log(`[Orchestrator] Parsed bare tool name (word boundary): ${searchName} -> ${prefixedName}`);
+            return {
+              id: `text_call_${Date.now()}`,
+              name: prefixedName,
+              arguments: {},
+            };
+          }
+        } catch {
+          // Invalid regex, skip
+          log(`[Orchestrator] Invalid regex for tool name: ${searchName}`);
+        }
+      }
+    }
+    
     return null;
   }
   

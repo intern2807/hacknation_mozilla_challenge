@@ -744,17 +744,25 @@ CRITICAL: You are an AGENT. When the user asks something that requires a tool, y
 
 AVAILABLE TOOLS BY SERVER:
 ${serverInfo}
-TOOL NAMING PATTERNS (use these to select the right tool):
-- "get_me", "me", "whoami", "get_current_user", "get_authenticated_user" → Returns YOUR info (the authenticated user)
-- "get_<resource>" → Returns a specific resource directly
-- "list_<resources>" → Returns a list/collection of resources
-- "search_<resources>" → Searches with a query - use only when looking for OTHERS or when you need to filter
+TOOL SELECTION - CRITICAL LOGIC:
 
-TOOL SELECTION PRINCIPLES:
-- When user says "my" or "me": Look for tools containing "me", "current", "authenticated", or "self" - NOT search tools.
-- When user asks about a specific other thing: Use get/lookup tools with an ID or name.
-- When user wants to find/search among many: Use search or list tools.
-- Read tool descriptions carefully - they tell you exactly what the tool returns.
+1. FIRST, determine if the user is asking about THEMSELVES or about OTHERS:
+   - "my", "me", "I" → User is asking about THEMSELVES (the authenticated user)
+   - Specific names, IDs, or "find/search for X" → User is asking about OTHERS
+
+2. IF asking about THEMSELVES:
+   - SEARCH tools CANNOT work (the user doesn't know their own info yet - that's why they're asking!)
+   - Look for tools with: "me", "self", "current", "authenticated", "whoami" in the name
+   - These tools take NO query parameter - they return info about the logged-in user
+
+3. IF asking about OTHERS or searching:
+   - Use "search_*", "find_*", or "list_*" tools with the appropriate query
+
+COMMON TOOL PATTERNS:
+- "*_me", "*me*", "whoami", "current_user" → Returns authenticated user's info (no query needed)
+- "get_*" → Returns a specific resource by ID/name
+- "list_*" → Returns a collection
+- "search_*" → Requires a query to search
 
 RULES:
 1. ALWAYS call tools directly when needed - never just describe how to use them.

@@ -120,6 +120,65 @@ export interface StreamToken {
 }
 
 // =============================================================================
+// Chrome AI API Compatibility Types
+// =============================================================================
+
+/**
+ * Chrome AI capability availability status.
+ * - 'readily': Model is ready to use immediately
+ * - 'after-download': Model needs to be downloaded first (not used in Harbor)
+ * - 'no': Model is not available
+ */
+export type AICapabilityAvailability = 'readily' | 'after-download' | 'no';
+
+/**
+ * Chrome-compatible AI text session interface.
+ * Extends Harbor's TextSession with Chrome API compatibility.
+ */
+export interface AITextSession extends TextSession {
+  clone(): Promise<AITextSession>;
+}
+
+/**
+ * Chrome languageModel.capabilities() return type.
+ */
+export interface AILanguageModelCapabilities {
+  available: AICapabilityAvailability;
+  defaultTopK?: number;
+  maxTopK?: number;
+  defaultTemperature?: number;
+}
+
+/**
+ * Chrome languageModel.create() options.
+ */
+export interface AILanguageModelCreateOptions {
+  systemPrompt?: string;
+  initialPrompts?: Array<{ role: 'user' | 'assistant'; content: string }>;
+  temperature?: number;
+  topK?: number;
+  signal?: AbortSignal;
+}
+
+/**
+ * Chrome-compatible window.ai API interface.
+ * Provides both Harbor's API and Chrome Prompt API compatibility.
+ */
+export interface AIApi {
+  /** Chrome Compatibility: Check if a text session can be created */
+  canCreateTextSession(): Promise<AICapabilityAvailability>;
+  
+  /** Create a text session (auto-requests permission if needed) */
+  createTextSession(options?: TextSessionOptions): Promise<AITextSession>;
+  
+  /** Chrome Prompt API: languageModel namespace */
+  languageModel: {
+    capabilities(): Promise<AILanguageModelCapabilities>;
+    create(options?: AILanguageModelCreateOptions): Promise<AITextSession>;
+  };
+}
+
+// =============================================================================
 // Agent Run Types (window.agent)
 // =============================================================================
 

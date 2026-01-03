@@ -186,6 +186,8 @@ function getSelectedTools(): string[] | undefined {
 async function sendDecision(decision: 'allow-once' | 'allow-always' | 'deny'): Promise<void> {
   const { promptId, tools } = parseParams();
   
+  console.log('[Permission Prompt] Sending decision:', { promptId, decision });
+  
   // Get selected tools (only relevant if not denying)
   let allowedTools: string[] | undefined;
   if (decision !== 'deny' && tools.length > 0) {
@@ -202,17 +204,18 @@ async function sendDecision(decision: 'allow-once' | 'allow-always' | 'deny'): P
   
   try {
     // Send decision to background script
-    await browser.runtime.sendMessage({
+    const response = await browser.runtime.sendMessage({
       type: 'provider_permission_response',
       promptId,
       decision,
       allowedTools,
     });
+    console.log('[Permission Prompt] Response received:', response);
     
     // Close this popup window
     window.close();
   } catch (err) {
-    console.error('Failed to send permission decision:', err);
+    console.error('[Permission Prompt] Failed to send permission decision:', err);
     // Show error to user
     alert('Failed to save permission decision. Please close this window and try again.');
   }

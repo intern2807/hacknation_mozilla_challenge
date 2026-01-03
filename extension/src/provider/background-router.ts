@@ -31,6 +31,7 @@ import {
   isToolAllowed,
   getAllowedTools,
 } from './permissions';
+import { llmChat } from '../background';
 
 const DEBUG = true;
 
@@ -81,6 +82,7 @@ function createError(code: ApiError['code'], message: string, details?: unknown)
 }
 
 function sendResponse(port: browser.Runtime.Port, type: string, requestId: string, payload?: unknown): void {
+  log('sendResponse called:', { type, requestId, payload, portName: port?.name });
   try {
     port.postMessage({
       namespace: 'harbor-provider',
@@ -88,8 +90,9 @@ function sendResponse(port: browser.Runtime.Port, type: string, requestId: strin
       requestId,
       payload,
     });
+    log('Response sent successfully');
   } catch (err) {
-    log('Failed to send response:', err);
+    log('Failed to send response (port may be disconnected):', err);
   }
 }
 
@@ -209,14 +212,17 @@ async function showPermissionPrompt(
   
   // Open as a popup window - increase height to accommodate tools
   const hasTools = params.has('tools');
+  const fullUrl = `${promptUrl}?${params.toString()}`;
+  log('Opening permission prompt window:', { fullUrl, hasTools });
   try {
-    await browser.windows.create({
-      url: `${promptUrl}?${params.toString()}`,
+    const win = await browser.windows.create({
+      url: fullUrl,
       type: 'popup',
       width: 420,
       height: hasTools ? 600 : 500,
       focused: true,
     });
+    log('Permission prompt window created:', win?.id);
   } catch (err) {
     log('Failed to open permission prompt:', err);
     pendingPermissionRequests.delete(promptId);
@@ -230,6 +236,7 @@ export function handlePermissionPromptResponse(
   decision: 'allow-once' | 'allow-always' | 'deny',
   allowedTools?: string[]
 ): void {
+  log('handlePermissionPromptResponse called:', { promptId, decision, allowedTools });
   const pending = pendingPermissionRequests.get(promptId);
   if (!pending) {
     log('No pending request for promptId:', promptId);
@@ -239,16 +246,21 @@ export function handlePermissionPromptResponse(
   pendingPermissionRequests.delete(promptId);
   
   const { port, requestId, origin, scopes } = pending;
+  log('Processing permission decision for:', { origin, scopes, requestId });
   
   (async () => {
     if (decision === 'deny') {
+      log('Denying permissions');
       await denyPermissions(origin, scopes);
       const result = await buildGrantResult(origin, scopes);
+      log('Sending deny result:', result);
       sendResponse(port, 'permissions_result', requestId, result);
     } else {
       const mode = decision === 'allow-once' ? 'once' : 'always';
+      log('Granting permissions with mode:', mode);
       await grantPermissions(origin, scopes, mode, { allowedTools });
       const result = await buildGrantResult(origin, scopes);
+      log('Sending grant result:', result);
       sendResponse(port, 'permissions_result', requestId, result);
     }
   })().catch(err => {
@@ -267,12 +279,15 @@ async function handleRequestPermissions(
   origin: string,
   payload: { scopes: PermissionScope[]; reason?: string; tools?: string[] }
 ): Promise<void> {
+  log('handleRequestPermissions called:', { origin, payload });
   const { scopes, reason, tools } = payload;
   
   // Filter to valid scopes
   const validScopes = scopes.filter(s => SCOPE_DESCRIPTIONS[s] !== undefined);
+  log('Valid scopes:', validScopes);
   
   if (validScopes.length === 0) {
+    log('No valid scopes, returning empty result');
     const result = await buildGrantResult(origin, []);
     sendResponse(port, 'permissions_result', requestId, result);
     return;
@@ -280,6 +295,7 @@ async function handleRequestPermissions(
   
   // Check for web:fetch - not implemented in v1
   if (validScopes.includes('web:fetch')) {
+    log('web:fetch not implemented');
     sendError(port, requestId, createError(
       'ERR_NOT_IMPLEMENTED',
       'web:fetch permission is not implemented in v1'
@@ -289,8 +305,10 @@ async function handleRequestPermissions(
   
   // Check if all scopes are already granted
   const missing = await getMissingPermissions(origin, validScopes);
+  log('Missing permissions:', missing);
   
   if (missing.length === 0) {
+    log('All permissions already granted');
     const result = await buildGrantResult(origin, validScopes);
     sendResponse(port, 'permissions_result', requestId, result);
     return;
@@ -298,16 +316,20 @@ async function handleRequestPermissions(
   
   // Check if any are denied
   const status = await getPermissionStatus(origin);
+  log('Current permission status:', status);
   const denied = missing.filter(s => status.scopes[s] === 'denied');
+  log('Denied scopes:', denied);
   
   if (denied.length > 0) {
     // User previously denied - return current status without re-prompting
+    log('Returning denied status without re-prompting');
     const result = await buildGrantResult(origin, validScopes);
     sendResponse(port, 'permissions_result', requestId, result);
     return;
   }
   
   // Show permission prompt for missing scopes (include requested tools)
+  log('Opening permission prompt for:', missing);
   await showPermissionPrompt(port, requestId, origin, missing, reason, tools);
 }
 
@@ -375,15 +397,22 @@ async function handleTextSessionPrompt(
   session.messages.push({ role: 'user', content: input });
   
   try {
-    // Call LLM via background sendToBridge
-    // We need to send a message to the main background script handler
-    const llmResponse = await browser.runtime.sendMessage({
-      type: 'llm_chat',
+    // Call LLM directly via exported function
+    log('Calling llmChat with messages:', session.messages.length);
+    const llmResponse = await llmChat({
       messages: session.messages.map(m => ({ role: m.role, content: m.content })),
       model: session.options.model,
       temperature: session.options.temperature,
       // No tools for basic text session
-    }) as { type: string; response?: { message?: { content?: string } }; error?: { message: string } };
+    });
+    
+    log('LLM response received:', llmResponse);
+    
+    // Handle undefined response (bridge not connected)
+    if (!llmResponse) {
+      sendError(port, requestId, createError('ERR_MODEL_FAILED', 'LLM not available - is the bridge connected?'));
+      return;
+    }
     
     if (llmResponse.type === 'error' || !llmResponse.response?.message?.content) {
       const errorMsg = llmResponse.error?.message || 'LLM request failed';

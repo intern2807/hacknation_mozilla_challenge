@@ -348,6 +348,41 @@ function sendHello(): void {
   });
 }
 
+// Exported LLM chat function for use by background-router
+export interface LLMChatOptions {
+  messages: Array<{ role: string; content: string }>;
+  model?: string;
+  temperature?: number;
+  tools?: unknown[];
+  max_tokens?: number;
+  system_prompt?: string;
+}
+
+export interface LLMChatResponse {
+  type: string;
+  response?: {
+    message?: {
+      content?: string;
+    };
+  };
+  error?: {
+    message: string;
+  };
+}
+
+export async function llmChat(options: LLMChatOptions): Promise<LLMChatResponse> {
+  return sendToBridge({
+    type: 'llm_chat',
+    request_id: generateRequestId(),
+    messages: options.messages,
+    tools: options.tools,
+    model: options.model,
+    max_tokens: options.max_tokens,
+    temperature: options.temperature,
+    system_prompt: options.system_prompt,
+  }, CHAT_TIMEOUT_MS) as Promise<LLMChatResponse>;
+}
+
 // Handle messages from sidebar
 browser.runtime.onMessage.addListener(
   (message: unknown, _sender: browser.Runtime.MessageSender) => {

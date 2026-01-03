@@ -87,7 +87,20 @@ window.addEventListener('message', (event) => {
   const data = event.data;
   if (!data || data.namespace !== NAMESPACE) return;
   
-  console.log('[Harbor Injected] Received message:', data.type, data.requestId, data.payload);
+  // Only handle response types - ignore our own outgoing requests
+  // Response types end with _result, or are error/stream types
+  const isResponse = data.type.endsWith('_result') || 
+                     data.type === 'error' ||
+                     data.type === 'pong' ||
+                     data.type.startsWith('text_session_stream_') ||
+                     data.type === 'agent_run_event';
+  
+  if (!isResponse) {
+    // This is an outgoing request we sent - ignore it
+    return;
+  }
+  
+  console.log('[Harbor Injected] Received response:', data.type, data.requestId, data.payload);
   
   // Check if this is a response to a pending request
   const pending = pendingRequests.get(data.requestId);
@@ -148,116 +161,275 @@ function createApiError(code: ApiError['code'], message: string, details?: unkno
 }
 
 // =============================================================================
-// window.ai API Implementation
+// Chrome AI API Compatibility Types
+// =============================================================================
+
+type AICapabilityAvailability = 'readily' | 'after-download' | 'no';
+
+interface AITextSession {
+  sessionId: string;
+  prompt(input: string): Promise<string>;
+  promptStreaming(input: string): AsyncIterable<StreamToken>;
+  destroy(): Promise<void>;
+  clone(): Promise<AITextSession>;
+}
+
+interface AILanguageModelCapabilities {
+  available: AICapabilityAvailability;
+  defaultTopK?: number;
+  maxTopK?: number;
+  defaultTemperature?: number;
+}
+
+interface AILanguageModelCreateOptions {
+  systemPrompt?: string;
+  initialPrompts?: Array<{ role: 'user' | 'assistant'; content: string }>;
+  temperature?: number;
+  topK?: number;
+  signal?: AbortSignal;
+}
+
+// =============================================================================
+// window.ai API Implementation (with Chrome Compatibility)
 // =============================================================================
 
 interface TextSessionImpl {
   sessionId: string;
   destroyed: boolean;
+  options?: TextSessionOptions;
+}
+
+/**
+ * Automatically request model:prompt permission if not already granted.
+ * This enables Chrome-like API usage without explicit permission calls.
+ */
+async function ensureModelPermission(): Promise<boolean> {
+  // First check if we already have permission
+  const status = await sendRequest<{ scopes: Record<string, string> }>('list_permissions');
+  const promptGrant = status.scopes['model:prompt'];
+  
+  if (promptGrant === 'granted-once' || promptGrant === 'granted-always') {
+    return true;
+  }
+  
+  // Auto-request permission with a default reason
+  const result = await sendRequest<PermissionGrantResult>('request_permissions', {
+    scopes: ['model:prompt'] as PermissionScope[],
+    reason: 'This page wants to use AI text generation',
+  }, 120000); // 2 min for user interaction
+  
+  return result.granted;
+}
+
+/**
+ * Create an AI text session object with the session implementation.
+ */
+function createSessionObject(session: TextSessionImpl): AITextSession {
+  return {
+    sessionId: session.sessionId,
+    
+    async prompt(input: string): Promise<string> {
+      if (session.destroyed) {
+        throw createApiError('ERR_SESSION_NOT_FOUND', 'Session has been destroyed');
+      }
+      
+      const promptResult = await sendRequest<{ result: string }>('text_session_prompt', {
+        sessionId: session.sessionId,
+        input,
+        streaming: false,
+      }, 180000); // 3 minute timeout for LLM
+      
+      return promptResult.result;
+    },
+    
+    promptStreaming(input: string): AsyncIterable<StreamToken> {
+      if (session.destroyed) {
+        throw createApiError('ERR_SESSION_NOT_FOUND', 'Session has been destroyed');
+      }
+      
+      const requestId = sendMessage('text_session_prompt_streaming', {
+        sessionId: session.sessionId,
+        input,
+        streaming: true,
+      });
+      
+      return {
+        [Symbol.asyncIterator](): AsyncIterator<StreamToken> {
+          const queue: StreamToken[] = [];
+          let resolveNext: ((value: IteratorResult<StreamToken>) => void) | null = null;
+          let done = false;
+          
+          streamListeners.set(requestId, {
+            onToken(token: StreamToken) {
+              if (token.type === 'done' || token.type === 'error') {
+                done = true;
+              }
+              
+              if (resolveNext) {
+                if (token.type === 'done') {
+                  resolveNext({ done: true, value: undefined as unknown as StreamToken });
+                } else {
+                  resolveNext({ done: false, value: token });
+                }
+                resolveNext = null;
+              } else {
+                queue.push(token);
+              }
+            },
+            onEvent() {}, // Not used for text sessions
+          });
+          
+          return {
+            async next(): Promise<IteratorResult<StreamToken>> {
+              if (queue.length > 0) {
+                const token = queue.shift()!;
+                if (token.type === 'done') {
+                  return { done: true, value: undefined as unknown as StreamToken };
+                }
+                return { done: false, value: token };
+              }
+              
+              if (done) {
+                return { done: true, value: undefined as unknown as StreamToken };
+              }
+              
+              return new Promise((resolve) => {
+                resolveNext = resolve;
+              });
+            },
+          };
+        },
+      };
+    },
+    
+    async destroy(): Promise<void> {
+      if (session.destroyed) return;
+      
+      session.destroyed = true;
+      await sendRequest('text_session_destroy', { sessionId: session.sessionId });
+    },
+    
+    async clone(): Promise<AITextSession> {
+      if (session.destroyed) {
+        throw createApiError('ERR_SESSION_NOT_FOUND', 'Session has been destroyed');
+      }
+      
+      // Create a new session with the same options
+      const result = await sendRequest<{ sessionId: string }>('create_text_session', { 
+        options: session.options 
+      });
+      
+      const newSession: TextSessionImpl = {
+        sessionId: result.sessionId,
+        destroyed: false,
+        options: session.options,
+      };
+      
+      return createSessionObject(newSession);
+    },
+  };
 }
 
 const aiApi = {
   /**
-   * Create a new text generation session.
-   * Requires "model:prompt" permission scope.
+   * Check if a text session can be created.
+   * Chrome Compatibility: Returns 'readily' if available, 'no' otherwise.
    */
-  async createTextSession(options?: TextSessionOptions): Promise<{
-    sessionId: string;
-    prompt(input: string): Promise<string>;
-    promptStreaming(input: string): AsyncIterable<StreamToken>;
-    destroy(): Promise<void>;
-  }> {
+  async canCreateTextSession(): Promise<AICapabilityAvailability> {
+    try {
+      // Ping to check if bridge is connected
+      await sendRequest('ping', undefined, 5000);
+      return 'readily';
+    } catch {
+      return 'no';
+    }
+  },
+  
+  /**
+   * Create a new text generation session.
+   * Chrome Compatibility: Automatically requests permission if not granted.
+   */
+  async createTextSession(options?: TextSessionOptions): Promise<AITextSession> {
+    // Auto-request permission if needed (Chrome compatibility)
+    const hasPermission = await ensureModelPermission();
+    if (!hasPermission) {
+      throw createApiError('ERR_PERMISSION_DENIED', 'User denied AI permission');
+    }
+    
     const result = await sendRequest<{ sessionId: string }>('create_text_session', { options });
     
     const session: TextSessionImpl = {
       sessionId: result.sessionId,
       destroyed: false,
+      options,
     };
     
-    return {
-      sessionId: session.sessionId,
-      
-      async prompt(input: string): Promise<string> {
-        if (session.destroyed) {
-          throw createApiError('ERR_SESSION_NOT_FOUND', 'Session has been destroyed');
-        }
-        
-        const promptResult = await sendRequest<{ result: string }>('text_session_prompt', {
-          sessionId: session.sessionId,
-          input,
-          streaming: false,
-        }, 180000); // 3 minute timeout for LLM
-        
-        return promptResult.result;
-      },
-      
-      promptStreaming(input: string): AsyncIterable<StreamToken> {
-        if (session.destroyed) {
-          throw createApiError('ERR_SESSION_NOT_FOUND', 'Session has been destroyed');
-        }
-        
-        const requestId = sendMessage('text_session_prompt_streaming', {
-          sessionId: session.sessionId,
-          input,
-          streaming: true,
-        });
-        
+    return createSessionObject(session);
+  },
+  
+  /**
+   * Chrome Prompt API compatible namespace: window.ai.languageModel
+   * Provides the newer Chrome AI API surface.
+   */
+  languageModel: {
+    /**
+     * Check capabilities of the language model.
+     * Chrome Compatibility: Returns capability info.
+     */
+    async capabilities(): Promise<AILanguageModelCapabilities> {
+      try {
+        await sendRequest('ping', undefined, 5000);
         return {
-          [Symbol.asyncIterator](): AsyncIterator<StreamToken> {
-            const queue: StreamToken[] = [];
-            let resolveNext: ((value: IteratorResult<StreamToken>) => void) | null = null;
-            let done = false;
-            
-            streamListeners.set(requestId, {
-              onToken(token: StreamToken) {
-                if (token.type === 'done' || token.type === 'error') {
-                  done = true;
-                }
-                
-                if (resolveNext) {
-                  if (token.type === 'done') {
-                    resolveNext({ done: true, value: undefined as unknown as StreamToken });
-                  } else {
-                    resolveNext({ done: false, value: token });
-                  }
-                  resolveNext = null;
-                } else {
-                  queue.push(token);
-                }
-              },
-              onEvent() {}, // Not used for text sessions
-            });
-            
-            return {
-              async next(): Promise<IteratorResult<StreamToken>> {
-                if (queue.length > 0) {
-                  const token = queue.shift()!;
-                  if (token.type === 'done') {
-                    return { done: true, value: undefined as unknown as StreamToken };
-                  }
-                  return { done: false, value: token };
-                }
-                
-                if (done) {
-                  return { done: true, value: undefined as unknown as StreamToken };
-                }
-                
-                return new Promise((resolve) => {
-                  resolveNext = resolve;
-                });
-              },
-            };
-          },
+          available: 'readily',
+          defaultTemperature: 1.0,
+          defaultTopK: 40,
+          maxTopK: 100,
         };
-      },
+      } catch {
+        return { available: 'no' };
+      }
+    },
+    
+    /**
+     * Create a new language model session.
+     * Chrome Compatibility: Maps to createTextSession with auto-permission.
+     */
+    async create(options?: AILanguageModelCreateOptions): Promise<AITextSession> {
+      // Auto-request permission if needed
+      const hasPermission = await ensureModelPermission();
+      if (!hasPermission) {
+        throw createApiError('ERR_PERMISSION_DENIED', 'User denied AI permission');
+      }
       
-      async destroy(): Promise<void> {
-        if (session.destroyed) return;
-        
-        session.destroyed = true;
-        await sendRequest('text_session_destroy', { sessionId: session.sessionId });
-      },
-    };
+      // Map Chrome options to Harbor options
+      const harborOptions: TextSessionOptions = {
+        systemPrompt: options?.systemPrompt,
+        temperature: options?.temperature,
+      };
+      
+      const result = await sendRequest<{ sessionId: string }>('create_text_session', { 
+        options: harborOptions 
+      });
+      
+      const session: TextSessionImpl = {
+        sessionId: result.sessionId,
+        destroyed: false,
+        options: harborOptions,
+      };
+      
+      const sessionObj = createSessionObject(session);
+      
+      // If initial prompts provided, replay them
+      if (options?.initialPrompts && options.initialPrompts.length > 0) {
+        for (const msg of options.initialPrompts) {
+          if (msg.role === 'user') {
+            await sessionObj.prompt(msg.content);
+          }
+        }
+      }
+      
+      return sessionObj;
+    },
   },
 };
 
@@ -409,7 +581,10 @@ const agentApi = {
 // =============================================================================
 
 // Create frozen, non-configurable APIs
-const frozenAi = Object.freeze(aiApi);
+const frozenAi = Object.freeze({
+  ...aiApi,
+  languageModel: Object.freeze(aiApi.languageModel),
+});
 const frozenAgent = Object.freeze({
   ...agentApi,
   permissions: Object.freeze(agentApi.permissions),
@@ -437,5 +612,5 @@ Object.defineProperty(window, 'agent', {
 // Signal that the provider is ready
 window.dispatchEvent(new CustomEvent('harbor-provider-ready'));
 
-console.log('[Harbor] JS AI Provider v1 loaded');
+console.log('[Harbor] JS AI Provider v1 loaded (Chrome-compatible)');
 

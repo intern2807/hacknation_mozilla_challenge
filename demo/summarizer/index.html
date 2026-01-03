@@ -243,6 +243,7 @@
     .code-block .method { color: #dcdcaa; }
     .code-block .property { color: #9cdcfe; }
     .code-block .function { color: #dcdcaa; }
+    .code-block .number { color: #b5cea8; }
 
     /* Requirements */
     .requirements {
@@ -420,36 +421,42 @@
       </div>
       
       <p style="color: var(--color-ink-soft); font-size: 14px; margin-bottom: 8px;">
-        The bookmarklet uses the Harbor JavaScript API. Here's the core logic:
+        Harbor supports two coding styles. The <strong>Chrome-compatible</strong> way auto-handles permissions:
       </p>
       
-      <div class="code-block"><span class="comment">// Check if Harbor is available</span>
-<span class="keyword">if</span> (!window.agent || !window.ai) {
-  <span class="method">alert</span>(<span class="string">'Harbor extension not found!'</span>);
-  <span class="keyword">return</span>;
-}
+      <div class="code-block"><span class="comment">// Chrome-compatible style (auto-permissions)</span>
+<span class="keyword">const</span> session = <span class="keyword">await</span> window.<span class="property">ai</span>.<span class="method">createTextSession</span>();
+<span class="keyword">const</span> summary = <span class="keyword">await</span> session.<span class="method">prompt</span>(document.<span class="property">body</span>.<span class="property">innerText</span>);
 
-<span class="comment">// Request permissions</span>
+<span class="comment">// Or using the Chrome Prompt API style:</span>
+<span class="keyword">const</span> session = <span class="keyword">await</span> window.<span class="property">ai</span>.<span class="property">languageModel</span>.<span class="method">create</span>({
+  <span class="property">systemPrompt</span>: <span class="string">'Summarize clearly and concisely.'</span>
+});
+<span class="keyword">const</span> summary = <span class="keyword">await</span> session.<span class="method">prompt</span>(text);</div>
+      
+      <p style="color: var(--color-ink-soft); font-size: 14px; margin: 16px 0 8px;">
+        Or the <strong>explicit Harbor style</strong> with fine-grained control:
+      </p>
+      
+      <div class="code-block"><span class="comment">// Explicit Harbor style (full control)</span>
 <span class="keyword">await</span> window.<span class="property">agent</span>.<span class="method">requestPermissions</span>({
-  <span class="property">scopes</span>: [<span class="string">'model:prompt'</span>],
-  <span class="property">reason</span>: <span class="string">'Summarize this page'</span>
+  <span class="property">scopes</span>: [<span class="string">'model:prompt'</span>, <span class="string">'browser:activeTab.read'</span>],
+  <span class="property">reason</span>: <span class="string">'Summarize the current page'</span>
 });
 
-<span class="comment">// Get page content (using DOM, not activeTab)</span>
-<span class="keyword">const</span> text = document.<span class="property">body</span>.<span class="property">innerText</span>;
+<span class="comment">// Read page content via extension API</span>
+<span class="keyword">const</span> tab = <span class="keyword">await</span> window.<span class="property">agent</span>.<span class="property">browser</span>.<span class="property">activeTab</span>.<span class="method">readability</span>();
 
-<span class="comment">// Create AI session and summarize</span>
+<span class="comment">// Create AI session with custom options</span>
 <span class="keyword">const</span> session = <span class="keyword">await</span> window.<span class="property">ai</span>.<span class="method">createTextSession</span>({
-  <span class="property">systemPrompt</span>: <span class="string">'Summarize clearly and concisely in 2-3 paragraphs.'</span>
+  <span class="property">systemPrompt</span>: <span class="string">'Summarize clearly and concisely.'</span>,
+  <span class="property">temperature</span>: <span class="number">0.7</span>
 });
 
-<span class="keyword">const</span> summary = <span class="keyword">await</span> session.<span class="method">prompt</span>(text);
-
-<span class="comment">// Display in overlay</span>
-<span class="method">showOverlay</span>(summary);</div>
+<span class="keyword">const</span> summary = <span class="keyword">await</span> session.<span class="method">prompt</span>(tab.<span class="property">text</span>);</div>
 
       <p style="color: var(--color-ink-faded); font-size: 13px; margin-top: 16px;">
-        <strong>Note:</strong> Since the bookmarklet runs <em>on</em> the page, it reads <code>document.body.innerText</code> directly instead of using <code>activeTab.read</code>.
+        <strong>Tip:</strong> The Chrome-compatible style is simpler — permissions are auto-requested when needed. Use the explicit style when you need more control over permissions, want to specify a custom reason, or need access to browser APIs like <code>activeTab.read</code>.
       </p>
     </div>
 
@@ -492,27 +499,40 @@
   overlay.id = 'harbor-summary-overlay';
   overlay.innerHTML = \`
     <style>
+      @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
+      
       #harbor-summary-overlay {
         position: fixed;
-        top: 0;
-        right: 0;
-        width: 400px;
-        max-width: 100vw;
-        height: 100vh;
-        background: rgba(15, 15, 15, 0.98);
-        color: #e8e8e8;
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
-        font-size: 14px;
-        line-height: 1.6;
+        top: 16px;
+        right: 16px;
+        bottom: 16px;
+        width: 420px;
+        max-width: calc(100vw - 32px);
+        background: linear-gradient(145deg, #1a1a1a 0%, #0d0d0d 100%);
+        color: #f0f0f0;
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+        font-size: 15px;
+        line-height: 1.7;
         z-index: 2147483647;
-        box-shadow: -4px 0 24px rgba(0,0,0,0.3);
+        border-radius: 16px;
+        box-shadow: 
+          0 0 0 1px rgba(255,255,255,0.08),
+          0 20px 50px -10px rgba(0,0,0,0.5),
+          0 0 100px -20px rgba(196, 90, 59, 0.15);
         display: flex;
         flex-direction: column;
-        animation: slideIn 0.2s ease;
+        animation: harborSlideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        overflow: hidden;
       }
-      @keyframes slideIn {
-        from { transform: translateX(100%); opacity: 0; }
-        to { transform: translateX(0); opacity: 1; }
+      @keyframes harborSlideIn {
+        from { 
+          transform: translateX(20px) scale(0.98); 
+          opacity: 0; 
+        }
+        to { 
+          transform: translateX(0) scale(1); 
+          opacity: 1; 
+        }
       }
       #harbor-summary-overlay * {
         box-sizing: border-box;
@@ -523,41 +543,75 @@
         display: flex;
         align-items: center;
         justify-content: space-between;
-        padding: 16px 20px;
-        border-bottom: 1px solid rgba(255,255,255,0.1);
-        background: rgba(0,0,0,0.3);
+        padding: 20px 24px;
+        background: linear-gradient(180deg, rgba(255,255,255,0.03) 0%, transparent 100%);
+        border-bottom: 1px solid rgba(255,255,255,0.06);
       }
       .harbor-title {
-        font-size: 15px;
+        font-size: 14px;
         font-weight: 600;
+        letter-spacing: -0.01em;
         display: flex;
         align-items: center;
-        gap: 8px;
+        gap: 10px;
+        color: #fff;
+      }
+      .harbor-title-icon {
+        width: 32px;
+        height: 32px;
+        background: linear-gradient(135deg, #c45a3b 0%, #a04830 100%);
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 16px;
       }
       .harbor-close {
-        width: 28px;
-        height: 28px;
-        background: rgba(255,255,255,0.1);
-        border: none;
-        border-radius: 6px;
+        width: 32px;
+        height: 32px;
+        background: rgba(255,255,255,0.06);
+        border: 1px solid rgba(255,255,255,0.08);
+        border-radius: 8px;
         color: #888;
         cursor: pointer;
         font-size: 18px;
         display: flex;
         align-items: center;
         justify-content: center;
+        transition: all 0.15s ease;
       }
       .harbor-close:hover {
-        background: rgba(255,255,255,0.15);
+        background: rgba(255,255,255,0.1);
+        border-color: rgba(255,255,255,0.15);
         color: #fff;
+        transform: scale(1.05);
       }
       .harbor-content {
         flex: 1;
-        padding: 20px;
+        padding: 24px;
         overflow-y: auto;
+        scrollbar-width: thin;
+        scrollbar-color: rgba(255,255,255,0.2) transparent;
+      }
+      .harbor-content::-webkit-scrollbar {
+        width: 6px;
+      }
+      .harbor-content::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      .harbor-content::-webkit-scrollbar-thumb {
+        background: rgba(255,255,255,0.2);
+        border-radius: 3px;
       }
       .harbor-content p {
-        margin-bottom: 16px;
+        margin-bottom: 20px;
+        color: rgba(255,255,255,0.85);
+        letter-spacing: -0.01em;
+      }
+      .harbor-content p:first-child {
+        font-size: 16px;
+        color: #fff;
+        font-weight: 500;
       }
       .harbor-content p:last-child {
         margin-bottom: 0;
@@ -567,52 +621,66 @@
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        height: 200px;
-        color: #888;
+        height: 240px;
+        color: rgba(255,255,255,0.5);
+        gap: 16px;
       }
       .harbor-spinner {
-        width: 32px;
-        height: 32px;
-        border: 3px solid rgba(255,255,255,0.1);
+        width: 40px;
+        height: 40px;
+        border: 3px solid rgba(255,255,255,0.08);
         border-top-color: #c45a3b;
         border-radius: 50%;
-        animation: spin 0.8s linear infinite;
-        margin-bottom: 16px;
+        animation: harborSpin 0.8s linear infinite;
       }
-      @keyframes spin {
+      @keyframes harborSpin {
         to { transform: rotate(360deg); }
       }
+      .harbor-loading-text {
+        font-size: 14px;
+        font-weight: 500;
+      }
       .harbor-error {
-        background: rgba(220, 38, 38, 0.1);
-        border: 1px solid rgba(220, 38, 38, 0.3);
-        border-radius: 8px;
-        padding: 16px;
-        color: #f87171;
+        background: linear-gradient(135deg, rgba(220, 38, 38, 0.15) 0%, rgba(220, 38, 38, 0.08) 100%);
+        border: 1px solid rgba(220, 38, 38, 0.25);
+        border-radius: 12px;
+        padding: 20px;
+        color: #fca5a5;
+        font-size: 14px;
       }
       .harbor-footer {
-        padding: 12px 20px;
-        border-top: 1px solid rgba(255,255,255,0.1);
+        padding: 16px 24px;
+        border-top: 1px solid rgba(255,255,255,0.06);
         font-size: 12px;
-        color: #666;
+        color: rgba(255,255,255,0.35);
         text-align: center;
+        background: rgba(0,0,0,0.2);
       }
       .harbor-footer a {
         color: #c45a3b;
         text-decoration: none;
+        font-weight: 500;
+        transition: color 0.15s ease;
+      }
+      .harbor-footer a:hover {
+        color: #e07050;
       }
     </style>
     <div class="harbor-header">
-      <span class="harbor-title">📄 Page Summary</span>
+      <span class="harbor-title">
+        <span class="harbor-title-icon">📄</span>
+        Page Summary
+      </span>
       <button class="harbor-close" onclick="this.closest('#harbor-summary-overlay').remove()">×</button>
     </div>
     <div class="harbor-content" id="harbor-summary-content">
       <div class="harbor-loading">
         <div class="harbor-spinner"></div>
-        <span>Summarizing page...</span>
+        <span class="harbor-loading-text">Analyzing page...</span>
       </div>
     </div>
     <div class="harbor-footer">
-      Powered by <a href="https://github.com/nicholasoxford/harbor" target="_blank">Harbor</a>
+      ✨ Powered by <a href="https://github.com/nicholasoxford/harbor" target="_blank">Harbor AI</a>
     </div>
   \`;
   

@@ -74,6 +74,27 @@ function createError(code: ApiError['code'], message: string): Error & { code: s
 }
 
 // =============================================================================
+// Chrome AI API Compatibility Types
+// =============================================================================
+
+type AICapabilityAvailability = 'readily' | 'after-download' | 'no';
+
+interface AILanguageModelCapabilities {
+  available: AICapabilityAvailability;
+  defaultTopK?: number;
+  maxTopK?: number;
+  defaultTemperature?: number;
+}
+
+interface AILanguageModelCreateOptions {
+  systemPrompt?: string;
+  initialPrompts?: Array<{ role: 'user' | 'assistant'; content: string }>;
+  temperature?: number;
+  topK?: number;
+  signal?: AbortSignal;
+}
+
+// =============================================================================
 // Session Interface
 // =============================================================================
 
@@ -82,6 +103,7 @@ interface TextSessionHandle {
   prompt(input: string): Promise<string>;
   promptStreaming(input: string): AsyncIterable<StreamToken>;
   destroy(): Promise<void>;
+  clone(): Promise<TextSessionHandle>;
   /** Get the current message history */
   getHistory(): Array<{ role: string; content: string }>;
   /** Clear message history while keeping the session */
@@ -92,16 +114,138 @@ interface TextSessionHandle {
 // window.ai Implementation
 // =============================================================================
 
+/**
+ * Create a session handle with all methods.
+ */
+function createSessionHandle(sessionId: string, options: TextSessionOptions): TextSessionHandle {
+  return {
+    sessionId,
+    
+    async prompt(input: string): Promise<string> {
+      const sess = sessions.get(sessionId);
+      if (!sess) throw createError('ERR_SESSION_NOT_FOUND', 'Session not found');
+      
+      sess.messages.push({ role: 'user', content: input });
+      sess.updatedAt = Date.now();
+      
+      const response = await browser.runtime.sendMessage({
+        type: 'llm_chat',
+        messages: sess.messages.map(m => ({ role: m.role, content: m.content })),
+        temperature: sess.options.temperature,
+      }) as { type: string; response?: { message?: { content?: string } }; error?: { message: string } };
+      
+      if (response.type === 'error' || !response.response?.message?.content) {
+        throw createError('ERR_MODEL_FAILED', response.error?.message || 'LLM request failed');
+      }
+      
+      const content = response.response.message.content;
+      sess.messages.push({ role: 'assistant', content });
+      sess.updatedAt = Date.now();
+      await persistSession(sess);
+      
+      return content;
+    },
+    
+    promptStreaming(input: string): AsyncIterable<StreamToken> {
+      const sess = sessions.get(sessionId);
+      if (!sess) throw createError('ERR_SESSION_NOT_FOUND', 'Session not found');
+      
+      return {
+        async *[Symbol.asyncIterator]() {
+          sess.messages.push({ role: 'user', content: input });
+          sess.updatedAt = Date.now();
+          
+          const response = await browser.runtime.sendMessage({
+            type: 'llm_chat',
+            messages: sess.messages.map(m => ({ role: m.role, content: m.content })),
+            temperature: sess.options.temperature,
+          }) as { type: string; response?: { message?: { content?: string } }; error?: { message: string } };
+          
+          if (response.type === 'error' || !response.response?.message?.content) {
+            yield { type: 'error', error: { code: 'ERR_MODEL_FAILED', message: response.error?.message || 'LLM request failed' } };
+            return;
+          }
+          
+          const content = response.response.message.content;
+          sess.messages.push({ role: 'assistant', content });
+          sess.updatedAt = Date.now();
+          await persistSession(sess);
+          
+          // Simulate streaming by yielding word by word
+          const words = content.split(/(\s+)/);
+          for (const word of words) {
+            if (word) {
+              yield { type: 'token', token: word };
+              await new Promise(r => setTimeout(r, 15));
+            }
+          }
+          yield { type: 'done' };
+        }
+      };
+    },
+    
+    async destroy(): Promise<void> {
+      sessions.delete(sessionId);
+      await deleteStoredSession(sessionId);
+    },
+    
+    async clone(): Promise<TextSessionHandle> {
+      const sess = sessions.get(sessionId);
+      if (!sess) throw createError('ERR_SESSION_NOT_FOUND', 'Session not found');
+      
+      // Create a new session with the same options
+      const newSessionId = generateId();
+      const newSession: SessionState = {
+        id: newSessionId,
+        options: { ...sess.options },
+        messages: [...sess.messages],
+        createdAt: Date.now(),
+        updatedAt: Date.now(),
+      };
+      
+      sessions.set(newSessionId, newSession);
+      await persistSession(newSession);
+      
+      return createSessionHandle(newSessionId, newSession.options);
+    },
+    
+    getHistory(): Array<{ role: string; content: string }> {
+      const sess = sessions.get(sessionId);
+      return sess ? [...sess.messages] : [];
+    },
+    
+    clearHistory(): void {
+      const sess = sessions.get(sessionId);
+      if (sess) {
+        // Keep only system prompt if present
+        const systemMsg = sess.messages.find(m => m.role === 'system');
+        sess.messages = systemMsg ? [systemMsg] : [];
+        sess.updatedAt = Date.now();
+        persistSession(sess);
+      }
+    },
+  };
+}
+
 export const ai = {
+  /**
+   * Chrome Compatibility: Check if a text session can be created.
+   * In internal API context, always returns 'readily'.
+   */
+  async canCreateTextSession(): Promise<AICapabilityAvailability> {
+    return 'readily';
+  },
+  
   /**
    * Create a new text generation session.
    * Sessions maintain conversation history and can be persisted.
    */
   async createTextSession(options?: TextSessionOptions): Promise<TextSessionHandle> {
     const sessionId = generateId();
+    const sessionOptions = options || {};
     const session: SessionState = {
       id: sessionId,
-      options: options || {},
+      options: sessionOptions,
       messages: [],
       createdAt: Date.now(),
       updatedAt: Date.now(),
@@ -114,93 +258,65 @@ export const ai = {
     sessions.set(sessionId, session);
     await persistSession(session);
     
-    return {
-      sessionId,
+    return createSessionHandle(sessionId, sessionOptions);
+  },
+  
+  /**
+   * Chrome Prompt API compatible namespace: ai.languageModel
+   * Provides the newer Chrome AI API surface.
+   */
+  languageModel: {
+    /**
+     * Check capabilities of the language model.
+     */
+    async capabilities(): Promise<AILanguageModelCapabilities> {
+      return {
+        available: 'readily',
+        defaultTemperature: 1.0,
+        defaultTopK: 40,
+        maxTopK: 100,
+      };
+    },
+    
+    /**
+     * Create a new language model session.
+     * Chrome Compatibility: Maps to createTextSession.
+     */
+    async create(options?: AILanguageModelCreateOptions): Promise<TextSessionHandle> {
+      const harborOptions: TextSessionOptions = {
+        systemPrompt: options?.systemPrompt,
+        temperature: options?.temperature,
+      };
       
-      async prompt(input: string): Promise<string> {
-        const sess = sessions.get(sessionId);
-        if (!sess) throw createError('ERR_SESSION_NOT_FOUND', 'Session not found');
-        
-        sess.messages.push({ role: 'user', content: input });
-        sess.updatedAt = Date.now();
-        
-        const response = await browser.runtime.sendMessage({
-          type: 'llm_chat',
-          messages: sess.messages.map(m => ({ role: m.role, content: m.content })),
-          temperature: sess.options.temperature,
-        }) as { type: string; response?: { message?: { content?: string } }; error?: { message: string } };
-        
-        if (response.type === 'error' || !response.response?.message?.content) {
-          throw createError('ERR_MODEL_FAILED', response.error?.message || 'LLM request failed');
-        }
-        
-        const content = response.response.message.content;
-        sess.messages.push({ role: 'assistant', content });
-        sess.updatedAt = Date.now();
-        await persistSession(sess);
-        
-        return content;
-      },
+      const sessionId = generateId();
+      const session: SessionState = {
+        id: sessionId,
+        options: harborOptions,
+        messages: [],
+        createdAt: Date.now(),
+        updatedAt: Date.now(),
+      };
       
-      promptStreaming(input: string): AsyncIterable<StreamToken> {
-        const sess = sessions.get(sessionId);
-        if (!sess) throw createError('ERR_SESSION_NOT_FOUND', 'Session not found');
-        
-        return {
-          async *[Symbol.asyncIterator]() {
-            sess.messages.push({ role: 'user', content: input });
-            sess.updatedAt = Date.now();
-            
-            const response = await browser.runtime.sendMessage({
-              type: 'llm_chat',
-              messages: sess.messages.map(m => ({ role: m.role, content: m.content })),
-              temperature: sess.options.temperature,
-            }) as { type: string; response?: { message?: { content?: string } }; error?: { message: string } };
-            
-            if (response.type === 'error' || !response.response?.message?.content) {
-              yield { type: 'error', error: { code: 'ERR_MODEL_FAILED', message: response.error?.message || 'LLM request failed' } };
-              return;
-            }
-            
-            const content = response.response.message.content;
-            sess.messages.push({ role: 'assistant', content });
-            sess.updatedAt = Date.now();
-            await persistSession(sess);
-            
-            // Simulate streaming by yielding word by word
-            const words = content.split(/(\s+)/);
-            for (const word of words) {
-              if (word) {
-                yield { type: 'token', token: word };
-                await new Promise(r => setTimeout(r, 15));
-              }
-            }
-            yield { type: 'done' };
+      if (options?.systemPrompt) {
+        session.messages.push({ role: 'system', content: options.systemPrompt });
+      }
+      
+      sessions.set(sessionId, session);
+      await persistSession(session);
+      
+      const handle = createSessionHandle(sessionId, harborOptions);
+      
+      // If initial prompts provided, replay them
+      if (options?.initialPrompts && options.initialPrompts.length > 0) {
+        for (const msg of options.initialPrompts) {
+          if (msg.role === 'user') {
+            await handle.prompt(msg.content);
           }
-        };
-      },
-      
-      async destroy(): Promise<void> {
-        sessions.delete(sessionId);
-        await deleteStoredSession(sessionId);
-      },
-      
-      getHistory(): Array<{ role: string; content: string }> {
-        const sess = sessions.get(sessionId);
-        return sess ? [...sess.messages] : [];
-      },
-      
-      clearHistory(): void {
-        const sess = sessions.get(sessionId);
-        if (sess) {
-          // Keep only system prompt if present
-          const systemMsg = sess.messages.find(m => m.role === 'system');
-          sess.messages = systemMsg ? [systemMsg] : [];
-          sess.updatedAt = Date.now();
-          persistSession(sess);
         }
-      },
-    };
+      }
+      
+      return handle;
+    },
   },
   
   /**
@@ -223,92 +339,7 @@ export const ai = {
       return null;
     }
     
-    // Return same interface as createTextSession
-    return {
-      sessionId: session.id,
-      
-      async prompt(input: string): Promise<string> {
-        const sess = sessions.get(sessionId);
-        if (!sess) throw createError('ERR_SESSION_NOT_FOUND', 'Session not found');
-        
-        sess.messages.push({ role: 'user', content: input });
-        sess.updatedAt = Date.now();
-        
-        const response = await browser.runtime.sendMessage({
-          type: 'llm_chat',
-          messages: sess.messages.map(m => ({ role: m.role, content: m.content })),
-          temperature: sess.options.temperature,
-        }) as { type: string; response?: { message?: { content?: string } }; error?: { message: string } };
-        
-        if (response.type === 'error' || !response.response?.message?.content) {
-          throw createError('ERR_MODEL_FAILED', response.error?.message || 'LLM request failed');
-        }
-        
-        const content = response.response.message.content;
-        sess.messages.push({ role: 'assistant', content });
-        sess.updatedAt = Date.now();
-        await persistSession(sess);
-        
-        return content;
-      },
-      
-      promptStreaming(input: string): AsyncIterable<StreamToken> {
-        const sess = sessions.get(sessionId);
-        if (!sess) throw createError('ERR_SESSION_NOT_FOUND', 'Session not found');
-        
-        return {
-          async *[Symbol.asyncIterator]() {
-            sess.messages.push({ role: 'user', content: input });
-            sess.updatedAt = Date.now();
-            
-            const response = await browser.runtime.sendMessage({
-              type: 'llm_chat',
-              messages: sess.messages.map(m => ({ role: m.role, content: m.content })),
-              temperature: sess.options.temperature,
-            }) as { type: string; response?: { message?: { content?: string } }; error?: { message: string } };
-            
-            if (response.type === 'error' || !response.response?.message?.content) {
-              yield { type: 'error', error: { code: 'ERR_MODEL_FAILED', message: response.error?.message || 'LLM request failed' } };
-              return;
-            }
-            
-            const content = response.response.message.content;
-            sess.messages.push({ role: 'assistant', content });
-            sess.updatedAt = Date.now();
-            await persistSession(sess);
-            
-            const words = content.split(/(\s+)/);
-            for (const word of words) {
-              if (word) {
-                yield { type: 'token', token: word };
-                await new Promise(r => setTimeout(r, 15));
-              }
-            }
-            yield { type: 'done' };
-          }
-        };
-      },
-      
-      async destroy(): Promise<void> {
-        sessions.delete(sessionId);
-        await deleteStoredSession(sessionId);
-      },
-      
-      getHistory(): Array<{ role: string; content: string }> {
-        const sess = sessions.get(sessionId);
-        return sess ? [...sess.messages] : [];
-      },
-      
-      clearHistory(): void {
-        const sess = sessions.get(sessionId);
-        if (sess) {
-          const systemMsg = sess.messages.find(m => m.role === 'system');
-          sess.messages = systemMsg ? [systemMsg] : [];
-          sess.updatedAt = Date.now();
-          persistSession(sess);
-        }
-      },
-    };
+    return createSessionHandle(session.id, session.options);
   },
 };
 

@@ -553,9 +553,11 @@ export const agent = {
               
               if (step.type === 'tool_results' && step.toolResults) {
                 for (const tr of step.toolResults) {
+                  // Use full prefixed name to match tool_call event
+                  const fullToolName = tr.serverId ? `${tr.serverId}__${tr.toolName}` : tr.toolName;
                   yield { 
                     type: 'tool_result', 
-                    tool: tr.toolName,
+                    tool: fullToolName,
                     result: tr.content,
                     error: tr.isError ? { code: 'ERR_TOOL_FAILED' as const, message: tr.content } : undefined,
                   };

@@ -738,25 +738,24 @@ export class ChatOrchestrator {
       serverInfo += `\n${serverId}:\n${toolList}\n`;
     }
     
-    return `You are an AI assistant with tool access. You MUST call tools to answer questions.
-
-⚠️ CRITICAL - READ BEFORE SELECTING A TOOL ⚠️
-When user asks about "my" or "me" (their own info):
-- DO NOT use search tools - the user doesn't know their info yet!
-- USE tools with "me" in the name (like "get_me") - these return the authenticated user's info
-- These tools need NO parameters
+    return `You are an AI assistant with tool access. You MUST call tools to answer questions that require them.
 
 AVAILABLE TOOLS:
 ${serverInfo}
-TO CALL A TOOL - output ONLY:
+
+HOW TO CALL A TOOL - output ONLY this JSON (nothing else):
 {"name": "tool_name", "parameters": {}}
 
-AFTER TOOL RESULTS - summarize in plain English for the user.
+TOOL SELECTION TIPS:
+- For "my" / "me" questions: Use tools with "me" in the name, NOT search tools
+- For time/date questions: Look for tools with "time" or "date" in the name
+- For file questions: Look for tools with "file", "read", "write" in the name
+- Read tool descriptions to understand what each tool does
 
 RULES:
-1. "my username" / "my account" / "my repos" → Find a tool with "me" in the name, NOT search
-2. Search tools are for finding OTHER people/things, not yourself
-3. Call the tool directly - don't describe it or ask permission`;
+1. If a question can be answered with a tool, CALL IT - don't say you can't help
+2. After receiving tool results, summarize in plain English
+3. Call tools directly - don't describe them or ask permission`;
   }
 
   /**

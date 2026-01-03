@@ -778,9 +778,11 @@ async function handleAgentRun(
         
         if (step.type === 'tool_results' && step.toolResults) {
           for (const tr of step.toolResults) {
+            // Use full prefixed name to match tool_call event
+            const fullToolName = tr.serverId ? `${tr.serverId}__${tr.toolName}` : tr.toolName;
             sendEvent({ 
               type: 'tool_result', 
-              tool: tr.toolName,
+              tool: fullToolName,
               result: tr.content,
               error: tr.isError ? createError('ERR_TOOL_FAILED', tr.content) : undefined,
             });

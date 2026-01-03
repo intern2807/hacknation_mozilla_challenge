@@ -2,10 +2,145 @@
  * Harbor JS AI Provider - Permission Prompt
  * 
  * Handles the permission dialog UI and communicates decisions back to the background script.
+ * Dynamically adapts to the user's Firefox theme using browser.theme API.
  */
 
 import browser from 'webextension-polyfill';
 import type { PermissionScope } from './provider/types';
+
+// =============================================================================
+// Theme Integration - Dynamic Firefox Theme Colors
+// =============================================================================
+
+interface ThemeColors {
+  // Popup/Panel colors
+  popup?: string;
+  popup_text?: string;
+  popup_border?: string;
+  popup_highlight?: string;
+  popup_highlight_text?: string;
+  
+  // Toolbar colors
+  toolbar?: string;
+  toolbar_text?: string;
+  toolbar_field?: string;
+  toolbar_field_text?: string;
+  
+  // Frame colors
+  frame?: string;
+  tab_background_text?: string;
+  
+  // Button colors
+  button_background_hover?: string;
+  button_background_active?: string;
+  
+  // Accent/icons
+  icons?: string;
+  icons_attention?: string;
+  
+  // Other
+  ntp_background?: string;
+  ntp_text?: string;
+  sidebar?: string;
+  sidebar_text?: string;
+}
+
+/**
+ * Apply Firefox theme colors to CSS custom properties.
+ * This makes the permission prompt match the user's Firefox theme.
+ */
+async function applyThemeColors(): Promise<void> {
+  try {
+    const theme = await browser.theme.getCurrent();
+    const colors = theme.colors as ThemeColors | undefined;
+    
+    if (!colors) {
+      console.log('[Permission Prompt] No theme colors available, using CSS fallbacks');
+      return;
+    }
+    
+    const root = document.documentElement;
+    
+    // Popup/Panel colors
+    if (colors.popup) {
+      root.style.setProperty('--popup-background', colors.popup);
+    }
+    if (colors.popup_text) {
+      root.style.setProperty('--popup-text', colors.popup_text);
+      // Derive secondary text color (slightly faded)
+      root.style.setProperty('--text-secondary', `color-mix(in srgb, ${colors.popup_text} 70%, transparent)`);
+    }
+    if (colors.popup_border) {
+      root.style.setProperty('--popup-border', colors.popup_border);
+    }
+    
+    // Toolbar colors
+    if (colors.toolbar) {
+      root.style.setProperty('--toolbar-background', colors.toolbar);
+      root.style.setProperty('--button-background', colors.toolbar);
+      // Derive surface-alt from toolbar
+      root.style.setProperty('--surface-alt', colors.toolbar);
+    }
+    if (colors.toolbar_text) {
+      root.style.setProperty('--toolbar-text', colors.toolbar_text);
+      root.style.setProperty('--button-text', colors.toolbar_text);
+    }
+    
+    // Frame colors (can affect overall appearance)
+    if (colors.frame) {
+      root.style.setProperty('--frame-background', colors.frame);
+    }
+    
+    // Button hover/active states
+    if (colors.button_background_hover) {
+      root.style.setProperty('--button-hover', colors.button_background_hover);
+    }
+    if (colors.button_background_active) {
+      root.style.setProperty('--button-active', colors.button_background_active);
+    }
+    
+    // Icons/Accent color - use for primary accent
+    if (colors.icons_attention) {
+      root.style.setProperty('--accent-color', colors.icons_attention);
+      root.style.setProperty('--link-color', colors.icons_attention);
+      root.style.setProperty('--focus-outline', colors.icons_attention);
+    } else if (colors.icons) {
+      root.style.setProperty('--link-color', colors.icons);
+    }
+    
+    // Popup highlight for selections
+    if (colors.popup_highlight) {
+      root.style.setProperty('--accent-color', colors.popup_highlight);
+    }
+    if (colors.popup_highlight_text) {
+      root.style.setProperty('--accent-text', colors.popup_highlight_text);
+    }
+    
+    // Derive separator color from popup text
+    if (colors.popup_text) {
+      root.style.setProperty('--separator', `color-mix(in srgb, ${colors.popup_text} 15%, transparent)`);
+    }
+    
+    console.log('[Permission Prompt] Applied theme colors:', colors);
+  } catch (err) {
+    console.warn('[Permission Prompt] Failed to get theme colors:', err);
+    // CSS fallbacks will be used
+  }
+}
+
+/**
+ * Listen for theme changes and reapply colors.
+ */
+function listenForThemeChanges(): void {
+  try {
+    browser.theme.onUpdated.addListener((updateInfo) => {
+      console.log('[Permission Prompt] Theme updated, reapplying colors');
+      applyThemeColors();
+    });
+  } catch (err) {
+    console.warn('[Permission Prompt] Could not listen for theme changes:', err);
+  }
+}
 
 // Scope icons and descriptions
 const SCOPE_INFO: Record<PermissionScope, { icon: string; iconClass: string; description: string }> = {
@@ -249,8 +384,12 @@ function setupListeners(): void {
 // Initialize
 // =============================================================================
 
-function init(): void {
-  // No theme init needed - CSS uses system colors automatically
+async function init(): Promise<void> {
+  // Apply Firefox theme colors dynamically
+  await applyThemeColors();
+  listenForThemeChanges();
+  
+  // Render UI and setup event listeners
   renderUI();
   setupListeners();
 }

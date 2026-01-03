@@ -59,7 +59,8 @@ harbor/
 │   │   ├── install_native_manifest_macos.sh
 │   │   └── install_native_manifest_linux.sh
 │   └── dist/                    # Built output
-└── bridge/                      # (Legacy) Python Native Messaging Bridge
+├── demo/                        # Demo web pages showing JS AI Provider usage
+└── docs/                        # Developer documentation
 ```
 
 ## Local Development

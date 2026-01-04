@@ -172,9 +172,19 @@ export class ChatOrchestrator {
           systemPrompt,
         };
         
-        // Call LLM
+        // Call LLM - log the provider/model info
         const llmManager = getLLMManager();
+        const activeProvider = llmManager.getActiveId();
+        const activeModel = llmManager.getActiveModelId();
+        log(`[Orchestrator] Calling LLM: provider=${activeProvider}, model=${activeModel}, tools=${tools.length}`);
+        
         const response = await llmManager.chat(request);
+        
+        // Log the LLM response details
+        log(`[Orchestrator] LLM response: finishReason=${response.finishReason}, toolCalls=${response.message.toolCalls?.length || 0}, content=${response.message.content?.substring(0, 100)}`);
+        if (response.error) {
+          log(`[Orchestrator] LLM error: ${response.error}`);
+        }
         
         // Check for error
         if (response.finishReason === 'error') {
@@ -719,46 +729,19 @@ export class ChatOrchestrator {
 
   /**
    * Build a system prompt that helps the LLM use tools correctly.
+   * 
+   * IMPORTANT: Keep this simple! Modern LLMs with native tool calling support
+   * get confused if we tell them to "output JSON" - they'll output JSON text
+   * instead of using the native tool_calls mechanism.
    */
   private buildSystemPrompt(tools: ToolDefinition[]): string {
     if (tools.length === 0) {
       return 'You are a helpful assistant.';
     }
     
-    // Group tools by server prefix
-    const toolsByServer: Record<string, ToolDefinition[]> = {};
-    for (const tool of tools) {
-      // Tool names are prefixed like "server_id__tool_name"
-      const parts = tool.name.split('__');
-      const serverId = parts.length > 1 ? parts[0] : 'unknown';
-      if (!toolsByServer[serverId]) {
-        toolsByServer[serverId] = [];
-      }
-      toolsByServer[serverId].push(tool);
-    }
-    
-    let serverInfo = '';
-    for (const [serverId, serverTools] of Object.entries(toolsByServer)) {
-      const toolList = serverTools.map(t => {
-        const shortName = t.name.split('__').pop() || t.name;
-        return `  - ${shortName}: ${t.description || 'No description'}`;
-      }).join('\n');
-      serverInfo += `\n${serverId}:\n${toolList}\n`;
-    }
-    
-    return `You are an AI assistant with tool access. You MUST call tools to answer questions that require them.
-
-AVAILABLE TOOLS:
-${serverInfo}
-
-HOW TO CALL A TOOL - output ONLY this JSON (nothing else):
-{"name": "tool_name", "parameters": {}}
-
-RULES:
-1. READ the tool descriptions carefully to choose the right tool
-2. If a question can be answered with a tool, CALL IT - don't say you can't help
-3. After receiving tool results, summarize in plain English
-4. Call tools directly - don't describe them or ask permission`;
+    // Simple prompt that works with native tool calling
+    // Don't include instructions about JSON format - let the LLM use native tools
+    return `You are a helpful AI assistant with access to tools. When the user asks a question that can be answered using a tool, call the appropriate tool. Do not say you cannot help - use the available tools instead.`;
   }
 
   /**

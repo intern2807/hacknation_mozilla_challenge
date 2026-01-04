@@ -292,10 +292,19 @@ export class AnyLLMAdapter implements LegacyLLMProvider {
   async chat(request: ChatRequest): Promise<ChatResponse> {
     const model = request.model || await this.getDefaultModel();
     
+    const convertedTools = this.convertTools(request.tools);
+    log(`[AnyLLMAdapter] chat() called:`);
+    log(`[AnyLLMAdapter]   provider: ${this.providerType}`);
+    log(`[AnyLLMAdapter]   model: ${model}`);
+    log(`[AnyLLMAdapter]   tools count: ${convertedTools?.length || 0}`);
+    if (convertedTools && convertedTools.length > 0) {
+      log(`[AnyLLMAdapter]   tool names: ${convertedTools.map(t => t.function.name).slice(0, 10).join(', ')}${convertedTools.length > 10 ? '...' : ''}`);
+    }
+    
     const anyRequest: CompletionRequest = {
       model: `${this.providerType}:${model}`,
       messages: this.convertMessages(request.messages, request.systemPrompt),
-      tools: this.convertTools(request.tools),
+      tools: convertedTools,
       max_tokens: request.maxTokens,
       temperature: request.temperature,
     };
@@ -309,7 +318,18 @@ export class AnyLLMAdapter implements LegacyLLMProvider {
     }
     
     try {
+      log(`[AnyLLMAdapter] Sending request to ${this.providerType}...`);
       const response = await completion(anyRequest);
+      log(`[AnyLLMAdapter] Response received:`);
+      log(`[AnyLLMAdapter]   finish_reason: ${response.choices[0]?.finish_reason}`);
+      const msgContent = response.choices[0]?.message?.content;
+      log(`[AnyLLMAdapter]   content length: ${typeof msgContent === 'string' ? msgContent.length : (Array.isArray(msgContent) ? msgContent.length : 0)}`);
+      log(`[AnyLLMAdapter]   tool_calls: ${response.choices[0]?.message?.tool_calls?.length || 0}`);
+      if (response.choices[0]?.message?.content) {
+        const content = response.choices[0].message.content;
+        const preview = typeof content === 'string' ? content.substring(0, 150) : '[multimodal]';
+        log(`[AnyLLMAdapter]   content preview: ${preview}`);
+      }
       return this.convertResponse(response);
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);

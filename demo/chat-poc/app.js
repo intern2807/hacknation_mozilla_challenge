@@ -117,16 +117,19 @@ function checkExtension() {
  */
 async function checkLLM() {
   try {
+    console.log('[Demo] Creating test LLM session...');
     const testSession = await window.ai.createTextSession();
+    console.log('[Demo] Test session created, destroying...');
     await testSession.destroy();
+    console.log('[Demo] LLM check passed');
     
     llmStatus.classList.add('success');
     llmStatusText.textContent = 'LLM Ready';
     return true;
   } catch (err) {
+    console.error('[Demo] LLM check failed:', err);
     llmStatus.classList.add('warning');
     llmStatusText.textContent = 'LLM Error';
-    console.error('[Demo] LLM check failed:', err);
     return false;
   }
 }
@@ -136,7 +139,9 @@ async function checkLLM() {
  */
 async function checkTools() {
   try {
+    console.log('[Demo] Listing tools...');
     const tools = await window.agent.tools.list();
+    console.log('[Demo] Got tools:', tools?.length);
     availableTools = tools; // Store for modal
     if (tools.length > 0) {
       toolsStatus.classList.add('success');
@@ -148,8 +153,9 @@ async function checkTools() {
       return [];
     }
   } catch (err) {
-    toolsStatusText.textContent = 'Tools: Error';
     console.error('[Demo] Tools check failed:', err);
+    toolsStatus.classList.add('error');
+    toolsStatusText.textContent = 'Tools: Error';
     return [];
   }
 }
@@ -300,8 +306,11 @@ function updateToolCallUI(toolEl, status, result) {
   contentEl.textContent += '\n\nResult: ' + resultStr;
 }
 
-function addThinkingUI() {
+function addThinkingUI(initialText = 'Thinking...') {
   showMessages();
+  
+  // Remove any existing thinking indicator first to prevent duplicates
+  removeThinking();
   
   const thinkingEl = document.createElement('div');
   thinkingEl.className = 'message assistant';
@@ -314,7 +323,7 @@ function addThinkingUI() {
     <div class="message-body">
       <div class="thinking">
         <div class="thinking-dots"><span></span><span></span><span></span></div>
-        <span id="thinking-text">Thinking...</span>
+        <span id="thinking-text">${initialText}</span>
       </div>
     </div>
   `;
@@ -327,7 +336,11 @@ function addThinkingUI() {
 
 function updateThinkingText(text) {
   const el = document.getElementById('thinking-text');
-  if (el) el.textContent = text;
+  if (el) {
+    // Clear and set to ensure clean update (no leftover text)
+    el.innerHTML = '';
+    el.textContent = text;
+  }
 }
 
 function removeThinking() {
@@ -470,7 +483,7 @@ async function runSimple(content) {
  * To disable the router and use all tools, pass { useAllTools: true }
  */
 async function runWithTools(content) {
-  addThinkingUI();
+  addThinkingUI('Initializing agent...');
   
   try {
     // Get tab context if enabled
@@ -507,8 +520,7 @@ async function runWithTools(content) {
           removeThinking();
           const toolEl = addToolCallUI(event.tool, event.args, 'pending');
           toolElements.set(event.tool, toolEl);
-          addThinkingUI();
-          updateThinkingText('Waiting for tool result...');
+          addThinkingUI('Waiting for tool result...');
           break;
           
         case 'tool_result':
@@ -539,9 +551,36 @@ async function runWithTools(content) {
           
         case 'final':
           // Agent completed
+          console.log('[Demo] Agent final event:', event);
           removeThinking();
-          if (!messageEl && event.output) {
-            addMessageUI('assistant', event.output);
+          
+          // Display the final output - ALWAYS show it regardless of token state
+          const finalText = event.output || '';
+          console.log('[Demo] Final text to display:', finalText, 'existing messageEl:', !!messageEl, 'responseText:', responseText);
+          
+          if (finalText) {
+            // Always create/update the message with the final text
+            if (!messageEl) {
+              messageEl = addMessageUI('assistant', finalText);
+            } else {
+              // Force update the body with final text
+              const body = messageEl.querySelector('.message-body');
+              if (body) {
+                body.innerHTML = finalText.split('\n').map(line => `<p>${escapeHtml(line) || '&nbsp;'}</p>`).join('');
+              }
+            }
+          } else if (!messageEl && !responseText) {
+            // No output at all - show a placeholder
+            messageEl = addMessageUI('assistant', '(No response)');
+          }
+          
+          // Update any pending tool calls to complete (in case tool_result was missed)
+          for (const [toolName, toolEl] of toolElements) {
+            const statusEl = toolEl.querySelector('.tool-status');
+            if (statusEl && statusEl.textContent === 'pending') {
+              statusEl.textContent = 'done';
+              statusEl.className = 'tool-status success';
+            }
           }
           
           // Show citations if present
@@ -549,9 +588,15 @@ async function runWithTools(content) {
             const citationText = event.citations.map(c => `• ${c.source}: ${c.ref}`).join('\n');
             addMessageUI('system', `Sources:\n${citationText}`);
           }
+          
+          // If tools were available but LLM didn't use them, show a hint
+          if (availableTools.length > 0 && toolElements.size === 0) {
+            console.log('[Demo] LLM did not use any tools. Available tools:', availableTools.length);
+          }
           break;
           
         case 'error':
+          console.error('[Demo] Agent error:', event.error);
           removeThinking();
           addMessageUI('assistant', `Error: ${event.error.message}`);
           break;
@@ -645,8 +690,25 @@ async function init() {
   const hasExtension = checkExtension();
   
   if (hasExtension) {
+    // Request necessary permissions first
+    let permissionsGranted = false;
+    try {
+      const permResult = await window.agent.requestPermissions({
+        scopes: ['model:prompt', 'model:tools', 'mcp:tools.list', 'mcp:tools.call'],
+        reason: 'Chat demo needs access to the LLM and MCP tools to answer your questions',
+      });
+      console.log('[Demo] Permission result:', permResult);
+      permissionsGranted = permResult.granted === true;
+    } catch (err) {
+      console.error('[Demo] Permission request failed:', err);
+    }
+    
+    // Check LLM and tools (even without explicit permissions, as they may have been granted before)
+    console.log('[Demo] Checking LLM...');
     await checkLLM();
+    console.log('[Demo] Checking tools...');
     await checkTools();
+    console.log('[Demo] Status checks complete');
   }
   
   // Log API availability for developers

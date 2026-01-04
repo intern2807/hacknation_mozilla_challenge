@@ -91,7 +91,9 @@ window.addEventListener('message', (event) => {
   if (data.type.endsWith('_result') || 
       data.type === 'error' || 
       data.type === 'pong' ||
-      data.type.includes('stream_')) {
+      data.type.includes('stream_') ||
+      data.type === 'agent_run_event' ||
+      data.type === 'response') {
     return;
   }
   

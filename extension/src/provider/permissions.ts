@@ -97,6 +97,15 @@ setInterval(cleanupExpiredGrants, 60000);
  * Get the current permission status for an origin.
  */
 export async function getPermissionStatus(origin: string): Promise<PermissionStatus> {
+  // Special case: extension pages always have all permissions
+  if (origin === 'extension') {
+    const scopes: Record<PermissionScope, PermissionGrant> = {} as Record<PermissionScope, PermissionGrant>;
+    for (const scope of ALL_SCOPES) {
+      scopes[scope] = 'granted-always';
+    }
+    return { origin, scopes };
+  }
+  
   cleanupExpiredGrants();
   
   const stored = await loadStoredPermissions();

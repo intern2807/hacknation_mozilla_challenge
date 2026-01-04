@@ -1,100 +1,23 @@
 import browser from 'webextension-polyfill';
 import { setupProviderRouter, handlePermissionPromptResponse } from './provider/background-router';
+import {
+  sendToBridge,
+  generateRequestId,
+  connectToNative,
+  disconnectNative,
+  isConnected,
+  sendHello,
+  setMessageCallback,
+  getConnectionState,
+  BridgeResponse,
+  REQUEST_TIMEOUT_MS,
+  DOCKER_TIMEOUT_MS,
+  CHAT_TIMEOUT_MS,
+} from './native-connection';
 
 // BUILD MARKER - if you don't see this, the extension is using cached code!
 // Harbor extension background script
 console.log('Harbor background script loading...');
-
-const NATIVE_HOST_NAME = 'harbor_bridge_host';
-
-interface HarborMessage {
-  type: string;
-  request_id: string;
-  [key: string]: unknown;
-}
-
-interface PongMessage extends HarborMessage {
-  type: 'pong';
-  bridge_version: string;
-}
-
-interface ErrorResponse {
-  type: 'error';
-  request_id: string;
-  error: {
-    code: string;
-    message: string;
-    details?: unknown;
-  };
-}
-
-interface MCPServer {
-  server_id: string;
-  label: string;
-  base_url: string;
-  status: 'disconnected' | 'connecting' | 'connected' | 'error';
-  error_message?: string | null;
-}
-
-interface AddServerResult extends HarborMessage {
-  type: 'add_server_result';
-  server: MCPServer;
-}
-
-interface ListServersResult extends HarborMessage {
-  type: 'list_servers_result';
-  servers: MCPServer[];
-}
-
-interface ConnectServerResult extends HarborMessage {
-  type: 'connect_server_result';
-  server: MCPServer;
-  connection_info?: unknown;
-}
-
-interface DisconnectServerResult extends HarborMessage {
-  type: 'disconnect_server_result';
-  server: MCPServer;
-}
-
-interface ListToolsResult extends HarborMessage {
-  type: 'list_tools_result';
-  tools: unknown[];
-  _todo?: string;
-}
-
-type BridgeResponse =
-  | PongMessage
-  | ErrorResponse
-  | AddServerResult
-  | ListServersResult
-  | ConnectServerResult
-  | DisconnectServerResult
-  | ListToolsResult;
-
-interface ConnectionState {
-  connected: boolean;
-  lastMessage: BridgeResponse | null;
-  error: string | null;
-}
-
-interface PendingRequest {
-  resolve: (response: BridgeResponse) => void;
-  reject: (error: Error) => void;
-  timeout: ReturnType<typeof setTimeout>;
-}
-
-let port: browser.Runtime.Port | null = null;
-let connectionState: ConnectionState = {
-  connected: false,
-  lastMessage: null,
-  error: null,
-};
-
-const pendingRequests = new Map<string, PendingRequest>();
-const REQUEST_TIMEOUT_MS = 30000; // Default timeout for most requests
-const DOCKER_TIMEOUT_MS = 300000; // 5 minutes for Docker (building images can be slow)
-const CHAT_TIMEOUT_MS = 180000; // 3 minutes for chat (LLM + tools can be slow)
 
 // Message log for debugging
 interface LogEntry {
@@ -180,10 +103,6 @@ function getMessageSummary(direction: 'send' | 'recv', type: string, data: unkno
   }
 }
 
-function generateRequestId(): string {
-  return crypto.randomUUID();
-}
-
 /**
  * Broadcast a message to all extension pages (sidebar, chat, directory).
  * Uses runtime.sendMessage which reaches all extension contexts.
@@ -196,34 +115,14 @@ function broadcastToExtension(message: Record<string, unknown>): void {
     });
 }
 
-function updateState(updates: Partial<ConnectionState>): void {
-  connectionState = { ...connectionState, ...updates };
-  browser.storage.local.set({ connectionState });
-  // Broadcast to any listening sidebars
-  browser.runtime
-    .sendMessage({ type: 'state_update', state: connectionState })
-    .catch(() => {
-      // No listeners, that's fine
-    });
-}
-
-function handleNativeMessage(message: unknown): void {
-  console.log('Received from native:', message);
-  const response = message as BridgeResponse;
-  
+// Set up message callback to handle broadcasts and logging
+setMessageCallback((response) => {
   // Log the received message
   addLogEntry('recv', response.type, response);
-
-  updateState({
-    connected: true,
-    lastMessage: response,
-    error: null,
-  });
 
   // Handle status updates (pushed from bridge, not in response to a request)
   if (response.type === 'status_update') {
     console.log('[Background] Status update:', response);
-    // Broadcast status updates to all extension pages
     browser.runtime
       .sendMessage({ 
         type: 'catalog_status', 
@@ -239,7 +138,6 @@ function handleNativeMessage(message: unknown): void {
   // Handle server progress updates (Docker startup, etc.)
   if (response.type === 'server_progress') {
     console.log('[Background] Server progress:', response);
-    // Broadcast progress to all extension pages
     browser.runtime
       .sendMessage({ 
         type: 'server_progress', 
@@ -251,15 +149,6 @@ function handleNativeMessage(message: unknown): void {
     return;
   }
 
-  // Resolve pending request if this is a response
-  const requestId = response.request_id;
-  if (requestId && pendingRequests.has(requestId)) {
-    const pending = pendingRequests.get(requestId)!;
-    clearTimeout(pending.timeout);
-    pendingRequests.delete(requestId);
-    pending.resolve(response);
-  }
-
   // Broadcast the response to sidebars
   browser.runtime
     .sendMessage({ type: 'bridge_response', response })
@@ -268,85 +157,11 @@ function handleNativeMessage(message: unknown): void {
   // Broadcast specific events for UI updates
   if (response.type === 'install_server_result' || 
       response.type === 'uninstall_server_result') {
-    // Notify sidebar to refresh installed servers list
     browser.runtime
       .sendMessage({ type: 'installed_servers_changed' })
       .catch(() => {});
   }
-}
-
-function handleNativeDisconnect(): void {
-  const error = browser.runtime.lastError?.message ?? 'Connection closed';
-  console.error('Native port disconnected:', error);
-  port = null;
-
-  // Reject all pending requests
-  for (const [requestId, pending] of pendingRequests.entries()) {
-    clearTimeout(pending.timeout);
-    pending.reject(new Error(`Connection lost: ${error}`));
-    pendingRequests.delete(requestId);
-  }
-
-  updateState({
-    connected: false,
-    error,
-  });
-}
-
-function connectToNative(): boolean {
-  if (port) {
-    return true;
-  }
-
-  try {
-    port = browser.runtime.connectNative(NATIVE_HOST_NAME);
-    port.onMessage.addListener(handleNativeMessage);
-    port.onDisconnect.addListener(handleNativeDisconnect);
-    updateState({ connected: true, error: null });
-    return true;
-  } catch (err) {
-    const error = err instanceof Error ? err.message : 'Failed to connect';
-    console.error('Failed to connect to native host:', error);
-    updateState({
-      connected: false,
-      error,
-    });
-    return false;
-  }
-}
-
-async function sendToBridge(message: HarborMessage, timeoutMs?: number): Promise<BridgeResponse> {
-  if (!port && !connectToNative()) {
-    throw new Error('Not connected to native bridge');
-  }
-
-  const effectiveTimeout = timeoutMs || REQUEST_TIMEOUT_MS;
-
-  return new Promise((resolve, reject) => {
-    const timeout = setTimeout(() => {
-      pendingRequests.delete(message.request_id);
-      reject(new Error(`Request timed out after ${effectiveTimeout / 1000}s`));
-    }, effectiveTimeout);
-
-    pendingRequests.set(message.request_id, { resolve, reject, timeout });
-
-    // Log the sent message
-    addLogEntry('send', message.type, message);
-    
-    console.log('Sending to native:', message);
-    port!.postMessage(message);
-  });
-}
-
-function sendHello(): void {
-  const message: HarborMessage = {
-    type: 'hello',
-    request_id: generateRequestId(),
-  };
-  sendToBridge(message).catch((err) => {
-    console.error('Failed to send hello:', err);
-  });
-}
+});
 
 // Exported LLM chat function for use by background-router
 export interface LLMChatOptions {
@@ -389,7 +204,7 @@ browser.runtime.onMessage.addListener(
     const msg = message as { type: string; [key: string]: unknown };
 
     if (msg.type === 'get_state') {
-      return Promise.resolve(connectionState);
+      return Promise.resolve(getConnectionState());
     }
     
     if (msg.type === 'get_message_log') {
@@ -403,7 +218,7 @@ browser.runtime.onMessage.addListener(
     }
 
     if (msg.type === 'send_hello') {
-      if (!port) {
+      if (!isConnected()) {
         connectToNative();
       }
       sendHello();
@@ -412,7 +227,7 @@ browser.runtime.onMessage.addListener(
 
     // Diagnostic ping - tests the full pipeline including push status updates
     if (msg.type === 'send_ping') {
-      if (!port) {
+      if (!isConnected()) {
         connectToNative();
       }
       return sendToBridge({
@@ -423,10 +238,7 @@ browser.runtime.onMessage.addListener(
     }
 
     if (msg.type === 'reconnect') {
-      if (port) {
-        port.disconnect();
-        port = null;
-      }
+      disconnectNative();
       connectToNative();
       sendHello();
       return Promise.resolve({ reconnecting: true });
@@ -1073,6 +885,9 @@ browser.runtime.onMessage.addListener(
       return sendToBridge({
         type: 'mcp_list_connections',
         request_id: generateRequestId(),
+      }).catch((err) => {
+        console.error('[Background] mcp_list_connections error:', err);
+        return { type: 'error', error: { message: err instanceof Error ? err.message : 'Failed to list connections' } };
       });
     }
 
@@ -1085,6 +900,9 @@ browser.runtime.onMessage.addListener(
         name: msg.name,
         system_prompt: msg.system_prompt,
         max_iterations: msg.max_iterations,
+      }).catch((err) => {
+        console.error('[Background] chat_create_session error:', err);
+        return { type: 'error', error: { message: err instanceof Error ? err.message : 'Failed to create session' } };
       });
     }
 
@@ -1096,7 +914,10 @@ browser.runtime.onMessage.addListener(
         session_id: msg.session_id,
         message: msg.message,
         use_tool_router: msg.use_tool_router,
-      }, CHAT_TIMEOUT_MS);
+      }, CHAT_TIMEOUT_MS).catch((err) => {
+        console.error('[Background] chat_send_message error:', err);
+        return { type: 'error', error: { message: err instanceof Error ? err.message : 'Failed to send message' } };
+      });
     }
 
     if (msg.type === 'chat_get_session') {

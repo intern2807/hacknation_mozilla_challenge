@@ -3,37 +3,19 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Harbor AI Agent Demo</title>
+  <title>Harbor Demos</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
     :root {
       --color-bg-primary: #0a0a0f;
       --color-bg-secondary: #12121a;
-      --color-bg-tertiary: #1a1a25;
-      --color-bg-hover: #22222e;
       --color-text-primary: #e8e8ed;
       --color-text-secondary: #9898a8;
-      --color-text-muted: #5c5c6d;
-      --color-border-primary: #2a2a3a;
-      --color-border-active: #4a4a60;
       --color-accent-primary: #6366f1;
       --color-accent-secondary: #8b5cf6;
-      --color-success: #10b981;
-      --color-warning: #f59e0b;
-      --color-error: #ef4444;
       --font-sans: 'Outfit', system-ui, -apple-system, sans-serif;
-      --font-mono: 'JetBrains Mono', ui-monospace, monospace;
-      --radius-sm: 6px;
-      --radius-md: 10px;
-      --radius-lg: 16px;
-      --space-1: 4px;
-      --space-2: 8px;
-      --space-3: 12px;
-      --space-4: 16px;
-      --space-5: 20px;
-      --space-6: 24px;
     }
 
     * {
@@ -48,1280 +30,153 @@
       color: var(--color-text-primary);
       min-height: 100vh;
       display: flex;
-    }
-
-    /* Sidebar */
-    .sidebar {
-      width: 280px;
-      background: var(--color-bg-secondary);
-      border-right: 1px solid var(--color-border-primary);
-      display: flex;
       flex-direction: column;
-      flex-shrink: 0;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 20px;
     }
 
-    .sidebar-header {
-      padding: var(--space-4);
-      border-bottom: 1px solid var(--color-border-primary);
+    .container {
+      max-width: 600px;
+      text-align: center;
     }
 
-    .sidebar-header h1 {
-      font-size: 20px;
+    h1 {
+      font-size: 2.5rem;
       font-weight: 700;
+      margin-bottom: 16px;
       background: linear-gradient(135deg, var(--color-accent-primary), var(--color-accent-secondary));
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
     }
 
-    .sidebar-header p {
-      font-size: 12px;
-      color: var(--color-text-muted);
-      margin-top: var(--space-1);
-    }
-
-    .new-chat-btn {
-      margin: var(--space-4);
-      padding: var(--space-3);
-      background: var(--color-accent-primary);
-      color: white;
-      border: none;
-      border-radius: var(--radius-md);
-      font-family: var(--font-sans);
-      font-size: 14px;
-      font-weight: 500;
-      cursor: pointer;
-      transition: filter 0.15s;
-    }
-
-    .new-chat-btn:hover {
-      filter: brightness(1.1);
-    }
-
-    .conversations {
-      flex: 1;
-      overflow-y: auto;
-      padding: var(--space-2);
-    }
-
-    .conversation-item {
-      padding: var(--space-3);
-      border-radius: var(--radius-md);
-      cursor: pointer;
-      transition: background 0.15s;
-      font-size: 14px;
+    .subtitle {
       color: var(--color-text-secondary);
-      margin-bottom: var(--space-1);
-    }
-
-    .conversation-item:hover {
-      background: var(--color-bg-hover);
-    }
-
-    .conversation-item.active {
-      background: var(--color-bg-tertiary);
-      color: var(--color-text-primary);
-    }
-
-    .sidebar-footer {
-      padding: var(--space-4);
-      border-top: 1px solid var(--color-border-primary);
-    }
-
-    .status-item {
-      display: flex;
-      align-items: center;
-      gap: var(--space-2);
-      font-size: 12px;
-      color: var(--color-text-secondary);
-      margin-bottom: var(--space-2);
-    }
-
-    .status-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: var(--color-text-muted);
-    }
-
-    .status-dot.connected {
-      background: var(--color-success);
-    }
-
-    .status-dot.warning {
-      background: var(--color-warning);
-    }
-
-    /* Main Content */
-    .main {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      min-width: 0;
-    }
-
-    .toolbar {
-      padding: var(--space-3) var(--space-4);
-      border-bottom: 1px solid var(--color-border-primary);
-      display: flex;
-      align-items: center;
-      gap: var(--space-3);
-      flex-wrap: wrap;
-    }
-
-    .toolbar-btn {
-      padding: var(--space-2) var(--space-3);
-      background: var(--color-bg-tertiary);
-      border: 1px solid var(--color-border-primary);
-      border-radius: var(--radius-md);
-      color: var(--color-text-secondary);
-      font-family: var(--font-sans);
-      font-size: 13px;
-      cursor: pointer;
-      transition: all 0.15s;
-      display: flex;
-      align-items: center;
-      gap: var(--space-2);
-    }
-
-    .toolbar-btn:hover {
-      background: var(--color-bg-hover);
-      border-color: var(--color-border-active);
-    }
-
-    .toolbar-btn.active {
-      background: var(--color-accent-primary);
-      border-color: var(--color-accent-primary);
-      color: white;
-    }
-
-    .toolbar-btn.connect-btn {
-      background: var(--color-accent-primary);
-      border-color: var(--color-accent-primary);
-      color: white;
-    }
-
-    .toolbar-btn.connected {
-      background: var(--color-success);
-      border-color: var(--color-success);
-    }
-
-    .toolbar-separator {
-      width: 1px;
-      height: 24px;
-      background: var(--color-border-primary);
-    }
-
-    /* Chat Area */
-    .chat-area {
-      flex: 1;
-      overflow-y: auto;
-      padding: var(--space-6);
-    }
-
-    .empty-state {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      height: 100%;
-      text-align: center;
-      color: var(--color-text-muted);
-    }
-
-    .empty-state-icon {
-      font-size: 48px;
-      margin-bottom: var(--space-4);
-      opacity: 0.5;
-    }
-
-    .empty-state h2 {
-      font-size: 24px;
-      font-weight: 600;
-      color: var(--color-text-primary);
-      margin-bottom: var(--space-2);
-    }
-
-    .empty-state p {
-      max-width: 400px;
+      font-size: 1.1rem;
+      margin-bottom: 48px;
       line-height: 1.6;
     }
 
-    .messages {
-      max-width: 800px;
-      margin: 0 auto;
-    }
-
-    .message {
-      margin-bottom: var(--space-5);
-      animation: fadeIn 0.3s ease;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    .message-header {
+    .demos {
       display: flex;
-      align-items: center;
-      gap: var(--space-2);
-      margin-bottom: var(--space-2);
+      flex-direction: column;
+      gap: 16px;
     }
 
-    .message-avatar {
-      width: 28px;
-      height: 28px;
-      border-radius: var(--radius-sm);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 12px;
-      font-weight: 600;
-    }
-
-    .message.user .message-avatar {
-      background: var(--color-accent-primary);
-      color: white;
-    }
-
-    .message.assistant .message-avatar {
-      background: linear-gradient(135deg, var(--color-accent-secondary), var(--color-accent-primary));
-      color: white;
-    }
-
-    .message-role {
-      font-size: 13px;
-      font-weight: 600;
-      color: var(--color-text-primary);
-    }
-
-    .message-time {
-      font-size: 11px;
-      color: var(--color-text-muted);
-    }
-
-    .message-body {
-      margin-left: 36px;
-      font-size: 14px;
-      line-height: 1.7;
-      color: var(--color-text-secondary);
-    }
-
-    .message-body p {
-      margin-bottom: var(--space-2);
-    }
-
-    .message-body p:last-child {
-      margin-bottom: 0;
-    }
-
-    /* Tool Calls */
-    .tool-call {
-      background: var(--color-bg-tertiary);
-      border: 1px solid var(--color-border-primary);
-      border-radius: var(--radius-md);
-      margin: var(--space-3) 0;
-      overflow: hidden;
-    }
-
-    .tool-call-header {
-      padding: var(--space-2) var(--space-3);
+    .demo-card {
       background: var(--color-bg-secondary);
-      border-bottom: 1px solid var(--color-border-primary);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      padding: 24px;
+      text-decoration: none;
+      color: inherit;
+      transition: all 0.2s ease;
+      text-align: left;
+    }
+
+    .demo-card:hover {
+      border-color: var(--color-accent-primary);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(99, 102, 241, 0.15);
+    }
+
+    .demo-card h2 {
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin-bottom: 8px;
       display: flex;
       align-items: center;
-      gap: var(--space-2);
-      font-size: 12px;
+      gap: 10px;
+    }
+
+    .demo-card p {
       color: var(--color-text-secondary);
-      cursor: pointer;
+      font-size: 0.95rem;
+      line-height: 1.5;
     }
 
-    .tool-call-header:hover {
-      background: var(--color-bg-hover);
+    .badge {
+      font-size: 0.7rem;
+      padding: 3px 8px;
+      background: var(--color-accent-primary);
+      border-radius: 4px;
+      text-transform: uppercase;
+      font-weight: 600;
+      letter-spacing: 0.5px;
     }
 
-    .tool-call-name {
-      font-family: var(--font-mono);
-      color: var(--color-accent-primary);
-    }
-
-    .tool-call-status {
-      margin-left: auto;
-      font-size: 11px;
-    }
-
-    .tool-call-status.pending {
-      color: var(--color-warning);
-    }
-
-    .tool-call-status.success {
-      color: var(--color-success);
-    }
-
-    .tool-call-status.error {
-      color: var(--color-error);
-    }
-
-    .tool-call-content {
-      padding: var(--space-3);
-      font-family: var(--font-mono);
-      font-size: 12px;
-      color: var(--color-text-secondary);
-      max-height: 200px;
-      overflow-y: auto;
-    }
-
-    .tool-call-content.collapsed {
-      display: none;
-    }
-
-    .tool-call-content pre {
-      white-space: pre-wrap;
-      word-break: break-word;
-    }
-
-    /* System Messages */
-    .system-message {
-      display: flex;
-      align-items: center;
-      gap: var(--space-2);
-      padding: var(--space-2) var(--space-3);
+    .extension-note {
+      margin-top: 48px;
+      padding: 20px;
       background: rgba(99, 102, 241, 0.1);
       border: 1px solid rgba(99, 102, 241, 0.2);
-      border-radius: var(--radius-md);
-      margin: var(--space-3) 0;
-      font-size: 12px;
-      color: var(--color-accent-primary);
-    }
-
-    /* Thinking Indicator */
-    .thinking {
-      display: flex;
-      align-items: center;
-      gap: var(--space-2);
-      color: var(--color-text-muted);
-      font-size: 13px;
-    }
-
-    .thinking-dots {
-      display: flex;
-      gap: 4px;
-    }
-
-    .thinking-dots span {
-      width: 6px;
-      height: 6px;
-      background: var(--color-accent-primary);
-      border-radius: 50%;
-      animation: pulse 1.4s ease-in-out infinite;
-    }
-
-    .thinking-dots span:nth-child(2) {
-      animation-delay: 0.2s;
-    }
-
-    .thinking-dots span:nth-child(3) {
-      animation-delay: 0.4s;
-    }
-
-    @keyframes pulse {
-      0%, 100% { opacity: 0.3; transform: scale(0.8); }
-      50% { opacity: 1; transform: scale(1); }
-    }
-
-    /* Input Area */
-    .input-area {
-      padding: var(--space-4);
-      border-top: 1px solid var(--color-border-primary);
-      background: var(--color-bg-secondary);
-    }
-
-    .input-wrapper {
-      max-width: 800px;
-      margin: 0 auto;
-      display: flex;
-      gap: var(--space-3);
-      background: var(--color-bg-tertiary);
-      border: 1px solid var(--color-border-primary);
-      border-radius: var(--radius-lg);
-      padding: var(--space-3);
-    }
-
-    .input-wrapper:focus-within {
-      border-color: var(--color-accent-primary);
-    }
-
-    .input-wrapper textarea {
-      flex: 1;
-      background: transparent;
-      border: none;
-      color: var(--color-text-primary);
-      font-family: var(--font-sans);
-      font-size: 14px;
-      line-height: 1.5;
-      resize: none;
-      min-height: 24px;
-      max-height: 200px;
-    }
-
-    .input-wrapper textarea:focus {
-      outline: none;
-    }
-
-    .input-wrapper textarea::placeholder {
-      color: var(--color-text-muted);
-    }
-
-    .send-btn {
-      width: 36px;
-      height: 36px;
-      background: var(--color-accent-primary);
-      border: none;
-      border-radius: var(--radius-md);
-      color: white;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: filter 0.15s;
-      flex-shrink: 0;
-    }
-
-    .send-btn:hover:not(:disabled) {
-      filter: brightness(1.1);
-    }
-
-    .send-btn:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-    }
-
-    /* Scrollbar */
-    ::-webkit-scrollbar {
-      width: 8px;
-    }
-
-    ::-webkit-scrollbar-track {
-      background: transparent;
-    }
-
-    ::-webkit-scrollbar-thumb {
-      background: var(--color-border-primary);
-      border-radius: 4px;
-    }
-
-    ::-webkit-scrollbar-thumb:hover {
-      background: var(--color-border-active);
-    }
-
-    /* Permissions Panel */
-    .permissions-panel {
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      background: var(--color-bg-secondary);
-      border: 1px solid var(--color-border-primary);
-      border-radius: var(--radius-lg);
-      padding: var(--space-5);
-      width: 480px;
-      max-width: 90vw;
-      max-height: 90vh;
-      overflow-y: auto;
-      z-index: 1000;
-      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
-    }
-
-    .permissions-panel.hidden {
-      display: none;
-    }
-
-    .permissions-overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(0, 0, 0, 0.6);
-      z-index: 999;
-    }
-
-    .permissions-overlay.hidden {
-      display: none;
-    }
-
-    .permissions-panel h3 {
-      font-size: 18px;
-      font-weight: 600;
-      margin-bottom: var(--space-2);
-    }
-
-    .permissions-intro {
-      font-size: 13px;
+      border-radius: 8px;
+      font-size: 0.9rem;
       color: var(--color-text-secondary);
-      margin-bottom: var(--space-4);
-      line-height: 1.5;
     }
 
-    .permission-list {
-      margin-bottom: var(--space-4);
-      max-height: 400px;
-      overflow-y: auto;
-    }
-
-    .permission-item {
-      display: flex;
-      align-items: flex-start;
-      gap: var(--space-3);
-      padding: var(--space-3);
-      background: var(--color-bg-tertiary);
-      border-radius: var(--radius-md);
-      margin-bottom: var(--space-2);
-      border: 1px solid transparent;
-      transition: border-color 0.15s;
-      cursor: pointer;
-    }
-
-    .permission-item:hover {
-      border-color: var(--color-border-active);
-    }
-
-    .permission-item:has(input:checked) {
-      border-color: var(--color-accent-primary);
-      background: rgba(99, 102, 241, 0.08);
-    }
-
-    .permission-checkbox {
-      margin-top: 4px;
-      width: 18px;
-      height: 18px;
-      accent-color: var(--color-accent-primary);
-    }
-
-    .permission-info {
-      flex: 1;
-    }
-
-    .permission-info h4 {
-      font-size: 14px;
-      font-weight: 600;
-      margin-bottom: var(--space-1);
+    .extension-note strong {
       color: var(--color-text-primary);
-    }
-
-    .permission-info code {
-      display: inline-block;
-      font-family: var(--font-mono);
-      font-size: 11px;
-      background: var(--color-bg-secondary);
-      color: var(--color-accent-primary);
-      padding: 2px 6px;
-      border-radius: 4px;
-      margin-bottom: var(--space-2);
-    }
-
-    .permission-info p {
-      font-size: 12px;
-      color: var(--color-text-secondary);
-      line-height: 1.5;
-      margin-bottom: var(--space-2);
-    }
-
-    .permission-example {
-      display: block;
-      font-size: 11px;
-      color: var(--color-text-muted);
-      font-style: italic;
-      padding-left: var(--space-2);
-      border-left: 2px solid var(--color-border-primary);
-    }
-
-    .permissions-actions {
-      display: flex;
-      gap: var(--space-2);
-    }
-
-    .permissions-actions button {
-      flex: 1;
-      padding: var(--space-3);
-      border-radius: var(--radius-md);
-      font-family: var(--font-sans);
-      font-size: 14px;
-      font-weight: 500;
-      cursor: pointer;
-      border: none;
-    }
-
-    .permissions-actions .cancel-btn {
-      background: var(--color-bg-tertiary);
-      color: var(--color-text-primary);
-      border: 1px solid var(--color-border-primary);
-    }
-
-    .permissions-actions .connect-btn {
-      background: var(--color-accent-primary);
-      color: white;
     }
   </style>
 </head>
 <body>
-  <!-- Sidebar -->
-  <aside class="sidebar">
-    <div class="sidebar-header">
-      <h1>Harbor Demo</h1>
-      <p>AI Agent Interface</p>
-    </div>
-    <button class="new-chat-btn" id="new-chat-btn">+ New Chat</button>
-    <div class="conversations" id="conversations">
-      <div class="conversation-item active">Welcome Chat</div>
-    </div>
-    <div class="sidebar-footer">
-      <div class="status-item">
-        <span class="status-dot" id="extension-status"></span>
-        <span id="extension-status-text">Checking extension...</span>
-      </div>
-      <div class="status-item">
-        <span class="status-dot" id="permission-status"></span>
-        <span id="permission-status-text">No permissions</span>
-      </div>
-      <div class="status-item">
-        <span class="status-dot" id="tools-status"></span>
-        <span id="tools-status-text">Tools: —</span>
-      </div>
-    </div>
-  </aside>
+  <div class="container">
+    <h1>Harbor Demos</h1>
+    <p class="subtitle">
+      Example applications showing how to use the Harbor JS AI Provider API
+      to add AI capabilities to any website.
+    </p>
 
-  <!-- Main Content -->
-  <main class="main">
-    <div class="toolbar">
-      <button class="toolbar-btn connect-btn" id="connect-btn">
-        <span>🔌</span> Connect to Harbor
-      </button>
-      <div class="toolbar-separator"></div>
-      <button class="toolbar-btn" id="tools-toggle">
-        <span>🔧</span> Enable Tools
-      </button>
-      <button class="toolbar-btn" id="tab-toggle">
-        <span>👁</span> Use Active Tab
-      </button>
-      <div class="toolbar-separator"></div>
-      <button class="toolbar-btn" id="list-tools-btn">
-        <span>📋</span> List Tools
-      </button>
-    </div>
+    <div class="demos">
+      <a href="getting-started/" class="demo-card">
+        <h2>
+          🚀 Getting Started
+          <span class="badge">Start Here</span>
+        </h2>
+        <p>
+          Interactive walkthrough — step through connecting to Harbor, 
+          requesting permissions, and making your first tool call.
+        </p>
+      </a>
 
-    <div class="chat-area" id="chat-area">
-      <div class="empty-state" id="empty-state">
-        <div class="empty-state-icon">🚢</div>
-        <h2>Welcome to Harbor</h2>
-        <p>This demo shows how web pages can use the Harbor JS AI Provider to interact with AI models and MCP tools.</p>
-        <p style="margin-top: 16px; font-size: 13px;">Click "Connect to Harbor" to get started.</p>
-      </div>
-      <div class="messages" id="messages" style="display: none;"></div>
+      <a href="chat-poc/" class="demo-card">
+        <h2>
+          💬 Chat Demo
+          <span class="badge">API</span>
+        </h2>
+        <p>
+          Full-featured chat interface using <code>window.agent.run()</code> with 
+          MCP tool integration, streaming responses, and citations.
+        </p>
+      </a>
+
+      <a href="summarizer/" class="demo-card">
+        <h2>
+          📄 Page Summarizer
+        </h2>
+        <p>
+          Simple bookmarklet-style demo using <code>window.ai.createTextSession()</code>
+          to summarize the current page. Shows Chrome API compatibility.
+        </p>
+      </a>
+
+      <a href="summarizer/chrome-compat.html" class="demo-card">
+        <h2>
+          🔄 Chrome Compat Demo
+        </h2>
+        <p>
+          Same summarizer but using the Chrome-compatible 
+          <code>window.ai.languageModel.create()</code> API style.
+        </p>
+      </a>
     </div>
 
-    <div class="input-area">
-      <div class="input-wrapper">
-        <textarea 
-          id="message-input" 
-          placeholder="Type a message... (Shift+Enter for new line)" 
-          rows="1"
-          disabled
-        ></textarea>
-        <button class="send-btn" id="send-btn" disabled>
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/>
-          </svg>
-        </button>
-      </div>
-    </div>
-  </main>
-
-  <!-- Permissions Panel (hidden by default) -->
-  <div class="permissions-overlay hidden" id="permissions-overlay"></div>
-  <div class="permissions-panel hidden" id="permissions-panel">
-    <h3>🔐 Request Permissions</h3>
-    <p class="permissions-intro">Select which capabilities this page can use. Harbor will ask you to confirm.</p>
-    <div class="permission-list">
-      <label class="permission-item">
-        <input type="checkbox" class="permission-checkbox" value="model:prompt" checked>
-        <div class="permission-info">
-          <h4>💬 Text Generation</h4>
-          <code>model:prompt</code>
-          <p>Send messages to AI and get responses back. This is the basic chat capability — without it, no AI interaction is possible.</p>
-          <span class="permission-example">Example: "What's the capital of France?"</span>
-        </div>
-      </label>
-      <label class="permission-item">
-        <input type="checkbox" class="permission-checkbox" value="model:tools" checked>
-        <div class="permission-info">
-          <h4>🛠️ AI with Tools</h4>
-          <code>model:tools</code>
-          <p>Let the AI decide when to use tools (like searching, reading files, etc.) to help answer your questions. The AI can make multiple tool calls in one response.</p>
-          <span class="permission-example">Example: "Look up today's weather and save it to a note"</span>
-        </div>
-      </label>
-      <label class="permission-item">
-        <input type="checkbox" class="permission-checkbox" value="mcp:tools.list" checked>
-        <div class="permission-info">
-          <h4>📋 List Available Tools</h4>
-          <code>mcp:tools.list</code>
-          <p>See what MCP tools are available from connected servers. This lets you browse capabilities without executing anything.</p>
-          <span class="permission-example">Example: Show tools from "filesystem" and "memory" servers</span>
-        </div>
-      </label>
-      <label class="permission-item">
-        <input type="checkbox" class="permission-checkbox" value="mcp:tools.call" checked>
-        <div class="permission-info">
-          <h4>⚡ Execute Tools</h4>
-          <code>mcp:tools.call</code>
-          <p>Actually run MCP tools. This is needed for the AI to take actions like reading/writing files, searching the web, or storing memories.</p>
-          <span class="permission-example">Example: filesystem/read_file, memory/save_memory</span>
-        </div>
-      </label>
-      <label class="permission-item">
-        <input type="checkbox" class="permission-checkbox" value="browser:activeTab.read">
-        <div class="permission-info">
-          <h4>👁️ Read Current Page</h4>
-          <code>browser:activeTab.read</code>
-          <p>Extract text content from the webpage you're currently viewing. Useful for summarizing articles or asking questions about page content.</p>
-          <span class="permission-example">Example: "Summarize this article for me"</span>
-        </div>
-      </label>
-    </div>
-    <div class="permissions-actions">
-      <button class="cancel-btn" id="permissions-cancel">Cancel</button>
-      <button class="connect-btn" id="permissions-request">Request Permissions</button>
+    <div class="extension-note">
+      <strong>Note:</strong> These demos require the Harbor browser extension to be installed.
+      The extension provides the <code>window.ai</code> and <code>window.agent</code> APIs.
     </div>
   </div>
-
-  <script type="module">
-    // =============================================================================
-    // State
-    // =============================================================================
-    
-    let isConnected = false;
-    let toolsEnabled = true;
-    let tabContextEnabled = false;
-    let session = null;
-    let isProcessing = false;
-    
-    // =============================================================================
-    // DOM Elements
-    // =============================================================================
-    
-    const connectBtn = document.getElementById('connect-btn');
-    const toolsToggle = document.getElementById('tools-toggle');
-    const tabToggle = document.getElementById('tab-toggle');
-    const listToolsBtn = document.getElementById('list-tools-btn');
-    const messageInput = document.getElementById('message-input');
-    const sendBtn = document.getElementById('send-btn');
-    const chatArea = document.getElementById('chat-area');
-    const emptyState = document.getElementById('empty-state');
-    const messagesEl = document.getElementById('messages');
-    const newChatBtn = document.getElementById('new-chat-btn');
-    
-    const extensionStatus = document.getElementById('extension-status');
-    const extensionStatusText = document.getElementById('extension-status-text');
-    const permissionStatus = document.getElementById('permission-status');
-    const permissionStatusText = document.getElementById('permission-status-text');
-    const toolsStatus = document.getElementById('tools-status');
-    const toolsStatusText = document.getElementById('tools-status-text');
-    
-    const permissionsPanel = document.getElementById('permissions-panel');
-    const permissionsOverlay = document.getElementById('permissions-overlay');
-    const permissionsCancel = document.getElementById('permissions-cancel');
-    const permissionsRequest = document.getElementById('permissions-request');
-    
-    // =============================================================================
-    // Check Extension
-    // =============================================================================
-    
-    function checkExtension() {
-      if (typeof window.agent !== 'undefined' && typeof window.ai !== 'undefined') {
-        extensionStatus.classList.add('connected');
-        extensionStatusText.textContent = 'Harbor extension detected';
-        return true;
-      } else {
-        extensionStatus.classList.remove('connected');
-        extensionStatus.classList.add('warning');
-        extensionStatusText.textContent = 'Extension not detected';
-        return false;
-      }
-    }
-    
-    async function checkPermissions() {
-      if (!window.agent) return;
-      
-      try {
-        const status = await window.agent.permissions.list();
-        const grantedScopes = Object.entries(status.scopes)
-          .filter(([_, grant]) => grant === 'granted-always' || grant === 'granted-once')
-          .map(([scope]) => scope);
-        
-        if (grantedScopes.length > 0) {
-          permissionStatus.classList.add('connected');
-          permissionStatusText.textContent = `${grantedScopes.length} permissions granted`;
-          isConnected = true;
-          updateUIState();
-        } else {
-          permissionStatus.classList.remove('connected');
-          permissionStatusText.textContent = 'No permissions';
-        }
-      } catch (err) {
-        console.error('Failed to check permissions:', err);
-      }
-    }
-    
-    async function loadTools() {
-      if (!window.agent) return;
-      
-      try {
-        const tools = await window.agent.tools.list();
-        toolsStatus.classList.add('connected');
-        toolsStatusText.textContent = `Tools: ${tools.length} available`;
-      } catch (err) {
-        toolsStatus.classList.remove('connected');
-        toolsStatusText.textContent = 'Tools: unavailable';
-      }
-    }
-    
-    // =============================================================================
-    // UI State
-    // =============================================================================
-    
-    function updateUIState() {
-      if (isConnected) {
-        connectBtn.textContent = '✓ Connected';
-        connectBtn.classList.add('connected');
-        messageInput.disabled = false;
-        sendBtn.disabled = false;
-        
-        toolsToggle.classList.toggle('active', toolsEnabled);
-        tabToggle.classList.toggle('active', tabContextEnabled);
-      } else {
-        connectBtn.textContent = '🔌 Connect to Harbor';
-        connectBtn.classList.remove('connected');
-        messageInput.disabled = true;
-        sendBtn.disabled = true;
-      }
-    }
-    
-    // =============================================================================
-    // Permission Request
-    // =============================================================================
-    
-    function showPermissionsPanel() {
-      permissionsPanel.classList.remove('hidden');
-      permissionsOverlay.classList.remove('hidden');
-    }
-    
-    function hidePermissionsPanel() {
-      permissionsPanel.classList.add('hidden');
-      permissionsOverlay.classList.add('hidden');
-    }
-    
-    async function requestPermissions() {
-      const checkboxes = document.querySelectorAll('.permission-checkbox:checked');
-      const scopes = Array.from(checkboxes).map(cb => cb.value);
-      
-      if (scopes.length === 0) {
-        hidePermissionsPanel();
-        return;
-      }
-      
-      hidePermissionsPanel();
-      addSystemMessage('Requesting permissions...');
-      
-      try {
-        const result = await window.agent.requestPermissions({
-          scopes,
-          reason: 'Harbor Demo needs these permissions to chat with AI and use tools.',
-        });
-        
-        if (result.granted) {
-          addSystemMessage('Permissions granted!');
-          isConnected = true;
-          updateUIState();
-          await checkPermissions();
-          await loadTools();
-        } else {
-          const denied = Object.entries(result.scopes)
-            .filter(([_, grant]) => grant === 'denied')
-            .map(([scope]) => scope);
-          
-          if (denied.length > 0) {
-            addSystemMessage(`Permission denied: ${denied.join(', ')}`);
-          } else {
-            addSystemMessage('Some permissions were not granted.');
-          }
-        }
-      } catch (err) {
-        addSystemMessage(`Permission request failed: ${err.message}`);
-      }
-    }
-    
-    // =============================================================================
-    // Message Rendering
-    // =============================================================================
-    
-    function escapeHtml(text) {
-      const div = document.createElement('div');
-      div.textContent = text;
-      return div.innerHTML;
-    }
-    
-    function showMessages() {
-      emptyState.style.display = 'none';
-      messagesEl.style.display = 'block';
-    }
-    
-    function addMessage(role, content, extra = {}) {
-      showMessages();
-      
-      const messageEl = document.createElement('div');
-      messageEl.className = `message ${role}`;
-      
-      const avatar = role === 'user' ? 'U' : 'A';
-      const roleName = role === 'user' ? 'You' : 'Assistant';
-      
-      let bodyContent = content.split('\n').map(line => `<p>${escapeHtml(line) || '&nbsp;'}</p>`).join('');
-      
-      // Add tool calls if present
-      if (extra.toolCalls) {
-        bodyContent += extra.toolCalls.map(tc => `
-          <div class="tool-call">
-            <div class="tool-call-header" onclick="this.nextElementSibling.classList.toggle('collapsed')">
-              <span>🔧</span>
-              <span class="tool-call-name">${escapeHtml(tc.name)}</span>
-              <span class="tool-call-status ${tc.status || 'pending'}">${tc.status || 'calling...'}</span>
-            </div>
-            <div class="tool-call-content">
-              <pre>${escapeHtml(JSON.stringify(tc.args, null, 2))}</pre>
-              ${tc.result ? `<pre style="margin-top: 8px; color: var(--color-success);">${escapeHtml(typeof tc.result === 'string' ? tc.result : JSON.stringify(tc.result, null, 2))}</pre>` : ''}
-            </div>
-          </div>
-        `).join('');
-      }
-      
-      messageEl.innerHTML = `
-        <div class="message-header">
-          <div class="message-avatar">${avatar}</div>
-          <span class="message-role">${roleName}</span>
-          <span class="message-time">${new Date().toLocaleTimeString()}</span>
-        </div>
-        <div class="message-body">${bodyContent}</div>
-      `;
-      
-      messagesEl.appendChild(messageEl);
-      chatArea.scrollTop = chatArea.scrollHeight;
-      
-      return messageEl;
-    }
-    
-    function addSystemMessage(content) {
-      showMessages();
-      
-      const messageEl = document.createElement('div');
-      messageEl.className = 'system-message';
-      messageEl.innerHTML = `<span>ℹ️</span> ${escapeHtml(content)}`;
-      
-      messagesEl.appendChild(messageEl);
-      chatArea.scrollTop = chatArea.scrollHeight;
-    }
-    
-    function addThinkingIndicator() {
-      showMessages();
-      
-      const thinkingEl = document.createElement('div');
-      thinkingEl.className = 'message assistant';
-      thinkingEl.id = 'thinking-indicator';
-      thinkingEl.innerHTML = `
-        <div class="message-header">
-          <div class="message-avatar">A</div>
-          <span class="message-role">Assistant</span>
-        </div>
-        <div class="message-body">
-          <div class="thinking">
-            <div class="thinking-dots">
-              <span></span><span></span><span></span>
-            </div>
-            <span>Thinking...</span>
-          </div>
-        </div>
-      `;
-      
-      messagesEl.appendChild(thinkingEl);
-      chatArea.scrollTop = chatArea.scrollHeight;
-    }
-    
-    function removeThinkingIndicator() {
-      const indicator = document.getElementById('thinking-indicator');
-      if (indicator) indicator.remove();
-    }
-    
-    function clearMessages() {
-      messagesEl.innerHTML = '';
-      emptyState.style.display = 'flex';
-      messagesEl.style.display = 'none';
-    }
-    
-    // =============================================================================
-    // Chat
-    // =============================================================================
-    
-    async function sendMessage() {
-      const content = messageInput.value.trim();
-      if (!content || isProcessing) return;
-      
-      isProcessing = true;
-      sendBtn.disabled = true;
-      messageInput.value = '';
-      autoResizeInput();
-      
-      addMessage('user', content);
-      
-      if (toolsEnabled) {
-        await runAgent(content);
-      } else {
-        await runBasicPrompt(content);
-      }
-      
-      isProcessing = false;
-      sendBtn.disabled = false;
-    }
-    
-    async function runBasicPrompt(content) {
-      addThinkingIndicator();
-      
-      try {
-        // Create a session if we don't have one
-        if (!session) {
-          session = await window.ai.createTextSession();
-        }
-        
-        const response = await session.prompt(content);
-        removeThinkingIndicator();
-        addMessage('assistant', response);
-      } catch (err) {
-        removeThinkingIndicator();
-        addMessage('assistant', `Error: ${err.message}`);
-      }
-    }
-    
-    async function runAgent(content) {
-      addThinkingIndicator();
-      
-      try {
-        const options = {
-          task: content,
-          maxToolCalls: 5,
-          requireCitations: true,
-        };
-        
-        const toolCalls = [];
-        let finalOutput = '';
-        
-        for await (const event of window.agent.run(options)) {
-          switch (event.type) {
-            case 'status':
-              // Update thinking indicator with status
-              const thinkingEl = document.getElementById('thinking-indicator');
-              if (thinkingEl) {
-                const statusEl = thinkingEl.querySelector('.thinking span:last-child');
-                if (statusEl) statusEl.textContent = event.message;
-              }
-              break;
-              
-            case 'tool_call':
-              removeThinkingIndicator();
-              toolCalls.push({
-                name: event.tool,
-                args: event.args,
-                status: 'pending',
-              });
-              addMessage('assistant', 'Using tools...', { toolCalls: [...toolCalls] });
-              addThinkingIndicator();
-              break;
-              
-            case 'tool_result':
-              const tc = toolCalls.find(t => t.name === event.tool && t.status === 'pending');
-              if (tc) {
-                tc.status = event.error ? 'error' : 'success';
-                tc.result = event.result;
-              }
-              break;
-              
-            case 'token':
-              removeThinkingIndicator();
-              finalOutput += event.token;
-              // Update the last message
-              const lastMsg = messagesEl.lastElementChild;
-              if (lastMsg && lastMsg.classList.contains('assistant')) {
-                const body = lastMsg.querySelector('.message-body');
-                if (body && !body.querySelector('.tool-call')) {
-                  body.innerHTML = finalOutput.split('\n').map(line => `<p>${escapeHtml(line) || '&nbsp;'}</p>`).join('');
-                }
-              } else {
-                addMessage('assistant', finalOutput);
-              }
-              break;
-              
-            case 'final':
-              removeThinkingIndicator();
-              // Replace or add final message
-              if (finalOutput !== event.output) {
-                const extra = {};
-                if (event.citations?.length) {
-                  extra.citations = event.citations;
-                }
-                addMessage('assistant', event.output, extra);
-              }
-              
-              // Show citations if present
-              if (event.citations?.length) {
-                const citationText = event.citations.map(c => 
-                  `• ${c.source}: ${c.ref}`
-                ).join('\n');
-                addSystemMessage(`Sources:\n${citationText}`);
-              }
-              break;
-              
-            case 'error':
-              removeThinkingIndicator();
-              addMessage('assistant', `Error: ${event.error.message}`);
-              break;
-          }
-        }
-      } catch (err) {
-        removeThinkingIndicator();
-        addMessage('assistant', `Error: ${err.message}`);
-      }
-    }
-    
-    async function listTools() {
-      try {
-        const tools = await window.agent.tools.list();
-        
-        showMessages();
-        
-        let content = `Found ${tools.length} tools:\n\n`;
-        for (const tool of tools) {
-          content += `• **${tool.name}**`;
-          if (tool.description) {
-            content += `\n  ${tool.description}`;
-          }
-          content += '\n';
-        }
-        
-        addMessage('assistant', content);
-      } catch (err) {
-        addMessage('assistant', `Failed to list tools: ${err.message}`);
-      }
-    }
-    
-    // =============================================================================
-    // Input Handling
-    // =============================================================================
-    
-    function autoResizeInput() {
-      messageInput.style.height = 'auto';
-      messageInput.style.height = Math.min(messageInput.scrollHeight, 200) + 'px';
-    }
-    
-    messageInput.addEventListener('input', autoResizeInput);
-    
-    messageInput.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter' && !e.shiftKey) {
-        e.preventDefault();
-        sendMessage();
-      }
-    });
-    
-    // =============================================================================
-    // Event Listeners
-    // =============================================================================
-    
-    connectBtn.addEventListener('click', () => {
-      if (!checkExtension()) {
-        alert('Harbor extension is not installed or not detected.\n\nPlease install the extension and reload this page.');
-        return;
-      }
-      showPermissionsPanel();
-    });
-    
-    toolsToggle.addEventListener('click', () => {
-      if (!isConnected) return;
-      toolsEnabled = !toolsEnabled;
-      toolsToggle.classList.toggle('active', toolsEnabled);
-    });
-    
-    tabToggle.addEventListener('click', async () => {
-      if (!isConnected) return;
-      
-      if (!tabContextEnabled) {
-        // Request tab permission if not already granted
-        try {
-          const result = await window.agent.requestPermissions({
-            scopes: ['browser:activeTab.read'],
-            reason: 'Read the current tab content to provide context for the AI.',
-          });
-          
-          if (result.granted || result.scopes['browser:activeTab.read'] === 'granted-always' || result.scopes['browser:activeTab.read'] === 'granted-once') {
-            tabContextEnabled = true;
-            tabToggle.classList.add('active');
-            addSystemMessage('Tab context enabled. The AI can now read your active tab.');
-          }
-        } catch (err) {
-          addSystemMessage(`Failed to get tab permission: ${err.message}`);
-        }
-      } else {
-        tabContextEnabled = false;
-        tabToggle.classList.remove('active');
-        addSystemMessage('Tab context disabled.');
-      }
-    });
-    
-    listToolsBtn.addEventListener('click', () => {
-      if (!isConnected) {
-        alert('Please connect to Harbor first.');
-        return;
-      }
-      listTools();
-    });
-    
-    sendBtn.addEventListener('click', sendMessage);
-    
-    newChatBtn.addEventListener('click', () => {
-      clearMessages();
-      session = null;
-    });
-    
-    permissionsCancel.addEventListener('click', hidePermissionsPanel);
-    permissionsOverlay.addEventListener('click', hidePermissionsPanel);
-    permissionsRequest.addEventListener('click', requestPermissions);
-    
-    // =============================================================================
-    // Initialize
-    // =============================================================================
-    
-    // Wait for provider to be ready
-    if (window.agent) {
-      checkExtension();
-      checkPermissions();
-    } else {
-      window.addEventListener('harbor-provider-ready', () => {
-        checkExtension();
-        checkPermissions();
-      });
-      
-      // Check after a short delay in case the event already fired
-      setTimeout(() => {
-        checkExtension();
-        if (window.agent) {
-          checkPermissions();
-        }
-      }, 500);
-    }
-  </script>
 </body>
 </html>
-

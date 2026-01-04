@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Getting Started — Harbor Demo</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Sora:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --color-bg: #0c0c0c;
+      --color-surface: #161616;
+      --color-surface-raised: #1c1c1c;
+      --color-border: #2a2a2a;
+      --color-text: #e5e5e5;
+      --color-text-dim: #888;
+      --color-text-faint: #555;
+      --color-success: #22c55e;
+      --color-success-dim: rgba(34, 197, 94, 0.15);
+      --color-pending: #3b82f6;
+      --color-pending-dim: rgba(59, 130, 246, 0.15);
+      --color-waiting: #525252;
+      --color-error: #ef4444;
+      --color-error-dim: rgba(239, 68, 68, 0.15);
+      
+      --font-sans: 'Sora', system-ui, sans-serif;
+      --font-mono: 'Space Mono', monospace;
+      
+      --radius: 8px;
+      --radius-lg: 16px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      height: 100%;
+    }
+
+    body {
+      font-family: var(--font-sans);
+      background: var(--color-bg);
+      color: var(--color-text);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 40px 20px;
+      min-height: 100vh;
+    }
+
+    /* Subtle grid background */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: 
+        linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+      background-size: 60px 60px;
+      pointer-events: none;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 680px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 48px;
+    }
+
+    .header-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 14px;
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--color-text-dim);
+      margin-bottom: 20px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .header-badge .dot {
+      width: 6px;
+      height: 6px;
+      background: var(--color-success);
+      border-radius: 50%;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+
+    .header h1 {
+      font-size: 28px;
+      font-weight: 700;
+      margin-bottom: 12px;
+      letter-spacing: -0.02em;
+    }
+
+    .header p {
+      font-size: 15px;
+      color: var(--color-text-dim);
+      line-height: 1.6;
+    }
+
+    /* Checklist */
+    .checklist {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+    }
+
+    .step {
+      display: flex;
+      gap: 16px;
+      padding: 20px 24px;
+      border-bottom: 1px solid var(--color-border);
+      transition: background 0.2s;
+    }
+
+    .step:last-child {
+      border-bottom: none;
+    }
+
+    .step.active {
+      background: var(--color-surface-raised);
+    }
+
+    .step.completed {
+      background: var(--color-success-dim);
+    }
+
+    .step.error {
+      background: var(--color-error-dim);
+    }
+
+    .step-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      font-size: 14px;
+      transition: all 0.3s;
+    }
+
+    .step.waiting .step-icon {
+      background: var(--color-border);
+      color: var(--color-text-faint);
+    }
+
+    .step.active .step-icon {
+      background: var(--color-pending);
+      color: white;
+      box-shadow: 0 0 20px rgba(59, 130, 246, 0.4);
+    }
+
+    .step.completed .step-icon {
+      background: var(--color-success);
+      color: white;
+    }
+
+    .step.error .step-icon {
+      background: var(--color-error);
+      color: white;
+    }
+
+    .step-content {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .step-title {
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 4px;
+      color: var(--color-text);
+    }
+
+    .step.waiting .step-title {
+      color: var(--color-text-faint);
+    }
+
+    .step-description {
+      font-size: 13px;
+      color: var(--color-text-dim);
+      line-height: 1.5;
+      margin-bottom: 12px;
+    }
+
+    .step.waiting .step-description {
+      color: var(--color-text-faint);
+    }
+
+    /* Code block */
+    .step-code {
+      background: #0a0a0a;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius);
+      padding: 12px 14px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      line-height: 1.6;
+      overflow-x: auto;
+      white-space: pre;
+      color: var(--color-text-dim);
+    }
+
+    .step.waiting .step-code {
+      opacity: 0.5;
+    }
+
+    .step-code .keyword { color: #c678dd; }
+    .step-code .string { color: #98c379; }
+    .step-code .comment { color: #5c6370; }
+    .step-code .property { color: #e5c07b; }
+    .step-code .method { color: #61afef; }
+
+    .step-output {
+      margin-top: 12px;
+      padding: 12px;
+      background: var(--color-bg);
+      border-radius: var(--radius);
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: var(--color-text-dim);
+      white-space: pre-wrap;
+      word-break: break-word;
+      max-height: 180px;
+      overflow-y: auto;
+    }
+
+    .step-output.success {
+      border-left: 3px solid var(--color-success);
+    }
+
+    .step-output.error {
+      border-left: 3px solid var(--color-error);
+      color: var(--color-error);
+    }
+
+    .output-label {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--color-text-faint);
+      margin-top: 12px;
+      margin-bottom: 6px;
+    }
+
+    /* Controls */
+    .controls {
+      margin-top: 24px;
+      display: flex;
+      gap: 12px;
+    }
+
+    .btn {
+      flex: 1;
+      padding: 14px 24px;
+      border: none;
+      border-radius: var(--radius);
+      font-family: var(--font-sans);
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .btn-primary {
+      background: var(--color-success);
+      color: #000;
+    }
+
+    .btn-primary:hover:not(:disabled) {
+      filter: brightness(1.1);
+      transform: translateY(-1px);
+    }
+
+    .btn-primary:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    .btn-secondary {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      color: var(--color-text-dim);
+    }
+
+    .btn-secondary:hover {
+      background: var(--color-surface-raised);
+      color: var(--color-text);
+    }
+
+    /* Progress bar */
+    .progress-bar {
+      height: 3px;
+      background: var(--color-border);
+      border-radius: 2px;
+      margin-bottom: 24px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--color-success), var(--color-pending));
+      transition: width 0.4s ease;
+      border-radius: 2px;
+    }
+
+    /* Footer */
+    .footer {
+      margin-top: 48px;
+      text-align: center;
+      font-size: 13px;
+      color: var(--color-text-faint);
+    }
+
+    .footer a {
+      color: var(--color-text-dim);
+      text-decoration: none;
+    }
+
+    .footer a:hover {
+      color: var(--color-text);
+    }
+
+    /* Spinner */
+    .spinner {
+      width: 14px;
+      height: 14px;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-top-color: white;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header class="header">
+      <div class="header-badge">
+        <span class="dot"></span>
+        <span>Interactive Walkthrough</span>
+      </div>
+      <h1>Getting Started with Harbor</h1>
+      <p>Step through the basics: connect, get permission, and make your first AI-powered tool call.</p>
+    </header>
+
+    <div class="progress-bar">
+      <div class="progress-fill" id="progress-fill" style="width: 0%"></div>
+    </div>
+
+    <div class="checklist" id="checklist">
+      <div class="step waiting" data-step="0">
+        <div class="step-icon">1</div>
+        <div class="step-content">
+          <div class="step-title">Detect Harbor Extension</div>
+          <div class="step-description">Check if the Harbor APIs are injected into the page</div>
+          <pre class="step-code"><span class="comment">// Check for Harbor's injected APIs</span>
+<span class="keyword">if</span> (window.<span class="property">ai</span> && window.<span class="property">agent</span>) {
+  console.<span class="method">log</span>(<span class="string">'Harbor is ready!'</span>);
+}</pre>
+        </div>
+      </div>
+
+      <div class="step waiting" data-step="1">
+        <div class="step-icon">2</div>
+        <div class="step-content">
+          <div class="step-title">Request Permission</div>
+          <div class="step-description">Ask the user for permission to use AI and tools</div>
+          <pre class="step-code"><span class="keyword">const</span> result = <span class="keyword">await</span> window.<span class="property">agent</span>.<span class="method">requestPermissions</span>({
+  <span class="property">scopes</span>: [
+    <span class="string">'model:prompt'</span>,
+    <span class="string">'model:tools'</span>,
+    <span class="string">'mcp:tools.list'</span>,
+    <span class="string">'mcp:tools.call'</span>
+  ],
+  <span class="property">reason</span>: <span class="string">'Getting Started demo'</span>
+});
+
+<span class="keyword">if</span> (result.<span class="property">granted</span>) {
+  console.<span class="method">log</span>(<span class="string">'Permission granted!'</span>);
+}</pre>
+        </div>
+      </div>
+
+      <div class="step waiting" data-step="2">
+        <div class="step-icon">3</div>
+        <div class="step-content">
+          <div class="step-title">Check Available Tools</div>
+          <div class="step-description">List MCP tools from connected servers</div>
+          <pre class="step-code"><span class="keyword">const</span> tools = <span class="keyword">await</span> window.<span class="property">agent</span>.<span class="property">tools</span>.<span class="method">list</span>();
+
+console.<span class="method">log</span>(<span class="string">`Found ${</span>tools.<span class="property">length</span><span class="string">} tools:`</span>);
+tools.<span class="method">forEach</span>(t => console.<span class="method">log</span>(<span class="string">`  • ${</span>t.<span class="property">name</span><span class="string">}`</span>));</pre>
+        </div>
+      </div>
+
+      <div class="step waiting" data-step="3">
+        <div class="step-icon">4</div>
+        <div class="step-content">
+          <div class="step-title">Ask "What time is it?"</div>
+          <div class="step-description">Run an AI agent that can use tools to answer</div>
+          <pre class="step-code"><span class="keyword">for await</span> (<span class="keyword">const</span> event <span class="keyword">of</span> window.<span class="property">agent</span>.<span class="method">run</span>({
+  <span class="property">task</span>: <span class="string">'What is the current time?'</span>,
+  <span class="property">maxSteps</span>: <span class="number">3</span>
+})) {
+  <span class="keyword">if</span> (event.<span class="property">type</span> === <span class="string">'tool_call'</span>) {
+    console.<span class="method">log</span>(<span class="string">'Using tool:'</span>, event.<span class="property">tool</span>);
+  }
+  <span class="keyword">if</span> (event.<span class="property">type</span> === <span class="string">'final'</span>) {
+    console.<span class="method">log</span>(<span class="string">'Response:'</span>, event.<span class="property">output</span>);
+  }
+}</pre>
+        </div>
+      </div>
+
+      <div class="step waiting" data-step="4">
+        <div class="step-icon">5</div>
+        <div class="step-content">
+          <div class="step-title">Display Response</div>
+          <div class="step-description">Show the AI's response</div>
+          <pre class="step-code"><span class="comment">// The agent's final response from the previous step</span>
+console.<span class="method">log</span>(response);</pre>
+        </div>
+      </div>
+    </div>
+
+    <div class="controls">
+      <button class="btn btn-secondary" id="reset-btn" style="display: none;">
+        ↺ Start Over
+      </button>
+      <button class="btn btn-primary" id="next-btn">
+        Run Step 1 →
+      </button>
+    </div>
+
+    <footer class="footer">
+      <a href="../">← Back to Demos</a>
+    </footer>
+  </div>
+
+  <script>
+    const steps = [
+      {
+        title: 'Detect Harbor Extension',
+        run: async () => {
+          await delay(500);
+          if (!window.ai || !window.agent) {
+            throw new Error('Harbor extension not detected.\n\nMake sure:\n• Harbor extension is installed\n• This page is allowed access');
+          }
+          return '✓ window.ai\n✓ window.agent';
+        }
+      },
+      {
+        title: 'Request Permission',
+        run: async () => {
+          const result = await window.agent.requestPermissions({
+            scopes: ['model:prompt', 'model:tools', 'mcp:tools.list', 'mcp:tools.call'],
+            reason: 'Getting Started demo - to show how Harbor works'
+          });
+          
+          if (!result.granted) {
+            throw new Error('Permission denied by user');
+          }
+          return '✓ Permission granted';
+        }
+      },
+      {
+        title: 'Check Available Tools',
+        run: async () => {
+          const tools = await window.agent.tools.list();
+          
+          if (!tools || tools.length === 0) {
+            throw new Error('No MCP tools available.\n\nStart an MCP server first.');
+          }
+          
+          const toolNames = tools.map(t => t.name).slice(0, 8);
+          let output = `Found ${tools.length} tool${tools.length === 1 ? '' : 's'}:\n`;
+          output += toolNames.map(n => `  • ${n}`).join('\n');
+          if (tools.length > 8) {
+            output += `\n  ... and ${tools.length - 8} more`;
+          }
+          
+          return output;
+        }
+      },
+      {
+        title: 'Ask "What time is it?"',
+        run: async () => {
+          // Store the response for the next step
+          window._harborDemoResponse = '';
+          window._harborDemoToolCalls = [];
+          let tokenText = '';
+          
+          // Use the agent API to run with tools
+          for await (const event of window.agent.run({
+            task: 'What is the current time? Please use the get_current_time tool.',
+            maxSteps: 5
+          })) {
+            console.log('[Demo] Agent event:', event.type, event);
+            
+            if (event.type === 'tool_call') {
+              window._harborDemoToolCalls.push(event.tool);
+            }
+            if (event.type === 'token' && event.token) {
+              tokenText += event.token;
+            }
+            if (event.type === 'final') {
+              window._harborDemoResponse = event.output || tokenText;
+            }
+            if (event.type === 'error') {
+              throw new Error(event.error?.message || 'Agent error');
+            }
+          }
+          
+          // Fallback to token text if no final output
+          if (!window._harborDemoResponse && tokenText) {
+            window._harborDemoResponse = tokenText;
+          }
+          
+          let output = '✓ Request sent to AI agent\n';
+          if (window._harborDemoToolCalls.length > 0) {
+            output += `\nTools used:\n`;
+            output += window._harborDemoToolCalls.map(t => `  • ${t}`).join('\n');
+          } else {
+            output += '\n(No tools were used)';
+          }
+          return output;
+        }
+      },
+      {
+        title: 'Display Response',
+        run: async () => {
+          await delay(300);
+          if (!window._harborDemoResponse) {
+            // Provide more context about what happened
+            const toolsUsed = window._harborDemoToolCalls?.length || 0;
+            throw new Error(`No response received from the AI.\n\nTools used: ${toolsUsed}\n\nCheck the browser console for details.`);
+          }
+          return window._harborDemoResponse;
+        }
+      }
+    ];
+
+    let currentStep = -1;
+    const totalSteps = steps.length;
+
+    const nextBtn = document.getElementById('next-btn');
+    const resetBtn = document.getElementById('reset-btn');
+    const progressFill = document.getElementById('progress-fill');
+    const checklist = document.getElementById('checklist');
+
+    function delay(ms) {
+      return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
+    function updateProgress() {
+      const percent = ((currentStep + 1) / totalSteps) * 100;
+      progressFill.style.width = `${percent}%`;
+    }
+
+    function getStepElement(index) {
+      return checklist.querySelector(`[data-step="${index}"]`);
+    }
+
+    function setStepState(index, state, output = null) {
+      const el = getStepElement(index);
+      el.className = `step ${state}`;
+      
+      const icon = el.querySelector('.step-icon');
+      if (state === 'completed') {
+        icon.textContent = '✓';
+      } else if (state === 'error') {
+        icon.textContent = '✗';
+      } else if (state === 'active') {
+        icon.innerHTML = '<div class="spinner"></div>';
+      } else {
+        icon.textContent = index + 1;
+      }
+
+      // Remove existing output
+      const existingOutput = el.querySelector('.step-output');
+      const existingLabel = el.querySelector('.output-label');
+      if (existingOutput) existingOutput.remove();
+      if (existingLabel) existingLabel.remove();
+
+      // Add new output if provided
+      if (output) {
+        const labelEl = document.createElement('div');
+        labelEl.className = 'output-label';
+        labelEl.textContent = state === 'error' ? '✗ Error' : '→ Output';
+        
+        const outputEl = document.createElement('div');
+        outputEl.className = `step-output ${state === 'error' ? 'error' : 'success'}`;
+        outputEl.textContent = output;
+        
+        el.querySelector('.step-content').appendChild(labelEl);
+        el.querySelector('.step-content').appendChild(outputEl);
+      }
+    }
+
+    async function runStep(index) {
+      const step = steps[index];
+      setStepState(index, 'active');
+      
+      try {
+        const result = await step.run();
+        setStepState(index, 'completed', result);
+        return true;
+      } catch (err) {
+        setStepState(index, 'error', err.message);
+        return false;
+      }
+    }
+
+    async function next() {
+      if (currentStep >= totalSteps - 1) {
+        return;
+      }
+
+      currentStep++;
+      updateProgress();
+
+      nextBtn.disabled = true;
+      nextBtn.innerHTML = '<div class="spinner"></div> Running...';
+
+      const success = await runStep(currentStep);
+
+      if (success && currentStep < totalSteps - 1) {
+        nextBtn.disabled = false;
+        nextBtn.textContent = `Run Step ${currentStep + 2} →`;
+      } else if (success && currentStep === totalSteps - 1) {
+        nextBtn.disabled = true;
+        nextBtn.textContent = 'Complete! ✓';
+        nextBtn.style.background = 'var(--color-success)';
+        resetBtn.style.display = 'block';
+      } else {
+        // Error occurred
+        nextBtn.disabled = false;
+        nextBtn.textContent = 'Retry →';
+        currentStep--; // Allow retry
+        resetBtn.style.display = 'block';
+      }
+    }
+
+    function reset() {
+      currentStep = -1;
+      updateProgress();
+      
+      // Reset all steps
+      for (let i = 0; i < totalSteps; i++) {
+        const el = getStepElement(i);
+        el.className = 'step waiting';
+        el.querySelector('.step-icon').textContent = i + 1;
+        const output = el.querySelector('.step-output');
+        const label = el.querySelector('.output-label');
+        if (output) output.remove();
+        if (label) label.remove();
+      }
+
+      nextBtn.disabled = false;
+      nextBtn.textContent = 'Run Step 1 →';
+      nextBtn.style.background = '';
+      resetBtn.style.display = 'none';
+    }
+
+    nextBtn.addEventListener('click', next);
+    resetBtn.addEventListener('click', reset);
+  </script>
+</body>
+</html>

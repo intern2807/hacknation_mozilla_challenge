@@ -32,6 +32,13 @@ import {
   getAllowedTools,
 } from './permissions';
 import { llmChat } from '../background';
+import { 
+  getMcpConnections,
+  listMcpTools,
+  createChatSession, 
+  sendChatMessage, 
+  deleteChatSession,
+} from '../bridge-api';
 
 const DEBUG = true;
 
@@ -472,24 +479,25 @@ async function handleToolsList(
   }
   
   try {
-    // Get list of connected MCP servers and their tools
-    const connectionsResponse = await browser.runtime.sendMessage({
-      type: 'mcp_list_connections',
-    }) as { type: string; connections?: Array<{ serverId: string; serverName: string; toolCount: number }> };
+    // Get list of connected MCP servers and their tools using direct function call
+    const connectionsResponse = await getMcpConnections();
+    log('[ToolsList] Connections response:', connectionsResponse);
     
-    if (!connectionsResponse.connections) {
+    if (connectionsResponse.type === 'error' || !connectionsResponse.connections) {
+      log('[ToolsList] No connections available');
       sendResponse(port, 'tools_list_result', requestId, { tools: [] });
       return;
     }
     
     const allTools: ToolDescriptor[] = [];
     
+    log(`[ToolsList] Found ${connectionsResponse.connections.length} connected servers`);
+    
     // For each connected server, get its tools
     for (const conn of connectionsResponse.connections) {
-      const toolsResponse = await browser.runtime.sendMessage({
-        type: 'mcp_list_tools',
-        server_id: conn.serverId,
-      }) as { type: string; tools?: Array<{ name: string; description?: string; inputSchema?: unknown }> };
+      log(`[ToolsList] Getting tools from server: ${conn.serverId}`);
+      const toolsResponse = await listMcpTools(conn.serverId);
+      log(`[ToolsList] Tools response for ${conn.serverId}:`, toolsResponse);
       
       if (toolsResponse.tools) {
         for (const tool of toolsResponse.tools) {
@@ -503,6 +511,7 @@ async function handleToolsList(
       }
     }
     
+    log(`[ToolsList] Total tools found: ${allTools.length}`);
     sendResponse(port, 'tools_list_result', requestId, { tools: allTools });
   } catch (err) {
     log('Tools list error:', err);
@@ -712,26 +721,12 @@ async function handleAgentRun(
   try {
     sendEvent({ type: 'status', message: 'Initializing agent...' });
     
-    // Get connected MCP servers
-    let connectionsResponse: { type: string; connections?: Array<{ serverId: string; serverName: string; toolCount: number }>; error?: { message: string } } | undefined;
-    try {
-      connectionsResponse = await browser.runtime.sendMessage({
-        type: 'mcp_list_connections',
-      }) as typeof connectionsResponse;
-      log('[AgentRun] Connections response:', connectionsResponse);
-    } catch (err) {
-      log('[AgentRun] Failed to get connections:', err);
-      sendEvent({ type: 'error', error: createError('ERR_INTERNAL', 'Failed to connect to bridge. Is the Harbor bridge running?') });
-      return;
-    }
+    // Get connected MCP servers using direct function call
+    // (browser.runtime.sendMessage from background to itself doesn't work reliably)
+    const connectionsResponse = await getMcpConnections();
+    log('[AgentRun] Connections response:', connectionsResponse);
     
-    // Handle error response or undefined
-    if (!connectionsResponse) {
-      log('[AgentRun] Connections response is undefined - bridge may not be connected');
-      sendEvent({ type: 'error', error: createError('ERR_INTERNAL', 'No response from bridge. Please check that the Harbor bridge is running.') });
-      return;
-    }
-    
+    // Handle error response
     if (connectionsResponse.type === 'error') {
       log('[AgentRun] Connections response error:', connectionsResponse);
       const errorMsg = connectionsResponse.error?.message || 'Unknown error listing MCP connections';
@@ -766,13 +761,12 @@ async function handleAgentRun(
     }
     
     // Create a temporary chat session with the connected servers
-    const createResponse = await browser.runtime.sendMessage({
-      type: 'chat_create_session',
-      enabled_servers: enabledServers,
+    const createResponse = await createChatSession({
+      enabledServers,
       name: `Agent task: ${task.substring(0, 30)}...`,
-      system_prompt: systemPrompt,
-      max_iterations: maxToolCalls,
-    }) as { type: string; session?: { id: string }; error?: { message: string } };
+      systemPrompt,
+      maxIterations: maxToolCalls,
+    });
     
     if (createResponse.type === 'error' || !createResponse.session?.id) {
       sendEvent({ type: 'error', error: createError('ERR_INTERNAL', createResponse.error?.message || 'Failed to create session') });
@@ -792,25 +786,11 @@ async function handleAgentRun(
     sendEvent({ type: 'status', message: 'Processing...' });
     
     // Send the message - the bridge orchestrator handles everything
-    const chatResponse = await browser.runtime.sendMessage({
-      type: 'chat_send_message',
-      session_id: sessionId,
+    const chatResponse = await sendChatMessage({
+      sessionId,
       message: task,
-      // use_tool_router defaults to false - LLM sees all tools and decides
-    }) as { 
-      type: string;
-      response?: string;
-      steps?: Array<{
-        type: 'llm_response' | 'tool_calls' | 'tool_results' | 'error' | 'final';
-        content?: string;
-        toolCalls?: Array<{ id: string; name: string; arguments: Record<string, unknown> }>;
-        toolResults?: Array<{ toolCallId: string; toolName: string; serverId: string; content: string; isError: boolean }>;
-        error?: string;
-      }>;
-      iterations?: number;
-      reachedMaxIterations?: boolean;
-      error?: { message: string };
-    };
+      // useToolRouter defaults to false - LLM sees all tools and decides
+    });
     
     if (chatResponse.type === 'error') {
       sendEvent({ type: 'error', error: createError('ERR_INTERNAL', chatResponse.error?.message || 'Chat failed') });
@@ -891,12 +871,7 @@ async function handleAgentRun(
   } finally {
     // Clean up the temporary session
     if (sessionId) {
-      browser.runtime.sendMessage({
-        type: 'chat_delete_session',
-        session_id: sessionId,
-      }).catch(() => {
-        // Ignore cleanup errors
-      });
+      deleteChatSession(sessionId);
     }
     streamingRequests.delete(requestId);
   }

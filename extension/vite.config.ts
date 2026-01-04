@@ -8,9 +8,12 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 // Content scripts that must be bundled as IIFE (not ES modules)
+// These are injected into web page contexts and cannot load separate modules
 const contentScriptEntries = {
   'content-bridge': resolve(__dirname, 'src/provider/content-bridge.ts'),
   'vscode-detector': resolve(__dirname, 'src/vscode-detector.ts'),
+  // provider-injected must be standalone since it's injected into web pages
+  'provider-injected': resolve(__dirname, 'src/provider/injected.ts'),
 };
 
 // ES module entries (background, sidebar, etc.)
@@ -19,7 +22,6 @@ const esModuleEntries = {
   sidebar: resolve(__dirname, 'src/sidebar.ts'),
   directory: resolve(__dirname, 'src/directory.ts'),
   'demo-bootstrap': resolve(__dirname, 'src/demo-bootstrap.ts'),
-  'provider-injected': resolve(__dirname, 'src/provider/injected.ts'),
   'permission-prompt': resolve(__dirname, 'src/permission-prompt.ts'),
 };
 
@@ -127,6 +129,16 @@ export default defineConfig({
         let chatPocHtml = readFileSync(
           resolve(__dirname, '../demo/chat-poc/index.html'),
           'utf-8'
+        );
+        // Update title for extension context
+        chatPocHtml = chatPocHtml.replace(
+          '<title>Harbor Chat — API Demo</title>',
+          '<title>Harbor Chat</title>'
+        );
+        // Update header badge for extension context
+        chatPocHtml = chatPocHtml.replace(
+          '<span class="header-badge" style="background: var(--color-warning);">API Demo</span>',
+          '<span class="header-badge" style="background: var(--color-success);">Extension</span>'
         );
         // Add bootstrap script before app.js to set up window.ai/window.agent
         chatPocHtml = chatPocHtml.replace(

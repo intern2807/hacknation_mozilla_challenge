@@ -24,45 +24,69 @@ No Node.js or other development tools required!
 
 ```bash
 cd installer/macos
-./build-pkg.sh --fast --sign-extension
+
+# First time or after major changes: clean build with signed extension
+./build-pkg.sh --clean --sign-extension
+
+# Subsequent builds (faster)
+./build-pkg.sh --sign-extension
 ```
 
 The output will be at `installer/macos/build/Harbor-<version>.pkg`.
 
-### Credentials Setup
+### Credentials Setup (Required)
 
-Create `installer/credentials.env` (this file is gitignored):
+Before building, you must create `installer/credentials.env`. This file contains your unique extension ID and signing credentials.
 
+**Step 1: Create the file**
 ```bash
-# Mozilla Add-ons API credentials
-# Get these from: https://addons.mozilla.org/developers/addon/api/key/
-AMO_JWT_ISSUER="user:12345678:123"
-AMO_JWT_SECRET="your-secret-here"
-
-# Apple Developer (optional, for pkg signing/notarization)
-DEVELOPER_ID="Your Name (XXXXXXXXXX)"
-APPLE_ID="your@email.com"
-APPLE_TEAM_ID="XXXXXXXXXX"
+cp installer/credentials.env.example installer/credentials.env
 ```
 
-To get Mozilla credentials:
-1. Go to https://addons.mozilla.org/developers/addon/api/key/
-2. Create an API key
-3. Copy the JWT issuer and secret
+**Step 2: Edit `credentials.env`**
+```bash
+# Firefox Extension ID (REQUIRED)
+# This MUST be unique per Mozilla account. Format: name@domain.com
+# - Use only: a-z, A-Z, 0-9, -, ., _
+# - NO + characters allowed!
+# - Example: yourname.harbor@gmail.com
+EXTENSION_ID="your.unique.id@example.com"
+
+# Mozilla Add-ons API credentials (REQUIRED for --sign-extension)
+# Get these from: https://addons.mozilla.org/developers/addon/api/key/
+AMO_JWT_ISSUER="user:12345678:123"
+AMO_JWT_SECRET="your-64-character-hex-secret"
+
+# Apple Developer (optional, for pkg signing/notarization)
+# DEVELOPER_ID="Developer ID Installer: Your Name (XXXXXXXXXX)"
+# APPLE_ID="your@email.com"
+# APPLE_TEAM_ID="XXXXXXXXXX"
+```
+
+**Step 3: Get Mozilla API credentials**
+1. Sign in to https://addons.mozilla.org
+2. Go to Tools → Manage API Keys (or visit https://addons.mozilla.org/developers/addon/api/key/)
+3. Generate new credentials
+4. Copy the JWT issuer and secret to your `credentials.env`
+
+> **Important**: The `EXTENSION_ID` is stamped into both the extension's `manifest.json` and the native messaging manifest. They must match for the extension to connect to the bridge.
 
 ### Build Options
 
 ```bash
-# Fast development build (current arch only, with extension signing)
-./build-pkg.sh --fast --sign-extension
+# Clean build with signed extension (recommended for first build)
+./build-pkg.sh --clean --sign-extension
 
-# Standard build (standalone binary with bundled Node.js)
-./build-pkg.sh
+# Just clean all artifacts (no build)
+./build-pkg.sh --clean-only
 
-# Sign the Firefox extension with Mozilla Add-ons
+# Fast development build (current arch only, no signing)
+./build-pkg.sh --fast
+
+# Standard universal build (both arm64 and x64)
 ./build-pkg.sh --sign-extension
 
-# Use system Node.js instead of bundling (smaller, but requires Node installed)
+# Use system Node.js instead of bundling (smaller, requires Node installed)
 ./build-pkg.sh --node
 
 # Sign the .pkg package (requires Apple Developer ID)
@@ -74,18 +98,34 @@ To get Mozilla credentials:
 # Full production build (all signing options)
 ./build-pkg.sh --all
 
-# Show help
+# Show all options
 ./build-pkg.sh --help
+```
+
+**Common combinations:**
+```bash
+# Development: clean + fast (no signing, current arch only)
+./build-pkg.sh --clean --fast
+
+# Development: clean + signed extension (for testing real installs)
+./build-pkg.sh --clean --sign-extension
+
+# Production: clean + all signing
+./build-pkg.sh --clean --all
 ```
 
 ### How the Build Works
 
 1. **Downloads Node.js v20.19.6** - Specific version for building native modules
 2. **Builds native modules** - `better-sqlite3` compiled for that exact Node version
-3. **Bundles with esbuild** - All JavaScript into single file
-4. **Packages with pkg** - Creates standalone binary with same Node.js v20.19.6 bundled
+3. **Bundles with esbuild** - All JavaScript into single CommonJS file
+4. **Packages with pkg** - Creates standalone binaries with Node.js v20.19.6 bundled
 5. **Signs extension** - Uses Mozilla Add-ons API for trusted installation
 6. **Creates .pkg** - Standard macOS installer with pre/post-install scripts
+
+**Universal builds** (default): Both arm64 and x64 binaries are included in the package. The `postinstall` script detects the architecture and installs the correct one. This avoids using `lipo` which corrupts `pkg` binaries.
+
+**Fast builds** (`--fast`): Only builds for the current architecture (faster for development).
 
 ### Version Numbers
 
@@ -158,16 +198,26 @@ rm -rf ~/.harbor
 ### Reinstalling During Development
 
 ```bash
-# Option 1: Uninstall first
-harbor-uninstall
+# Recommended: Clean build + uninstall + fresh install
+./build-pkg.sh --clean --sign-extension
+harbor-uninstall  # or: sudo "/Library/Application Support/Harbor/uninstall.sh" --force
+sudo installer -pkg build/Harbor-*.pkg -target /
 
-# Option 2: Just clear package receipts (for clean reinstall)
+# Alternative: Just clear package receipts (skips uninstall)
 sudo pkgutil --forget com.harbor.bridge
 
 # Remove user-level native messaging manifest (if exists from dev setup)
 rm -f ~/Library/Application\ Support/Mozilla/NativeMessagingHosts/harbor_bridge_host.json
 
-# Install fresh
+# Then install
+sudo installer -pkg build/Harbor-*.pkg -target /
+```
+
+**Quick iteration during development:**
+```bash
+# Fast rebuild (current arch, no signing)
+./build-pkg.sh --fast
+harbor-uninstall
 sudo installer -pkg build/Harbor-*.pkg -target /
 ```
 
@@ -201,20 +251,40 @@ For pkg signing/notarization:
 
 **Extension shows "not verified"**
 - Make sure you're using `--sign-extension` flag
-- Check that credentials.env has valid AMO credentials
+- Check that `credentials.env` has valid AMO credentials
 - Each version can only be signed once - the build uses timestamps to avoid conflicts
 
 **Bridge won't connect**
 - Check `~/.harbor/bridge.log` for errors
-- Verify native messaging manifest exists: `cat "/Library/Application Support/Mozilla/NativeMessagingHosts/harbor_bridge_host.json"`
+- Verify native messaging manifest exists and has correct extension ID:
+  ```bash
+  cat "/Library/Application Support/Mozilla/NativeMessagingHosts/harbor_bridge_host.json"
+  ```
+- The `allowed_extensions` array must contain your `EXTENSION_ID` from `credentials.env`
 - Make sure Firefox was restarted after installation
+- Remove any user-level manifest that might override:
+  ```bash
+  rm -f ~/Library/Application\ Support/Mozilla/NativeMessagingHosts/harbor_bridge_host.json
+  ```
 
 **Permission errors with ~/.harbor**
-- The installer should set correct permissions, but if not: `sudo chown -R $USER:staff ~/.harbor/`
+- The installer should set correct permissions, but if not:
+  ```bash
+  sudo chown -R $USER:staff ~/.harbor/
+  ```
+
+**Build fails or produces corrupted binary**
+- Do a clean build: `./build-pkg.sh --clean --sign-extension`
+- The `--clean` flag removes all cached artifacts including `node_modules`
 
 **pkg build fails with native module errors**
-- The build downloads a specific Node.js version (20.19.6) to ensure compatibility
-- If you see ABI mismatch errors, try cleaning: `cd bridge-ts && rm -rf node_modules && npm install`
+- The build downloads a specific Node.js version (20.19.6) to ensure ABI compatibility
+- Clean everything and rebuild: `./build-pkg.sh --clean --sign-extension`
+
+**Extension ID conflicts**
+- If you get "Forbidden" errors when signing, your `EXTENSION_ID` may be registered to another account
+- Choose a different unique ID (e.g., `yourname.harbor@yourdomain.com`)
+- Remember: No `+` characters allowed in the extension ID!
 
 ## Windows (.msi)
 

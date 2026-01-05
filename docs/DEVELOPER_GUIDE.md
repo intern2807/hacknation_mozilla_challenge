@@ -97,14 +97,22 @@ Build a distributable `.pkg` installer:
 
 ```bash
 cd installer/macos
-./build-pkg.sh --fast --sign-extension
+
+# First time: set up credentials
+cp ../credentials.env.example ../credentials.env
+# Edit credentials.env with your EXTENSION_ID and Mozilla API credentials
+
+# Build (use --clean for first build or after major changes)
+./build-pkg.sh --clean --sign-extension
+
+# Install
 sudo installer -pkg build/Harbor-*.pkg -target /
 ```
 
 See [Installer Documentation](../installer/README.md) for full details including:
-- Setting up `credentials.env` for extension signing
-- Build options and troubleshooting
-- What gets installed
+- Setting up `credentials.env` (required for extension ID and signing)
+- Build options (`--clean`, `--fast`, `--sign-extension`, etc.)
+- Troubleshooting connection issues
 
 #### Option B: Development Setup
 

@@ -74,15 +74,51 @@ load_credentials() {
         source "$CREDENTIALS_FILE"
         set +a
         echo_success "Credentials loaded"
+        
+        # Validate required fields
+        if [ -z "$EXTENSION_ID" ]; then
+            echo_error "EXTENSION_ID not set in credentials.env"
+            echo "       This is required for the extension to connect to the native bridge."
+            exit 1
+        fi
+        echo "  Extension ID: $EXTENSION_ID"
     else
         echo_warn "No credentials file found at $CREDENTIALS_FILE"
         echo "       Create it from credentials.env.example for extension signing"
+        echo_error "EXTENSION_ID is required - cannot build without credentials.env"
+        exit 1
     fi
 }
 
 # =============================================================================
 # Cleanup
 # =============================================================================
+
+# Deep clean - removes all build artifacts including node_modules
+clean_all() {
+    echo_step "Deep cleaning all build artifacts..."
+    
+    # Clean installer build directory
+    rm -rf "$BUILD_DIR"
+    rm -rf "$PAYLOAD_DIR"
+    
+    # Clean bridge-ts
+    rm -rf "$BRIDGE_DIR/dist"
+    rm -rf "$BRIDGE_DIR/node_modules"
+    rm -rf "$BRIDGE_DIR/build"
+    
+    # Clean extension
+    rm -rf "$EXTENSION_DIR/dist"
+    rm -rf "$EXTENSION_DIR/node_modules"
+    
+    # Clean any-llm-ts submodule if present
+    if [ -d "$BRIDGE_DIR/src/any-llm-ts" ]; then
+        rm -rf "$BRIDGE_DIR/src/any-llm-ts/dist"
+        rm -rf "$BRIDGE_DIR/src/any-llm-ts/node_modules"
+    fi
+    
+    echo_success "Deep clean complete"
+}
 
 cleanup() {
     echo_step "Cleaning up previous build..."
@@ -108,9 +144,13 @@ build_extension() {
         npm install
     fi
     
-    # Update manifest.json with current version
+    # Update manifest.json with current version and extension ID
     echo "  Setting version to $VERSION..."
     sed -i '' "s/\"version\": \"[^\"]*\"/\"version\": \"$VERSION\"/" manifest.json
+    
+    echo "  Setting extension ID to $EXTENSION_ID..."
+    # Update the gecko ID in browser_specific_settings
+    sed -i '' "s/\"id\": \"[^\"]*@[^\"]*\"/\"id\": \"$EXTENSION_ID\"/" manifest.json
     
     # Build
     npm run build
@@ -270,24 +310,22 @@ build_bridge() {
     # The bundle was built in bridge-ts/, so assets should be at bridge-ts/node_modules/...
     # We need to create that structure in the build dir
     
-    # Create package.json for pkg
+    # Create pkg.json for assets config
     # Note: pkg uses major version format (node20) not full version (node20.19.6)
-    # assets relative to bridge-ts (where bundle was built)
-    cat > build/package.json << EOF
+    cat > build/pkg.json << EOF
 {
-  "name": "harbor-bridge",
-  "bin": "bundle.cjs",
   "pkg": {
-    "assets": ["../node_modules/better-sqlite3/build/Release/better_sqlite3.node"],
-    "targets": ["node${BUNDLED_NODE_MAJOR}-macos-${BINARY_SUFFIX}"],
-    "outputPath": "."
+    "assets": ["../node_modules/better-sqlite3/build/Release/better_sqlite3.node"]
   }
 }
 EOF
     
+    # IMPORTANT: Pass bundle.cjs directly to pkg, not package.json - the bin field doesn't work properly
     cd build
-    npx @yao-pkg/pkg . 2>&1 | grep -v "^> Warning" || true
-    mv harbor-bridge "$BUILD_DIR/harbor-bridge" 2>/dev/null || true
+    npx @yao-pkg/pkg bundle.cjs \
+        --config pkg.json \
+        --target "node${BUNDLED_NODE_MAJOR}-macos-${BINARY_SUFFIX}" \
+        --output "$BUILD_DIR/harbor-bridge" 2>&1 | grep -v "^> Warning" || true
     cd ..
     
     # Copy binary to payload
@@ -413,7 +451,9 @@ create_component_pkg() {
     fi
     
     sed "s/__BUILD_ARCH__/$BUILD_ARCH_MARKER/g" "$INSTALLER_DIR/scripts/preinstall" > "$SCRIPTS_TEMP/preinstall"
-    cp "$INSTALLER_DIR/scripts/postinstall" "$SCRIPTS_TEMP/postinstall"
+    
+    # Stamp postinstall with extension ID
+    sed "s/__EXTENSION_ID__/$EXTENSION_ID/g" "$INSTALLER_DIR/scripts/postinstall" > "$SCRIPTS_TEMP/postinstall"
     
     # Make scripts executable
     chmod +x "$SCRIPTS_TEMP/preinstall"
@@ -561,28 +601,26 @@ build_universal() {
 }
 EOF
     
-    # Build for both architectures (JS binary is universal, but native module is not)
+    # Build for both architectures
+    # NOTE: We do NOT use lipo! pkg binaries have embedded bytecode that lipo corrupts.
+    # Instead, we include both binaries and let postinstall choose the right one.
     cd build
     
     # Note: pkg uses major version format (node20) not full version (node20.19.6)
+    # IMPORTANT: Pass bundle.cjs directly, not pkg.json - the bin field doesn't work properly
     echo "  Building for arm64 with Node $BUNDLED_NODE_MAJOR..."
-    npx @yao-pkg/pkg pkg.json \
+    npx @yao-pkg/pkg bundle.cjs \
+        --config pkg.json \
         --target "node${BUNDLED_NODE_MAJOR}-macos-arm64" \
         --output "$BUILD_DIR/harbor-bridge-arm64" 2>&1 | grep -v "^> Warning" || true
     
     echo "  Building for x64 with Node $BUNDLED_NODE_MAJOR..."
-    npx @yao-pkg/pkg pkg.json \
+    npx @yao-pkg/pkg bundle.cjs \
+        --config pkg.json \
         --target "node${BUNDLED_NODE_MAJOR}-macos-x64" \
         --output "$BUILD_DIR/harbor-bridge-x64" 2>&1 | grep -v "^> Warning" || true
     
     cd ..
-    
-    # Create universal binary with lipo
-    echo "  Creating universal binary..."
-    lipo -create \
-        "$BUILD_DIR/harbor-bridge-arm64" \
-        "$BUILD_DIR/harbor-bridge-x64" \
-        -output "$BUILD_DIR/harbor-bridge"
     
     # Copy the native module alongside the binary
     echo "  Copying native modules..."
@@ -595,8 +633,10 @@ EOF
         echo "  Copied: $(basename "$NATIVE_BINDING")"
     fi
     
-    # Copy to payload
-    cp "$BUILD_DIR/harbor-bridge" "$PAYLOAD_DIR/Library/Application Support/Harbor/"
+    # Copy BOTH binaries to payload - postinstall will choose the right one
+    echo "  Including both architecture binaries (postinstall will select correct one)..."
+    cp "$BUILD_DIR/harbor-bridge-arm64" "$PAYLOAD_DIR/Library/Application Support/Harbor/"
+    cp "$BUILD_DIR/harbor-bridge-x64" "$PAYLOAD_DIR/Library/Application Support/Harbor/"
     
     # Copy native modules to payload
     if [ -d "$BUILD_DIR/native" ] && [ "$(ls -A "$BUILD_DIR/native" 2>/dev/null)" ]; then
@@ -665,26 +705,35 @@ main() {
                 SIGN_EXT=false
                 shift
                 ;;
+            --clean)
+                # Deep clean all build artifacts before building
+                clean_all
+                shift
+                ;;
+            --clean-only)
+                # Just clean, don't build
+                clean_all
+                exit 0
+                ;;
             --help)
                 echo "Usage: $0 [options]"
                 echo ""
                 echo "Options:"
-                echo "  --fast            Fast dev build (no signing)"
-                echo "  --node            Use system Node.js (smaller, but requires Node installed)"
-                echo "  --sign-extension  Sign extension with Mozilla Add-ons (requires AMO credentials)"
+                echo "  --clean           Deep clean all artifacts before building"
+                echo "  --clean-only      Clean only, don't build"
+                echo "  --fast            Fast dev build (current arch, no signing)"
+                echo "  --sign-extension  Sign extension with Mozilla Add-ons"
                 echo "  --sign            Sign the .pkg package (requires DEVELOPER_ID)"
-                echo "  --notarize        Notarize the package (requires APPLE_ID, APPLE_TEAM_ID)"
+                echo "  --notarize        Notarize the package"
                 echo "  --all             Enable all signing options"
+                echo "  --node            Use system Node.js instead of bundling"
                 echo ""
-                echo "Default: Builds standalone binary with bundled Node.js v$BUNDLED_NODE_FULL (exact version)"
-                echo "         Only user dependencies: Docker Desktop and Firefox"
+                echo "Examples:"
+                echo "  $0 --clean --sign-extension   # Clean build with signed extension"
+                echo "  $0 --fast                     # Quick dev build"
+                echo "  $0 --clean-only               # Just clean, no build"
                 echo ""
                 echo "Credentials file: installer/credentials.env"
-                echo "  AMO_JWT_ISSUER    Mozilla Add-ons JWT issuer"
-                echo "  AMO_JWT_SECRET    Mozilla Add-ons JWT secret"
-                echo "  DEVELOPER_ID      Apple Developer ID for pkg signing"
-                echo "  APPLE_ID          Apple ID email for notarization"
-                echo "  APPLE_TEAM_ID     Apple Team ID for notarization"
                 exit 0
                 ;;
             *)

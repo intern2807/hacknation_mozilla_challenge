@@ -1,4 +1,17 @@
 // Welcome page initialization
+
+// Detect dark mode and set theme attribute
+function detectTheme() {
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    document.documentElement.setAttribute('data-theme', prefersDark ? 'dark' : 'light');
+}
+
+// Run immediately
+detectTheme();
+
+// Listen for theme changes
+window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', detectTheme);
+
 // Get browser API
 const browserAPI = typeof browser !== 'undefined' ? browser : (typeof chrome !== 'undefined' ? chrome : null);
 

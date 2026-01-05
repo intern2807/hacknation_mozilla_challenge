@@ -22,3 +22,4 @@ console.log('[Harbor Demo] APIs ready:', {
   'window.agent': typeof (window as unknown as { agent: unknown }).agent !== 'undefined',
 });
 
+

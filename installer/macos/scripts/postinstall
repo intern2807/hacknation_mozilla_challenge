@@ -12,12 +12,54 @@ HARBOR_DIR="/Library/Application Support/Harbor"
 HARBOR_BIN="$HARBOR_DIR/harbor-bridge"
 HARBOR_XPI="$HARBOR_DIR/harbor.xpi"
 
+# =============================================================================
+# Select correct binary for current architecture
+# =============================================================================
+select_binary() {
+    echo "Selecting binary for current architecture..."
+    
+    # Use sysctl to detect native architecture (works even under Rosetta)
+    # uname -m can return x86_64 when running under Rosetta on Apple Silicon
+    if sysctl -n hw.optional.arm64 2>/dev/null | grep -q "1"; then
+        ARCH="arm64"
+    else
+        ARCH=$(uname -m)
+    fi
+    echo "  Detected architecture: $ARCH" >> "$LOG_FILE"
+    
+    if [ "$ARCH" = "arm64" ]; then
+        BINARY_SOURCE="$HARBOR_DIR/harbor-bridge-arm64"
+    else
+        BINARY_SOURCE="$HARBOR_DIR/harbor-bridge-x64"
+    fi
+    
+    if [ -f "$BINARY_SOURCE" ]; then
+        # Copy the correct binary
+        cp "$BINARY_SOURCE" "$HARBOR_BIN"
+        chmod +x "$HARBOR_BIN"
+        echo "  ✓ Selected $ARCH binary"
+        echo "  Selected binary: $BINARY_SOURCE -> $HARBOR_BIN" >> "$LOG_FILE"
+        
+        # Clean up both architecture-specific binaries
+        rm -f "$HARBOR_DIR/harbor-bridge-arm64" 2>/dev/null || true
+        rm -f "$HARBOR_DIR/harbor-bridge-x64" 2>/dev/null || true
+    elif [ -f "$HARBOR_BIN" ]; then
+        # Single-arch build already has the binary in place
+        echo "  ✓ Using pre-built binary"
+        echo "  Using pre-built binary at: $HARBOR_BIN" >> "$LOG_FILE"
+    else
+        echo "  ✗ ERROR: No suitable binary found for $ARCH!" | tee -a "$LOG_FILE"
+        exit 1
+    fi
+}
+
 # Firefox native messaging paths
 FIREFOX_NATIVE_HOSTS="/Library/Application Support/Mozilla/NativeMessagingHosts"
 MANIFEST_NAME="harbor_bridge_host"
 
 # Firefox extension ID (must match extension's manifest.json)
-EXTENSION_ID="harbor@example.com"
+# This is stamped by build-pkg.sh from credentials.env
+EXTENSION_ID="__EXTENSION_ID__"
 
 # =============================================================================
 # Create launcher script
@@ -268,6 +310,7 @@ echo "════════════════════════�
 echo ""
 
 # Run installation steps
+select_binary
 set_permissions
 create_launcher
 install_native_manifest

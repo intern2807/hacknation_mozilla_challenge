@@ -5,6 +5,10 @@
  * - Build command/args from installed server config
  * - Inject environment variables (including secrets)
  * - Track connection state
+ * 
+ * Process Isolation:
+ * When enabled (HARBOR_MCP_ISOLATION=1), each server runs in a forked process.
+ * This provides crash isolation - if a server misbehaves, only the runner dies.
  */
 
 import { existsSync, readFileSync, writeFileSync, mkdirSync } from 'node:fs';
@@ -21,14 +25,18 @@ import {
   McpToolCallResult 
 } from './stdio-client.js';
 import { HttpMcpClient } from './http-client.js';
+import { McpRunnerClient } from './runner-client.js';
 import { resolveExecutable, getEnhancedPath } from '../utils/resolve-executable.js';
 import { getBinaryPath, isLinuxBinaryDownloaded, downloadLinuxBinary } from '../installer/binary-downloader.js';
 import { getLinuxBinaryUrl } from '../installer/github-resolver.js';
 import { getDockerImageManager } from '../installer/docker-images.js';
 import { spawn } from 'node:child_process';
 
-// Union type for both client types
-type McpClient = StdioMcpClient | HttpMcpClient;
+// Union type for all client types (including isolated runner)
+type McpClient = StdioMcpClient | HttpMcpClient | McpRunnerClient;
+
+// Import the isolation checker (allows dynamic control in tests)
+import { isProcessIsolationEnabled } from './isolation-config.js';
 
 // Track servers that have successfully connected at least once
 const CONNECTED_HISTORY_FILE = join(homedir(), '.harbor', 'connected_servers.json');
@@ -558,6 +566,9 @@ export class McpClientManager {
 
   /**
    * Connect to a local stdio-based MCP server.
+   * 
+   * When process isolation is enabled (HARBOR_MCP_ISOLATION=1), the server
+   * runs in a forked process for crash isolation.
    */
   private async connectStdio(
     server: InstalledServer,
@@ -583,8 +594,108 @@ export class McpClientManager {
       };
     }
     
-    log(`[McpClientManager] Connecting to ${serverId}: ${command} ${args.join(' ')}`);
+    const isolationMode = isProcessIsolationEnabled() ? 'isolated' : 'direct';
+    log(`[McpClientManager] Connecting to ${serverId} (${isolationMode}): ${command} ${args.join(' ')}`);
 
+    // Use isolated runner or direct client based on configuration
+    if (isProcessIsolationEnabled()) {
+      return this.connectStdioIsolated(server, serverId, command, args, secrets);
+    } else {
+      return this.connectStdioDirect(server, serverId, command, args, secrets);
+    }
+  }
+
+  /**
+   * Connect to a server using an isolated runner process.
+   * Provides crash isolation: if the server crashes, only the runner dies.
+   */
+  private async connectStdioIsolated(
+    server: InstalledServer,
+    serverId: string,
+    command: string,
+    args: string[],
+    secrets: Record<string, string>
+  ): Promise<ConnectionResult> {
+    // Create the isolated runner client
+    const client = new McpRunnerClient({
+      serverId,
+      onCrash: (error) => {
+        log(`[McpClientManager] Isolated runner for ${serverId} crashed: ${error}`);
+        this.handleServerCrash(serverId, server, secrets);
+      },
+    });
+
+    try {
+      // Start the runner and connect
+      const connectionInfo = await client.connect({
+        command,
+        args,
+        env: {
+          ...secrets,
+          PATH: getEnhancedPath(),
+        },
+      });
+
+      // Get cached capabilities from connect
+      const tools = client.getCachedTools();
+      const resources = client.getCachedResources();
+      const prompts = client.getCachedPrompts();
+
+      // Store the connection
+      const connectedServer: ConnectedServer = {
+        serverId,
+        client,
+        connectionInfo,
+        installedServer: server,
+        connectedAt: Date.now(),
+        tools,
+        resources,
+        prompts,
+      };
+
+      this.connections.set(serverId, connectedServer);
+      this.markConnectedSuccess(serverId);
+
+      log(`[McpClientManager] Connected to ${serverId} (isolated): ${tools.length} tools, ${resources.length} resources, ${prompts.length} prompts`);
+
+      return {
+        success: true,
+        serverId,
+        connectionInfo,
+        tools,
+        resources,
+        prompts,
+      };
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      log(`[McpClientManager] Failed to connect to ${serverId} (isolated): ${message}`);
+
+      // Clean up
+      try {
+        await client.stopRunner();
+      } catch {
+        // Ignore cleanup errors
+      }
+
+      return {
+        success: false,
+        serverId,
+        error: `Failed to connect (isolated): ${message}`,
+      };
+    }
+  }
+
+  /**
+   * Connect to a server directly (no process isolation).
+   * Traditional approach: server runs as child process of the bridge.
+   */
+  private async connectStdioDirect(
+    server: InstalledServer,
+    serverId: string,
+    command: string,
+    args: string[],
+    secrets: Record<string, string>
+  ): Promise<ConnectionResult> {
     // Create the client with enhanced PATH for finding executables
     const client = new StdioMcpClient({
       command,
@@ -1045,6 +1156,22 @@ Please try a different MCP server, or check the package's GitHub page for manual
       };
     }
 
+    if (packageType === 'git') {
+      // For git packages, use npx with GitHub URL
+      // npm supports: github:user/repo, https://github.com/user/repo.git
+      const npxPath = resolveExecutable('npx');
+      // Convert full URL to github:user/repo format
+      let gitRef = packageId;
+      const match = packageId.match(/github\.com[/:]([^/]+\/[^/]+?)(?:\.git)?$/);
+      if (match) {
+        gitRef = `github:${match[1]}`;
+      }
+      return {
+        command: npxPath,
+        args: ['-y', gitRef, ...(serverArgs || [])],
+      };
+    }
+
     if (packageType === 'pypi') {
       // Use uvx to run Python packages (from uv)
       // uvx runs packages in isolated environments automatically
@@ -1084,7 +1211,7 @@ Please try a different MCP server, or check the package's GitHub page for manual
     //   };
     // }
 
-    throw new Error(`Unsupported package type: ${packageType}. Supported: npm, pypi, binary`);
+    throw new Error(`Unsupported package type: ${packageType}. Supported: npm, git, pypi, binary`);
   }
 }
 

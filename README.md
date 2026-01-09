@@ -1,10 +1,19 @@
 # Harbor
 
 <p align="center">
-  <strong>AI capabilities for the web, on your terms.</strong>
+  <strong>The reference implementation of the Web Agent API</strong>
 </p>
 
-Harbor is a Firefox browser extension with a native Node.js bridge that brings AI models and MCP (Model Context Protocol) tools to web applications — with user consent and local-first privacy.
+Harbor is a Firefox browser extension that implements the **[Web Agent API](spec/)** — a proposed standard for bringing AI agent capabilities to web applications.
+
+## What is the Web Agent API?
+
+The **Web Agent API** is a specification that defines how web pages can access AI capabilities:
+
+- **`window.ai`** — Text generation (Chrome Prompt API compatible)
+- **`window.agent`** — Tool calling, browser access, and autonomous agent tasks via [MCP](https://modelcontextprotocol.io/)
+
+**Harbor** is Mozilla's reference implementation of this specification, available as a Firefox extension with a native Node.js bridge. It connects web pages to local AI models (Ollama, llamafile) or cloud providers — with user consent and local-first privacy.
 
 ```
 ┌──────────────────┐                              ┌──────────────────┐
@@ -26,35 +35,44 @@ Harbor is a Firefox browser extension with a native Node.js bridge that brings A
 - **MCP Server Management** — Install, run, and manage MCP servers from a curated directory
 - **JS AI Provider** — Exposes `window.ai` and `window.agent` APIs to web pages
 - **Permission System** — Per-origin capability grants with user consent
+- **Process Isolation** — Optional crash isolation for MCP servers (forked processes)
 - **Docker Isolation** — Optional containerized execution for MCP servers
 
 ---
 
 ## 📚 Documentation
 
-Choose the guide that matches your needs:
+### Web Agent API Specification
 
-### For Users
+| Document | Description |
+|----------|-------------|
+| **[Web Agent API Spec](spec/)** | The API specification (`window.ai`, `window.agent`) |
+| [Explainer](spec/explainer.md) | Full specification with Web IDL and examples |
+| [Security & Privacy](spec/security-privacy.md) | Security model and privacy considerations |
+
+### Harbor Implementation
+
+#### For Users
 
 | Document | Description |
 |----------|-------------|
 | **[User Guide](docs/USER_GUIDE.md)** | Install Harbor, set up LLMs, manage MCP servers |
 
-### For Developers Building Apps with Harbor
+#### For Web Developers
 
 | Document | Description |
 |----------|-------------|
-| **[Developer Guide](docs/DEVELOPER_GUIDE.md)** | Full API reference for `window.ai` and `window.agent` |
-| [JS AI Provider API](docs/JS_AI_PROVIDER_API.md) | Detailed API with examples and TypeScript types |
-| [Demo Code](demo/) | Working examples of Harbor integration |
+| **[Developer Guide](docs/DEVELOPER_GUIDE.md)** | Build apps using the Web Agent API |
+| [JS API Reference](docs/JS_AI_PROVIDER_API.md) | Detailed API with examples and TypeScript types |
+| [Demo Code](demo/) | Working examples |
 
-### For AI Agents
+#### For AI Agents
 
 | Document | Description |
 |----------|-------------|
 | **[LLMS.txt](docs/LLMS.txt)** | Compact, token-efficient reference for AI coding assistants |
 
-### For Harbor Contributors
+#### For Contributors
 
 | Document | Description |
 |----------|-------------|
@@ -112,9 +130,9 @@ cd bridge-ts/scripts && ./install_native_manifest_macos.sh && cd ../..
 
 ## 🎯 How It Works
 
-**Web Page Integration:**
+**Web Page Integration (Web Agent API):**
 ```javascript
-// Check if Harbor is available
+// Check if Web Agent API is available
 if (window.agent) {
   // Request permissions
   await window.agent.requestPermissions({

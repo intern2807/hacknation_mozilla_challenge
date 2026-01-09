@@ -350,7 +350,7 @@ chore: upgrade vitest to v1.0
 
 1. Open a PR against `main`
 2. Wait for CI checks to pass
-3. Request review from maintainers
+3. Request review
 4. Address feedback
 5. Merge when approved
 

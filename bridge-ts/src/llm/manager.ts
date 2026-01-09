@@ -40,7 +40,7 @@ const REMOTE_PROVIDERS: LLMProviderType[] = ['openai', 'anthropic', 'mistral', '
 /** Default URLs for local providers */
 const DEFAULT_URLS: Record<string, string> = {
   ollama: 'http://localhost:11434',
-  llamafile: 'http://localhost:8080',
+  llamafile: 'http://localhost:8080/v1',  // OpenAI SDK expects /v1 in baseURL
 };
 
 /** Environment variable names for API keys */

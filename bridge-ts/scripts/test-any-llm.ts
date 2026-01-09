@@ -12,7 +12,7 @@ import {
   checkProvider,
   getSupportedProviders,
   AnyLLM,
-} from '../src/any-llm/index.js';
+} from 'any-llm-ts';
 
 async function testProviders() {
   console.log('='.repeat(60));

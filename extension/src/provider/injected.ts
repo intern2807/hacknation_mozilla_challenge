@@ -201,6 +201,18 @@ const frozenAgent = Object.freeze({
   ...harborAgentApi,
   permissions: Object.freeze(harborAgentApi.permissions),
   tools: Object.freeze(harborAgentApi.tools),
+  // BYOC: MCP server management
+  mcp: Object.freeze({
+    discover: harborAgentApi.mcp.discover,
+    register: harborAgentApi.mcp.register,
+    unregister: harborAgentApi.mcp.unregister,
+  }),
+  // BYOC: Chat UI control
+  chat: Object.freeze({
+    canOpen: harborAgentApi.chat.canOpen,
+    open: harborAgentApi.chat.open,
+    close: harborAgentApi.chat.close,
+  }),
   browser: Object.freeze({
     activeTab: Object.freeze(harborAgentApi.browser.activeTab),
   }),

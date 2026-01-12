@@ -16,6 +16,12 @@ import type {
   ActiveTabReadability,
   StreamToken,
   RunEvent,
+  // BYOC types
+  DeclaredMCPServer,
+  MCPServerRegistration,
+  MCPRegistrationResult,
+  ChatOpenOptions,
+  ChatOpenResult,
 } from './types';
 import {
   getPermissionStatus,
@@ -74,6 +80,41 @@ const pendingPermissionRequests = new Map<string, {
 const streamingRequests = new Map<string, {
   port: browser.Runtime.Port;
   aborted: boolean;
+}>();
+
+// BYOC: Registered website MCP servers
+const websiteMcpServers = new Map<string, {
+  origin: string;
+  serverId: string;
+  url: string;
+  name: string;
+  description?: string;
+  tools?: string[];
+  tabId?: number;
+  connectedAt: number;
+}>();
+
+// BYOC: Open chat sessions
+const openChatSessions = new Map<string, {
+  origin: string;
+  chatId: string;
+  tabId: number;
+  options: ChatOpenOptions;
+  openedAt: number;
+}>();
+
+// BYOC: Pending MCP registrations (waiting for permission)
+const pendingMcpRegistrations = new Map<string, {
+  port: browser.Runtime.Port;
+  origin: string;
+  payload: MCPServerRegistration;
+}>();
+
+// BYOC: Pending chat opens (waiting for permission)
+const pendingChatOpens = new Map<string, {
+  port: browser.Runtime.Port;
+  origin: string;
+  payload: ChatOpenOptions;
 }>();
 
 // Session ID counter
@@ -267,6 +308,26 @@ export function handlePermissionPromptResponse(
       const result = await buildGrantResult(origin, scopes);
       log('Sending deny result:', result);
       sendResponse(port, 'permissions_result', requestId, result);
+      
+      // BYOC: Handle denied MCP registration
+      const pendingMcp = pendingMcpRegistrations.get(requestId);
+      if (pendingMcp) {
+        pendingMcpRegistrations.delete(requestId);
+        sendResponse(port, 'mcp_register_result', requestId, {
+          success: false,
+          error: { code: 'USER_DENIED', message: 'User denied permission' }
+        } as MCPRegistrationResult);
+      }
+      
+      // BYOC: Handle denied chat open
+      const pendingChat = pendingChatOpens.get(requestId);
+      if (pendingChat) {
+        pendingChatOpens.delete(requestId);
+        sendResponse(port, 'chat_open_result', requestId, {
+          success: false,
+          error: { code: 'USER_DENIED', message: 'User denied permission' }
+        } as ChatOpenResult);
+      }
     } else {
       const mode = decision === 'allow-once' ? 'once' : 'always';
       log('Granting permissions with mode:', mode);
@@ -275,6 +336,20 @@ export function handlePermissionPromptResponse(
       const result = await buildGrantResult(origin, scopes);
       log('Sending grant result:', result);
       sendResponse(port, 'permissions_result', requestId, result);
+      
+      // BYOC: Complete pending MCP registration
+      const pendingMcp = pendingMcpRegistrations.get(requestId);
+      if (pendingMcp) {
+        pendingMcpRegistrations.delete(requestId);
+        await completeMcpRegistration(pendingMcp.port, requestId, pendingMcp.origin, pendingMcp.payload);
+      }
+      
+      // BYOC: Complete pending chat open
+      const pendingChat = pendingChatOpens.get(requestId);
+      if (pendingChat) {
+        pendingChatOpens.delete(requestId);
+        await completeChatOpen(pendingChat.port, requestId, pendingChat.origin, pendingChat.payload);
+      }
     }
     
     // Notify sidebar to refresh permissions display
@@ -573,35 +648,53 @@ async function handleToolsList(
   log('[ToolsList] Permission granted, fetching connections...');
   
   try {
-    // Get list of connected MCP servers and their tools using direct function call
+    const allTools: ToolDescriptor[] = [];
+    
+    // First, add any website-registered tools for this origin
+    const tabId = port.sender?.tab?.id;
+    for (const [serverId, server] of websiteMcpServers) {
+      // Include website tools if they're from the same origin or same tab
+      if (server.origin === origin || server.tabId === tabId) {
+        log(`[ToolsList] Including website server: ${serverId} with ${server.tools?.length || 0} tools`);
+        
+        // Add tools with proper format
+        if (server.tools) {
+          for (const toolName of server.tools) {
+            allTools.push({
+              name: `${serverId}/${toolName}`,
+              description: `Website tool: ${toolName} from ${server.name}`,
+              serverId,
+              // Note: We don't have full schema for website tools yet
+              // The page will handle validation
+            });
+          }
+        }
+      }
+    }
+    
+    // Then get MCP server tools
     const connectionsResponse = await getMcpConnections();
     log('[ToolsList] Connections response:', JSON.stringify(connectionsResponse));
     
-    if (connectionsResponse.type === 'error' || !connectionsResponse.connections) {
-      log('[ToolsList] No connections available');
-      sendResponse(port, 'tools_list_result', requestId, { tools: [] });
-      return;
-    }
-    
-    const allTools: ToolDescriptor[] = [];
-    
-    log(`[ToolsList] Found ${connectionsResponse.connections.length} connected servers`);
-    
-    // For each connected server, get its tools
-    for (const conn of connectionsResponse.connections) {
-      log(`[ToolsList] Server ${conn.serverId}: toolCount=${conn.toolCount}`);
-      log(`[ToolsList] Getting tools from server: ${conn.serverId}`);
-      const toolsResponse = await listMcpTools(conn.serverId);
-      log(`[ToolsList] Tools response for ${conn.serverId}:`, JSON.stringify(toolsResponse));
+    if (connectionsResponse.type !== 'error' && connectionsResponse.connections) {
+      log(`[ToolsList] Found ${connectionsResponse.connections.length} connected MCP servers`);
       
-      if (toolsResponse.tools) {
-        for (const tool of toolsResponse.tools) {
-          allTools.push({
-            name: `${conn.serverId}/${tool.name}`,
-            description: tool.description,
-            inputSchema: tool.inputSchema,
-            serverId: conn.serverId,
-          });
+      // For each connected server, get its tools
+      for (const conn of connectionsResponse.connections) {
+        log(`[ToolsList] Server ${conn.serverId}: toolCount=${conn.toolCount}`);
+        log(`[ToolsList] Getting tools from server: ${conn.serverId}`);
+        const toolsResponse = await listMcpTools(conn.serverId);
+        log(`[ToolsList] Tools response for ${conn.serverId}:`, JSON.stringify(toolsResponse));
+        
+        if (toolsResponse.tools) {
+          for (const tool of toolsResponse.tools) {
+            allTools.push({
+              name: `${conn.serverId}/${tool.name}`,
+              description: tool.description,
+              inputSchema: tool.inputSchema,
+              serverId: conn.serverId,
+            });
+          }
         }
       }
     }
@@ -613,6 +706,32 @@ async function handleToolsList(
     sendError(port, requestId, createError('ERR_INTERNAL', String(err)));
   }
 }
+
+// Pending website tool calls
+const pendingWebsiteToolCalls = new Map<string, {
+  port: browser.Runtime.Port;
+  requestId: string;
+}>();
+
+// Listen for website tool results from content scripts
+browser.runtime.onMessage.addListener((message: { type: string; callId?: string; result?: unknown; error?: string }) => {
+  if (message.type === 'website_tool_result' && message.callId) {
+    const pending = pendingWebsiteToolCalls.get(message.callId);
+    if (pending) {
+      pendingWebsiteToolCalls.delete(message.callId);
+      
+      if (message.error) {
+        sendError(pending.port, pending.requestId, createError('ERR_TOOL_FAILED', message.error));
+      } else {
+        sendResponse(pending.port, 'tools_call_result', pending.requestId, {
+          success: true,
+          result: message.result,
+        });
+      }
+      log('[Tool Call] Website tool result received:', message.callId);
+    }
+  }
+});
 
 async function handleToolsCall(
   port: browser.Runtime.Port,
@@ -637,6 +756,56 @@ async function handleToolsCall(
     return;
   }
   
+  const serverId = tool.slice(0, slashIndex);
+  const toolName = tool.slice(slashIndex + 1);
+  
+  // Check if this is a website-registered tool
+  const websiteServer = websiteMcpServers.get(serverId);
+  if (websiteServer) {
+    log('[Tool Call] Website tool detected:', serverId, toolName);
+    
+    // Verify the tool belongs to the same origin or we have permission
+    // For now, allow if the calling origin matches the server origin
+    // or if we have mcp:tools.call permission
+    
+    const tabId = websiteServer.tabId;
+    if (!tabId) {
+      sendError(port, requestId, createError('ERR_TOOL_FAILED', 'Website tab not found'));
+      return;
+    }
+    
+    // Generate call ID
+    const callId = `wt-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+    
+    // Store pending call
+    pendingWebsiteToolCalls.set(callId, { port, requestId });
+    
+    // Set timeout
+    setTimeout(() => {
+      if (pendingWebsiteToolCalls.has(callId)) {
+        pendingWebsiteToolCalls.delete(callId);
+        sendError(port, requestId, createError('ERR_TOOL_FAILED', 'Website tool call timed out'));
+      }
+    }, 30000);
+    
+    try {
+      // Send tool call request to content script
+      await browser.tabs.sendMessage(tabId, {
+        type: 'website_tool_call',
+        callId,
+        toolName,
+        args,
+      });
+      log('[Tool Call] Sent to tab:', tabId, toolName);
+    } catch (err) {
+      pendingWebsiteToolCalls.delete(callId);
+      sendError(port, requestId, createError('ERR_TOOL_FAILED', `Failed to call website tool: ${err}`));
+    }
+    
+    return;
+  }
+  
+  // Not a website tool - use normal MCP flow
   // Check if this specific tool is allowed for this origin
   const toolAllowed = await isToolAllowed(origin, tool);
   if (!toolAllowed) {
@@ -648,9 +817,6 @@ async function handleToolsCall(
     ));
     return;
   }
-  
-  const serverId = tool.slice(0, slashIndex);
-  const toolName = tool.slice(slashIndex + 1);
   
   try {
     // Call the tool via MCP
@@ -985,6 +1151,308 @@ function handleAgentRunAbort(requestId: string): void {
 }
 
 // =============================================================================
+// BYOC: MCP Server Registration Handlers
+// =============================================================================
+
+async function handleMcpDiscover(
+  port: browser.Runtime.Port,
+  requestId: string,
+  _origin: string
+): Promise<void> {
+  // mcp_discover is handled in content-bridge.ts (parses <link> elements)
+  // If it reaches here, return empty array (content script didn't intercept)
+  sendResponse(port, 'mcp_discover_result', requestId, { servers: [] });
+}
+
+async function handleMcpRegister(
+  port: browser.Runtime.Port,
+  requestId: string,
+  origin: string,
+  payload: MCPServerRegistration
+): Promise<void> {
+  log('[MCP Register] Request from origin:', origin, 'payload:', payload);
+  
+  // Check/request mcp:servers.register permission
+  if (!(await hasPermission(origin, 'mcp:servers.register'))) {
+    // Store pending registration and show permission prompt
+    pendingMcpRegistrations.set(requestId, { port, origin, payload });
+    await showPermissionPrompt(
+      port,
+      requestId,
+      origin,
+      ['mcp:servers.register'],
+      `Register AI tools from "${payload.name}"`,
+    );
+    return;
+  }
+  
+  // Permission granted - proceed with registration
+  await completeMcpRegistration(port, requestId, origin, payload);
+}
+
+async function completeMcpRegistration(
+  port: browser.Runtime.Port,
+  requestId: string,
+  origin: string,
+  payload: MCPServerRegistration
+): Promise<void> {
+  try {
+    // Validate URL
+    let url: URL;
+    try {
+      url = new URL(payload.url, origin);
+    } catch {
+      sendResponse(port, 'mcp_register_result', requestId, {
+        success: false,
+        error: { code: 'INVALID_URL', message: 'Invalid MCP server URL' }
+      } as MCPRegistrationResult);
+      return;
+    }
+    
+    // For production, require HTTPS (allow localhost for development)
+    if (url.protocol !== 'https:' && url.protocol !== 'wss:' && url.hostname !== 'localhost') {
+      sendResponse(port, 'mcp_register_result', requestId, {
+        success: false,
+        error: { code: 'INVALID_URL', message: 'MCP server URL must use HTTPS' }
+      } as MCPRegistrationResult);
+      return;
+    }
+    
+    // Generate server ID with origin namespace
+    const originHost = new URL(origin).hostname;
+    const serverId = `byoc__${originHost}__${Date.now()}`;
+    
+    log('[MCP Register] Attempting to connect to:', url.toString());
+    
+    // Try to connect to the MCP server via the bridge
+    // First, add it as a temporary HTTP/SSE server
+    try {
+      const addResponse = await browser.runtime.sendMessage({
+        type: 'add_remote_mcp',
+        server_id: serverId,
+        name: payload.name || `${originHost} MCP Server`,
+        url: url.toString(),
+        transport: payload.transport || 'sse',
+        temporary: true, // Mark as temporary (clean up when tab closes)
+        origin: origin,
+      }) as { type: string; success?: boolean; error?: { message: string } };
+      
+      if (addResponse.type === 'error' || !addResponse.success) {
+        log('[MCP Register] Bridge connection failed:', addResponse.error);
+        // Fall back to postMessage-based tools (page implements tools directly)
+        log('[MCP Register] Falling back to postMessage-based tools');
+      } else {
+        log('[MCP Register] Bridge connection successful:', serverId);
+      }
+    } catch (bridgeErr) {
+      // Bridge not available or error - fall back to postMessage tools
+      log('[MCP Register] Bridge error (using postMessage fallback):', bridgeErr);
+    }
+    
+    // Store the registration (works with both bridge and postMessage approaches)
+    websiteMcpServers.set(serverId, {
+      origin,
+      serverId,
+      url: url.toString(),
+      name: payload.name,
+      description: payload.description,
+      tools: payload.tools,
+      tabId: port.sender?.tab?.id,
+      connectedAt: Date.now(),
+    });
+    
+    sendResponse(port, 'mcp_register_result', requestId, {
+      success: true,
+      serverId,
+    } as MCPRegistrationResult);
+  } catch (err) {
+    log('[MCP Register] Error:', err);
+    sendResponse(port, 'mcp_register_result', requestId, {
+      success: false,
+      error: { code: 'CONNECTION_FAILED', message: String(err) }
+    } as MCPRegistrationResult);
+  }
+}
+
+async function handleMcpUnregister(
+  port: browser.Runtime.Port,
+  requestId: string,
+  origin: string,
+  payload: { serverId: string }
+): Promise<void> {
+  const server = websiteMcpServers.get(payload.serverId);
+  
+  // Only allow unregistering servers from the same origin
+  if (!server || server.origin !== origin) {
+    sendResponse(port, 'mcp_unregister_result', requestId, { success: false });
+    return;
+  }
+  
+  // TODO: Disconnect from bridge if connected
+  
+  websiteMcpServers.delete(payload.serverId);
+  log('[MCP Unregister] Removed server:', payload.serverId);
+  sendResponse(port, 'mcp_unregister_result', requestId, { success: true });
+}
+
+// =============================================================================
+// BYOC: Chat UI Handlers
+// =============================================================================
+
+async function handleChatCanOpen(
+  port: browser.Runtime.Port,
+  requestId: string,
+  _origin: string
+): Promise<void> {
+  // Check if page-chat injection is available
+  // For now, always return 'readily' since we can inject page-chat
+  sendResponse(port, 'chat_can_open_result', requestId, { availability: 'readily' });
+}
+
+async function handleChatOpen(
+  port: browser.Runtime.Port,
+  requestId: string,
+  origin: string,
+  payload: ChatOpenOptions
+): Promise<void> {
+  log('[Chat Open] Request from origin:', origin);
+  
+  // Check/request chat:open permission
+  if (!(await hasPermission(origin, 'chat:open'))) {
+    pendingChatOpens.set(requestId, { port, origin, payload });
+    await showPermissionPrompt(
+      port,
+      requestId,
+      origin,
+      ['chat:open'],
+      'Open the AI chat assistant'
+    );
+    return;
+  }
+  
+  // Permission granted - open the chat
+  await completeChatOpen(port, requestId, origin, payload);
+}
+
+async function completeChatOpen(
+  port: browser.Runtime.Port,
+  requestId: string,
+  origin: string,
+  payload: ChatOpenOptions
+): Promise<void> {
+  const tabId = port.sender?.tab?.id;
+  if (!tabId) {
+    sendResponse(port, 'chat_open_result', requestId, {
+      success: false,
+      error: { code: 'NOT_AVAILABLE', message: 'No tab context' }
+    } as ChatOpenResult);
+    return;
+  }
+  
+  // Check if chat already open for this tab
+  for (const [, session] of openChatSessions) {
+    if (session.tabId === tabId) {
+      sendResponse(port, 'chat_open_result', requestId, {
+        success: false,
+        error: { code: 'ALREADY_OPEN', message: 'Chat already open in this tab' }
+      } as ChatOpenResult);
+      return;
+    }
+  }
+  
+  // Generate chat ID
+  const chatId = `chat-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+  
+  try {
+    // Inject page-chat configuration first
+    await browser.scripting.executeScript({
+      target: { tabId },
+      func: (config: { chatId: string; options: ChatOpenOptions }) => {
+        (window as unknown as { __harborPageChatConfig: unknown }).__harborPageChatConfig = {
+          chatId: config.chatId,
+          ...config.options,
+        };
+      },
+      args: [{ chatId, options: payload }],
+    });
+    
+    // Then inject the page-chat script
+    await browser.scripting.executeScript({
+      target: { tabId },
+      files: ['page-chat.js'],
+    });
+    
+    // Store session
+    openChatSessions.set(chatId, {
+      origin,
+      chatId,
+      tabId,
+      options: payload,
+      openedAt: Date.now(),
+    });
+    
+    log('[Chat Open] Chat opened:', chatId);
+    sendResponse(port, 'chat_open_result', requestId, {
+      success: true,
+      chatId,
+    } as ChatOpenResult);
+  } catch (err) {
+    log('[Chat Open] Error:', err);
+    sendResponse(port, 'chat_open_result', requestId, {
+      success: false,
+      error: { code: 'NOT_AVAILABLE', message: String(err) }
+    } as ChatOpenResult);
+  }
+}
+
+async function handleChatClose(
+  port: browser.Runtime.Port,
+  requestId: string,
+  origin: string,
+  payload: { chatId?: string }
+): Promise<void> {
+  const tabId = port.sender?.tab?.id;
+  
+  // Find the chat session
+  let chatToClose: string | undefined;
+  
+  if (payload.chatId) {
+    const session = openChatSessions.get(payload.chatId);
+    if (session && session.origin === origin) {
+      chatToClose = payload.chatId;
+    }
+  } else {
+    // Close any chat from this origin on this tab
+    for (const [chatId, session] of openChatSessions) {
+      if (session.origin === origin && session.tabId === tabId) {
+        chatToClose = chatId;
+        break;
+      }
+    }
+  }
+  
+  if (!chatToClose || !tabId) {
+    sendResponse(port, 'chat_close_result', requestId, { success: false });
+    return;
+  }
+  
+  try {
+    // Send message to page-chat to close
+    await browser.tabs.sendMessage(tabId, {
+      type: 'harbor_chat_close',
+      chatId: chatToClose,
+    });
+    
+    openChatSessions.delete(chatToClose);
+    log('[Chat Close] Chat closed:', chatToClose);
+    sendResponse(port, 'chat_close_result', requestId, { success: true });
+  } catch (err) {
+    log('[Chat Close] Error:', err);
+    sendResponse(port, 'chat_close_result', requestId, { success: false });
+  }
+}
+
+// =============================================================================
 // Message Router
 // =============================================================================
 
@@ -1048,6 +1516,32 @@ function handleProviderMessage(
       
     case 'agent_run_abort':
       handleAgentRunAbort((payload as { requestId: string }).requestId);
+      break;
+    
+    // BYOC: MCP Server Registration
+    case 'mcp_discover':
+      handleMcpDiscover(port, requestId, origin);
+      break;
+      
+    case 'mcp_register':
+      handleMcpRegister(port, requestId, origin, payload as MCPServerRegistration);
+      break;
+      
+    case 'mcp_unregister':
+      handleMcpUnregister(port, requestId, origin, payload as { serverId: string });
+      break;
+    
+    // BYOC: Chat UI
+    case 'chat_can_open':
+      handleChatCanOpen(port, requestId, origin);
+      break;
+      
+    case 'chat_open':
+      handleChatOpen(port, requestId, origin, payload as ChatOpenOptions);
+      break;
+      
+    case 'chat_close':
+      handleChatClose(port, requestId, origin, payload as { chatId?: string });
       break;
       
     default:

@@ -21,6 +21,13 @@ import type {
   RunEvent,
   LLMProviderInfo,
   ActiveLLMConfig,
+  // BYOC types
+  DeclaredMCPServer,
+  MCPServerRegistration,
+  MCPRegistrationResult,
+  ChatAvailability,
+  ChatOpenOptions,
+  ChatOpenResult,
 } from './types';
 
 // =============================================================================
@@ -377,6 +384,26 @@ export interface AgentApi {
     call(options: { tool: string; args: Record<string, unknown> }): Promise<unknown>;
   };
   
+  /** MCP server management namespace (BYOC) */
+  mcp: {
+    /** Discover <link rel="mcp-server"> declarations on the page */
+    discover(): Promise<DeclaredMCPServer[]>;
+    /** Register a website's MCP server */
+    register(options: MCPServerRegistration): Promise<MCPRegistrationResult>;
+    /** Unregister a previously registered server */
+    unregister(serverId: string): Promise<{ success: boolean }>;
+  };
+  
+  /** Chat UI namespace (BYOC) */
+  chat: {
+    /** Check if the browser's chat UI can be opened */
+    canOpen(): Promise<ChatAvailability>;
+    /** Open the browser's chat UI */
+    open(options?: ChatOpenOptions): Promise<ChatOpenResult>;
+    /** Close the chat UI */
+    close(chatId?: string): Promise<{ success: boolean }>;
+  };
+  
   browser: {
     activeTab: {
       readability(): Promise<ActiveTabReadability>;
@@ -441,6 +468,73 @@ export function createAgentApi(transport: Transport): AgentApi {
         }
         
         return result.result;
+      },
+    },
+    
+    /**
+     * MCP server management namespace (BYOC - Bring Your Own Chatbot).
+     * Allows websites to register their own MCP servers.
+     */
+    mcp: {
+      /**
+       * Discover <link rel="mcp-server"> declarations on the page.
+       * This is handled locally by content-bridge (no round-trip to background).
+       */
+      async discover(): Promise<DeclaredMCPServer[]> {
+        const result = await transport.sendRequest<{ servers: DeclaredMCPServer[] }>('mcp_discover');
+        return result.servers;
+      },
+      
+      /**
+       * Register a website's MCP server.
+       * Requires mcp:servers.register permission.
+       */
+      async register(options: MCPServerRegistration): Promise<MCPRegistrationResult> {
+        return transport.sendRequest<MCPRegistrationResult>(
+          'mcp_register',
+          options,
+          120000 // 2 min for user permission
+        );
+      },
+      
+      /**
+       * Unregister a previously registered server.
+       */
+      async unregister(serverId: string): Promise<{ success: boolean }> {
+        return transport.sendRequest<{ success: boolean }>('mcp_unregister', { serverId });
+      },
+    },
+    
+    /**
+     * Chat UI namespace (BYOC - Bring Your Own Chatbot).
+     * Allows websites to open the browser's chat interface.
+     */
+    chat: {
+      /**
+       * Check if the browser's chat UI can be opened.
+       */
+      async canOpen(): Promise<ChatAvailability> {
+        const result = await transport.sendRequest<{ availability: ChatAvailability }>('chat_can_open');
+        return result.availability;
+      },
+      
+      /**
+       * Open the browser's chat UI with optional configuration.
+       * Requires chat:open permission.
+       */
+      async open(options?: ChatOpenOptions): Promise<ChatOpenResult> {
+        return transport.sendRequest<ChatOpenResult>(
+          'chat_open',
+          options || {},
+          120000 // 2 min for user permission
+        );
+      },
+      
+      /**
+       * Close the chat UI.
+       */
+      async close(chatId?: string): Promise<{ success: boolean }> {
+        return transport.sendRequest<{ success: boolean }>('chat_close', { chatId });
       },
     },
     

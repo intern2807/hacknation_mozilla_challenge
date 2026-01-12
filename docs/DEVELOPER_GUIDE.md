@@ -28,6 +28,7 @@ With the Web Agent API, your web application can:
 - **Call MCP tools** like file access, GitHub, databases, web search
 - **Run autonomous agent tasks** that use tools to accomplish goals
 - **Read the active tab** for page summarization or context
+- **Bring Your Own Chatbot (BYOC)** — integrate with the user's own AI while providing site-specific tools
 
 All with user consent and local-first privacy.
 
@@ -47,6 +48,7 @@ All with user consent and local-first privacy.
 10. [Installer (App Store)](#installer-app-store)
 11. [Error Handling](#error-handling)
 12. [TypeScript Definitions](#typescript-definitions)
+13. [Bring Your Own Chatbot (BYOC)](#bring-your-own-chatbot-byoc)
 
 ---
 
@@ -1039,6 +1041,79 @@ interface ApiError {
 
 ---
 
+## Bring Your Own Chatbot (BYOC)
+
+BYOC allows websites to integrate with the user's own AI chatbot instead of embedding their own. This gives users control over their AI while letting websites provide domain-specific tools.
+
+### Declaring MCP Servers (HTML)
+
+Add a `<link>` element to declare your MCP server:
+
+```html
+<link 
+  rel="mcp-server" 
+  href="https://yoursite.com/mcp"
+  title="Your Site Assistant"
+  data-description="Search products, manage orders"
+  data-tools="search,add_to_cart,check_order"
+>
+```
+
+### Registering and Opening Chat (JavaScript)
+
+```javascript
+// Check BYOC availability
+if (!window.agent?.mcp) {
+  showFallbackHelp();
+  return;
+}
+
+// Request permissions
+await window.agent.requestPermissions({
+  scopes: ['mcp:servers.register', 'chat:open', 'model:prompt'],
+  reason: 'AI shopping assistance',
+});
+
+// Register your MCP server
+const reg = await window.agent.mcp.register({
+  url: 'https://yoursite.com/mcp',
+  name: 'Your Site Assistant',
+  tools: ['search', 'add_to_cart'],
+});
+
+if (!reg.success) {
+  console.log('User declined:', reg.error?.code);
+  return;
+}
+
+// Open the user's chatbot with your context
+document.getElementById('chat-btn').onclick = () => {
+  window.agent.chat.open({
+    systemPrompt: 'You are a helpful shopping assistant.',
+    style: { accentColor: '#ff9900' },
+  });
+};
+```
+
+### Implementing Your MCP Server
+
+Your MCP server needs to support HTTP/SSE transport. See the [BYOC demo](../demo/bring-your-chatbot/) for a complete example.
+
+### Graceful Degradation
+
+Always provide fallbacks when BYOC isn't available:
+
+```javascript
+if (typeof window.agent?.mcp === 'undefined') {
+  // Show traditional help button, live chat, or contact form
+  showFallbackHelp();
+}
+```
+
+See [JS API Reference](./JS_AI_PROVIDER_API.md#bring-your-own-chatbot-byoc) for complete BYOC API documentation.
+
+---
+
 ## Data Storage
 
 All data is stored in `~/.harbor/`:
@@ -1055,5 +1130,5 @@ All data is stored in `~/.harbor/`:
 
 ## Version
 
-This document describes **Harbor v1**, implementing **Web Agent API v1.0**.
+This document describes **Harbor v1**, implementing **Web Agent API v1.1** (includes BYOC extensions).
 

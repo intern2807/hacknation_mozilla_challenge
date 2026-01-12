@@ -32,7 +32,9 @@ SCOPES:
 - model:tools      → AI with tool calling
 - mcp:tools.list   → List available MCP tools
 - mcp:tools.call   → Execute MCP tools
+- mcp:servers.register → Register website MCP servers (BYOC)
 - browser:activeTab.read → Read active tab content
+- chat:open        → Open browser chat UI (BYOC)
 
 GRANTS: granted-always | granted-once | denied | not-granted
 
@@ -104,6 +106,47 @@ for await (const event of window.agent.run({
     case 'error':       // { error: ApiError }
   }
 }
+```
+
+## BYOC (Bring Your Own Chatbot)
+
+Websites can integrate with user's AI via MCP servers and browser chat UI.
+
+### Declarative Discovery (HTML)
+```html
+<link rel="mcp-server" href="https://shop.example/mcp" 
+      title="Shop" data-tools="search,add_to_cart">
+```
+
+### API Methods
+```js
+// Discover link-declared servers
+const servers = await window.agent.mcp.discover();
+// Returns: [{ url, title, description, tools }]
+
+// Register website's MCP server
+const reg = await window.agent.mcp.register({
+  url: 'https://shop.example/mcp',
+  name: 'Shop Assistant',
+  tools: ['search', 'add_to_cart']
+});
+if (reg.success) console.log('Registered:', reg.serverId);
+
+// Check chat availability
+const avail = await window.agent.chat.canOpen(); // 'readily' | 'no'
+
+// Open browser chat
+const chat = await window.agent.chat.open({
+  systemPrompt: 'Shopping assistant',
+  tools: ['search', 'add_to_cart'],
+  style: { theme: 'light', accentColor: '#ff9900' }
+});
+
+// Close chat
+await window.agent.chat.close(chat.chatId);
+
+// Unregister server
+await window.agent.mcp.unregister(reg.serverId);
 ```
 
 ## Error Codes
@@ -181,7 +224,8 @@ sessions/*.json        → Chat history
 ## Types Reference
 
 ```ts
-type PermissionScope = 'model:prompt' | 'model:tools' | 'mcp:tools.list' | 'mcp:tools.call' | 'browser:activeTab.read';
+type PermissionScope = 'model:prompt' | 'model:tools' | 'mcp:tools.list' | 'mcp:tools.call' 
+  | 'mcp:servers.register' | 'browser:activeTab.read' | 'chat:open';
 type PermissionGrant = 'granted-once' | 'granted-always' | 'denied' | 'not-granted';
 
 interface ToolDescriptor { name: string; description?: string; inputSchema?: object; serverId?: string; }
@@ -198,6 +242,13 @@ type RunEvent =
   | { type: 'error'; error: ApiError };
 
 interface Citation { source: 'tab' | 'tool'; ref: string; excerpt: string; }
+
+// BYOC Types
+interface MCPServerRegistration { url: string; name: string; description?: string; tools?: string[]; }
+interface MCPRegistrationResult { success: boolean; serverId?: string; error?: { code: string; message: string; }; }
+type ChatAvailability = 'readily' | 'no';
+interface ChatOpenOptions { systemPrompt?: string; tools?: string[]; style?: { theme?: string; accentColor?: string; }; }
+interface ChatOpenResult { success: boolean; chatId?: string; error?: { code: string; message: string; }; }
 ```
 
 ## Complete Example

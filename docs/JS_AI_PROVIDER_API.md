@@ -42,7 +42,9 @@ All API calls require permission from the user. Permissions are scoped per-origi
 | `model:list` | List configured AI providers | `ai.providers.list()`, `ai.providers.getActive()` |
 | `mcp:tools.list` | List available MCP tools | `agent.tools.list()` |
 | `mcp:tools.call` | Execute MCP tools | `agent.tools.call()` |
+| `mcp:servers.register` | Register website MCP servers | `agent.mcp.register()` |
 | `browser:activeTab.read` | Read content from active tab | `agent.browser.activeTab.readability()` |
+| `chat:open` | Open browser's chat UI | `agent.chat.open()` |
 | `web:fetch` | Proxy fetch requests | Not implemented in v1 |
 
 ### Permission Grants
@@ -371,6 +373,284 @@ for await (const event of window.agent.run({
 })) {
   // handle events...
 }
+```
+
+---
+
+## Bring Your Own Chatbot (BYOC)
+
+The BYOC APIs allow websites to integrate with the user's own AI chatbot instead of embedding their own. Websites can declare MCP servers that provide domain-specific tools, and request the browser to open its chat UI.
+
+### `<link rel="mcp-server">` — Declarative MCP Server Discovery
+
+Websites can declare MCP server availability via HTML, similar to RSS feeds:
+
+```html
+<link 
+  rel="mcp-server" 
+  href="https://shop.example/mcp"
+  title="Shop Assistant"
+  data-description="Search products, manage cart"
+  data-tools="search_products,get_cart,add_to_cart"
+  data-transport="sse"
+>
+```
+
+**Attributes:**
+
+| Attribute | Required | Description |
+|-----------|----------|-------------|
+| `rel` | ✓ | Must be `"mcp-server"` |
+| `href` | ✓ | URL of the MCP server endpoint |
+| `title` | ✓ | Human-readable name |
+| `data-description` | | Description of capabilities |
+| `data-tools` | | Comma-separated tool names |
+| `data-transport` | | `"sse"` (default) or `"websocket"` |
+
+---
+
+### agent.mcp.discover()
+
+Get MCP servers declared via `<link rel="mcp-server">` on the current page.
+
+**Signature:**
+```typescript
+agent.mcp.discover(): Promise<DeclaredMCPServer[]>
+```
+
+**Returns:**
+```typescript
+interface DeclaredMCPServer {
+  url: string;
+  title: string;
+  description?: string;
+  tools?: string[];
+  transport?: 'sse' | 'websocket';
+}
+```
+
+**Example:**
+```javascript
+const servers = await window.agent.mcp.discover();
+
+for (const server of servers) {
+  console.log(`Found: ${server.title} at ${server.url}`);
+  console.log(`  Tools: ${server.tools?.join(', ')}`);
+}
+```
+
+---
+
+### agent.mcp.register(options)
+
+Register a website's MCP server for the user's chatbot to use.
+
+**Requires:** `mcp:servers.register` permission
+
+**Signature:**
+```typescript
+agent.mcp.register(options: MCPServerRegistration): Promise<MCPRegistrationResult>
+```
+
+**Parameters:**
+```typescript
+interface MCPServerRegistration {
+  url: string;          // Server endpoint (HTTPS or localhost)
+  name: string;         // Human-readable name
+  description?: string; // What the server provides
+  tools?: string[];     // Tool names for transparency
+  transport?: 'sse' | 'websocket';
+}
+```
+
+**Returns:**
+```typescript
+interface MCPRegistrationResult {
+  success: boolean;
+  serverId?: string;
+  error?: {
+    code: 'USER_DENIED' | 'INVALID_URL' | 'CONNECTION_FAILED' | 'NOT_SUPPORTED';
+    message: string;
+  };
+}
+```
+
+**Example:**
+```javascript
+const result = await window.agent.mcp.register({
+  url: 'https://shop.example/mcp',
+  name: 'Acme Shop Assistant',
+  description: 'Search products and manage cart',
+  tools: ['search_products', 'add_to_cart', 'get_cart'],
+});
+
+if (result.success) {
+  console.log('Registered with ID:', result.serverId);
+} else if (result.error?.code === 'USER_DENIED') {
+  console.log('User declined - show fallback UI');
+}
+```
+
+---
+
+### agent.mcp.unregister(serverId)
+
+Unregister a previously registered MCP server.
+
+**Signature:**
+```typescript
+agent.mcp.unregister(serverId: string): Promise<{ success: boolean }>
+```
+
+**Example:**
+```javascript
+await window.agent.mcp.unregister(result.serverId);
+```
+
+---
+
+### agent.chat.canOpen()
+
+Check if the browser's chat UI can be opened.
+
+**Signature:**
+```typescript
+agent.chat.canOpen(): Promise<ChatAvailability>
+```
+
+**Returns:**
+```typescript
+type ChatAvailability = 'readily' | 'no';
+```
+
+**Example:**
+```javascript
+const availability = await window.agent.chat.canOpen();
+
+if (availability === 'readily') {
+  showChatButton();
+} else {
+  showFallbackHelp();
+}
+```
+
+---
+
+### agent.chat.open(options?)
+
+Open the browser's chat UI with optional configuration.
+
+**Requires:** `chat:open` permission
+
+**Signature:**
+```typescript
+agent.chat.open(options?: ChatOpenOptions): Promise<ChatOpenResult>
+```
+
+**Parameters:**
+```typescript
+interface ChatOpenOptions {
+  initialMessage?: string;   // Message to start with
+  systemPrompt?: string;     // Configure AI behavior
+  tools?: string[];          // Which tools to enable
+  sessionId?: string;        // For persistence across pages
+  style?: {
+    theme?: 'light' | 'dark' | 'auto';
+    accentColor?: string;
+    position?: 'right' | 'left' | 'center';
+  };
+}
+```
+
+**Returns:**
+```typescript
+interface ChatOpenResult {
+  success: boolean;
+  chatId?: string;
+  error?: {
+    code: 'USER_DENIED' | 'NOT_AVAILABLE' | 'ALREADY_OPEN';
+    message: string;
+  };
+}
+```
+
+**Example:**
+```javascript
+const result = await window.agent.chat.open({
+  systemPrompt: 'You are a helpful shopping assistant for Acme Shop.',
+  tools: ['search_products', 'add_to_cart'],
+  style: {
+    theme: 'light',
+    accentColor: '#ff9900',
+  },
+});
+
+if (result.success) {
+  console.log('Chat opened:', result.chatId);
+}
+```
+
+---
+
+### agent.chat.close(chatId?)
+
+Close the browser's chat UI.
+
+**Signature:**
+```typescript
+agent.chat.close(chatId?: string): Promise<{ success: boolean }>
+```
+
+**Example:**
+```javascript
+await window.agent.chat.close();
+```
+
+---
+
+### Complete BYOC Example
+
+```javascript
+async function initShopAssistant() {
+  // Check if Web Agent API is available
+  if (typeof window.agent === 'undefined') {
+    showTraditionalHelp();
+    return;
+  }
+
+  // Request permissions
+  const perms = await window.agent.requestPermissions({
+    scopes: ['mcp:servers.register', 'chat:open', 'model:prompt'],
+    reason: 'Acme Shop wants to provide AI shopping assistance',
+  });
+
+  if (!perms.granted) {
+    showTraditionalHelp();
+    return;
+  }
+
+  // Register our MCP server
+  const reg = await window.agent.mcp.register({
+    url: 'https://shop.example/mcp',
+    name: 'Acme Shop',
+    tools: ['search_products', 'get_cart', 'add_to_cart'],
+  });
+
+  if (!reg.success) {
+    showTraditionalHelp();
+    return;
+  }
+
+  // Show chat button
+  document.getElementById('chat-btn').addEventListener('click', async () => {
+    await window.agent.chat.open({
+      systemPrompt: 'You are a helpful shopping assistant.',
+      style: { accentColor: '#ff9900' },
+    });
+  });
+}
+
+initShopAssistant();
 ```
 
 ---
@@ -864,6 +1144,17 @@ declare global {
         };
       };
       run(options: AgentRunOptions): AsyncIterable<RunEvent>;
+      // BYOC APIs
+      mcp: {
+        discover(): Promise<DeclaredMCPServer[]>;
+        register(options: MCPServerRegistration): Promise<MCPRegistrationResult>;
+        unregister(serverId: string): Promise<{ success: boolean }>;
+      };
+      chat: {
+        canOpen(): Promise<ChatAvailability>;
+        open(options?: ChatOpenOptions): Promise<ChatOpenResult>;
+        close(chatId?: string): Promise<{ success: boolean }>;
+      };
     };
   }
 }
@@ -874,7 +1165,9 @@ type PermissionScope =
   | 'model:list'
   | 'mcp:tools.list'
   | 'mcp:tools.call'
+  | 'mcp:servers.register'
   | 'browser:activeTab.read'
+  | 'chat:open'
   | 'web:fetch';
 
 type PermissionGrant =
@@ -971,11 +1264,62 @@ interface ApiError {
   message: string;
   details?: unknown;
 }
+
+// BYOC Types
+interface DeclaredMCPServer {
+  url: string;
+  title: string;
+  description?: string;
+  tools?: string[];
+  transport?: 'sse' | 'websocket';
+}
+
+interface MCPServerRegistration {
+  url: string;
+  name: string;
+  description?: string;
+  tools?: string[];
+  transport?: 'sse' | 'websocket';
+}
+
+interface MCPRegistrationResult {
+  success: boolean;
+  serverId?: string;
+  error?: {
+    code: 'USER_DENIED' | 'INVALID_URL' | 'CONNECTION_FAILED' | 'NOT_SUPPORTED';
+    message: string;
+  };
+}
+
+type ChatAvailability = 'readily' | 'no';
+
+interface ChatOpenOptions {
+  initialMessage?: string;
+  systemPrompt?: string;
+  tools?: string[];
+  sessionId?: string;
+  style?: {
+    theme?: 'light' | 'dark' | 'auto';
+    accentColor?: string;
+    position?: 'right' | 'left' | 'center';
+  };
+}
+
+interface ChatOpenResult {
+  success: boolean;
+  chatId?: string;
+  error?: {
+    code: 'USER_DENIED' | 'NOT_AVAILABLE' | 'ALREADY_OPEN';
+    message: string;
+  };
+}
 ```
 
 ---
 
 ## Version
 
-This document describes **Web Agent API v1.0** as implemented by **Harbor v1**.
+This document describes **Web Agent API v1.1** as implemented by **Harbor v1**.
+
+**v1.1 additions:** BYOC APIs (`agent.mcp.*`, `agent.chat.*`)
 

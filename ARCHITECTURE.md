@@ -24,6 +24,7 @@ Harbor implements the Web Agent API, providing:
 | **LLM Integration** | Local model support (Ollama, llamafile) + cloud providers |
 | **Permission System** | Per-origin capability grants with user consent |
 | **Chat Orchestration** | Agent loop with tool calling |
+| **Bring Your Own Chatbot** | Websites can integrate with the user's AI via `agent.mcp.*` and `agent.chat.*` |
 
 ---
 
@@ -37,7 +38,9 @@ Harbor implements the Web Agent API, providing:
 │  ├── createTextSession()             ├── requestPermissions()                │
 │  └── session.prompt()                ├── tools.list() / tools.call()        │
 │                                      ├── browser.activeTab.readability()    │
-│                                      └── run({ task })                       │
+│                                      ├── run({ task })                       │
+│                                      ├── mcp.discover/register() [BYOC]     │
+│                                      └── chat.open/close() [BYOC]           │
 └───────────────────────────────────────┬─────────────────────────────────────┘
                                         │ postMessage
                                         ▼
@@ -294,7 +297,9 @@ Permissions are scoped per-origin with capability-based grants.
 | `model:tools` | AI with tool calling | `agent.run()` |
 | `mcp:tools.list` | List available tools | `agent.tools.list()` |
 | `mcp:tools.call` | Execute tools | `agent.tools.call()` |
+| `mcp:servers.register` | Register website MCP servers | `agent.mcp.register()` |
 | `browser:activeTab.read` | Read active tab | `agent.browser.activeTab.readability()` |
+| `chat:open` | Open browser chat UI | `agent.chat.open()` |
 
 ### Grant Types
 
@@ -486,6 +491,8 @@ The bridge uses native messaging with length-prefixed JSON frames.
 **Server Management:** `add_server`, `remove_server`, `list_servers`, `connect_server`, `disconnect_server`
 
 **MCP Operations:** `mcp_connect`, `mcp_list_tools`, `mcp_call_tool`, `mcp_read_resource`
+
+**BYOC:** `connect_remote_mcp`, `disconnect_remote_mcp`, `page_chat_message`
 
 **LLM:** `llm_detect`, `llm_chat`, `llm_set_active`
 

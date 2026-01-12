@@ -1929,6 +1929,67 @@ for await (const event of window.agent.run({ task: '...' })) {
 
 ---
 
+## Extension: Bring Your Own Chatbot (BYOC)
+
+The BYOC extension allows websites to integrate with the user's own AI chatbot rather than embedding their own AI. This enables:
+
+- **User control**: Users use their preferred AI with their privacy settings
+- **No API keys**: Websites don't need to manage AI keys
+- **Contextual tools**: Websites provide domain-specific tools via MCP
+
+### Declarative MCP Server Discovery
+
+Websites can declare MCP server availability via HTML `<link>` elements:
+
+```html
+<link 
+  rel="mcp-server" 
+  href="https://shop.example/mcp"
+  title="Shop Assistant"
+  data-description="Search products, manage cart"
+  data-tools="search_products,add_to_cart"
+>
+```
+
+### New Permission Scopes
+
+| Scope | Description |
+|-------|-------------|
+| `mcp:servers.register` | Register website MCP servers |
+| `chat:open` | Open the browser's chat UI |
+
+### New API Methods
+
+| Method | Description |
+|--------|-------------|
+| `agent.mcp.discover()` | Get `<link>`-declared MCP servers |
+| `agent.mcp.register(options)` | Register a website's MCP server |
+| `agent.mcp.unregister(serverId)` | Unregister a server |
+| `agent.chat.canOpen()` | Check if chat UI is available |
+| `agent.chat.open(options)` | Open browser chat UI with config |
+| `agent.chat.close(chatId?)` | Close the chat UI |
+
+### Example
+
+```javascript
+// Register website's MCP server
+const reg = await window.agent.mcp.register({
+  url: 'https://shop.example/mcp',
+  name: 'Acme Shop',
+  tools: ['search_products', 'add_to_cart'],
+});
+
+// Open the user's chatbot with website context
+await window.agent.chat.open({
+  systemPrompt: 'You are a shopping assistant.',
+  style: { accentColor: '#ff9900' },
+});
+```
+
+See [JS_AI_PROVIDER_API.md](../docs/JS_AI_PROVIDER_API.md) for complete BYOC API reference.
+
+---
+
 ## Open Questions
 
 ### 1. Streaming API Design
@@ -2026,6 +2087,7 @@ const caps = await window.agent.capabilities();
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 1.1 | January 2026 | Added BYOC extension (`agent.mcp.*`, `agent.chat.*`) |
 | 1.0 | January 2026 | Initial specification |
 
 ---

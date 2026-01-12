@@ -1251,3 +1251,13 @@ export function getMcpClientManager(): McpClientManager {
   return _manager;
 }
 
+/**
+ * Reset the singleton instance. FOR TESTING ONLY.
+ * This cleans up all connections before creating a new instance.
+ */
+export async function __resetMcpClientManagerForTesting(): Promise<void> {
+  if (_manager) {
+    await _manager.disconnectAll();
+    _manager = null;
+  }
+}

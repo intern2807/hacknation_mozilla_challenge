@@ -1026,6 +1026,13 @@ export function getInstalledServerManager(): InstalledServerManager {
   return _manager;
 }
 
+/**
+ * Reset the singleton instance. FOR TESTING ONLY.
+ */
+export function __resetInstalledServerManagerForTesting(): void {
+  _manager = null;
+}
+
 
 
 

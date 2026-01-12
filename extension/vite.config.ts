@@ -17,6 +17,8 @@ const contentScriptEntries = {
   'vscode-detector': resolve(__dirname, 'src/vscode-detector.ts'),
   // provider-injected must be standalone since it's injected into web pages
   'provider-injected': resolve(__dirname, 'src/provider/injected.ts'),
+  // page-chat is injected when user wants to chat about the current page
+  'page-chat': resolve(__dirname, 'src/page-chat.ts'),
 };
 
 // ES module entries (background, sidebar, etc.)

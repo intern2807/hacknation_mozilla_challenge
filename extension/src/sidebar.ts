@@ -2891,6 +2891,24 @@ openChatBtn?.addEventListener('click', () => {
   browser.tabs.create({ url: demoUrl });
 });
 
+// Open Page Chat button (injects chat sidebar into current tab)
+const openPageChatBtn = document.getElementById('open-page-chat') as HTMLButtonElement;
+openPageChatBtn?.addEventListener('click', async () => {
+  try {
+    // Get the active tab
+    const tabs = await browser.tabs.query({ active: true, currentWindow: true });
+    if (tabs[0]?.id) {
+      // Send message to background to inject page chat
+      await browser.runtime.sendMessage({ 
+        type: 'open_page_chat', 
+        tabId: tabs[0].id 
+      });
+    }
+  } catch (err) {
+    console.error('[Sidebar] Failed to open page chat:', err);
+  }
+});
+
 // Theme toggle
 themeToggleBtn.addEventListener('click', toggleTheme);
 

@@ -41,10 +41,19 @@
   ],
   "web_accessible_resources": [
     {
-      "resources": ["provider-injected.js"],
+      "resources": ["provider-injected.js", "page-chat.js"],
       "matches": ["http://*/*", "https://*/*"]
     }
   ],
+  "commands": {
+    "toggle-page-chat": {
+      "suggested_key": {
+        "default": "Alt+Shift+C",
+        "mac": "Alt+Shift+C"
+      },
+      "description": "Toggle page chat sidebar"
+    }
+  },
   "browser_specific_settings": {
     "gecko": {
       "id": "raffi.krikorian.harbor@gmail.com",

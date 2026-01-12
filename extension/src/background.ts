@@ -11,10 +11,12 @@ import {
   setMessageCallback,
   getConnectionState,
   BridgeResponse,
+  HarborMessage,
   REQUEST_TIMEOUT_MS,
   DOCKER_TIMEOUT_MS,
   CHAT_TIMEOUT_MS,
 } from './native-connection';
+import { dispatchToBridge } from './bridge-dispatch';
 
 // BUILD MARKER - if you don't see this, the extension is using cached code!
 // Harbor extension background script
@@ -126,11 +128,8 @@ setMessageCallback((response) => {
     console.log('[Background] Status update:', response);
     browser.runtime
       .sendMessage({ 
+        ...response,  // Spread first, then override type
         type: 'catalog_status', 
-        category: (response as { category?: string }).category,
-        status: (response as { status?: string }).status,
-        message: (response as { message?: string }).message,
-        ...response,
       })
       .catch(() => {});
     return;
@@ -247,220 +246,17 @@ browser.runtime.onMessage.addListener(
       return Promise.resolve({ reconnecting: true });
     }
 
-    // Server management messages
-    if (msg.type === 'add_server') {
-      return sendToBridge({
-        type: 'add_server',
-        request_id: generateRequestId(),
-        label: msg.label as string,
-        base_url: msg.base_url as string,
-      });
+    // =======================================================================
+    // Try dispatch table for common bridge messages
+    // =======================================================================
+    const dispatched = dispatchToBridge(msg);
+    if (dispatched !== undefined) {
+      return dispatched;
     }
 
-    if (msg.type === 'remove_server') {
-      return sendToBridge({
-        type: 'remove_server',
-        request_id: generateRequestId(),
-        server_id: msg.server_id as string,
-      });
-    }
-
-    if (msg.type === 'list_servers') {
-      return sendToBridge({
-        type: 'list_servers',
-        request_id: generateRequestId(),
-      });
-    }
-
-    if (msg.type === 'connect_server') {
-      return sendToBridge({
-        type: 'connect_server',
-        request_id: generateRequestId(),
-        server_id: msg.server_id as string,
-      });
-    }
-
-    if (msg.type === 'disconnect_server') {
-      return sendToBridge({
-        type: 'disconnect_server',
-        request_id: generateRequestId(),
-        server_id: msg.server_id as string,
-      });
-    }
-
-    if (msg.type === 'list_tools') {
-      return sendToBridge({
-        type: 'list_tools',
-        request_id: generateRequestId(),
-        server_id: msg.server_id as string,
-      });
-    }
-
-    // Catalog messages - forward to native bridge
-    if (msg.type === 'catalog_get') {
-      const force = msg.force === true;
-      console.log('[catalog] Getting catalog via bridge, force:', force);
-      return sendToBridge({
-        type: 'catalog_get',
-        request_id: generateRequestId(),
-        force,
-      }).then(response => {
-        // Bridge returns catalog_get_result, extract the data
-        if (response && 'servers' in response) {
-          return response;
-        }
-        throw new Error(response?.error?.message || 'Failed to get catalog');
-      });
-    }
-
-    if (msg.type === 'catalog_refresh') {
-      console.log('[catalog] Forcing refresh via bridge');
-      return sendToBridge({
-        type: 'catalog_refresh',
-        request_id: generateRequestId(),
-      }).then(response => {
-        if (response && 'servers' in response) {
-          return response;
-        }
-        throw new Error(response?.error?.message || 'Failed to refresh catalog');
-      });
-    }
-
-    if (msg.type === 'catalog_search') {
-      const query = (msg.query as string) || '';
-      console.log('[catalog] Searching via bridge:', query);
-      return sendToBridge({
-        type: 'catalog_search',
-        request_id: generateRequestId(),
-        query,
-      }).then(response => {
-        if (response && 'servers' in response) {
-          return response;
-        }
-        throw new Error(response?.error?.message || 'Failed to search catalog');
-      });
-    }
-
-    if (msg.type === 'catalog_enrich') {
-      console.log('[catalog] Starting enrichment via bridge');
-      return sendToBridge({
-        type: 'catalog_enrich',
-        request_id: generateRequestId(),
-      }, 120000); // 2 minute timeout for enrichment
-    }
-
-    // Installer messages - forward to native bridge
-    if (msg.type === 'check_runtimes') {
-      return sendToBridge({
-        type: 'check_runtimes',
-        request_id: generateRequestId(),
-      });
-    }
-
-    if (msg.type === 'install_server') {
-      return sendToBridge({
-        type: 'install_server',
-        request_id: generateRequestId(),
-        catalog_entry: msg.catalog_entry,
-        package_index: msg.package_index || 0,
-      });
-    }
-
-    if (msg.type === 'uninstall_server') {
-      return sendToBridge({
-        type: 'uninstall_server',
-        request_id: generateRequestId(),
-        server_id: msg.server_id,
-      });
-    }
-
-    if (msg.type === 'add_remote_server') {
-      return sendToBridge({
-        type: 'add_remote_server',
-        request_id: generateRequestId(),
-        name: msg.name,
-        url: msg.url,
-        transport_type: msg.transport_type || 'http',
-        headers: msg.headers,
-      }).then(result => {
-        // Notify sidebar to refresh installed servers list
-        browser.runtime
-          .sendMessage({ type: 'installed_servers_changed' })
-          .catch(() => {});
-        return result;
-      });
-    }
-
-    if (msg.type === 'import_config') {
-      return sendToBridge({
-        type: 'import_config',
-        request_id: generateRequestId(),
-        config_json: msg.config_json,
-        install_url: msg.install_url,
-      }).then(result => {
-        // Notify sidebar to refresh installed servers list
-        browser.runtime
-          .sendMessage({ type: 'installed_servers_changed' })
-          .catch(() => {});
-        return result;
-      });
-    }
-
-    if (msg.type === 'list_installed') {
-      return sendToBridge({
-        type: 'list_installed',
-        request_id: generateRequestId(),
-      });
-    }
-    
-    if (msg.type === 'update_server_args') {
-      return sendToBridge({
-        type: 'update_server_args',
-        request_id: generateRequestId(),
-        server_id: msg.server_id,
-        args: msg.args,
-      });
-    }
-
-    // Curated servers messages
-    if (msg.type === 'get_curated_servers') {
-      return sendToBridge({
-        type: 'get_curated_servers',
-        request_id: generateRequestId(),
-      });
-    }
-
-    if (msg.type === 'install_curated_server') {
-      return sendToBridge({
-        type: 'install_curated_server',
-        request_id: generateRequestId(),
-        server_id: msg.server_id,
-      }).then(result => {
-        // Notify sidebar to refresh installed servers list
-        if (result && result.type === 'install_curated_server_result' && result.success) {
-          browser.runtime
-            .sendMessage({ type: 'installed_servers_changed' })
-            .catch(() => {});
-        }
-        return result;
-      });
-    }
-
-    if (msg.type === 'install_github_repo') {
-      return sendToBridge({
-        type: 'install_github_repo',
-        request_id: generateRequestId(),
-        github_url: msg.github_url,
-      }).then(result => {
-        // Notify sidebar to refresh installed servers list
-        if (result && result.type === 'install_github_repo_result' && result.success) {
-          browser.runtime
-            .sendMessage({ type: 'installed_servers_changed' })
-            .catch(() => {});
-        }
-        return result;
-      });
-    }
+    // =======================================================================
+    // Special handlers that need custom logic
+    // =======================================================================
 
     // Install from VS Code button (detected on web pages)
     if (msg.type === 'install_from_vscode_button') {
@@ -541,40 +337,7 @@ browser.runtime.onMessage.addListener(
       });
     }
 
-    if (msg.type === 'start_installed') {
-      return sendToBridge({
-        type: 'start_installed',
-        request_id: generateRequestId(),
-        server_id: msg.server_id,
-      });
-    }
-
-    if (msg.type === 'stop_installed') {
-      return sendToBridge({
-        type: 'stop_installed',
-        request_id: generateRequestId(),
-        server_id: msg.server_id,
-      });
-    }
-
-    if (msg.type === 'set_server_secrets') {
-      return sendToBridge({
-        type: 'set_server_secrets',
-        request_id: generateRequestId(),
-        server_id: msg.server_id,
-        secrets: msg.secrets,
-      });
-    }
-
-    if (msg.type === 'get_server_status') {
-      return sendToBridge({
-        type: 'get_server_status',
-        request_id: generateRequestId(),
-        server_id: msg.server_id,
-      });
-    }
-
-    // MCP stdio messages (for locally installed servers)
+    // MCP connect - needs special logic for Docker timeout and broadcast
     if (msg.type === 'mcp_connect') {
       const useDocker = msg.use_docker || false;
       console.log('[Background] mcp_connect request for:', msg.server_id, 'skip_security_check:', msg.skip_security_check, 'use_docker:', useDocker);
@@ -602,117 +365,8 @@ browser.runtime.onMessage.addListener(
         return result;
       });
     }
-    
-    // Docker-related messages
-    if (msg.type === 'check_docker') {
-      return sendToBridge({
-        type: 'check_docker',
-        request_id: generateRequestId(),
-      });
-    }
-    
-    // Runtime dependency check (Python, Node.js, Docker)
-    if (msg.type === 'check_runtimes') {
-      return sendToBridge({
-        type: 'check_runtimes',
-        request_id: generateRequestId(),
-      });
-    }
-    
-    if (msg.type === 'reconnect_orphaned_containers') {
-      console.log('[Background] Reconnecting orphaned Docker containers...');
-      return sendToBridge({
-        type: 'reconnect_orphaned_containers',
-        request_id: generateRequestId(),
-      }, DOCKER_TIMEOUT_MS).then(result => {
-        console.log('[Background] Reconnect result:', result);
-        // Notify sidebar to refresh after reconnection
-        if (result && result.type === 'reconnect_orphaned_containers_result') {
-          broadcastToExtension({ type: 'installed_servers_changed' });
-        }
-        return result;
-      });
-    }
-    
-    if (msg.type === 'build_docker_images') {
-      return sendToBridge({
-        type: 'build_docker_images',
-        request_id: generateRequestId(),
-        image_type: msg.image_type,
-      });
-    }
-    
-    if (msg.type === 'set_docker_mode') {
-      return sendToBridge({
-        type: 'set_docker_mode',
-        request_id: generateRequestId(),
-        server_id: msg.server_id,
-        use_docker: msg.use_docker,
-        volumes: msg.volumes,
-      });
-    }
-    
-    if (msg.type === 'should_prefer_docker') {
-      return sendToBridge({
-        type: 'should_prefer_docker',
-        request_id: generateRequestId(),
-        server_id: msg.server_id,
-      });
-    }
 
-    if (msg.type === 'mcp_disconnect') {
-      return sendToBridge({
-        type: 'mcp_disconnect',
-        request_id: generateRequestId(),
-        server_id: msg.server_id,
-      }).then(result => {
-        // Broadcast to all extension pages that a server disconnected
-        broadcastToExtension({
-          type: 'mcp_server_disconnected',
-          server_id: msg.server_id,
-        });
-        return result;
-      });
-    }
-
-    if (msg.type === 'mcp_list_tools') {
-      return sendToBridge({
-        type: 'mcp_list_tools',
-        request_id: generateRequestId(),
-        server_id: msg.server_id,
-      });
-    }
-
-    // Credential messages
-    if (msg.type === 'set_credential') {
-      return sendToBridge({
-        type: 'set_credential',
-        request_id: generateRequestId(),
-        server_id: msg.server_id,
-        key: msg.key,
-        value: msg.value,
-        credential_type: msg.credential_type || 'api_key',
-      });
-    }
-
-    if (msg.type === 'list_credentials') {
-      return sendToBridge({
-        type: 'list_credentials',
-        request_id: generateRequestId(),
-        server_id: msg.server_id,
-      });
-    }
-
-    if (msg.type === 'delete_credential') {
-      return sendToBridge({
-        type: 'delete_credential',
-        request_id: generateRequestId(),
-        server_id: msg.server_id,
-        key: msg.key,
-      });
-    }
-
-    // OAuth messages
+    // OAuth start - needs popup window creation
     if (msg.type === 'oauth_start') {
       return sendToBridge({
         type: 'oauth_start',
@@ -739,58 +393,7 @@ browser.runtime.onMessage.addListener(
       });
     }
 
-    if (msg.type === 'oauth_cancel') {
-      return sendToBridge({
-        type: 'oauth_cancel',
-        request_id: generateRequestId(),
-        state: msg.state,
-      });
-    }
-
-    if (msg.type === 'oauth_revoke') {
-      return sendToBridge({
-        type: 'oauth_revoke',
-        request_id: generateRequestId(),
-        server_id: msg.server_id,
-        credential_key: msg.credential_key,
-      });
-    }
-
-    if (msg.type === 'oauth_status') {
-      return sendToBridge({
-        type: 'oauth_status',
-        request_id: generateRequestId(),
-        server_id: msg.server_id,
-        credential_key: msg.credential_key,
-      });
-    }
-
-    if (msg.type === 'list_oauth_providers') {
-      return sendToBridge({
-        type: 'list_oauth_providers',
-        request_id: generateRequestId(),
-      });
-    }
-
-    // Manifest-based OAuth messages
-    if (msg.type === 'get_server_manifest') {
-      console.log('[Background] get_server_manifest for:', msg.server_id);
-      return sendToBridge({
-        type: 'get_server_manifest',
-        request_id: generateRequestId(),
-        server_id: msg.server_id,
-      });
-    }
-
-    if (msg.type === 'manifest_oauth_status') {
-      console.log('[Background] manifest_oauth_status for:', msg.server_id);
-      return sendToBridge({
-        type: 'manifest_oauth_status',
-        request_id: generateRequestId(),
-        server_id: msg.server_id,
-      });
-    }
-
+    // Manifest OAuth start - needs popup window creation
     if (msg.type === 'manifest_oauth_start') {
       console.log('[Background] manifest_oauth_start for:', msg.server_id);
       return sendToBridge({
@@ -1194,5 +797,39 @@ autoDetectLLM();
 
 // Initialize the JS AI Provider router
 setupProviderRouter();
+
+// ============================================================================
+// Page Chat - inject chat sidebar into current tab
+// ============================================================================
+
+async function injectPageChat(tabId: number): Promise<void> {
+  try {
+    // Inject the page-chat content script
+    await browser.scripting.executeScript({
+      target: { tabId },
+      files: ['page-chat.js'],
+    });
+    console.log('[Background] Page chat injected into tab', tabId);
+  } catch (err) {
+    console.error('[Background] Failed to inject page chat:', err);
+  }
+}
+
+// Listen for keyboard command
+browser.commands.onCommand.addListener(async (command) => {
+  if (command === 'toggle-page-chat') {
+    const tabs = await browser.tabs.query({ active: true, currentWindow: true });
+    if (tabs[0]?.id) {
+      await injectPageChat(tabs[0].id);
+    }
+  }
+});
+
+// Also handle message from sidebar/popup to open page chat
+browser.runtime.onMessage.addListener((message, sender) => {
+  if (message.type === 'open_page_chat' && message.tabId) {
+    injectPageChat(message.tabId);
+  }
+});
 
 console.log('Harbor background script initialized');

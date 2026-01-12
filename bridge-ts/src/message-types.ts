@@ -90,6 +90,13 @@ export const MSG_SET_DOCKER_MODE = 'set_docker_mode' as const;
 export const MSG_SHOULD_PREFER_DOCKER = 'should_prefer_docker' as const;
 
 // =============================================================================
+// BYOC Messages (Bring Your Own Chatbot - website MCP integration)
+// =============================================================================
+
+export const MSG_CONNECT_REMOTE_MCP = 'connect_remote_mcp' as const;
+export const MSG_DISCONNECT_REMOTE_MCP = 'disconnect_remote_mcp' as const;
+
+// =============================================================================
 // MCP Connection Messages (stdio-based local servers)
 // =============================================================================
 
@@ -239,6 +246,9 @@ export type MessageType =
   | typeof MSG_BUILD_DOCKER_IMAGES
   | typeof MSG_SET_DOCKER_MODE
   | typeof MSG_SHOULD_PREFER_DOCKER
+  // BYOC
+  | typeof MSG_CONNECT_REMOTE_MCP
+  | typeof MSG_DISCONNECT_REMOTE_MCP
   // MCP
   | typeof MSG_MCP_CONNECT
   | typeof MSG_MCP_DISCONNECT

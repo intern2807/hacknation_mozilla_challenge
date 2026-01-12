@@ -656,6 +656,130 @@ const handleAddRemoteServer: MessageHandler = async (message, _store, _client, _
   }
 };
 
+// =============================================================================
+// BYOC: Connect to a website's MCP server temporarily
+// =============================================================================
+
+// Track temporary BYOC servers (cleared when tab closes)
+const temporaryByocServers: Map<string, { 
+  serverId: string; 
+  origin: string;
+  installedServerId?: string;
+}> = new Map();
+
+/**
+ * Connect to a remote MCP server for BYOC (Bring Your Own Chatbot).
+ * 
+ * When a website calls agent.mcp.register(), the extension sends this message
+ * to the bridge to establish a temporary connection to the website's MCP server.
+ */
+const handleConnectRemoteMcp: MessageHandler = async (message, _store, _client, _catalog, installer, mcpManager) => {
+  const requestId = message.request_id || '';
+  const serverId = message.server_id as string || '';
+  const name = message.name as string || '';
+  const url = message.url as string || '';
+  const transport = (message.transport as 'http' | 'sse') || 'sse';
+  const origin = message.origin as string || '';
+
+  if (!serverId) {
+    return makeError(requestId, 'invalid_request', 'Missing server_id');
+  }
+  if (!url) {
+    return makeError(requestId, 'invalid_request', 'Missing url');
+  }
+
+  try {
+    // Validate URL
+    const parsedUrl = new URL(url);
+    
+    // For production, require HTTPS (allow localhost for development)
+    if (parsedUrl.protocol !== 'https:' && parsedUrl.protocol !== 'wss:' && 
+        parsedUrl.hostname !== 'localhost' && parsedUrl.hostname !== '127.0.0.1') {
+      return makeError(requestId, 'invalid_request', 'MCP server URL must use HTTPS (except localhost for development)');
+    }
+
+    log(`[BYOC] Connecting to remote MCP server: ${url}`);
+
+    // Add as a temporary remote server
+    const serverName = name || `BYOC: ${new URL(origin).hostname}`;
+    const server = installer.addRemoteServer(serverName, url, transport);
+    
+    log(`[BYOC] Added temporary server: ${server.id}`);
+
+    // Try to connect immediately
+    try {
+      const connectionResult = await mcpManager.connect(server, {});
+      
+      if (!connectionResult.success) {
+        log(`[BYOC] Connection failed: ${connectionResult.error}`);
+        // Clean up the temporary server
+        installer.uninstall(server.id);
+        return makeError(requestId, 'connection_failed', connectionResult.error || 'Failed to connect');
+      }
+
+      log(`[BYOC] Connected successfully. Tools: ${connectionResult.tools?.length || 0}`);
+
+      // Track the temporary server
+      temporaryByocServers.set(serverId, {
+        serverId,
+        origin,
+        installedServerId: server.id,
+      });
+
+      return makeResult('connect_remote_mcp', requestId, {
+        success: true,
+        server_id: server.id,
+        byoc_id: serverId,
+        connectionInfo: connectionResult.connectionInfo,
+        tools: connectionResult.tools?.map(t => ({
+          name: t.name,
+          description: t.description,
+        })),
+      });
+    } catch (connErr) {
+      log(`[BYOC] Connection error: ${connErr}`);
+      // Clean up the temporary server
+      try {
+        installer.uninstall(server.id);
+      } catch { /* ignore cleanup errors */ }
+      return makeError(requestId, 'connection_failed', String(connErr));
+    }
+  } catch (e) {
+    log(`[BYOC] Failed to add remote server: ${e}`);
+    return makeError(requestId, 'add_error', String(e));
+  }
+};
+
+/**
+ * Disconnect and clean up a BYOC server.
+ */
+const handleDisconnectRemoteMcp: MessageHandler = async (message, _store, _client, _catalog, installer, mcpManager) => {
+  const requestId = message.request_id || '';
+  const serverId = message.server_id as string || '';
+
+  const byocServer = temporaryByocServers.get(serverId);
+  if (!byocServer) {
+    return makeResult('disconnect_remote_mcp', requestId, { success: true });
+  }
+
+  try {
+    // Disconnect and uninstall
+    if (byocServer.installedServerId) {
+      try {
+        await mcpManager.disconnect(byocServer.installedServerId);
+      } catch { /* ignore */ }
+      try {
+        installer.uninstall(byocServer.installedServerId);
+      } catch { /* ignore */ }
+    }
+    temporaryByocServers.delete(serverId);
+    log(`[BYOC] Cleaned up server: ${serverId}`);
+    return makeResult('disconnect_remote_mcp', requestId, { success: true });
+  } catch (e) {
+    return makeError(requestId, 'disconnect_error', String(e));
+  }
+};
+
 // Import MCP configuration (Claude Desktop or VS Code format)
 const handleImportConfig: MessageHandler = async (message, _store, _client, _catalog, installer) => {
   const requestId = message.request_id || '';
@@ -3808,6 +3932,10 @@ const HANDLERS: Record<string, MessageHandler> = {
   [M.MSG_BUILD_DOCKER_IMAGES]: handleBuildDockerImages,
   [M.MSG_SET_DOCKER_MODE]: handleSetDockerMode,
   [M.MSG_SHOULD_PREFER_DOCKER]: handleShouldPreferDocker,
+  
+  // BYOC handlers (Bring Your Own Chatbot)
+  [M.MSG_CONNECT_REMOTE_MCP]: handleConnectRemoteMcp,
+  [M.MSG_DISCONNECT_REMOTE_MCP]: handleDisconnectRemoteMcp,
   
   // Installer handlers
   [M.MSG_CHECK_RUNTIMES]: handleCheckRuntimes,

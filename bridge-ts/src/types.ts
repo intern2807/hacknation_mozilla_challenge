@@ -96,6 +96,7 @@ export enum RuntimeType {
   NODE = 'node',
   PYTHON = 'python',
   DOCKER = 'docker',
+  OLLAMA = 'ollama',
 }
 
 export interface Runtime {

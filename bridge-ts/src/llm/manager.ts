@@ -2,7 +2,7 @@
  * LLM Manager - detects and manages LLM providers.
  * 
  * Supports both local and remote providers through the any-llm library:
- * - Local: Ollama (localhost:11434), llamafile (localhost:8080)
+ * - Local: Ollama (localhost:11434) - native install with Metal GPU acceleration
  * - Remote: OpenAI, Anthropic, Mistral, Groq
  * 
  * Remote providers require API keys which are stored securely via the
@@ -32,7 +32,7 @@ const LLM_CREDENTIAL_NAMESPACE = '_llm_providers';
 // =============================================================================
 
 /** Local providers that don't require API keys */
-const LOCAL_PROVIDERS: LLMProviderType[] = ['ollama', 'llamafile'];
+const LOCAL_PROVIDERS: LLMProviderType[] = ['ollama'];
 
 /** Remote providers that require API keys */
 const REMOTE_PROVIDERS: LLMProviderType[] = ['openai', 'anthropic', 'mistral', 'groq'];
@@ -40,7 +40,6 @@ const REMOTE_PROVIDERS: LLMProviderType[] = ['openai', 'anthropic', 'mistral', '
 /** Default URLs for local providers */
 const DEFAULT_URLS: Record<string, string> = {
   ollama: 'http://localhost:11434',
-  llamafile: 'http://localhost:8080/v1',  // OpenAI SDK expects /v1 in baseURL
 };
 
 /** Environment variable names for API keys */
@@ -58,7 +57,6 @@ const DEFAULT_MODELS: Record<string, string> = {
   mistral: 'mistral-large-latest',
   groq: 'llama-3.1-70b-versatile',
   ollama: 'llama3.2',
-  llamafile: 'default',
 };
 
 // =============================================================================
@@ -69,7 +67,7 @@ const DEFAULT_MODELS: Record<string, string> = {
  * Manages LLM providers with support for both local and remote services.
  * 
  * Key features:
- * - Automatic detection of local providers (Ollama, llamafile)
+ * - Automatic detection of local Ollama provider
  * - API key management for remote providers
  * - Provider switching and model selection
  * - Proxy for chat requests
@@ -562,6 +560,13 @@ export function getLLMManager(): LLMManager {
     _manager = new LLMManager();
   }
   return _manager;
+}
+
+/**
+ * Reset the singleton instance. FOR TESTING ONLY.
+ */
+export function __resetLLMManagerForTesting(): void {
+  _manager = null;
 }
 
 // Re-export types for convenience

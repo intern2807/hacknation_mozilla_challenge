@@ -1,7 +1,8 @@
 /**
  * Runtime detection and management.
  * 
- * Detects available runtimes (Node.js, Python, Docker).
+ * Detects available runtimes (Node.js, Python, Docker, Ollama).
+ * Uses any-llm-ts for Ollama server availability checks.
  */
 
 import { execSync } from 'node:child_process';
@@ -9,6 +10,7 @@ import { existsSync } from 'node:fs';
 import { platform } from 'node:os';
 import { log } from '../native-messaging.js';
 import { Runtime, RuntimeType } from '../types.js';
+import { AnyLLM } from '../any-llm-ts/src/index.js';
 
 // Install hints for missing runtimes
 const INSTALL_HINTS: Record<RuntimeType, Record<string, string>> = {
@@ -26,6 +28,11 @@ const INSTALL_HINTS: Record<RuntimeType, Record<string, string>> = {
     darwin: 'Install Docker Desktop: https://docker.com/products/docker-desktop/',
     linux: 'Install with: curl -fsSL https://get.docker.com | sh',
     win32: 'Install Docker Desktop: https://docker.com/products/docker-desktop/',
+  },
+  [RuntimeType.OLLAMA]: {
+    darwin: 'Install with: brew install ollama\nOr download from: https://ollama.com/',
+    linux: 'Install with: curl -fsSL https://ollama.com/install.sh | sh',
+    win32: 'Download from: https://ollama.com/',
   },
 };
 
@@ -71,17 +78,18 @@ export class RuntimeManager {
   private cache: Map<RuntimeType, Runtime> = new Map();
 
   async detectAll(forceRefresh: boolean = false): Promise<Runtime[]> {
-    if (!forceRefresh && this.cache.size === 3) {
+    if (!forceRefresh && this.cache.size === 4) {
       return Array.from(this.cache.values());
     }
 
-    const [node, python, docker] = await Promise.all([
+    const [node, python, docker, ollama] = await Promise.all([
       this.detectNode(),
       this.detectPython(),
       this.detectDocker(),
+      this.detectOllama(),
     ]);
 
-    return [node, python, docker];
+    return [node, python, docker, ollama];
   }
 
   async detectNode(): Promise<Runtime> {
@@ -179,6 +187,46 @@ export class RuntimeManager {
     }
 
     this.cache.set(RuntimeType.DOCKER, runtime);
+    return runtime;
+  }
+
+  async detectOllama(): Promise<Runtime> {
+    const runtime: Runtime = {
+      type: RuntimeType.OLLAMA,
+      available: false,
+      version: null,
+      path: null,
+      runnerCmd: null,
+      installHint: getInstallHint(RuntimeType.OLLAMA),
+    };
+
+    const ollamaPath = which('ollama');
+    if (ollamaPath) {
+      runtime.path = ollamaPath;
+      runtime.runnerCmd = 'ollama';
+      runtime.version = getVersion('ollama', ['--version']);
+
+      // Use any-llm-ts to check if Ollama server is running
+      try {
+        const ollama = AnyLLM.create('ollama');
+        const isRunning = await ollama.isAvailable();
+        
+        if (isRunning) {
+          runtime.available = true;
+        } else {
+          // Ollama installed but not running - still mark as available since it can be started
+          runtime.available = true;
+          runtime.installHint = 'Ollama is installed. Run "ollama serve" to start the server.';
+        }
+      } catch {
+        // Ollama installed but server check failed - still mark as available
+        runtime.available = true;
+        runtime.installHint = 'Ollama is installed. Run "ollama serve" to start the server.';
+      }
+    }
+
+    this.cache.set(RuntimeType.OLLAMA, runtime);
+    log(`[RuntimeManager] Ollama: ${runtime.available ? 'available' : 'not found'} (${runtime.version || 'unknown version'})`);
     return runtime;
   }
 

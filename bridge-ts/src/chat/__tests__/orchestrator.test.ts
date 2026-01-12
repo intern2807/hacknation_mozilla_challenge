@@ -8,6 +8,7 @@
 
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { ChatOrchestrator } from '../orchestrator.js';
+import { parseToolCallFromText } from '../tool-call-parser.js';
 
 // Mock the dependencies
 vi.mock('../../llm/manager.js', () => ({
@@ -37,10 +38,9 @@ describe('ChatOrchestrator', () => {
   });
 
   describe('Text-Based Tool Call Parsing', () => {
-    // Access the private method for testing
-    const parseToolCall = (orchestrator: ChatOrchestrator, content: string, toolMapping: Record<string, string>) => {
-      // @ts-expect-error - accessing private method for testing
-      return orchestrator.parseToolCallFromText(content, toolMapping);
+    // Now using the public parseToolCallFromText function directly
+    const parseToolCall = (_orchestrator: ChatOrchestrator, content: string, toolMapping: Record<string, string>) => {
+      return parseToolCallFromText(content, toolMapping);
     };
 
     describe('Format 1: {"name": "tool_name", "parameters": {...}}', () => {
@@ -309,6 +309,101 @@ Here's a JSON object for the function call:
         expect(result?.name).toBe('curated-time__get_current_time');
         expect(result?.arguments).toEqual({ timezone: 'America/Los_Angeles' });
       });
+    });
+  });
+
+  describe('Model Support Detection', () => {
+    // Test the modelSupportsNativeTools logic (accessed via buildSystemPrompt behavior)
+    // These are critical to ensure we don't accidentally break text-based tool calling
+    
+    it('should use text-based prompt for mistral:7b-instruct', () => {
+      // Access private method via prototype for testing
+      const buildPrompt = (orchestrator as any).buildSystemPrompt.bind(orchestrator);
+      const tools = [{ name: 'test', description: 'test', inputSchema: {} }];
+      
+      const prompt = buildPrompt(tools, 'ollama', 'mistral:7b-instruct');
+      
+      // Text-based prompt should contain tool call format instructions
+      expect(prompt).toContain('Tool Call Format');
+      expect(prompt).toContain('{"name":');
+    });
+
+    it('should use native prompt for llama3.2', () => {
+      const buildPrompt = (orchestrator as any).buildSystemPrompt.bind(orchestrator);
+      const tools = [{ name: 'test', description: 'test', inputSchema: {} }];
+      
+      const prompt = buildPrompt(tools, 'ollama', 'llama3.2:3b');
+      
+      // Native prompt should NOT contain JSON format instructions
+      expect(prompt).not.toContain('{"name":');
+      // But should still have strategy guidance
+      expect(prompt).toContain('SEARCH first');
+    });
+
+    it('should use native prompt for OpenAI', () => {
+      const buildPrompt = (orchestrator as any).buildSystemPrompt.bind(orchestrator);
+      const tools = [{ name: 'test', description: 'test', inputSchema: {} }];
+      
+      const prompt = buildPrompt(tools, 'openai', 'gpt-4');
+      
+      expect(prompt).not.toContain('{"name":');
+      expect(prompt).toContain('SEARCH first');
+    });
+
+    it('should use native prompt for Anthropic', () => {
+      const buildPrompt = (orchestrator as any).buildSystemPrompt.bind(orchestrator);
+      const tools = [{ name: 'test', description: 'test', inputSchema: {} }];
+      
+      const prompt = buildPrompt(tools, 'anthropic', 'claude-3');
+      
+      expect(prompt).not.toContain('{"name":');
+    });
+  });
+
+  describe('System Prompt Content', () => {
+    it('should tell model that tools ARE connected', () => {
+      const buildPrompt = (orchestrator as any).buildSystemPrompt.bind(orchestrator);
+      const tools = [{ name: 'test', description: 'test', inputSchema: {} }];
+      
+      const prompt = buildPrompt(tools, 'ollama', 'mistral:7b-instruct');
+      
+      // Critical: The prompt should tell the model tools work
+      expect(prompt.toLowerCase()).toContain('connected');
+      // Should warn the model NOT to say "can't access"
+      expect(prompt.toLowerCase()).toContain("never say");
+    });
+
+    it('should include guidance for empty results', () => {
+      const buildPrompt = (orchestrator as any).buildSystemPrompt.bind(orchestrator);
+      const tools = [{ name: 'test', description: 'test', inputSchema: {} }];
+      
+      const prompt = buildPrompt(tools, 'ollama', 'mistral:7b-instruct');
+      
+      // Should tell model what to do with empty results
+      expect(prompt.toLowerCase()).toContain('no results');
+    });
+
+    it('should discourage saying "I cannot access"', () => {
+      const buildPrompt = (orchestrator as any).buildSystemPrompt.bind(orchestrator);
+      const tools = [{ name: 'test', description: 'test', inputSchema: {} }];
+      
+      const prompt = buildPrompt(tools, 'ollama', 'mistral:7b-instruct');
+      
+      // Should tell model not to say it can't access things
+      // The prompt says: "never say 'I can't access'"
+      expect(prompt.toLowerCase()).toContain("never say");
+      expect(prompt.toLowerCase()).toContain("i can't access");
+    });
+
+    it('should explain step-by-step workflow', () => {
+      const buildPrompt = (orchestrator as any).buildSystemPrompt.bind(orchestrator);
+      const tools = [{ name: 'test', description: 'test', inputSchema: {} }];
+      
+      const prompt = buildPrompt(tools, 'ollama', 'mistral:7b-instruct');
+      
+      // Should explain multi-step workflow
+      expect(prompt).toContain('SEARCH first');
+      expect(prompt).toContain('READ');
     });
   });
 });

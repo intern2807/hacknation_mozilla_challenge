@@ -1,11 +1,12 @@
 /**
- * LLM Setup - Downloads and manages local LLM (llamafile).
+ * LLM Setup - Downloads and manages local LLM models.
  * 
- * Currently supports llamafile only, but designed for future expansion.
+ * Supports Ollama (native or Docker) for local model execution.
+ * Uses any-llm-ts for Ollama API interactions where possible.
  * 
  * Flow:
- * 1. Check status (is llamafile downloaded? running?)
- * 2. If not downloaded, user clicks "Download"
+ * 1. Check status (is Ollama available? model downloaded?)
+ * 2. If model not downloaded, user clicks "Download"
  * 3. Download progress is streamed back
  * 4. Once downloaded, can start/stop the server
  */
@@ -13,8 +14,10 @@
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import * as https from 'node:https';
-import { spawn, execSync, ChildProcess } from 'node:child_process';
+import { spawn, execSync, spawnSync, ChildProcess } from 'node:child_process';
 import { log } from '../native-messaging.js';
+import { getDockerExec } from '../installer/docker-exec.js';
+import { AnyLLM } from '../any-llm-ts/src/index.js';
 
 // =============================================================================
 // Types
@@ -96,41 +99,41 @@ export interface DownloadProgress {
  */
 const AVAILABLE_MODELS: LLMModel[] = [
   {
-    id: 'mistral-7b-instruct',
-    name: 'Mistral 7B Instruct',
-    size: 4_070_000_000, // ~4.1 GB
-    sizeHuman: '4.1 GB',
-    url: 'https://huggingface.co/Mozilla/Mistral-7B-Instruct-v0.2-llamafile/resolve/main/mistral-7b-instruct-v0.2.Q4_0.llamafile',
-    description: 'Best for tool calling. Good balance of speed and capability.',
-    supportsTools: true,
-    recommended: true,
-  },
-  {
-    id: 'phi-2',
-    name: 'Phi-2 (2.7B)',
-    size: 1_700_000_000, // ~1.7 GB
-    sizeHuman: '1.7 GB',
-    url: 'https://huggingface.co/Mozilla/phi-2-llamafile/resolve/main/phi-2.Q4_K_M.llamafile',
-    description: 'Smaller and faster. Good for testing.',
-    supportsTools: true,
-  },
-  {
-    id: 'tinyllama-1.1b',
-    name: 'TinyLlama 1.1B',
-    size: 670_000_000, // ~670 MB
-    sizeHuman: '670 MB',
-    url: 'https://huggingface.co/Mozilla/TinyLlama-1.1B-Chat-v1.0-llamafile/resolve/main/TinyLlama-1.1B-Chat-v1.0.Q5_K_M.llamafile',
-    description: 'Fastest download. Limited capability but good for testing.',
-    supportsTools: false,
-  },
-  {
     id: 'llama-3.2-3b',
     name: 'Llama 3.2 3B Instruct',
     size: 2_000_000_000, // ~2 GB
     sizeHuman: '2.0 GB',
     url: 'https://huggingface.co/Mozilla/Llama-3.2-3B-Instruct-llamafile/resolve/main/Llama-3.2-3B-Instruct.Q6_K.llamafile',
-    description: 'Latest Llama model. Great instruction following.',
+    description: 'Best for tool calling. Native tool support with great instruction following.',
     supportsTools: true,
+    recommended: true,
+  },
+  {
+    id: 'mistral-nemo',
+    name: 'Mistral NeMo 12B',
+    size: 7_000_000_000, // ~7 GB  
+    sizeHuman: '7.0 GB',
+    url: '', // Ollama-only, no llamafile available
+    description: 'Larger and more capable. Native tool calling support.',
+    supportsTools: true,
+  },
+  {
+    id: 'qwen-2.5-7b',
+    name: 'Qwen 2.5 7B Instruct',
+    size: 4_400_000_000, // ~4.4 GB
+    sizeHuman: '4.4 GB',
+    url: '', // Ollama-only
+    description: 'Excellent multilingual model with native tool calling.',
+    supportsTools: true,
+  },
+  {
+    id: 'tinyllama-1.1b',
+    name: 'TinyLlama 1.1B (No Tools)',
+    size: 670_000_000, // ~670 MB
+    sizeHuman: '670 MB',
+    url: 'https://huggingface.co/Mozilla/TinyLlama-1.1B-Chat-v1.0-llamafile/resolve/main/TinyLlama-1.1B-Chat-v1.0.Q5_K_M.llamafile',
+    description: 'Fastest download. Limited capability, NO tool support.',
+    supportsTools: false,
   },
 ];
 
@@ -146,6 +149,30 @@ function getLLMDir(): string {
 function getModelPath(modelId: string): string {
   return path.join(getLLMDir(), `${modelId}.llamafile`);
 }
+
+/**
+ * Get the path to the marker file indicating a model was downloaded via Ollama.
+ * We use a marker file instead of the actual model since Ollama stores models in its own directory.
+ */
+function getOllamaMarkerPath(modelId: string): string {
+  return path.join(getLLMDir(), `${modelId}.ollama`);
+}
+
+/**
+ * Map of model IDs to Ollama model names.
+ * 
+ * IMPORTANT: Only use Ollama models that support native tool calling!
+ * - llama3.1, llama3.2, llama3.3 (8B+) - YES
+ * - mistral-nemo, mistral-large - YES  
+ * - qwen2.5 - YES
+ * - mistral:7b-instruct - NO (old model, no tool support)
+ */
+const OLLAMA_MODEL_MAP: Record<string, string> = {
+  'llama-3.2-3b': 'llama3.2:3b',
+  'mistral-nemo': 'mistral-nemo',
+  'qwen-2.5-7b': 'qwen2.5:7b',
+  'tinyllama-1.1b': 'tinyllama',
+};
 
 function getPidFilePath(): string {
   return path.join(getLLMDir(), 'running.json');
@@ -163,6 +190,8 @@ interface RunningProcessInfo {
   modelId: string;
   port: number;
   startedAt: string;
+  /** Docker container ID (if running in Docker) */
+  dockerContainerId?: string;
 }
 
 /**
@@ -341,6 +370,7 @@ export class LLMSetupManager {
   
   /**
    * Get list of downloaded model IDs.
+   * Includes both llamafile downloads and Ollama-downloaded models.
    */
   getDownloadedModels(): string[] {
     const dir = getLLMDir();
@@ -349,9 +379,26 @@ export class LLMSetupManager {
     }
     
     const files = fs.readdirSync(dir);
-    return files
+    const modelIds = new Set<string>();
+    
+    // Llamafile downloads
+    files
       .filter(f => f.endsWith('.llamafile'))
-      .map(f => f.replace('.llamafile', ''));
+      .forEach(f => modelIds.add(f.replace('.llamafile', '')));
+    
+    // Ollama downloads (marker files)
+    files
+      .filter(f => f.endsWith('.ollama'))
+      .forEach(f => modelIds.add(f.replace('.ollama', '')));
+    
+    return Array.from(modelIds);
+  }
+  
+  /**
+   * Check if a model was downloaded via Ollama (vs llamafile).
+   */
+  isOllamaModel(modelId: string): boolean {
+    return fs.existsSync(getOllamaMarkerPath(modelId));
   }
   
   /**
@@ -428,20 +475,12 @@ export class LLMSetupManager {
   }
   
   /**
-   * Check if Ollama is running (uses /api/tags endpoint).
+   * Check if Ollama is running using any-llm-ts.
    */
   private async isOllamaRunning(baseUrl: string): Promise<boolean> {
     try {
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 2000);
-      
-      const response = await fetch(`${baseUrl}/api/tags`, {
-        method: 'GET',
-        signal: controller.signal,
-      });
-      
-      clearTimeout(timeoutId);
-      return response.ok;
+      const ollama = AnyLLM.create('ollama', { baseUrl });
+      return await ollama.isAvailable();
     } catch {
       return false;
     }
@@ -545,6 +584,8 @@ export class LLMSetupManager {
   
   /**
    * Download a model.
+   * On macOS with Docker, uses Ollama to download (faster, works without Gatekeeper issues).
+   * Otherwise downloads llamafile directly.
    */
   async downloadModel(
     modelId: string,
@@ -556,11 +597,12 @@ export class LLMSetupManager {
     }
     
     ensureLLMDir();
-    const targetPath = getModelPath(modelId);
-    const tempPath = `${targetPath}.download`;
     
-    // Check if already downloaded
-    if (fs.existsSync(targetPath)) {
+    // Check if already downloaded (either llamafile or ollama marker)
+    const targetPath = getModelPath(modelId);
+    const ollamaMarkerPath = getOllamaMarkerPath(modelId);
+    
+    if (fs.existsSync(targetPath) || fs.existsSync(ollamaMarkerPath)) {
       log(`[LLMSetup] Model ${modelId} already downloaded`);
       onProgress?.({
         modelId,
@@ -572,7 +614,27 @@ export class LLMSetupManager {
       return;
     }
     
-    log(`[LLMSetup] Starting download of ${modelId} from ${model.url}`);
+    // Check for native Ollama first (best performance)
+    const nativeOllamaAvailable = await this.checkNativeOllamaInstalled();
+    if (nativeOllamaAvailable) {
+      log(`[LLMSetup] Native Ollama detected, using for download (best performance)`);
+      return this.downloadModelViaNativeOllama(modelId, model, onProgress);
+    }
+    
+    // On macOS without native Ollama, try Docker (slower but avoids Gatekeeper)
+    if (process.platform === 'darwin') {
+      const dockerExec = getDockerExec();
+      const dockerInfo = await dockerExec.checkDocker();
+      
+      if (dockerInfo.available) {
+        log(`[LLMSetup] No native Ollama, using Docker (slower - consider installing Ollama: brew install ollama)`);
+        return this.downloadModelViaOllama(modelId, model, onProgress);
+      }
+    }
+    
+    log(`[LLMSetup] Starting llamafile download of ${modelId} from ${model.url}`);
+    
+    const tempPath = `${targetPath}.download`;
     
     return new Promise((resolve, reject) => {
       const file = fs.createWriteStream(tempPath);
@@ -866,14 +928,15 @@ export class LLMSetupManager {
       // Make executable
       fs.chmodSync(targetPath, 0o755);
       
-      // Remove macOS quarantine attribute to prevent Gatekeeper prompts
+      // Remove macOS quarantine and other extended attributes to prevent Gatekeeper prompts
       if (process.platform === 'darwin') {
         try {
-          execSync(`xattr -d com.apple.quarantine "${targetPath}"`, { stdio: 'ignore' });
-          log(`[LLMSetup] Removed quarantine attribute from ${targetPath}`);
-        } catch {
-          // Attribute may not exist, that's fine
-          log(`[LLMSetup] No quarantine attribute to remove (or already removed)`);
+          // Use -cr to recursively clear ALL extended attributes
+          execSync(`xattr -cr "${targetPath}"`, { stdio: 'pipe' });
+          log(`[LLMSetup] Cleared extended attributes from ${targetPath}`);
+        } catch (e) {
+          // Log but don't fail - user can manually clear if needed
+          log(`[LLMSetup] Warning: Could not clear extended attributes: ${e}`);
         }
       }
       
@@ -908,6 +971,380 @@ export class LLMSetupManager {
   }
   
   /**
+   * Download a model via native Ollama (fastest on macOS with Metal GPU).
+   */
+  private async downloadModelViaNativeOllama(
+    modelId: string,
+    model: LLMModel,
+    onProgress?: (progress: DownloadProgress) => void
+  ): Promise<void> {
+    const ollamaModel = OLLAMA_MODEL_MAP[modelId];
+    if (!ollamaModel) {
+      throw new Error(`No Ollama equivalent for model: ${modelId}`);
+    }
+    
+    const ollamaUrl = 'http://localhost:11434';
+    
+    log(`[LLMSetup] Downloading ${modelId} via native Ollama (${ollamaModel})`);
+    
+    try {
+      // Ensure Ollama is running
+      let isRunning = await this.isOllamaRunning(ollamaUrl);
+      
+      if (!isRunning) {
+        log('[LLMSetup] Starting native Ollama server for download...');
+        const ollamaServe = spawn('ollama', ['serve'], {
+          detached: true,
+          stdio: 'ignore',
+        });
+        ollamaServe.unref();
+        
+        const ready = await this.waitForOllamaReady(ollamaUrl, 30000);
+        if (!ready) {
+          throw new Error('Failed to start native Ollama server');
+        }
+      }
+      
+      // Check if model is already downloaded
+      const modelAvailable = await this.checkOllamaModelAvailable(ollamaUrl, ollamaModel);
+      if (modelAvailable) {
+        log(`[LLMSetup] Model ${ollamaModel} already available in native Ollama`);
+        
+        // Create marker file
+        const ollamaMarkerPath = getOllamaMarkerPath(modelId);
+        fs.writeFileSync(ollamaMarkerPath, JSON.stringify({
+          modelId,
+          ollamaModelName: ollamaModel,
+          downloadedAt: new Date().toISOString(),
+          native: true,
+        }));
+        
+        onProgress?.({
+          modelId,
+          bytesDownloaded: model.size,
+          totalBytes: model.size,
+          percent: 100,
+          status: 'complete',
+        });
+        return;
+      }
+      
+      // Pull the model with progress streaming
+      log(`[LLMSetup] Pulling model via native Ollama: ${ollamaModel}`);
+      
+      onProgress?.({
+        modelId,
+        bytesDownloaded: 0,
+        totalBytes: model.size,
+        percent: 0,
+        status: 'downloading',
+      });
+      
+      const response = await fetch(`${ollamaUrl}/api/pull`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: ollamaModel, stream: true }),
+      });
+      
+      if (!response.ok) {
+        throw new Error(`Ollama pull failed: ${response.status}`);
+      }
+      
+      // Stream the progress
+      const reader = response.body?.getReader();
+      if (!reader) {
+        throw new Error('No response body');
+      }
+      
+      const decoder = new TextDecoder();
+      let buffer = '';
+      let lastPercent = -1;
+      
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        
+        buffer += decoder.decode(value, { stream: true });
+        const lines = buffer.split('\n');
+        buffer = lines.pop() || '';
+        
+        for (const line of lines) {
+          if (!line.trim()) continue;
+          
+          try {
+            const data = JSON.parse(line) as { 
+              status?: string; 
+              completed?: number; 
+              total?: number;
+              error?: string;
+            };
+            
+            if (data.error) {
+              throw new Error(data.error);
+            }
+            
+            if (data.total && data.completed !== undefined) {
+              const percent = Math.round((data.completed / data.total) * 100);
+              if (percent !== lastPercent) {
+                lastPercent = percent;
+                onProgress?.({
+                  modelId,
+                  bytesDownloaded: data.completed,
+                  totalBytes: data.total,
+                  percent,
+                  status: 'downloading',
+                });
+              }
+            }
+            
+            if (data.status === 'success') {
+              // Create marker file
+              const ollamaMarkerPath = getOllamaMarkerPath(modelId);
+              fs.writeFileSync(ollamaMarkerPath, JSON.stringify({
+                modelId,
+                ollamaModelName: ollamaModel,
+                downloadedAt: new Date().toISOString(),
+                native: true,
+              }));
+              
+              log(`[LLMSetup] Native Ollama download complete: ${ollamaModel}`);
+              onProgress?.({
+                modelId,
+                bytesDownloaded: model.size,
+                totalBytes: model.size,
+                percent: 100,
+                status: 'complete',
+              });
+              return;
+            }
+          } catch (parseError) {
+            // Ignore parse errors for non-JSON lines
+          }
+        }
+      }
+      
+      throw new Error('Download did not complete successfully');
+      
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      log(`[LLMSetup] Native Ollama download failed: ${message}`);
+      
+      onProgress?.({
+        modelId,
+        bytesDownloaded: 0,
+        totalBytes: model.size,
+        percent: 0,
+        status: 'error',
+        error: message,
+      });
+      
+      throw error;
+    }
+  }
+  
+  /**
+   * Download a model via Ollama in Docker.
+   * This is used on macOS to avoid Gatekeeper issues with llamafile.
+   */
+  private async downloadModelViaOllama(
+    modelId: string,
+    model: LLMModel,
+    onProgress?: (progress: DownloadProgress) => void
+  ): Promise<void> {
+    const ollamaModel = OLLAMA_MODEL_MAP[modelId];
+    if (!ollamaModel) {
+      throw new Error(`No Ollama equivalent for model: ${modelId}`);
+    }
+    
+    const containerName = 'harbor-ollama';
+    const ollamaPort = 11434;
+    const ollamaUrl = `http://127.0.0.1:${ollamaPort}`;
+    
+    log(`[LLMSetup] Downloading ${modelId} via Ollama (${ollamaModel})`);
+    
+    try {
+      // Ensure Ollama container is running
+      const containerRunning = await this.ensureOllamaContainer(containerName, ollamaPort);
+      if (!containerRunning) {
+        throw new Error('Failed to start Ollama container');
+      }
+      
+      // Pull the model with progress streaming
+      log(`[LLMSetup] Pulling Ollama model: ${ollamaModel}`);
+      
+      onProgress?.({
+        modelId,
+        bytesDownloaded: 0,
+        totalBytes: model.size,
+        percent: 0,
+        status: 'downloading',
+      });
+      
+      const response = await fetch(`${ollamaUrl}/api/pull`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: ollamaModel, stream: true }),
+      });
+      
+      if (!response.ok) {
+        throw new Error(`Ollama pull failed: ${response.status}`);
+      }
+      
+      // Stream the progress
+      const reader = response.body?.getReader();
+      if (!reader) {
+        throw new Error('No response body');
+      }
+      
+      const decoder = new TextDecoder();
+      let lastPercent = 0;
+      
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        
+        const text = decoder.decode(value, { stream: true });
+        const lines = text.split('\n').filter(l => l.trim());
+        
+        for (const line of lines) {
+          try {
+            const data = JSON.parse(line) as { 
+              status?: string; 
+              completed?: number; 
+              total?: number; 
+              error?: string;
+            };
+            
+            if (data.error) {
+              throw new Error(data.error);
+            }
+            
+            // Calculate progress
+            if (data.completed && data.total) {
+              const percent = Math.round((data.completed / data.total) * 100);
+              if (percent !== lastPercent) {
+                lastPercent = percent;
+                log(`[LLMSetup] Ollama pull: ${data.status} ${percent}%`);
+                onProgress?.({
+                  modelId,
+                  bytesDownloaded: data.completed,
+                  totalBytes: data.total,
+                  percent,
+                  status: 'downloading',
+                });
+              }
+            } else if (data.status) {
+              log(`[LLMSetup] Ollama pull: ${data.status}`);
+            }
+          } catch (parseErr) {
+            // Ignore JSON parse errors for partial lines
+            if (parseErr instanceof Error && parseErr.message !== 'Unexpected end of JSON input') {
+              throw parseErr;
+            }
+          }
+        }
+      }
+      
+      // Write marker file to indicate this model was downloaded via Ollama
+      const markerPath = getOllamaMarkerPath(modelId);
+      fs.writeFileSync(markerPath, JSON.stringify({
+        modelId,
+        ollamaModel,
+        downloadedAt: new Date().toISOString(),
+      }, null, 2));
+      
+      log(`[LLMSetup] Ollama download complete: ${ollamaModel}`);
+      
+      onProgress?.({
+        modelId,
+        bytesDownloaded: model.size,
+        totalBytes: model.size,
+        percent: 100,
+        status: 'complete',
+      });
+      
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      log(`[LLMSetup] Ollama download failed: ${message}`);
+      
+      onProgress?.({
+        modelId,
+        bytesDownloaded: 0,
+        totalBytes: model.size,
+        percent: 0,
+        status: 'error',
+        error: message,
+      });
+      
+      throw error;
+    }
+  }
+  
+  /**
+   * Ensure Ollama container is running, start it if not.
+   */
+  private async ensureOllamaContainer(containerName: string, port: number): Promise<boolean> {
+    const ollamaUrl = `http://127.0.0.1:${port}`;
+    
+    // Check if Ollama is already responding (maybe already running)
+    if (await this.isOllamaRunning(ollamaUrl)) {
+      log('[LLMSetup] Ollama already running');
+      return true;
+    }
+    
+    log('[LLMSetup] Starting Ollama container...');
+    
+    try {
+      // Remove any existing container
+      try {
+        execSync(`docker rm -f "${containerName}"`, { stdio: 'ignore' });
+      } catch {
+        // Container didn't exist
+      }
+      
+      // Start Ollama container
+      const homeDir = process.env.HOME || '/tmp';
+      const ollamaDataDir = path.join(homeDir, '.harbor', 'ollama-docker');
+      
+      if (!fs.existsSync(ollamaDataDir)) {
+        fs.mkdirSync(ollamaDataDir, { recursive: true });
+      }
+      
+      const dockerArgs = [
+        'run', '-d',
+        '--name', containerName,
+        '-p', `${port}:11434`,
+        '-v', `${ollamaDataDir}:/root/.ollama`,
+        'ollama/ollama',
+      ];
+      
+      const result = spawnSync('docker', dockerArgs, {
+        encoding: 'utf-8',
+        timeout: 60000,
+      });
+      
+      if (result.status !== 0) {
+        log(`[LLMSetup] Docker start failed: ${result.stderr}`);
+        return false;
+      }
+      
+      // Wait for API to be ready
+      const ready = await this.waitForOllamaReady(ollamaUrl, 30000);
+      if (!ready) {
+        log('[LLMSetup] Ollama API not ready after 30s');
+        return false;
+      }
+      
+      log('[LLMSetup] Ollama container started');
+      return true;
+      
+    } catch (error) {
+      log(`[LLMSetup] Failed to start Ollama container: ${error}`);
+      return false;
+    }
+  }
+  
+  /**
    * Cancel an in-progress download.
    */
   cancelDownload(): void {
@@ -919,24 +1356,73 @@ export class LLMSetupManager {
   
   /**
    * Delete a downloaded model.
+   * Handles both llamafile and Ollama downloads.
    */
   deleteModel(modelId: string): boolean {
+    // Stop if running
+    if (this.activeModelId === modelId) {
+      this.stopLocalLLM();
+    }
+    
+    let deleted = false;
+    
+    // Delete llamafile if exists
     const modelPath = getModelPath(modelId);
     if (fs.existsSync(modelPath)) {
-      // Stop if running
-      if (this.activeModelId === modelId) {
-        this.stopLocalLLM();
-      }
-      
       fs.unlinkSync(modelPath);
-      log(`[LLMSetup] Deleted model: ${modelId}`);
-      return true;
+      log(`[LLMSetup] Deleted llamafile: ${modelId}`);
+      deleted = true;
     }
-    return false;
+    
+    // Delete Ollama marker if exists
+    const ollamaMarkerPath = getOllamaMarkerPath(modelId);
+    if (fs.existsSync(ollamaMarkerPath)) {
+      fs.unlinkSync(ollamaMarkerPath);
+      log(`[LLMSetup] Deleted Ollama marker: ${modelId}`);
+      deleted = true;
+      
+      // Also try to delete the model from Ollama
+      const ollamaModel = OLLAMA_MODEL_MAP[modelId];
+      if (ollamaModel) {
+        this.deleteOllamaModel(ollamaModel).catch(err => {
+          log(`[LLMSetup] Warning: Could not delete from Ollama: ${err}`);
+        });
+      }
+    }
+    
+    return deleted;
   }
   
   /**
+   * Delete a model from Ollama.
+   */
+  private async deleteOllamaModel(modelName: string): Promise<void> {
+    const ollamaUrl = 'http://127.0.0.1:11434';
+    
+    try {
+      const response = await fetch(`${ollamaUrl}/api/delete`, {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: modelName }),
+        signal: AbortSignal.timeout(10000),
+      });
+      
+      if (response.ok) {
+        log(`[LLMSetup] Deleted model from Ollama: ${modelName}`);
+      }
+    } catch {
+      // Ollama might not be running, that's OK
+    }
+  }
+  
+  /**
+   * Docker container ID for the running llamafile (if using Docker).
+   */
+  private dockerContainerId: string | null = null;
+  
+  /**
    * Start a downloaded llamafile.
+   * On macOS, uses Docker to avoid Gatekeeper issues.
    */
   async startLocalLLM(modelId: string, port: number = 8080): Promise<{
     success: boolean;
@@ -952,15 +1438,353 @@ export class LLMSetupManager {
       };
     }
     
-    // Ensure the file is executable (in case it was downloaded before chmod fix)
+    // Stop any existing process
+    if (this.runningProcess || this.dockerContainerId) {
+      await this.stopLocalLLM();
+    }
+    
+    // Check for native Ollama first (best performance on macOS with Metal GPU)
+    const nativeOllamaAvailable = await this.checkNativeOllamaInstalled();
+    if (nativeOllamaAvailable) {
+      log('[LLMSetup] Native Ollama detected, using for best performance');
+      return this.startWithNativeOllama(modelId);
+    }
+    
+    // On macOS without native Ollama, use Docker (slower but avoids Gatekeeper)
+    if (process.platform === 'darwin') {
+      const dockerExec = getDockerExec();
+      const dockerInfo = await dockerExec.checkDocker();
+      
+      if (dockerInfo.available) {
+        log('[LLMSetup] No native Ollama, using Docker (slower - consider installing Ollama natively)');
+        return this.startLocalLLMWithDocker(modelId, modelPath, port);
+      } else {
+        log(`[LLMSetup] Docker not available: ${dockerInfo.error}`);
+        log('[LLMSetup] Attempting native llamafile execution (may fail due to Gatekeeper)');
+      }
+    }
+    
+    // Native llamafile execution (Linux, or macOS without Docker/Ollama)
+    return this.startLocalLLMNative(modelId, modelPath, port);
+  }
+  
+  /**
+   * Start Ollama in Docker (for macOS to bypass Gatekeeper issues with llamafile).
+   * Uses the official Ollama Docker image. Model should already be downloaded.
+   */
+  private async startLocalLLMWithDocker(
+    modelId: string, 
+    _modelPath: string, 
+    _port: number
+  ): Promise<{ success: boolean; error?: string; url?: string }> {
+    const ollamaModel = OLLAMA_MODEL_MAP[modelId];
+    if (!ollamaModel) {
+      return {
+        success: false,
+        error: `No Ollama equivalent for model: ${modelId}`,
+      };
+    }
+    
+    const containerName = 'harbor-ollama';
+    const ollamaPort = 11434;
+    const ollamaUrl = `http://127.0.0.1:${ollamaPort}`;
+    
+    log(`[LLMSetup] Starting Ollama in Docker with model: ${ollamaModel}`);
+    
+    try {
+      // Ensure Ollama container is running
+      const containerRunning = await this.ensureOllamaContainer(containerName, ollamaPort);
+      if (!containerRunning) {
+        return {
+          success: false,
+          error: 'Failed to start Ollama container',
+        };
+      }
+      
+      // Model should already be downloaded during the download phase
+      // Just verify it's available
+      const modelAvailable = await this.checkOllamaModelAvailable(ollamaUrl, ollamaModel);
+      
+      if (!modelAvailable) {
+        // Model not found - try to pull it (fallback for edge cases)
+        log(`[LLMSetup] Model ${ollamaModel} not found, pulling...`);
+        const pullSuccess = await this.pullOllamaModel(ollamaUrl, ollamaModel);
+        if (!pullSuccess) {
+          return {
+            success: false,
+            error: `Model ${ollamaModel} not available. Please download it first.`,
+          };
+        }
+      }
+      
+      this.activeModelId = modelId;
+      this.dockerContainerId = containerName;
+      
+      // Save container info for recovery
+      saveRunningProcess({
+        pid: -1,
+        modelId,
+        port: ollamaPort,
+        startedAt: new Date().toISOString(),
+        dockerContainerId: containerName,
+      });
+      
+      log(`[LLMSetup] Ollama ready with model ${ollamaModel} at ${ollamaUrl}`);
+      
+      return {
+        success: true,
+        url: ollamaUrl,
+      };
+      
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      log(`[LLMSetup] Docker/Ollama start failed: ${message}`);
+      
+      return {
+        success: false,
+        error: `Docker/Ollama failed: ${message}`,
+      };
+    }
+  }
+  
+  /**
+   * Check if native Ollama is installed on the system.
+   * Native Ollama is much faster on macOS because it uses Metal GPU acceleration.
+   */
+  private async checkNativeOllamaInstalled(): Promise<boolean> {
+    try {
+      // Check if ollama command exists
+      const result = spawnSync('which', ['ollama'], { encoding: 'utf-8' });
+      if (result.status !== 0) {
+        log('[LLMSetup] Native Ollama not found (which ollama failed)');
+        return false;
+      }
+      
+      // Check if Ollama is running or can be started
+      const ollamaUrl = 'http://localhost:11434';
+      if (await this.isOllamaRunning(ollamaUrl)) {
+        log('[LLMSetup] Native Ollama is already running');
+        return true;
+      }
+      
+      // Ollama is installed but not running - we can start it
+      log('[LLMSetup] Native Ollama is installed but not running');
+      return true;
+      
+    } catch (error) {
+      log(`[LLMSetup] Error checking native Ollama: ${error}`);
+      return false;
+    }
+  }
+  
+  /**
+   * Start using native Ollama (much faster on macOS with Metal GPU).
+   */
+  private async startWithNativeOllama(modelId: string): Promise<{
+    success: boolean;
+    error?: string;
+    url?: string;
+  }> {
+    const ollamaModel = OLLAMA_MODEL_MAP[modelId];
+    if (!ollamaModel) {
+      return {
+        success: false,
+        error: `No Ollama equivalent for model: ${modelId}`,
+      };
+    }
+    
+    const ollamaUrl = 'http://localhost:11434';
+    
+    try {
+      // Check if Ollama is running
+      let isRunning = await this.isOllamaRunning(ollamaUrl);
+      
+      if (!isRunning) {
+        // Try to start Ollama serve in background
+        log('[LLMSetup] Starting native Ollama server...');
+        const ollamaServe = spawn('ollama', ['serve'], {
+          detached: true,
+          stdio: 'ignore',
+        });
+        ollamaServe.unref();
+        
+        // Wait for it to be ready
+        const ready = await this.waitForOllamaReady(ollamaUrl, 30000);
+        if (!ready) {
+          return {
+            success: false,
+            error: 'Failed to start native Ollama server. Try running "ollama serve" manually.',
+          };
+        }
+        isRunning = true;
+      }
+      
+      // Check if model is available
+      const modelAvailable = await this.checkOllamaModelAvailable(ollamaUrl, ollamaModel);
+      
+      if (!modelAvailable) {
+        // Pull the model
+        log(`[LLMSetup] Pulling model ${ollamaModel}...`);
+        const pullResult = spawnSync('ollama', ['pull', ollamaModel], {
+          encoding: 'utf-8',
+          timeout: 600000, // 10 minute timeout for large models
+        });
+        
+        if (pullResult.status !== 0) {
+          return {
+            success: false,
+            error: `Failed to pull model ${ollamaModel}: ${pullResult.stderr}`,
+          };
+        }
+      }
+      
+      this.activeModelId = modelId;
+      
+      log(`[LLMSetup] Native Ollama ready with model: ${ollamaModel}`);
+      
+      return {
+        success: true,
+        url: ollamaUrl,
+      };
+      
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      log(`[LLMSetup] Native Ollama start failed: ${message}`);
+      
+      return {
+        success: false,
+        error: `Native Ollama failed: ${message}`,
+      };
+    }
+  }
+  
+  /**
+   * Check if a model is available in Ollama using any-llm-ts.
+   */
+  private async checkOllamaModelAvailable(baseUrl: string, modelName: string): Promise<boolean> {
+    try {
+      const ollama = AnyLLM.create('ollama', { baseUrl });
+      const models = await ollama.listModels();
+      
+      // Check if model exists (handle both "model" and "model:tag" formats)
+      const modelBase = modelName.split(':')[0];
+      return models.some(m => 
+        m.id === modelName || 
+        m.id.startsWith(modelBase + ':')
+      );
+      
+    } catch {
+      return false;
+    }
+  }
+  
+  /**
+   * Wait for Ollama API to be ready using any-llm-ts.
+   */
+  private async waitForOllamaReady(baseUrl: string, timeoutMs: number): Promise<boolean> {
+    const startTime = Date.now();
+    const ollama = AnyLLM.create('ollama', { baseUrl });
+    
+    while (Date.now() - startTime < timeoutMs) {
+      try {
+        if (await ollama.isAvailable()) {
+          return true;
+        }
+      } catch {
+        // Not ready yet
+      }
+      await new Promise(r => setTimeout(r, 500));
+    }
+    
+    return false;
+  }
+  
+  /**
+   * Pull an Ollama model via API.
+   */
+  private async pullOllamaModel(baseUrl: string, modelName: string): Promise<boolean> {
+    try {
+      log(`[LLMSetup] Pulling Ollama model: ${modelName}`);
+      
+      // Ollama pull can take a long time - we'll stream the response
+      const response = await fetch(`${baseUrl}/api/pull`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: modelName, stream: true }),
+      });
+      
+      if (!response.ok) {
+        log(`[LLMSetup] Pull request failed: ${response.status}`);
+        return false;
+      }
+      
+      // Read the streaming response
+      const reader = response.body?.getReader();
+      if (!reader) {
+        log('[LLMSetup] No response body reader');
+        return false;
+      }
+      
+      const decoder = new TextDecoder();
+      let lastStatus = '';
+      
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        
+        const text = decoder.decode(value, { stream: true });
+        const lines = text.split('\n').filter(l => l.trim());
+        
+        for (const line of lines) {
+          try {
+            const data = JSON.parse(line) as { status?: string; completed?: number; total?: number; error?: string };
+            
+            if (data.error) {
+              log(`[LLMSetup] Pull error: ${data.error}`);
+              return false;
+            }
+            
+            // Log progress occasionally
+            if (data.status && data.status !== lastStatus) {
+              lastStatus = data.status;
+              if (data.completed && data.total) {
+                const percent = Math.round((data.completed / data.total) * 100);
+                log(`[LLMSetup] Pulling ${modelName}: ${data.status} ${percent}%`);
+              } else {
+                log(`[LLMSetup] Pulling ${modelName}: ${data.status}`);
+              }
+            }
+          } catch {
+            // Ignore JSON parse errors
+          }
+        }
+      }
+      
+      log(`[LLMSetup] Model pull complete: ${modelName}`);
+      return true;
+      
+    } catch (error) {
+      log(`[LLMSetup] Pull failed: ${error}`);
+      return false;
+    }
+  }
+  
+  /**
+   * Start llamafile natively (for Linux, or macOS without Docker).
+   */
+  private async startLocalLLMNative(
+    modelId: string,
+    modelPath: string,
+    port: number
+  ): Promise<{ success: boolean; error?: string; url?: string }> {
+    // Ensure the file is executable
     try {
       fs.chmodSync(modelPath, 0o755);
     } catch (chmodErr) {
       log(`[LLMSetup] Warning: Could not set execute permissions: ${chmodErr}`);
     }
     
-    // On macOS, remove ALL extended attributes that can block execution of downloaded files
-    // This includes com.apple.quarantine, com.apple.provenance, etc.
+    // On macOS, try to clear extended attributes (may not work due to Gatekeeper)
     if (process.platform === 'darwin') {
       try {
         execSync(`xattr -cr "${modelPath}"`, { stdio: 'ignore' });
@@ -969,8 +1793,7 @@ export class LLMSetupManager {
         log(`[LLMSetup] Warning: Could not clear extended attributes: ${xattrErr}`);
       }
       
-      // Also clear quarantine from llamafile's cache directory where it extracts .dylib files
-      // llamafile extracts ggml-metal.dylib and other libs here
+      // Also clear quarantine from llamafile's cache directory
       const homeDir = process.env.HOME || '';
       const llamafileCacheDirs = [
         path.join(homeDir, '.cache', 'llamafile'),
@@ -984,22 +1807,15 @@ export class LLMSetupManager {
             execSync(`xattr -cr "${cacheDir}"`, { stdio: 'ignore' });
             log(`[LLMSetup] Cleared extended attributes from cache: ${cacheDir}`);
           } catch {
-            // Ignore errors - directory may not have quarantined files
+            // Ignore
           }
         }
       }
     }
     
-    // Stop any existing process
-    if (this.runningProcess) {
-      await this.stopLocalLLM();
-    }
-    
-    log(`[LLMSetup] Starting llamafile: ${modelPath}`);
+    log(`[LLMSetup] Starting llamafile natively: ${modelPath}`);
     
     try {
-      // Start the llamafile server
-      // Use shell: true because llamafiles are polyglot executables that may need shell interpretation
       this.runningProcess = spawn(modelPath, [
         '--server',
         '--host', '127.0.0.1',
@@ -1014,7 +1830,7 @@ export class LLMSetupManager {
       
       this.activeModelId = modelId;
       
-      // Save PID file for recovery after bridge restart
+      // Save PID file for recovery
       if (this.runningProcess.pid) {
         saveRunningProcess({
           pid: this.runningProcess.pid,
@@ -1051,7 +1867,7 @@ export class LLMSetupManager {
         this.stopLocalLLM();
         return {
           success: false,
-          error: 'Server failed to start within 30 seconds',
+          error: 'Server failed to start within 30 seconds. On macOS, try installing Docker Desktop.',
         };
       }
       
@@ -1090,11 +1906,67 @@ export class LLMSetupManager {
   }
   
   /**
-   * Stop the running llamafile.
-   * Uses PID file for reliable process tracking across bridge restarts.
+   * Stop the running llamafile or Ollama container.
+   * Handles both native processes and Docker containers.
    */
   async stopLocalLLM(): Promise<boolean> {
-    log('[LLMSetup] Stopping llamafile...');
+    log('[LLMSetup] Stopping LLM...');
+    
+    // Check for Docker container first (by ID or name)
+    if (this.dockerContainerId) {
+      try {
+        log(`[LLMSetup] Stopping Docker container: ${this.dockerContainerId}`);
+        execSync(`docker stop ${this.dockerContainerId}`, { 
+          timeout: 10000,
+          stdio: 'ignore',
+        });
+        log('[LLMSetup] Docker container stopped');
+      } catch (error) {
+        log(`[LLMSetup] Error stopping Docker container: ${error}`);
+        // Try force remove
+        try {
+          execSync(`docker rm -f ${this.dockerContainerId}`, { stdio: 'ignore' });
+        } catch {
+          // Ignore
+        }
+      }
+      this.dockerContainerId = null;
+      this.activeModelId = null;
+      clearRunningProcess();
+      return true;
+    }
+    
+    // Also try stopping by known container name (harbor-ollama)
+    try {
+      execSync('docker stop harbor-ollama', { timeout: 10000, stdio: 'ignore' });
+      execSync('docker rm harbor-ollama', { timeout: 5000, stdio: 'ignore' });
+      log('[LLMSetup] Stopped harbor-ollama container');
+    } catch {
+      // Container wasn't running
+    }
+    
+    // Check saved process info for Docker container
+    const savedProcess = loadRunningProcess();
+    if (savedProcess?.dockerContainerId) {
+      try {
+        log(`[LLMSetup] Stopping saved Docker container: ${savedProcess.dockerContainerId}`);
+        execSync(`docker stop ${savedProcess.dockerContainerId}`, { 
+          timeout: 10000,
+          stdio: 'ignore',
+        });
+        log('[LLMSetup] Docker container stopped');
+      } catch (error) {
+        log(`[LLMSetup] Error stopping Docker container: ${error}`);
+        try {
+          execSync(`docker rm -f ${savedProcess.dockerContainerId}`, { stdio: 'ignore' });
+        } catch {
+          // Ignore
+        }
+      }
+      this.activeModelId = null;
+      clearRunningProcess();
+      return true;
+    }
     
     // Method 1: If we have a direct reference to the process, use it
     if (this.runningProcess) {
@@ -1124,7 +1996,6 @@ export class LLMSetupManager {
     }
     
     // Method 2: Use PID file to find and kill the process we started
-    const savedProcess = loadRunningProcess();
     if (savedProcess) {
       log(`[LLMSetup] Found tracked process: PID ${savedProcess.pid}`);
       

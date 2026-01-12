@@ -16,6 +16,11 @@ import { log } from '../native-messaging.js';
 import { ChatSession, addMessage } from './session.js';
 import { McpTool } from '../types.js';
 import { getToolRouter, RoutingResult } from './tool-router.js';
+import { 
+  parseToolCallFromText, 
+  cleanLLMTokens, 
+  ToolNameToServerMap 
+} from './tool-call-parser.js';
 
 /**
  * Result of a single orchestration step.
@@ -96,7 +101,7 @@ export interface OrchestrationResult {
 }
 
 /**
- * Mapping from tool name to server ID.
+ * Mapping from tool name to server ID with full metadata.
  */
 interface ToolMapping {
   [toolName: string]: {
@@ -104,6 +109,17 @@ interface ToolMapping {
     originalName: string;
     tool: McpTool;
   };
+}
+
+/**
+ * Convert the rich ToolMapping to a simple name->serverId map for parsing.
+ */
+function toSimpleToolMapping(mapping: ToolMapping): ToolNameToServerMap {
+  const result: ToolNameToServerMap = {};
+  for (const [name, info] of Object.entries(mapping)) {
+    result[name] = info.serverId;
+  }
+  return result;
 }
 
 /**
@@ -168,20 +184,30 @@ export class ChatOrchestrator {
         const activeProvider = llmManager.getActiveId();
         const activeModel = llmManager.getActiveModelId();
         
-        // Build the request - use provider-specific system prompt
-        const systemPrompt = session.systemPrompt || this.buildSystemPrompt(tools, activeProvider);
+        // Build the request - use provider/model-specific system prompt
+        log(`[Orchestrator] Building system prompt for provider: ${activeProvider}, model: ${activeModel}`);
+        const systemPrompt = session.systemPrompt || this.buildSystemPrompt(tools, activeProvider, activeModel);
+        const useNativeTools = this.modelSupportsNativeTools(activeProvider, activeModel);
+        log(`[Orchestrator] System prompt type: ${useNativeTools ? 'native tool calling' : 'text-based tool calling'}`);
+        log(`[Orchestrator] System prompt length: ${systemPrompt?.length || 0} chars`);
         
         const request: ChatRequest = {
           messages: [...session.messages],
-          tools: tools.length > 0 ? tools : undefined,
+          // Only pass tools natively if model supports it, otherwise use text-based prompting
+          tools: useNativeTools && tools.length > 0 ? tools : undefined,
           systemPrompt,
         };
-        log(`[Orchestrator] Calling LLM: provider=${activeProvider}, model=${activeModel}, tools=${tools.length}`);
+        log(`[Orchestrator] Calling LLM: provider=${activeProvider}, model=${activeModel}, tools=${tools.length}, native=${useNativeTools}`);
+        log(`[Orchestrator] Tools being passed: ${tools.slice(0, 5).map(t => t.name).join(', ')}${tools.length > 5 ? '...' : ''}`);
+        log(`[Orchestrator] System prompt (first 200 chars): ${request.systemPrompt?.substring(0, 200)}`);
         
         const response = await llmManager.chat(request);
         
         // Log the LLM response details
         log(`[Orchestrator] LLM response: finishReason=${response.finishReason}, toolCalls=${response.message.toolCalls?.length || 0}, content=${response.message.content?.substring(0, 100)}`);
+        if (response.message.toolCalls && response.message.toolCalls.length > 0) {
+          log(`[Orchestrator] Tool calls received: ${response.message.toolCalls.map(tc => `${tc.name}(${JSON.stringify(tc.arguments)})`).join(', ')}`);
+        }
         if (response.error) {
           log(`[Orchestrator] LLM error: ${response.error}`);
         }
@@ -215,16 +241,24 @@ export class ChatOrchestrator {
         // Fallback: Check if LLM wrote tool call as text (common with some Ollama models)
         if ((!toolCalls || toolCalls.length === 0) && response.message.content) {
           log(`[Orchestrator] No native tool calls, checking for text-based tool call...`);
-          log(`[Orchestrator] Full LLM response (first 500 chars): ${response.message.content.substring(0, 500)}`);
-          const parsedToolCall = this.parseToolCallFromText(response.message.content, toolMapping);
+          log(`[Orchestrator] Full LLM response: ${response.message.content}`);
+          
+          const simpleMapping = toSimpleToolMapping(toolMapping);
+          log(`[Orchestrator] Tool mapping has ${Object.keys(simpleMapping).length} tools: ${Object.keys(simpleMapping).slice(0, 5).join(', ')}...`);
+          
+          const parsedToolCall = parseToolCallFromText(
+            response.message.content, 
+            simpleMapping
+          );
           if (parsedToolCall) {
-            log('[Orchestrator] Detected tool call written as text, converting...');
+            log('[Orchestrator] ✓ Detected tool call written as text!');
             log(`[Orchestrator] Parsed tool: ${parsedToolCall.name} with args: ${JSON.stringify(parsedToolCall.arguments)}`);
             toolCalls = [parsedToolCall];
             response.finishReason = 'tool_calls';
           } else {
-            log('[Orchestrator] No text-based tool call found - model may not support tool calling');
+            log('[Orchestrator] ✗ No text-based tool call found');
             log('[Orchestrator] Available tool names: ' + Object.keys(toolMapping).join(', '));
+            log('[Orchestrator] Content looks like JSON: ' + (response.message.content.trim().startsWith('{') ? 'YES' : 'NO'));
           }
         }
         
@@ -275,7 +309,7 @@ export class ChatOrchestrator {
         }
         
         // LLM produced a final response - clean any special tokens
-        const finalContent = this.cleanLLMTokens(response.message.content || '');
+        const finalContent = cleanLLMTokens(response.message.content || '');
         
         // Check if LLM is describing how to use a tool instead of calling it
         const describePatterns = [
@@ -382,412 +416,32 @@ export class ChatOrchestrator {
       routing: routingResult,
     };
   }
-  
-  /**
-   * Parse a tool call from text when LLM writes it out instead of using proper format.
-   * This is a fallback for models that don't support tool calling well.
-   * 
-   * Handles multiple formats:
-   * 1. {"name": "tool_name", "parameters": {...}} or {"name": "tool_name", "arguments": {...}}
-   * 2. "tool_name": {...args...}  (common LLM format)
-   * 3. tool_name({...args...}) (function call style)
-   */
-  private parseToolCallFromText(
-    content: string, 
-    toolMapping: ToolMapping
-  ): ToolCall | null {
-    // Clean up LLM special tokens (Llama, Mistral, etc.)
-    let cleanedContent = this.cleanLLMTokens(content);
-    
-    // Extract JSON from markdown code blocks if present
-    // Handles ```json ... ``` or ``` ... ```
-    const codeBlockMatch = cleanedContent.match(/```(?:json)?\s*\n?([\s\S]*?)\n?```/);
-    if (codeBlockMatch) {
-      cleanedContent = codeBlockMatch[1].trim();
-      log(`[Orchestrator] parseToolCall: Extracted JSON from code block`);
-    }
-    
-    log(`[Orchestrator] parseToolCall: Attempting to parse: ${cleanedContent.substring(0, 300)}`);
-    
-    const toolNames = Object.keys(toolMapping);
-    
-    // Format 1: {"name": "tool_name", ...}
-    const result1 = this.tryParseNameFormat(cleanedContent, toolMapping);
-    if (result1) return result1;
-    
-    // Format 2: "tool_name": {...} or tool_name: {...}
-    const result2 = this.tryParseKeyValueFormat(cleanedContent, toolNames, toolMapping);
-    if (result2) return result2;
-    
-    // Format 3: tool_name({...}) function call style
-    const result3 = this.tryParseFunctionCallFormat(cleanedContent, toolNames, toolMapping);
-    if (result3) return result3;
-    
-    // Format 4: Check if LLM mentioned a tool name and we can extract params
-    const result4 = this.tryParseLooseFormat(cleanedContent, toolNames, toolMapping);
-    if (result4) return result4;
-    
-    // Format 5: Just tool name by itself (for tools with no required parameters)
-    // Handles cases like "get_me" or "get_me()" with no JSON
-    const result5 = this.tryParseBareToolName(cleanedContent, toolNames, toolMapping);
-    if (result5) return result5;
-    
-    log('[Orchestrator] parseToolCall: No valid tool call format found');
-    return null;
-  }
-  
-  /**
-   * Try to parse {"name": "tool_name", "parameters": {...}} format.
-   */
-  private tryParseNameFormat(content: string, toolMapping: ToolMapping): ToolCall | null {
-    try {
-      // Look for {"name" or { "name" (with whitespace)
-      let startIdx = content.indexOf('{"name"');
-      if (startIdx === -1) {
-        // Try with whitespace/newlines between { and "name"
-        const match = content.match(/\{\s*"name"/);
-        if (match && match.index !== undefined) {
-          startIdx = match.index;
-        }
-      }
-      if (startIdx === -1) return null;
-      
-      const jsonStr = this.extractJsonObject(content, startIdx);
-      if (!jsonStr) {
-        log(`[Orchestrator] tryParseNameFormat: Could not extract JSON object`);
-        return null;
-      }
-      
-      log(`[Orchestrator] tryParseNameFormat: Extracted JSON: ${jsonStr}`);
-      
-      const parsed = JSON.parse(jsonStr);
-      if (parsed.name) {
-        log(`[Orchestrator] tryParseNameFormat: Looking for tool "${parsed.name}"`);
-        log(`[Orchestrator] tryParseNameFormat: Available tools: ${Object.keys(toolMapping).join(', ')}`);
-        
-        // Try exact match first
-        let matchedName = toolMapping[parsed.name] ? parsed.name : null;
-        
-        // If not found, try to find a prefixed version (server__toolname)
-        if (!matchedName) {
-          for (const prefixedName of Object.keys(toolMapping)) {
-            const shortName = prefixedName.split('__').pop();
-            if (shortName === parsed.name) {
-              matchedName = prefixedName;
-              log(`[Orchestrator] Matched unprefixed name "${parsed.name}" to "${prefixedName}"`);
-              break;
-            }
-            // Also try matching if the model used a similar prefix
-            // e.g., model outputs "github__search" but actual is "github-npm__search"
-            const modelPrefix = parsed.name.split('__')[0];
-            const actualPrefix = prefixedName.split('__')[0];
-            const modelTool = parsed.name.split('__').slice(1).join('__');
-            const actualTool = prefixedName.split('__').slice(1).join('__');
-            if (modelTool && actualTool && modelTool === actualTool) {
-              // Tool name matches, just prefix is different
-              log(`[Orchestrator] Tool name matches but prefix differs: model="${modelPrefix}" actual="${actualPrefix}"`);
-              matchedName = prefixedName;
-              break;
-            }
-          }
-        }
-        
-        if (matchedName) {
-          const args = (parsed.parameters || parsed.arguments || {}) as Record<string, unknown>;
-          log(`[Orchestrator] Parsed name format: ${matchedName} with args: ${JSON.stringify(args)}`);
-          return {
-            id: `text_call_${Date.now()}`,
-            name: matchedName,
-            arguments: args,
-          };
-        } else {
-          log(`[Orchestrator] tryParseNameFormat: No matching tool found for "${parsed.name}"`);
-        }
-      }
-    } catch (e) {
-      log(`[Orchestrator] tryParseNameFormat failed: ${e}`);
-    }
-    return null;
-  }
-  
-  /**
-   * Try to parse "tool_name": {...} or tool_name: {...} format.
-   */
-  private tryParseKeyValueFormat(
-    content: string, 
-    toolNames: string[], 
-    toolMapping: ToolMapping
-  ): ToolCall | null {
-    // Build a list of both prefixed and short names to search for
-    const namesToSearch: { searchName: string; prefixedName: string }[] = [];
-    for (const prefixedName of toolNames) {
-      namesToSearch.push({ searchName: prefixedName, prefixedName });
-      // Also add short name (without server prefix)
-      const shortName = prefixedName.split('__').pop();
-      if (shortName && shortName !== prefixedName) {
-        namesToSearch.push({ searchName: shortName, prefixedName });
-      }
-    }
-    
-    for (const { searchName, prefixedName } of namesToSearch) {
-      // Look for "tool_name": { or tool_name: {
-      const escapedName = searchName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-      const patterns = [
-        `"${escapedName}":\\s*\\{`,
-        `${escapedName}:\\s*\\{`,
-        `\`${escapedName}\`:\\s*\\{`,
-      ];
-      
-      for (const pattern of patterns) {
-        const regex = new RegExp(pattern);
-        const match = content.match(regex);
-        if (match && match.index !== undefined) {
-          try {
-            // Find the { after the tool name
-            const braceStart = content.indexOf('{', match.index);
-            if (braceStart === -1) continue;
-            
-            const jsonStr = this.extractJsonObject(content, braceStart);
-            if (!jsonStr) continue;
-            
-            const args = JSON.parse(jsonStr);
-            log(`[Orchestrator] Parsed key-value format for: ${searchName} -> ${prefixedName}`);
-            return {
-              id: `text_call_${Date.now()}`,
-              name: prefixedName,
-              arguments: args as Record<string, unknown>,
-            };
-          } catch (e) {
-            log(`[Orchestrator] tryParseKeyValueFormat failed for ${searchName}: ${e}`);
-          }
-        }
-      }
-    }
-    return null;
-  }
-  
-  /**
-   * Try to parse tool_name({...}) function call format.
-   */
-  private tryParseFunctionCallFormat(
-    content: string, 
-    toolNames: string[], 
-    toolMapping: ToolMapping
-  ): ToolCall | null {
-    // Build a list of both prefixed and short names to search for
-    const namesToSearch: { searchName: string; prefixedName: string }[] = [];
-    for (const prefixedName of toolNames) {
-      namesToSearch.push({ searchName: prefixedName, prefixedName });
-      // Also add short name (without server prefix)
-      const shortName = prefixedName.split('__').pop();
-      if (shortName && shortName !== prefixedName) {
-        namesToSearch.push({ searchName: shortName, prefixedName });
-      }
-    }
-    
-    for (const { searchName, prefixedName } of namesToSearch) {
-      const pattern = new RegExp(`${searchName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\s*\\(\\s*\\{`);
-      const match = content.match(pattern);
-      if (match && match.index !== undefined) {
-        try {
-          const braceStart = content.indexOf('{', match.index);
-          if (braceStart === -1) continue;
-          
-          const jsonStr = this.extractJsonObject(content, braceStart);
-          if (!jsonStr) continue;
-          
-          const args = JSON.parse(jsonStr);
-          log(`[Orchestrator] Parsed function call format for: ${searchName} -> ${prefixedName}`);
-          return {
-            id: `text_call_${Date.now()}`,
-            name: prefixedName,
-            arguments: args as Record<string, unknown>,
-          };
-        } catch (e) {
-          log(`[Orchestrator] tryParseFunctionCallFormat failed for ${searchName}: ${e}`);
-        }
-      }
-    }
-    return null;
-  }
-  
-  /**
-   * Try to loosely match tool names and extract any JSON object as parameters.
-   */
-  private tryParseLooseFormat(
-    content: string, 
-    toolNames: string[], 
-    toolMapping: ToolMapping
-  ): ToolCall | null {
-    const contentLower = content.toLowerCase();
-    
-    for (const prefixedName of toolNames) {
-      // Get short name for matching
-      const shortName = prefixedName.split('__').pop() || prefixedName;
-      
-      // Check if tool name is mentioned (case insensitive, with or without underscores)
-      const normalizedTool = prefixedName.toLowerCase().replace(/__/g, '_');
-      const normalizedShort = shortName.toLowerCase().replace(/_/g, ' '); // "get_current_time" -> "get current time"
-      const shortLower = shortName.toLowerCase();
-      
-      if (contentLower.includes(normalizedTool) || 
-          contentLower.includes(prefixedName.toLowerCase()) ||
-          contentLower.includes(shortLower) ||
-          contentLower.includes(normalizedShort)) {
-        // Find the first JSON object in the content
-        const braceStart = content.indexOf('{');
-        if (braceStart === -1) continue;
-        
-        try {
-          const jsonStr = this.extractJsonObject(content, braceStart);
-          if (!jsonStr) continue;
-          
-          const parsed = JSON.parse(jsonStr);
-          // Make sure it looks like arguments (not a meta-object with name/tool which we handle elsewhere)
-          if (parsed && typeof parsed === 'object' && !parsed.name && !parsed.tool) {
-            log(`[Orchestrator] Parsed loose format for: ${shortName} -> ${prefixedName}`);
-            return {
-              id: `text_call_${Date.now()}`,
-              name: prefixedName,
-              arguments: parsed as Record<string, unknown>,
-            };
-          }
-        } catch (e) {
-          log(`[Orchestrator] tryParseLooseFormat failed for ${prefixedName}: ${e}`);
-        }
-      }
-    }
-    return null;
-  }
-  
-  /**
-   * Try to parse a bare tool name (with no parameters).
-   * Handles: "get_me", "get_me()", tool names embedded in text like "I'll call get_me now"
-   */
-  private tryParseBareToolName(
-    content: string, 
-    toolNames: string[], 
-    toolMapping: ToolMapping
-  ): ToolCall | null {
-    const contentTrimmed = content.trim();
-    const contentLower = contentTrimmed.toLowerCase();
-    
-    // Build list of names to check (both prefixed and short)
-    const namesToSearch: { searchName: string; prefixedName: string }[] = [];
-    for (const prefixedName of toolNames) {
-      namesToSearch.push({ searchName: prefixedName, prefixedName });
-      const shortName = prefixedName.split('__').pop();
-      if (shortName && shortName !== prefixedName) {
-        namesToSearch.push({ searchName: shortName, prefixedName });
-      }
-    }
-    
-    // Sort by name length (longer names first) to avoid partial matches
-    namesToSearch.sort((a, b) => b.searchName.length - a.searchName.length);
-    
-    for (const { searchName, prefixedName } of namesToSearch) {
-      const searchLower = searchName.toLowerCase();
-      
-      // Check for exact match (content is just the tool name)
-      if (contentLower === searchLower || 
-          contentLower === `${searchLower}()` || 
-          contentLower === `${searchLower}({})`) {
-        log(`[Orchestrator] Parsed bare tool name (exact): ${searchName} -> ${prefixedName}`);
-        return {
-          id: `text_call_${Date.now()}`,
-          name: prefixedName,
-          arguments: {},
-        };
-      }
-      
-      // Check for tool name at word boundaries in short content (< 100 chars suggests just calling a tool)
-      // Only do this check if content is short enough to be a tool call response
-      if (contentTrimmed.length < 100 && contentTrimmed.length > 0) {
-        // Simple check: look for the tool name as a standalone word
-        // Escape special regex characters in the tool name
-        const escaped = searchName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-        try {
-          const pattern = new RegExp(`(?:^|\\s)${escaped}(?:\\s*\\(\\s*\\{?\\s*\\}?\\s*\\))?(?:\\s|$)`, 'i');
-          if (pattern.test(contentTrimmed)) {
-            log(`[Orchestrator] Parsed bare tool name (word boundary): ${searchName} -> ${prefixedName}`);
-            return {
-              id: `text_call_${Date.now()}`,
-              name: prefixedName,
-              arguments: {},
-            };
-          }
-        } catch {
-          // Invalid regex, skip
-          log(`[Orchestrator] Invalid regex for tool name: ${searchName}`);
-        }
-      }
-    }
-    
-    return null;
-  }
-  
-  /**
-   * Extract a balanced JSON object starting at a given index.
-   */
-  private extractJsonObject(content: string, startIdx: number): string | null {
-    let braceCount = 0;
-    let endIdx = startIdx;
-    let inString = false;
-    let escapeNext = false;
-    
-    for (let i = startIdx; i < content.length; i++) {
-      const char = content[i];
-      
-      if (escapeNext) {
-        escapeNext = false;
-        continue;
-      }
-      
-      if (char === '\\' && inString) {
-        escapeNext = true;
-        continue;
-      }
-      
-      if (char === '"' && !escapeNext) {
-        inString = !inString;
-        continue;
-      }
-      
-      if (!inString) {
-        if (char === '{') braceCount++;
-        else if (char === '}') {
-          braceCount--;
-          if (braceCount === 0) {
-            endIdx = i + 1;
-            break;
-          }
-        }
-      }
-    }
-    
-    if (braceCount !== 0) {
-      log(`[Orchestrator] extractJsonObject: Unbalanced braces`);
-      return null;
-    }
-    
-    return content.slice(startIdx, endIdx);
-  }
 
   /**
-   * Clean LLM special tokens from output.
-   * These tokens (like <|eot_id|>) sometimes leak into responses from local models.
+   * Check if a provider/model combo supports native tool calling.
+   * 
+   * Native tool calling means the model can receive tools in the API request
+   * and return structured tool_calls in the response.
    */
-  private cleanLLMTokens(content: string): string {
-    return content
-      .replace(/<\|eot_id\|>/g, '')
-      .replace(/<\|end_of_text\|>/g, '')
-      .replace(/<\|begin_of_text\|>/g, '')
-      .replace(/<\|start_header_id\|>.*?<\|end_header_id\|>/g, '')
-      .replace(/<\|im_end\|>/g, '')
-      .replace(/<\|im_start\|>/g, '')
-      .replace(/<\/s>/g, '')
-      .replace(/<s>/g, '')
-      .trim();
+  private modelSupportsNativeTools(provider?: string | null, model?: string | null): boolean {
+    // Cloud providers with native tool support
+    const nativeToolProviders = ['openai', 'anthropic', 'mistral', 'groq'];
+    if (provider && nativeToolProviders.includes(provider)) {
+      return true;
+    }
+    
+    // Ollama - only specific models support native tool calling
+    if (provider === 'ollama' && model) {
+      const ollamaModelsWithNativeTools = [
+        'llama3.1', 'llama3.2', 'llama3.3',
+        'mistral-nemo', 'mistral-large',
+        'qwen2.5',
+        'command-r',
+      ];
+      return ollamaModelsWithNativeTools.some(m => model.toLowerCase().includes(m));
+    }
+    
+    return false;
   }
 
   /**
@@ -797,7 +451,7 @@ export class ChatOrchestrator {
    * For providers without native tool calling (llamafile), include explicit
    * instructions on how to format tool calls as JSON.
    */
-  private buildSystemPrompt(tools: ToolDefinition[], provider?: string | null): string {
+  private buildSystemPrompt(tools: ToolDefinition[], provider?: string | null, model?: string | null): string {
     if (tools.length === 0) {
       return 'You are a helpful assistant.';
     }
@@ -805,9 +459,40 @@ export class ChatOrchestrator {
     // Providers that have native tool calling support
     const nativeToolCallingProviders = ['openai', 'anthropic', 'mistral', 'groq'];
     
-    if (provider && nativeToolCallingProviders.includes(provider)) {
-      // Simple prompt for native tool calling - don't confuse the model
-      return `You are a helpful AI assistant with access to tools. When the user asks a question that can be answered using a tool, call the appropriate tool. Do not say you cannot help - use the available tools instead.`;
+    // Ollama models that support native tool calling
+    // Note: mistral:7b-instruct does NOT support native tools despite the name
+    const ollamaModelsWithNativeTools = [
+      'llama3.1', 'llama3.2', 'llama3.3',  // Llama 3.1+ has native tool support
+      'mistral-nemo', 'mistral-large',      // Newer Mistral models (not 7b-instruct)
+      'qwen2.5',                            // Qwen 2.5 has tool support
+      'command-r',                          // Command R models
+    ];
+    
+    // Check if this is an Ollama model with native tool support
+    const isOllamaWithNativeTools = provider === 'ollama' && model && 
+      ollamaModelsWithNativeTools.some(m => model.toLowerCase().includes(m));
+    
+    // Use native tool calling prompt for supported providers/models
+    if ((provider && nativeToolCallingProviders.includes(provider)) || isOllamaWithNativeTools) {
+      log(`[Orchestrator] Using native tool calling prompt for ${provider}/${model}`);
+      return `You are a helpful assistant that takes actions using tools. The tools ARE connected to real services.
+
+Think step by step. You can make multiple tool calls - each returns results, then you decide the next action.
+
+Strategy:
+1. SEARCH first to find items (returns IDs and summaries)
+2. Then READ/GET specific items using IDs from search results
+3. Keep parameters simple - only use values from the user's request or previous results
+
+After getting results:
+- If found: Summarize for user or get more details
+- If empty: Say "No results found" - don't say you can't access things
+- Never say "I can't access" after a tool call - the tools work`;
+    }
+    
+    // For Ollama models without native tool support, log which model
+    if (provider === 'ollama') {
+      log(`[Orchestrator] Model ${model} does not support native tools, using text-based tool calling`);
     }
     
     // For llamafile, ollama, and other local models - provide explicit tool calling instructions
@@ -825,28 +510,43 @@ export class ChatOrchestrator {
           return `${name}${isRequired ? ' (required)' : ''}: ${prop.description || 'no description'}`;
         });
         if (params.length > 0) {
-          paramInfo = ` | Parameters: ${params.join(', ')}`;
+          paramInfo = `\n  Parameters: ${params.join('; ')}`;
         }
       }
       
       return `- ${t.name}: ${t.description || 'No description'}${paramInfo}`;
     }).join('\n');
     
-    return `You are an AI assistant that MUST use tools to answer questions. You cannot answer from memory - you MUST call a tool first.
+    return `You are a helpful assistant that takes actions using tools. The tools WORK - you are connected to real services.
 
 ## Available Tools
 ${toolList}
 
-## IMPORTANT: You MUST call a tool
-- Do NOT answer questions directly - ALWAYS call a tool first
-- Do NOT make up information - use tools to get real data
-- Output ONLY the JSON tool call, nothing else
+## How This Works
+1. You call a tool by outputting JSON
+2. The tool executes and you receive the results  
+3. You can then call another tool OR give a final answer to the user
+
+## Strategy - Think Step by Step
+- SEARCH first to find items (returns IDs and summaries)
+- Then READ/GET specific items using IDs from search results
+- Keep queries simple - just use what the user mentioned
 
 ## Tool Call Format
-{"name": "exact_tool_name_from_list", "parameters": {"param": "value"}}
+To call a tool, respond with ONLY this JSON:
+{"name": "tool_name", "parameters": {"param": "value"}}
 
-## After Receiving Tool Results  
-Summarize the results in plain language for the user.`;
+## After Getting Results
+When you receive tool results:
+- If results found: Summarize them for the user, or call another tool to get more details
+- If empty/no results: Tell the user "No results found for X" - don't say you can't access things
+- If error: Explain the error and suggest alternatives
+
+## Critical Rules
+- The tools ARE connected and working - never say "I can't access" after calling a tool
+- Work one step at a time - you'll see results before the next step
+- Use only real values - no placeholders like [your_email]
+- After search returns IDs, you can call read/get to see full details`;
   }
 
   /**
@@ -1046,4 +746,11 @@ export function getChatOrchestrator(): ChatOrchestrator {
     _orchestrator = new ChatOrchestrator();
   }
   return _orchestrator;
+}
+
+/**
+ * Reset the singleton instance. FOR TESTING ONLY.
+ */
+export function __resetChatOrchestratorForTesting(): void {
+  _orchestrator = null;
 }

@@ -401,6 +401,90 @@ install_uninstaller() {
 }
 
 # =============================================================================
+# Install Ollama (for Local LLM support)
+# =============================================================================
+install_ollama() {
+    echo "Setting up Ollama for Local LLM..."
+    
+    # Check if Ollama is already installed
+    if command -v ollama &> /dev/null; then
+        OLLAMA_VERSION=$(ollama --version 2>/dev/null | head -1 || echo "installed")
+        echo "  ✓ Ollama already installed: $OLLAMA_VERSION"
+        echo "Ollama already installed: $OLLAMA_VERSION" >> "$LOG_FILE"
+        return 0
+    fi
+    
+    # Check if we can install (need network)
+    if ! ping -c 1 ollama.com &> /dev/null; then
+        echo "  ⚠ Cannot reach ollama.com - skipping Ollama installation"
+        echo "    Install Ollama later with: brew install ollama"
+        echo "    Or download from: https://ollama.com"
+        echo "Cannot reach ollama.com, skipping Ollama install" >> "$LOG_FILE"
+        return 0
+    fi
+    
+    # Get the actual user
+    ACTUAL_USER="${SUDO_USER:-}"
+    if [ -z "$ACTUAL_USER" ]; then
+        ACTUAL_USER=$(stat -f '%Su' /dev/console 2>/dev/null || echo "")
+    fi
+    
+    echo "  Downloading Ollama..."
+    echo "Downloading Ollama for user: $ACTUAL_USER" >> "$LOG_FILE"
+    
+    # Create temp directory
+    OLLAMA_TEMP="/tmp/harbor-ollama-install"
+    mkdir -p "$OLLAMA_TEMP"
+    
+    # Download Ollama installer
+    # Ollama provides a simple install script at https://ollama.com/install.sh
+    # Or we can download the macOS app directly
+    OLLAMA_URL="https://ollama.com/download/Ollama-darwin.zip"
+    OLLAMA_ZIP="$OLLAMA_TEMP/Ollama.zip"
+    
+    if curl -sL "$OLLAMA_URL" -o "$OLLAMA_ZIP" 2>> "$LOG_FILE"; then
+        echo "  Extracting Ollama..."
+        
+        # Extract to Applications
+        cd "$OLLAMA_TEMP"
+        unzip -q "$OLLAMA_ZIP" -d "$OLLAMA_TEMP" 2>> "$LOG_FILE"
+        
+        # Move to Applications
+        if [ -d "$OLLAMA_TEMP/Ollama.app" ]; then
+            # Remove old version if exists
+            rm -rf "/Applications/Ollama.app" 2>/dev/null || true
+            
+            # Move new version
+            mv "$OLLAMA_TEMP/Ollama.app" "/Applications/"
+            
+            echo "  ✓ Ollama installed to /Applications/Ollama.app"
+            echo "Ollama installed to /Applications" >> "$LOG_FILE"
+            
+            # Launch Ollama (as the user) to set up CLI tools
+            if [ -n "$ACTUAL_USER" ] && [ "$ACTUAL_USER" != "root" ]; then
+                echo "  Starting Ollama..."
+                su "$ACTUAL_USER" -c "open -a Ollama" 2>> "$LOG_FILE" &
+                echo "  ✓ Ollama started (it will install CLI tools on first run)"
+            fi
+        else
+            echo "  ⚠ Ollama extraction failed - install manually"
+            echo "Ollama extraction failed" >> "$LOG_FILE"
+        fi
+        
+        # Cleanup
+        rm -rf "$OLLAMA_TEMP"
+    else
+        echo "  ⚠ Ollama download failed - install manually"
+        echo "    Run: brew install ollama"
+        echo "    Or download from: https://ollama.com"
+        echo "Ollama download failed" >> "$LOG_FILE"
+        
+        # Cleanup
+        rm -rf "$OLLAMA_TEMP"
+    fi
+}
+
+# =============================================================================
 # Create first-run marker (as the actual user, not root)
 # =============================================================================
 create_first_run_marker() {
@@ -451,6 +535,7 @@ select_binary
 set_permissions
 create_launcher
 install_native_manifest
+install_ollama
 install_firefox_extension
 install_chrome_extension
 install_uninstaller
@@ -484,7 +569,12 @@ echo "  4. Select: $HARBOR_DIR/chrome-extension"
 echo "  5. Click the Harbor icon to open the side panel"
 echo ""
 fi
-echo "IMPORTANT: Start Docker Desktop before using MCP servers."
+echo "LOCAL LLM:"
+echo "  Ollama provides fast, local AI using your Mac's GPU."
+echo "  If Ollama wasn't installed, run: brew install ollama"
+echo ""
+echo "MCP SERVERS:"
+echo "  Some MCP servers may require Docker Desktop."
 echo ""
 echo "To uninstall Harbor later:"
 echo "  • Double-click 'Uninstall Harbor' in /Applications"

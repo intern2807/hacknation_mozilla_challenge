@@ -21,35 +21,35 @@
       flex-direction: column;
       max-width: 720px;
       margin: 0 auto;
-      padding: var(--harbor-space-12) var(--harbor-space-6);
+      padding: var(--demo-space-12) var(--demo-space-6);
       width: 100%;
     }
 
     /* Bookmarklet Section */
     .bookmarklet-section {
       text-align: center;
-      padding: var(--harbor-space-6) 0;
+      padding: var(--demo-space-6) 0;
     }
 
     .bookmarklet-link {
       display: inline-flex;
       align-items: center;
-      gap: var(--harbor-space-3);
-      padding: var(--harbor-space-4) var(--harbor-space-8);
-      background: linear-gradient(135deg, var(--harbor-accent-primary), var(--harbor-accent-tertiary));
+      gap: var(--demo-space-3);
+      padding: var(--demo-space-4) var(--demo-space-8);
+      background: linear-gradient(135deg, var(--demo-accent-primary), var(--demo-accent-tertiary));
       color: white;
       text-decoration: none;
-      border-radius: var(--harbor-radius-lg);
-      font-size: var(--harbor-text-base);
-      font-weight: var(--harbor-weight-semibold);
-      box-shadow: var(--harbor-shadow-glow);
+      border-radius: var(--demo-radius-lg);
+      font-size: var(--demo-text-base);
+      font-weight: var(--demo-weight-semibold);
+      box-shadow: var(--demo-shadow-glow);
       cursor: grab;
       transition: transform 0.2s, box-shadow 0.2s;
     }
 
     .bookmarklet-link:hover {
       transform: translateY(-2px);
-      box-shadow: var(--harbor-shadow-lg), var(--harbor-shadow-glow);
+      box-shadow: var(--demo-shadow-lg), var(--demo-shadow-glow);
       color: white;
     }
 
@@ -58,13 +58,13 @@
     }
 
     .bookmarklet-hint {
-      margin-top: var(--harbor-space-4);
-      font-size: var(--harbor-text-sm);
-      color: var(--harbor-text-muted);
+      margin-top: var(--demo-space-4);
+      font-size: var(--demo-text-sm);
+      color: var(--demo-text-muted);
     }
 
     .bookmarklet-hint strong {
-      color: var(--harbor-text-secondary);
+      color: var(--demo-text-secondary);
     }
 
     /* Instructions */
@@ -74,8 +74,8 @@
 
     .step {
       display: flex;
-      gap: var(--harbor-space-4);
-      margin-bottom: var(--harbor-space-5);
+      gap: var(--demo-space-4);
+      margin-bottom: var(--demo-space-5);
     }
 
     .step:last-child {
@@ -85,71 +85,71 @@
     .step-number {
       width: 28px;
       height: 28px;
-      background: linear-gradient(135deg, var(--harbor-accent-primary), var(--harbor-accent-tertiary));
+      background: linear-gradient(135deg, var(--demo-accent-primary), var(--demo-accent-tertiary));
       color: white;
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: var(--harbor-text-sm);
-      font-weight: var(--harbor-weight-semibold);
+      font-size: var(--demo-text-sm);
+      font-weight: var(--demo-weight-semibold);
       flex-shrink: 0;
     }
 
     .step-content h3 {
-      font-size: var(--harbor-text-sm);
-      font-weight: var(--harbor-weight-semibold);
-      color: var(--harbor-text-primary);
-      margin-bottom: var(--harbor-space-1);
+      font-size: var(--demo-text-sm);
+      font-weight: var(--demo-weight-semibold);
+      color: var(--demo-text-primary);
+      margin-bottom: var(--demo-space-1);
     }
 
     .step-content p {
-      font-size: var(--harbor-text-sm);
-      color: var(--harbor-text-secondary);
+      font-size: var(--demo-text-sm);
+      color: var(--demo-text-secondary);
     }
 
     /* Requirements */
     .requirements {
       display: flex;
-      gap: var(--harbor-space-3);
+      gap: var(--demo-space-3);
       flex-wrap: wrap;
-      margin-top: var(--harbor-space-4);
+      margin-top: var(--demo-space-4);
     }
 
     .requirement {
       display: flex;
       align-items: center;
-      gap: var(--harbor-space-2);
-      padding: var(--harbor-space-2) var(--harbor-space-3);
-      background: var(--harbor-bg-elevated);
-      border-radius: var(--harbor-radius-md);
-      font-size: var(--harbor-text-sm);
-      color: var(--harbor-text-secondary);
+      gap: var(--demo-space-2);
+      padding: var(--demo-space-2) var(--demo-space-3);
+      background: var(--demo-bg-elevated);
+      border-radius: var(--demo-radius-md);
+      font-size: var(--demo-text-sm);
+      color: var(--demo-text-secondary);
     }
 
     .requirement-icon {
-      font-size: var(--harbor-text-sm);
+      font-size: var(--demo-text-sm);
     }
 
     /* Preview section */
     .preview-section {
-      margin-top: var(--harbor-space-4);
-      padding-top: var(--harbor-space-4);
-      border-top: 1px dashed var(--harbor-border-default);
+      margin-top: var(--demo-space-4);
+      padding-top: var(--demo-space-4);
+      border-top: 1px dashed var(--demo-border-default);
     }
 
     .preview-label {
-      font-size: var(--harbor-text-xs);
-      color: var(--harbor-text-muted);
+      font-size: var(--demo-text-xs);
+      color: var(--demo-text-muted);
       text-transform: uppercase;
       letter-spacing: 0.05em;
-      margin-bottom: var(--harbor-space-3);
+      margin-bottom: var(--demo-space-3);
     }
 
     .overlay-preview {
       background: rgba(0, 0, 0, 0.85);
-      border-radius: var(--harbor-radius-md);
-      padding: var(--harbor-space-5);
+      border-radius: var(--demo-radius-md);
+      padding: var(--demo-space-5);
       color: white;
     }
 
@@ -157,14 +157,14 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      margin-bottom: var(--harbor-space-3);
-      padding-bottom: var(--harbor-space-3);
+      margin-bottom: var(--demo-space-3);
+      padding-bottom: var(--demo-space-3);
       border-bottom: 1px solid rgba(255,255,255,0.1);
     }
 
     .overlay-preview-title {
-      font-size: var(--harbor-text-sm);
-      font-weight: var(--harbor-weight-semibold);
+      font-size: var(--demo-text-sm);
+      font-weight: var(--demo-weight-semibold);
     }
 
     .overlay-preview-close {
@@ -172,15 +172,15 @@
       height: 24px;
       background: rgba(255,255,255,0.1);
       border: none;
-      border-radius: var(--harbor-radius-sm);
+      border-radius: var(--demo-radius-sm);
       color: white;
       cursor: pointer;
-      font-size: var(--harbor-text-sm);
+      font-size: var(--demo-text-sm);
     }
 
     .overlay-preview-content {
-      font-size: var(--harbor-text-sm);
-      line-height: var(--harbor-leading-relaxed);
+      font-size: var(--demo-text-sm);
+      line-height: var(--demo-leading-relaxed);
       color: rgba(255,255,255,0.85);
     }
 
@@ -188,33 +188,33 @@
     .link-other {
       display: inline-flex;
       align-items: center;
-      gap: var(--harbor-space-2);
-      margin-top: var(--harbor-space-4);
-      padding: var(--harbor-space-2) var(--harbor-space-4);
-      background: var(--harbor-bg-elevated);
-      border: 1px solid var(--harbor-border-default);
-      border-radius: var(--harbor-radius-md);
-      color: var(--harbor-text-secondary);
+      gap: var(--demo-space-2);
+      margin-top: var(--demo-space-4);
+      padding: var(--demo-space-2) var(--demo-space-4);
+      background: var(--demo-bg-elevated);
+      border: 1px solid var(--demo-border-default);
+      border-radius: var(--demo-radius-md);
+      color: var(--demo-text-secondary);
       text-decoration: none;
-      font-size: var(--harbor-text-sm);
+      font-size: var(--demo-text-sm);
       transition: all 0.15s ease;
     }
 
     .link-other:hover {
-      background: var(--harbor-bg-overlay);
-      border-color: var(--harbor-accent-primary);
-      color: var(--harbor-accent-primary);
+      background: var(--demo-bg-overlay);
+      border-color: var(--demo-accent-primary);
+      color: var(--demo-accent-primary);
     }
 
     /* Build your own section */
     .ideas-list {
-      margin: var(--harbor-space-4) 0 0 var(--harbor-space-5);
-      color: var(--harbor-text-secondary);
-      font-size: var(--harbor-text-sm);
+      margin: var(--demo-space-4) 0 0 var(--demo-space-5);
+      color: var(--demo-text-secondary);
+      font-size: var(--demo-text-sm);
     }
 
     .ideas-list li {
-      margin-bottom: var(--harbor-space-3);
+      margin-bottom: var(--demo-space-3);
     }
 
     .ideas-list li:last-child {
@@ -222,22 +222,22 @@
     }
 
     .ideas-list strong {
-      color: var(--harbor-text-primary);
+      color: var(--demo-text-primary);
     }
   </style>
 </head>
-<body class="harbor-bg-glow">
+<body class="demo-bg-glow">
   <div class="page-container">
-    <header class="harbor-demo-header">
-      <div class="harbor-demo-logo">📄</div>
-      <h1 class="harbor-demo-title harbor-text-gradient">Page Summarizer</h1>
-      <p class="harbor-demo-subtitle">A bookmarklet that summarizes any webpage using the Web Agent API</p>
+    <header class="demo-header">
+      <div class="demo-logo">📄</div>
+      <h1 class="demo-title demo-text-gradient">Page Summarizer</h1>
+      <p class="demo-subtitle">A bookmarklet that summarizes any webpage using the Web Agent API</p>
     </header>
 
-    <div class="harbor-card harbor-mb-6">
-      <div class="harbor-card-header">
-        <div class="harbor-card-icon">🔖</div>
-        <h2 class="harbor-card-title">Get the Bookmarklet</h2>
+    <div class="demo-card demo-mb-6">
+      <div class="demo-card-header">
+        <div class="demo-card-icon">🔖</div>
+        <h2 class="demo-card-title">Get the Bookmarklet</h2>
       </div>
       
       <div class="bookmarklet-section">
@@ -299,17 +299,17 @@
       </div>
     </div>
 
-    <div class="harbor-card harbor-mb-6">
-      <div class="harbor-card-header">
-        <div class="harbor-card-icon">💻</div>
-        <h2 class="harbor-card-title">How It Works</h2>
+    <div class="demo-card demo-mb-6">
+      <div class="demo-card-header">
+        <div class="demo-card-icon">💻</div>
+        <h2 class="demo-card-title">How It Works</h2>
       </div>
       
-      <p style="color: var(--harbor-text-secondary); font-size: var(--harbor-text-sm); margin-bottom: var(--harbor-space-2);">
-        The Web Agent API supports two coding styles. The <strong style="color: var(--harbor-text-primary);">Chrome-compatible</strong> way auto-handles permissions:
+      <p style="color: var(--demo-text-secondary); font-size: var(--demo-text-sm); margin-bottom: var(--demo-space-2);">
+        The Web Agent API supports two coding styles. The <strong style="color: var(--demo-text-primary);">Chrome-compatible</strong> way auto-handles permissions:
       </p>
       
-      <pre class="harbor-code"><span class="comment">// Chrome-compatible style (auto-permissions)</span>
+      <pre class="demo-code"><span class="comment">// Chrome-compatible style (auto-permissions)</span>
 <span class="keyword">const</span> session = <span class="keyword">await</span> window.<span class="property">ai</span>.<span class="method">createTextSession</span>();
 <span class="keyword">const</span> summary = <span class="keyword">await</span> session.<span class="method">prompt</span>(document.<span class="property">body</span>.<span class="property">innerText</span>);
 
@@ -319,11 +319,11 @@
 });
 <span class="keyword">const</span> summary = <span class="keyword">await</span> session.<span class="method">prompt</span>(text);</pre>
       
-      <p style="color: var(--harbor-text-secondary); font-size: var(--harbor-text-sm); margin: var(--harbor-space-4) 0 var(--harbor-space-2);">
-        Or the <strong style="color: var(--harbor-text-primary);">explicit Web Agent API style</strong> with fine-grained control:
+      <p style="color: var(--demo-text-secondary); font-size: var(--demo-text-sm); margin: var(--demo-space-4) 0 var(--demo-space-2);">
+        Or the <strong style="color: var(--demo-text-primary);">explicit Web Agent API style</strong> with fine-grained control:
       </p>
       
-      <pre class="harbor-code"><span class="comment">// Explicit Web Agent API style (full control)</span>
+      <pre class="demo-code"><span class="comment">// Explicit Web Agent API style (full control)</span>
 <span class="keyword">await</span> window.<span class="property">agent</span>.<span class="method">requestPermissions</span>({
   <span class="property">scopes</span>: [<span class="string">'model:prompt'</span>, <span class="string">'browser:activeTab.read'</span>],
   <span class="property">reason</span>: <span class="string">'Summarize the current page'</span>
@@ -340,8 +340,8 @@
 
 <span class="keyword">const</span> summary = <span class="keyword">await</span> session.<span class="method">prompt</span>(tab.<span class="property">text</span>);</pre>
 
-      <p style="color: var(--harbor-text-muted); font-size: var(--harbor-text-sm); margin-top: var(--harbor-space-4);">
-        <strong style="color: var(--harbor-text-secondary);">Tip:</strong> The Chrome-compatible style is simpler — permissions are auto-requested when needed. Use the explicit style when you need more control over permissions, want to specify a custom reason, or need access to browser APIs like <code>activeTab.read</code>.
+      <p style="color: var(--demo-text-muted); font-size: var(--demo-text-sm); margin-top: var(--demo-space-4);">
+        <strong style="color: var(--demo-text-secondary);">Tip:</strong> The Chrome-compatible style is simpler — permissions are auto-requested when needed. Use the explicit style when you need more control over permissions, want to specify a custom reason, or need access to browser APIs like <code>activeTab.read</code>.
       </p>
 
       <a href="chrome-compat.html" class="link-other">
@@ -350,13 +350,13 @@
       </a>
     </div>
 
-    <div class="harbor-card">
-      <div class="harbor-card-header">
-        <div class="harbor-card-icon">🛠️</div>
-        <h2 class="harbor-card-title">Build Your Own</h2>
+    <div class="demo-card">
+      <div class="demo-card-header">
+        <div class="demo-card-icon">🛠️</div>
+        <h2 class="demo-card-title">Build Your Own</h2>
       </div>
       
-      <p style="color: var(--harbor-text-secondary); font-size: var(--harbor-text-sm);">
+      <p style="color: var(--demo-text-secondary); font-size: var(--demo-text-sm);">
         This pattern works for any AI-powered browser tool. Fork this example to build:
       </p>
       
@@ -369,9 +369,9 @@
       </ul>
     </div>
 
-    <footer class="harbor-demo-footer">
+    <footer class="demo-footer">
       <p>Built with <a href="https://github.com/nicholasoxford/harbor" target="_blank">Harbor</a> — Local AI in your browser</p>
-      <p style="margin-top: var(--harbor-space-2);"><a href="../">← Back to Demos</a></p>
+      <p style="margin-top: var(--demo-space-2);"><a href="../">← Back to Demos</a></p>
     </footer>
   </div>
 
@@ -393,10 +393,10 @@
 
   // Create overlay UI
   const overlay = document.createElement('div');
-  overlay.id = 'harbor-summary-overlay';
+  overlay.id = 'demo-summary-overlay';
   overlay.innerHTML = \`
     <style>
-      #harbor-summary-overlay {
+      #demo-summary-overlay {
         position: fixed;
         top: 20px;
         right: 20px;
@@ -416,10 +416,10 @@
           0 0 30px rgba(139, 92, 246, 0.15);
         display: flex;
         flex-direction: column;
-        animation: harborSlideIn 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+        animation: demoSlideIn 0.35s cubic-bezier(0.16, 1, 0.3, 1);
         overflow: hidden;
       }
-      @keyframes harborSlideIn {
+      @keyframes demoSlideIn {
         from { 
           transform: translateX(30px) scale(0.96); 
           opacity: 0; 
@@ -429,12 +429,12 @@
           opacity: 1; 
         }
       }
-      #harbor-summary-overlay * {
+      #demo-summary-overlay * {
         box-sizing: border-box;
         margin: 0;
         padding: 0;
       }
-      .harbor-header {
+      .demo-header {
         display: flex;
         align-items: center;
         justify-content: space-between;
@@ -442,7 +442,7 @@
         background: linear-gradient(180deg, #14141c 0%, #0e0e14 100%);
         border-bottom: 1px solid rgba(255,255,255,0.08);
       }
-      .harbor-title {
+      .demo-title {
         font-size: 13px;
         font-weight: 600;
         letter-spacing: 0.02em;
@@ -452,7 +452,7 @@
         color: #f0f0f5;
         text-transform: uppercase;
       }
-      .harbor-title-icon {
+      .demo-title-icon {
         width: 28px;
         height: 28px;
         background: linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%);
@@ -463,7 +463,7 @@
         font-size: 14px;
         box-shadow: 0 0 20px rgba(139, 92, 246, 0.3);
       }
-      .harbor-close {
+      .demo-close {
         width: 28px;
         height: 28px;
         background: rgba(255,255,255,0.05);
@@ -477,44 +477,44 @@
         justify-content: center;
         transition: all 0.15s ease;
       }
-      .harbor-close:hover {
+      .demo-close:hover {
         background: rgba(255,255,255,0.1);
         color: #f0f0f5;
       }
-      .harbor-content {
+      .demo-content {
         flex: 1;
         padding: 24px;
         overflow-y: auto;
         background: #0e0e14;
       }
-      .harbor-content::-webkit-scrollbar {
+      .demo-content::-webkit-scrollbar {
         width: 8px;
       }
-      .harbor-content::-webkit-scrollbar-track {
+      .demo-content::-webkit-scrollbar-track {
         background: transparent;
       }
-      .harbor-content::-webkit-scrollbar-thumb {
+      .demo-content::-webkit-scrollbar-thumb {
         background: rgba(255,255,255,0.1);
         border-radius: 4px;
       }
-      .harbor-content::-webkit-scrollbar-thumb:hover {
+      .demo-content::-webkit-scrollbar-thumb:hover {
         background: rgba(255,255,255,0.15);
       }
-      .harbor-content p {
+      .demo-content p {
         font-size: 15px;
         line-height: 1.75;
         color: #a0a0b0;
         margin-bottom: 16px;
       }
-      .harbor-content p:first-child {
+      .demo-content p:first-child {
         font-size: 16px;
         color: #f0f0f5;
         font-weight: 500;
       }
-      .harbor-content p:last-child {
+      .demo-content p:last-child {
         margin-bottom: 0;
       }
-      .harbor-loading {
+      .demo-loading {
         display: flex;
         flex-direction: column;
         align-items: center;
@@ -523,23 +523,23 @@
         color: #606070;
         gap: 16px;
       }
-      .harbor-spinner {
+      .demo-spinner {
         width: 36px;
         height: 36px;
         border: 3px solid rgba(255,255,255,0.1);
         border-top-color: #8b5cf6;
         border-radius: 50%;
-        animation: harborSpin 0.8s linear infinite;
+        animation: demoSpin 0.8s linear infinite;
       }
-      @keyframes harborSpin {
+      @keyframes demoSpin {
         to { transform: rotate(360deg); }
       }
-      .harbor-loading-text {
+      .demo-loading-text {
         font-size: 13px;
         font-weight: 500;
         color: #606070;
       }
-      .harbor-error {
+      .demo-error {
         background: rgba(239, 68, 68, 0.1);
         border: 1px solid rgba(239, 68, 68, 0.3);
         border-radius: 8px;
@@ -548,7 +548,7 @@
         font-size: 13px;
         line-height: 1.5;
       }
-      .harbor-footer {
+      .demo-footer {
         padding: 12px 20px;
         border-top: 1px solid rgba(255,255,255,0.06);
         font-size: 11px;
@@ -556,39 +556,39 @@
         text-align: center;
         background: #0a0a0f;
       }
-      .harbor-footer a {
+      .demo-footer a {
         color: #8b5cf6;
         text-decoration: none;
         font-weight: 600;
       }
-      .harbor-footer a:hover {
+      .demo-footer a:hover {
         text-decoration: underline;
       }
     </style>
-    <div class="harbor-header">
-      <span class="harbor-title">
-        <span class="harbor-title-icon">📄</span>
+    <div class="demo-header">
+      <span class="demo-title">
+        <span class="demo-title-icon">📄</span>
         Summary
       </span>
-      <button class="harbor-close" onclick="this.closest('#harbor-summary-overlay').remove()">×</button>
+      <button class="demo-close" onclick="this.closest('#demo-summary-overlay').remove()">×</button>
     </div>
-    <div class="harbor-content" id="harbor-summary-content">
-      <div class="harbor-loading">
-        <div class="harbor-spinner"></div>
-        <span class="harbor-loading-text">Analyzing page...</span>
+    <div class="demo-content" id="demo-summary-content">
+      <div class="demo-loading">
+        <div class="demo-spinner"></div>
+        <span class="demo-loading-text">Analyzing page...</span>
       </div>
     </div>
-    <div class="harbor-footer">
+    <div class="demo-footer">
       Powered by <a href="https://github.com/nicholasoxford/harbor" target="_blank">Harbor</a>
     </div>
   \`;
   
   // Remove existing overlay if present
-  const existing = document.getElementById('harbor-summary-overlay');
+  const existing = document.getElementById('demo-summary-overlay');
   if (existing) existing.remove();
   
   document.body.appendChild(overlay);
-  const contentEl = document.getElementById('harbor-summary-content');
+  const contentEl = document.getElementById('demo-summary-content');
   
   try {
     // Request permission
@@ -623,7 +623,7 @@
     await session.destroy();
     
   } catch (err) {
-    contentEl.innerHTML = '<div class="harbor-error">Error: ' + (err.message || 'Failed to summarize') + '</div>';
+    contentEl.innerHTML = '<div class="demo-error">Error: ' + (err.message || 'Failed to summarize') + '</div>';
   }
 })();
     `.trim();

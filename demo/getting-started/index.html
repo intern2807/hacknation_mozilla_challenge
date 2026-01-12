@@ -13,7 +13,7 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: var(--harbor-space-10) var(--harbor-space-6);
+      padding: var(--demo-space-10) var(--demo-space-6);
       min-height: 100vh;
     }
 
@@ -26,15 +26,15 @@
     .header-badge {
       display: inline-flex;
       align-items: center;
-      gap: var(--harbor-space-2);
-      padding: var(--harbor-space-2) var(--harbor-space-4);
-      background: var(--harbor-bg-surface);
-      border: 1px solid var(--harbor-border-default);
-      border-radius: var(--harbor-radius-full);
-      font-size: var(--harbor-text-xs);
-      font-weight: var(--harbor-weight-medium);
-      color: var(--harbor-text-secondary);
-      margin-bottom: var(--harbor-space-5);
+      gap: var(--demo-space-2);
+      padding: var(--demo-space-2) var(--demo-space-4);
+      background: var(--demo-bg-surface);
+      border: 1px solid var(--demo-border-default);
+      border-radius: var(--demo-radius-full);
+      font-size: var(--demo-text-xs);
+      font-weight: var(--demo-weight-medium);
+      color: var(--demo-text-secondary);
+      margin-bottom: var(--demo-space-5);
       text-transform: uppercase;
       letter-spacing: 0.05em;
     }
@@ -42,40 +42,40 @@
     .header-badge .dot {
       width: 6px;
       height: 6px;
-      background: var(--harbor-success);
+      background: var(--demo-success);
       border-radius: 50%;
-      animation: harbor-pulse 2s infinite;
+      animation: demo-pulse 2s infinite;
     }
 
     /* Progress bar */
     .progress-bar {
       height: 3px;
-      background: var(--harbor-border-default);
+      background: var(--demo-border-default);
       border-radius: 2px;
-      margin-bottom: var(--harbor-space-6);
+      margin-bottom: var(--demo-space-6);
       overflow: hidden;
     }
 
     .progress-fill {
       height: 100%;
-      background: linear-gradient(90deg, var(--harbor-accent-primary), var(--harbor-accent-tertiary));
+      background: linear-gradient(90deg, var(--demo-accent-primary), var(--demo-accent-tertiary));
       transition: width 0.4s ease;
       border-radius: 2px;
     }
 
     /* Checklist */
     .checklist {
-      background: var(--harbor-bg-surface);
-      border: 1px solid var(--harbor-border-default);
-      border-radius: var(--harbor-radius-xl);
+      background: var(--demo-bg-surface);
+      border: 1px solid var(--demo-border-default);
+      border-radius: var(--demo-radius-xl);
       overflow: hidden;
     }
 
     .step {
       display: flex;
-      gap: var(--harbor-space-4);
-      padding: var(--harbor-space-5) var(--harbor-space-6);
-      border-bottom: 1px solid var(--harbor-border-default);
+      gap: var(--demo-space-4);
+      padding: var(--demo-space-5) var(--demo-space-6);
+      border-bottom: 1px solid var(--demo-border-default);
       transition: background 0.2s;
     }
 
@@ -84,15 +84,15 @@
     }
 
     .step.active {
-      background: var(--harbor-bg-overlay);
+      background: var(--demo-bg-overlay);
     }
 
     .step.completed {
-      background: var(--harbor-success-dim);
+      background: var(--demo-success-dim);
     }
 
     .step.error {
-      background: var(--harbor-error-dim);
+      background: var(--demo-error-dim);
     }
 
     .step-icon {
@@ -103,29 +103,29 @@
       align-items: center;
       justify-content: center;
       flex-shrink: 0;
-      font-size: var(--harbor-text-sm);
-      font-weight: var(--harbor-weight-semibold);
+      font-size: var(--demo-text-sm);
+      font-weight: var(--demo-weight-semibold);
       transition: all 0.3s;
     }
 
     .step.waiting .step-icon {
-      background: var(--harbor-border-default);
-      color: var(--harbor-text-faint);
+      background: var(--demo-border-default);
+      color: var(--demo-text-faint);
     }
 
     .step.active .step-icon {
-      background: var(--harbor-accent-primary);
+      background: var(--demo-accent-primary);
       color: white;
-      box-shadow: var(--harbor-shadow-glow);
+      box-shadow: var(--demo-shadow-glow);
     }
 
     .step.completed .step-icon {
-      background: var(--harbor-success);
+      background: var(--demo-success);
       color: white;
     }
 
     .step.error .step-icon {
-      background: var(--harbor-error);
+      background: var(--demo-error);
       color: white;
     }
 
@@ -135,39 +135,39 @@
     }
 
     .step-title {
-      font-size: var(--harbor-text-sm);
-      font-weight: var(--harbor-weight-semibold);
-      margin-bottom: var(--harbor-space-1);
-      color: var(--harbor-text-primary);
+      font-size: var(--demo-text-sm);
+      font-weight: var(--demo-weight-semibold);
+      margin-bottom: var(--demo-space-1);
+      color: var(--demo-text-primary);
     }
 
     .step.waiting .step-title {
-      color: var(--harbor-text-faint);
+      color: var(--demo-text-faint);
     }
 
     .step-description {
-      font-size: var(--harbor-text-sm);
-      color: var(--harbor-text-secondary);
-      line-height: var(--harbor-leading-normal);
-      margin-bottom: var(--harbor-space-3);
+      font-size: var(--demo-text-sm);
+      color: var(--demo-text-secondary);
+      line-height: var(--demo-leading-normal);
+      margin-bottom: var(--demo-space-3);
     }
 
     .step.waiting .step-description {
-      color: var(--harbor-text-faint);
+      color: var(--demo-text-faint);
     }
 
     /* Code block */
     .step-code {
-      background: var(--harbor-bg-base);
-      border: 1px solid var(--harbor-border-subtle);
-      border-radius: var(--harbor-radius-md);
-      padding: var(--harbor-space-3) var(--harbor-space-4);
-      font-family: var(--harbor-font-mono);
+      background: var(--demo-bg-base);
+      border: 1px solid var(--demo-border-subtle);
+      border-radius: var(--demo-radius-md);
+      padding: var(--demo-space-3) var(--demo-space-4);
+      font-family: var(--demo-font-mono);
       font-size: 11px;
       line-height: 1.6;
       overflow-x: auto;
       white-space: pre;
-      color: var(--harbor-text-secondary);
+      color: var(--demo-text-secondary);
     }
 
     .step.waiting .step-code {
@@ -176,18 +176,18 @@
 
     .step-code .keyword { color: #c678dd; }
     .step-code .string { color: #98c379; }
-    .step-code .comment { color: var(--harbor-text-muted); }
+    .step-code .comment { color: var(--demo-text-muted); }
     .step-code .property { color: #e5c07b; }
     .step-code .method { color: #61afef; }
 
     .step-output {
-      margin-top: var(--harbor-space-3);
-      padding: var(--harbor-space-3);
-      background: var(--harbor-bg-base);
-      border-radius: var(--harbor-radius-md);
-      font-family: var(--harbor-font-mono);
-      font-size: var(--harbor-text-xs);
-      color: var(--harbor-text-secondary);
+      margin-top: var(--demo-space-3);
+      padding: var(--demo-space-3);
+      background: var(--demo-bg-base);
+      border-radius: var(--demo-radius-md);
+      font-family: var(--demo-font-mono);
+      font-size: var(--demo-text-xs);
+      color: var(--demo-text-secondary);
       white-space: pre-wrap;
       word-break: break-word;
       max-height: 180px;
@@ -195,56 +195,56 @@
     }
 
     .step-output.success {
-      border-left: 3px solid var(--harbor-success);
+      border-left: 3px solid var(--demo-success);
     }
 
     .step-output.error {
-      border-left: 3px solid var(--harbor-error);
-      color: var(--harbor-error);
+      border-left: 3px solid var(--demo-error);
+      color: var(--demo-error);
     }
 
     .output-label {
       font-size: 10px;
       text-transform: uppercase;
       letter-spacing: 0.05em;
-      color: var(--harbor-text-faint);
-      margin-top: var(--harbor-space-3);
-      margin-bottom: var(--harbor-space-2);
+      color: var(--demo-text-faint);
+      margin-top: var(--demo-space-3);
+      margin-bottom: var(--demo-space-2);
     }
 
     /* Controls */
     .controls {
-      margin-top: var(--harbor-space-6);
+      margin-top: var(--demo-space-6);
       display: flex;
-      gap: var(--harbor-space-3);
+      gap: var(--demo-space-3);
     }
 
     .btn {
       flex: 1;
-      padding: var(--harbor-space-4) var(--harbor-space-6);
+      padding: var(--demo-space-4) var(--demo-space-6);
       border: none;
-      border-radius: var(--harbor-radius-md);
-      font-family: var(--harbor-font-sans);
-      font-size: var(--harbor-text-sm);
-      font-weight: var(--harbor-weight-semibold);
+      border-radius: var(--demo-radius-md);
+      font-family: var(--demo-font-sans);
+      font-size: var(--demo-text-sm);
+      font-weight: var(--demo-weight-semibold);
       cursor: pointer;
       transition: all 0.2s;
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: var(--harbor-space-2);
+      gap: var(--demo-space-2);
     }
 
     .btn-primary {
-      background: linear-gradient(135deg, var(--harbor-accent-primary), var(--harbor-accent-secondary));
+      background: linear-gradient(135deg, var(--demo-accent-primary), var(--demo-accent-secondary));
       color: white;
-      box-shadow: var(--harbor-shadow-sm);
+      box-shadow: var(--demo-shadow-sm);
     }
 
     .btn-primary:hover:not(:disabled) {
       filter: brightness(1.1);
       transform: translateY(-1px);
-      box-shadow: var(--harbor-shadow-glow);
+      box-shadow: var(--demo-shadow-glow);
     }
 
     .btn-primary:disabled {
@@ -253,31 +253,31 @@
     }
 
     .btn-secondary {
-      background: var(--harbor-bg-surface);
-      border: 1px solid var(--harbor-border-default);
-      color: var(--harbor-text-secondary);
+      background: var(--demo-bg-surface);
+      border: 1px solid var(--demo-border-default);
+      color: var(--demo-text-secondary);
     }
 
     .btn-secondary:hover {
-      background: var(--harbor-bg-overlay);
-      color: var(--harbor-text-primary);
+      background: var(--demo-bg-overlay);
+      color: var(--demo-text-primary);
     }
 
     /* Footer */
     .footer {
-      margin-top: var(--harbor-space-12);
+      margin-top: var(--demo-space-12);
       text-align: center;
-      font-size: var(--harbor-text-sm);
-      color: var(--harbor-text-muted);
+      font-size: var(--demo-text-sm);
+      color: var(--demo-text-muted);
     }
 
     .footer a {
-      color: var(--harbor-text-secondary);
+      color: var(--demo-text-secondary);
       text-decoration: none;
     }
 
     .footer a:hover {
-      color: var(--harbor-accent-primary);
+      color: var(--demo-accent-primary);
     }
 
     /* Spinner */
@@ -287,19 +287,19 @@
       border: 2px solid rgba(255,255,255,0.3);
       border-top-color: white;
       border-radius: 50%;
-      animation: harbor-spin 0.8s linear infinite;
+      animation: demo-spin 0.8s linear infinite;
     }
   </style>
 </head>
-<body class="harbor-bg-grid">
+<body class="demo-bg-grid">
   <div class="page-container">
-    <header class="harbor-demo-header">
+    <header class="demo-header">
       <div class="header-badge">
         <span class="dot"></span>
         <span>Interactive Walkthrough</span>
       </div>
-      <h1 class="harbor-demo-title harbor-text-gradient">Getting Started with the Web Agent API</h1>
-      <p class="harbor-demo-subtitle">Step through the basics: detect the API, get permission, and make your first AI-powered tool call.</p>
+      <h1 class="demo-title demo-text-gradient">Getting Started with the Web Agent API</h1>
+      <p class="demo-subtitle">Step through the basics: detect the API, get permission, and make your first AI-powered tool call.</p>
     </header>
 
     <div class="progress-bar">
@@ -445,8 +445,8 @@ console.<span class="method">log</span>(response);</pre>
         title: 'Ask "What time is it?"',
         run: async () => {
           // Store the response for the next step
-          window._harborDemoResponse = '';
-          window._harborDemoToolCalls = [];
+          window._webAgentDemoResponse = '';
+          window._webAgentDemoToolCalls = [];
           let tokenText = '';
           
           // Use the agent API to run with tools
@@ -457,13 +457,13 @@ console.<span class="method">log</span>(response);</pre>
             console.log('[Demo] Agent event:', event.type, event);
             
             if (event.type === 'tool_call') {
-              window._harborDemoToolCalls.push(event.tool);
+              window._webAgentDemoToolCalls.push(event.tool);
             }
             if (event.type === 'token' && event.token) {
               tokenText += event.token;
             }
             if (event.type === 'final') {
-              window._harborDemoResponse = event.output || tokenText;
+              window._webAgentDemoResponse = event.output || tokenText;
             }
             if (event.type === 'error') {
               throw new Error(event.error?.message || 'Agent error');
@@ -471,14 +471,14 @@ console.<span class="method">log</span>(response);</pre>
           }
           
           // Fallback to token text if no final output
-          if (!window._harborDemoResponse && tokenText) {
-            window._harborDemoResponse = tokenText;
+          if (!window._webAgentDemoResponse && tokenText) {
+            window._webAgentDemoResponse = tokenText;
           }
           
           let output = '✓ Request sent to AI agent\n';
-          if (window._harborDemoToolCalls.length > 0) {
+          if (window._webAgentDemoToolCalls.length > 0) {
             output += `\nTools used:\n`;
-            output += window._harborDemoToolCalls.map(t => `  • ${t}`).join('\n');
+            output += window._webAgentDemoToolCalls.map(t => `  • ${t}`).join('\n');
           } else {
             output += '\n(No tools were used)';
           }
@@ -489,12 +489,12 @@ console.<span class="method">log</span>(response);</pre>
         title: 'Display Response',
         run: async () => {
           await delay(300);
-          if (!window._harborDemoResponse) {
+          if (!window._webAgentDemoResponse) {
             // Provide more context about what happened
-            const toolsUsed = window._harborDemoToolCalls?.length || 0;
+            const toolsUsed = window._webAgentDemoToolCalls?.length || 0;
             throw new Error(`No response received from the AI.\n\nTools used: ${toolsUsed}\n\nCheck the browser console for details.`);
           }
-          return window._harborDemoResponse;
+          return window._webAgentDemoResponse;
         }
       }
     ];
@@ -589,7 +589,7 @@ console.<span class="method">log</span>(response);</pre>
       } else if (success && currentStep === totalSteps - 1) {
         nextBtn.disabled = true;
         nextBtn.textContent = 'Complete! ✓';
-        nextBtn.style.background = 'var(--harbor-success)';
+        nextBtn.style.background = 'var(--demo-success)';
         resetBtn.style.display = 'block';
       } else {
         // Error occurred

@@ -1,0 +1,1386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bring Your Own Chatbot — Web Agent API Demo</title>
+  
+  <!-- 
+    PROPOSED: Declarative MCP Server Discovery
+    
+    This <link> element would allow browsers to discover that this site
+    offers MCP servers for the user's chatbot. The browser could show
+    an indicator (like the RSS icon) that the user can click to connect.
+    
+    This is a proposal - browsers don't support this yet!
+  -->
+  <link 
+    rel="mcp-server" 
+    href="/mcp/shop-assistant"
+    title="Acme Shop Assistant"
+    data-description="Search products, manage cart, track orders"
+    data-tools="search_products,get_product_details,add_to_cart,get_cart"
+  >
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../shared/styles.css">
+  <style>
+    :root {
+      /* Shop theme colors - website can customize these */
+      --shop-primary: #f97316;
+      --shop-primary-dark: #ea580c;
+      --shop-bg: #fffbf5;
+      --shop-surface: #ffffff;
+      --shop-text: #1f2937;
+      --shop-text-muted: #6b7280;
+      --shop-border: #e5e7eb;
+    }
+
+    body {
+      background: var(--shop-bg);
+      color: var(--shop-text);
+      min-height: 100vh;
+    }
+
+    /* Shop header */
+    .shop-header {
+      background: var(--shop-surface);
+      border-bottom: 1px solid var(--shop-border);
+      padding: var(--demo-space-4) var(--demo-space-6);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .shop-logo {
+      display: flex;
+      align-items: center;
+      gap: var(--demo-space-2);
+      font-size: var(--demo-text-xl);
+      font-weight: var(--demo-weight-bold);
+      color: var(--shop-primary);
+    }
+
+    .shop-logo-icon {
+      width: 36px;
+      height: 36px;
+      background: var(--shop-primary);
+      border-radius: var(--demo-radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 18px;
+    }
+
+    .shop-nav {
+      display: flex;
+      gap: var(--demo-space-6);
+    }
+
+    .shop-nav a {
+      color: var(--shop-text-muted);
+      text-decoration: none;
+      font-size: var(--demo-text-sm);
+      font-weight: var(--demo-weight-medium);
+      transition: color 0.2s;
+    }
+
+    .shop-nav a:hover {
+      color: var(--shop-primary);
+    }
+
+    /* Main content area */
+    .shop-main {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: var(--demo-space-8) var(--demo-space-6);
+    }
+
+    /* Hero section */
+    .shop-hero {
+      text-align: center;
+      margin-bottom: var(--demo-space-12);
+    }
+
+    .shop-hero h1 {
+      font-size: 2.5rem;
+      color: var(--shop-text);
+      margin-bottom: var(--demo-space-4);
+    }
+
+    .shop-hero p {
+      font-size: var(--demo-text-lg);
+      color: var(--shop-text-muted);
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    /* Product grid */
+    .product-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: var(--demo-space-6);
+    }
+
+    .product-card {
+      background: var(--shop-surface);
+      border: 1px solid var(--shop-border);
+      border-radius: var(--demo-radius-lg);
+      overflow: hidden;
+      transition: box-shadow 0.2s, transform 0.2s;
+    }
+
+    .product-card:hover {
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+      transform: translateY(-2px);
+    }
+
+    .product-image {
+      aspect-ratio: 1;
+      background: linear-gradient(135deg, #fef3c7, #fde68a);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 64px;
+    }
+
+    .product-info {
+      padding: var(--demo-space-4);
+    }
+
+    .product-name {
+      font-weight: var(--demo-weight-semibold);
+      color: var(--shop-text);
+      margin-bottom: var(--demo-space-1);
+    }
+
+    .product-price {
+      font-size: var(--demo-text-lg);
+      font-weight: var(--demo-weight-bold);
+      color: var(--shop-primary);
+    }
+
+    .product-rating {
+      font-size: var(--demo-text-sm);
+      color: var(--shop-text-muted);
+      margin-top: var(--demo-space-2);
+    }
+
+    /* ============================================
+       BYOC Demo UI
+       ============================================ */
+    
+    /* Demo banner */
+    .demo-banner {
+      background: linear-gradient(135deg, var(--demo-bg-surface), var(--demo-bg-elevated));
+      border: 1px solid var(--demo-border-default);
+      border-radius: var(--demo-radius-xl);
+      padding: var(--demo-space-6);
+      margin-bottom: var(--demo-space-8);
+    }
+
+    .demo-banner-header {
+      display: flex;
+      align-items: flex-start;
+      gap: var(--demo-space-4);
+      margin-bottom: var(--demo-space-4);
+    }
+
+    .demo-banner-icon {
+      width: 48px;
+      height: 48px;
+      background: linear-gradient(135deg, var(--demo-accent-primary), var(--demo-accent-tertiary));
+      border-radius: var(--demo-radius-lg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      flex-shrink: 0;
+    }
+
+    .demo-banner-content h2 {
+      font-size: var(--demo-text-lg);
+      color: var(--demo-text-primary);
+      margin-bottom: var(--demo-space-1);
+    }
+
+    .demo-banner-content p {
+      font-size: var(--demo-text-sm);
+      color: var(--demo-text-secondary);
+      line-height: var(--demo-leading-relaxed);
+    }
+
+    .demo-banner-actions {
+      display: flex;
+      gap: var(--demo-space-3);
+    }
+
+    /* Chat FAB (Floating Action Button) */
+    .chat-fab {
+      position: fixed;
+      bottom: var(--demo-space-6);
+      right: var(--demo-space-6);
+      width: 60px;
+      height: 60px;
+      background: var(--shop-primary);
+      border: none;
+      border-radius: 50%;
+      color: white;
+      font-size: 24px;
+      cursor: pointer;
+      box-shadow: 0 4px 20px rgba(249, 115, 22, 0.4);
+      transition: all 0.2s;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .chat-fab:hover {
+      transform: scale(1.05);
+      box-shadow: 0 6px 28px rgba(249, 115, 22, 0.5);
+    }
+
+    .chat-fab.hidden {
+      display: none;
+    }
+
+    /* Permission modal overlay */
+    .permission-modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 200;
+      animation: fadeIn 0.15s ease;
+    }
+
+    .permission-modal-overlay.hidden {
+      display: none;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .permission-modal {
+      background: var(--demo-bg-surface);
+      border: 1px solid var(--demo-border-default);
+      border-radius: var(--demo-radius-xl);
+      width: 480px;
+      max-width: 90%;
+      padding: var(--demo-space-6);
+      animation: slideUp 0.2s ease;
+    }
+
+    @keyframes slideUp {
+      from { transform: translateY(20px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    .permission-header {
+      display: flex;
+      align-items: center;
+      gap: var(--demo-space-3);
+      margin-bottom: var(--demo-space-4);
+    }
+
+    .permission-icon {
+      width: 44px;
+      height: 44px;
+      background: var(--shop-primary);
+      border-radius: var(--demo-radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+    }
+
+    .permission-title {
+      font-size: var(--demo-text-base);
+      font-weight: var(--demo-weight-semibold);
+      color: var(--demo-text-primary);
+    }
+
+    .permission-origin {
+      font-size: var(--demo-text-sm);
+      color: var(--demo-text-muted);
+    }
+
+    .permission-description {
+      font-size: var(--demo-text-sm);
+      color: var(--demo-text-secondary);
+      margin-bottom: var(--demo-space-4);
+      line-height: var(--demo-leading-relaxed);
+    }
+
+    .permission-tools {
+      background: var(--demo-bg-elevated);
+      border: 1px solid var(--demo-border-default);
+      border-radius: var(--demo-radius-md);
+      padding: var(--demo-space-3);
+      margin-bottom: var(--demo-space-4);
+    }
+
+    .permission-tools-title {
+      font-size: var(--demo-text-xs);
+      font-weight: var(--demo-weight-semibold);
+      color: var(--demo-text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: var(--demo-space-2);
+    }
+
+    .permission-tool {
+      display: flex;
+      align-items: center;
+      gap: var(--demo-space-2);
+      padding: var(--demo-space-2) 0;
+      font-size: var(--demo-text-sm);
+    }
+
+    .permission-tool-check {
+      color: var(--demo-success);
+    }
+
+    .permission-tool-name {
+      font-family: var(--demo-font-mono);
+      color: var(--demo-accent-primary);
+    }
+
+    .permission-tool-desc {
+      color: var(--demo-text-secondary);
+    }
+
+    .permission-note {
+      font-size: var(--demo-text-xs);
+      color: var(--demo-text-muted);
+      margin-bottom: var(--demo-space-4);
+      padding: var(--demo-space-3);
+      background: var(--demo-bg-base);
+      border-radius: var(--demo-radius-md);
+    }
+
+    .permission-actions {
+      display: flex;
+      gap: var(--demo-space-3);
+      justify-content: flex-end;
+    }
+
+    .permission-btn {
+      padding: var(--demo-space-2) var(--demo-space-4);
+      border-radius: var(--demo-radius-md);
+      font-size: var(--demo-text-sm);
+      font-weight: var(--demo-weight-semibold);
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .permission-btn-deny {
+      background: transparent;
+      border: 1px solid var(--demo-border-default);
+      color: var(--demo-text-secondary);
+    }
+
+    .permission-btn-deny:hover {
+      background: var(--demo-bg-elevated);
+    }
+
+    .permission-btn-once {
+      background: var(--demo-bg-elevated);
+      border: 1px solid var(--demo-border-default);
+      color: var(--demo-text-primary);
+    }
+
+    .permission-btn-once:hover {
+      background: var(--demo-bg-overlay);
+    }
+
+    .permission-btn-allow {
+      background: var(--shop-primary);
+      border: 1px solid var(--shop-primary);
+      color: white;
+    }
+
+    .permission-btn-allow:hover {
+      background: var(--shop-primary-dark);
+    }
+
+    /* Chatbot panel */
+    .chatbot-panel {
+      position: fixed;
+      bottom: var(--demo-space-6);
+      right: var(--demo-space-6);
+      width: 400px;
+      max-width: calc(100vw - 48px);
+      height: 600px;
+      max-height: calc(100vh - 100px);
+      background: var(--demo-bg-surface);
+      border: 1px solid var(--demo-border-default);
+      border-radius: var(--demo-radius-xl);
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+      display: flex;
+      flex-direction: column;
+      z-index: 150;
+      animation: slideUp 0.2s ease;
+      overflow: hidden;
+    }
+
+    .chatbot-panel.hidden {
+      display: none;
+    }
+
+    .chatbot-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: var(--demo-space-4);
+      background: var(--shop-primary);
+      color: white;
+    }
+
+    .chatbot-header-left {
+      display: flex;
+      align-items: center;
+      gap: var(--demo-space-3);
+    }
+
+    .chatbot-header-icon {
+      width: 32px;
+      height: 32px;
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: var(--demo-radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+    }
+
+    .chatbot-header-title {
+      font-weight: var(--demo-weight-semibold);
+    }
+
+    .chatbot-header-subtitle {
+      font-size: var(--demo-text-xs);
+      opacity: 0.8;
+    }
+
+    .chatbot-close {
+      width: 32px;
+      height: 32px;
+      background: rgba(255, 255, 255, 0.1);
+      border: none;
+      border-radius: var(--demo-radius-md);
+      color: white;
+      font-size: 18px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.15s;
+    }
+
+    .chatbot-close:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    .chatbot-messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: var(--demo-space-4);
+      display: flex;
+      flex-direction: column;
+      gap: var(--demo-space-3);
+    }
+
+    .chat-message {
+      max-width: 85%;
+      animation: fadeIn 0.2s ease;
+    }
+
+    .chat-message.user {
+      align-self: flex-end;
+    }
+
+    .chat-message.assistant {
+      align-self: flex-start;
+    }
+
+    .chat-message-bubble {
+      padding: var(--demo-space-3) var(--demo-space-4);
+      border-radius: var(--demo-radius-lg);
+      font-size: var(--demo-text-sm);
+      line-height: var(--demo-leading-relaxed);
+    }
+
+    .chat-message.user .chat-message-bubble {
+      background: var(--shop-primary);
+      color: white;
+      border-bottom-right-radius: var(--demo-radius-sm);
+    }
+
+    .chat-message.assistant .chat-message-bubble {
+      background: var(--demo-bg-elevated);
+      color: var(--demo-text-primary);
+      border-bottom-left-radius: var(--demo-radius-sm);
+    }
+
+    .chat-tool-call {
+      background: var(--demo-bg-base);
+      border: 1px solid var(--demo-border-default);
+      border-radius: var(--demo-radius-md);
+      padding: var(--demo-space-2) var(--demo-space-3);
+      margin-top: var(--demo-space-2);
+      font-size: var(--demo-text-xs);
+      color: var(--demo-text-muted);
+    }
+
+    .chat-tool-name {
+      font-family: var(--demo-font-mono);
+      color: var(--demo-accent-primary);
+    }
+
+    .chat-typing {
+      display: flex;
+      gap: 4px;
+      padding: var(--demo-space-2);
+    }
+
+    .chat-typing span {
+      width: 8px;
+      height: 8px;
+      background: var(--demo-text-muted);
+      border-radius: 50%;
+      animation: typing 1s infinite;
+    }
+
+    .chat-typing span:nth-child(2) { animation-delay: 0.15s; }
+    .chat-typing span:nth-child(3) { animation-delay: 0.3s; }
+
+    @keyframes typing {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-4px); }
+    }
+
+    .chatbot-input {
+      padding: var(--demo-space-3);
+      border-top: 1px solid var(--demo-border-default);
+      display: flex;
+      gap: var(--demo-space-2);
+    }
+
+    .chatbot-input textarea {
+      flex: 1;
+      padding: var(--demo-space-3);
+      background: var(--demo-bg-elevated);
+      border: 1px solid var(--demo-border-default);
+      border-radius: var(--demo-radius-md);
+      color: var(--demo-text-primary);
+      font-family: var(--demo-font-sans);
+      font-size: var(--demo-text-sm);
+      resize: none;
+      min-height: 40px;
+      max-height: 100px;
+    }
+
+    .chatbot-input textarea:focus {
+      outline: none;
+      border-color: var(--shop-primary);
+    }
+
+    .chatbot-input button {
+      width: 40px;
+      height: 40px;
+      background: var(--shop-primary);
+      border: none;
+      border-radius: var(--demo-radius-md);
+      color: white;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: background 0.15s;
+    }
+
+    .chatbot-input button:hover:not(:disabled) {
+      background: var(--shop-primary-dark);
+    }
+
+    .chatbot-input button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    /* API not available state */
+    .no-api-banner {
+      background: var(--demo-warning-dim);
+      border: 1px solid rgba(245, 158, 11, 0.3);
+      border-radius: var(--demo-radius-lg);
+      padding: var(--demo-space-4);
+      margin-bottom: var(--demo-space-6);
+      display: flex;
+      align-items: flex-start;
+      gap: var(--demo-space-3);
+    }
+
+    .no-api-banner.hidden {
+      display: none;
+    }
+
+    .no-api-icon {
+      font-size: 24px;
+    }
+
+    .no-api-content h3 {
+      font-size: var(--demo-text-base);
+      font-weight: var(--demo-weight-semibold);
+      color: var(--demo-warning);
+      margin-bottom: var(--demo-space-1);
+    }
+
+    .no-api-content p {
+      font-size: var(--demo-text-sm);
+      color: var(--demo-text-secondary);
+    }
+
+    /* Footer */
+    .shop-footer {
+      text-align: center;
+      padding: var(--demo-space-8) var(--demo-space-6);
+      color: var(--shop-text-muted);
+      font-size: var(--demo-text-sm);
+    }
+
+    .shop-footer a {
+      color: var(--demo-accent-primary);
+    }
+  </style>
+</head>
+<body>
+  <!-- Shop Header -->
+  <header class="shop-header">
+    <div class="shop-logo">
+      <div class="shop-logo-icon">🛍️</div>
+      <span>Acme Shop</span>
+    </div>
+    <nav class="shop-nav">
+      <a href="#">Products</a>
+      <a href="#">Categories</a>
+      <a href="#">Deals</a>
+      <a href="#">Cart (0)</a>
+    </nav>
+  </header>
+
+  <!-- Main Content -->
+  <main class="shop-main">
+    <!-- Demo Banner -->
+    <div class="demo-banner">
+      <div class="demo-banner-header">
+        <div class="demo-banner-icon">🤖</div>
+        <div class="demo-banner-content">
+          <h2>Bring Your Own Chatbot Demo</h2>
+          <p>
+            This demo shows how websites can integrate with the user's own AI chatbot. 
+            Instead of embedding an AI into the page, the website declares its MCP servers 
+            (via <code>&lt;link rel="mcp-server"&gt;</code>) and the browser brings up 
+            your chatbot with access to those tools.
+          </p>
+        </div>
+      </div>
+      <div class="demo-banner-actions">
+        <a href="README.md" class="demo-btn demo-btn-secondary">📖 Read the Plan</a>
+        <a href="../" class="demo-btn demo-btn-ghost">← Back to Demos</a>
+      </div>
+    </div>
+
+    <!-- API Not Available Warning -->
+    <div class="no-api-banner hidden" id="no-api-banner">
+      <div class="no-api-icon">⚠️</div>
+      <div class="no-api-content">
+        <h3>Web Agent API Not Available</h3>
+        <p>
+          The AI chatbot features require a Web Agent API implementation (like Harbor) to be installed. 
+          You can still browse the demo, but the chatbot won't be functional.
+        </p>
+      </div>
+    </div>
+
+    <!-- Hero -->
+    <section class="shop-hero">
+      <h1>Welcome to Acme Shop</h1>
+      <p>Find the perfect products with help from your AI assistant. Click the chat button to get personalized recommendations!</p>
+    </section>
+
+    <!-- Product Grid -->
+    <section class="product-grid">
+      <div class="product-card" data-product="wireless-headphones">
+        <div class="product-image">🎧</div>
+        <div class="product-info">
+          <div class="product-name">Wireless Headphones Pro</div>
+          <div class="product-price">$149.99</div>
+          <div class="product-rating">⭐⭐⭐⭐⭐ (128 reviews)</div>
+        </div>
+      </div>
+      <div class="product-card" data-product="smart-watch">
+        <div class="product-image">⌚</div>
+        <div class="product-info">
+          <div class="product-name">Smart Watch Series X</div>
+          <div class="product-price">$299.99</div>
+          <div class="product-rating">⭐⭐⭐⭐ (89 reviews)</div>
+        </div>
+      </div>
+      <div class="product-card" data-product="laptop-stand">
+        <div class="product-image">💻</div>
+        <div class="product-info">
+          <div class="product-name">Ergonomic Laptop Stand</div>
+          <div class="product-price">$59.99</div>
+          <div class="product-rating">⭐⭐⭐⭐⭐ (256 reviews)</div>
+        </div>
+      </div>
+      <div class="product-card" data-product="mechanical-keyboard">
+        <div class="product-image">⌨️</div>
+        <div class="product-info">
+          <div class="product-name">Mechanical Keyboard RGB</div>
+          <div class="product-price">$129.99</div>
+          <div class="product-rating">⭐⭐⭐⭐ (64 reviews)</div>
+        </div>
+      </div>
+      <div class="product-card" data-product="webcam-hd">
+        <div class="product-image">📷</div>
+        <div class="product-info">
+          <div class="product-name">HD Webcam 4K</div>
+          <div class="product-price">$89.99</div>
+          <div class="product-rating">⭐⭐⭐⭐⭐ (192 reviews)</div>
+        </div>
+      </div>
+      <div class="product-card" data-product="usb-hub">
+        <div class="product-image">🔌</div>
+        <div class="product-info">
+          <div class="product-name">USB-C Hub 7-in-1</div>
+          <div class="product-price">$49.99</div>
+          <div class="product-rating">⭐⭐⭐⭐ (156 reviews)</div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Chat FAB -->
+  <button class="chat-fab hidden" id="chat-fab" title="Chat with AI Assistant">
+    💬
+  </button>
+
+  <!-- Permission Modal (simulated) -->
+  <div class="permission-modal-overlay hidden" id="permission-modal">
+    <div class="permission-modal">
+      <div class="permission-header">
+        <div class="permission-icon">🛍️</div>
+        <div>
+          <div class="permission-title">Acme Shop wants to use your AI assistant</div>
+          <div class="permission-origin">localhost:8000</div>
+        </div>
+      </div>
+      
+      <p class="permission-description">
+        This website wants to register an AI assistant that can help you shop. 
+        Your chatbot will be able to use these tools:
+      </p>
+      
+      <div class="permission-tools">
+        <div class="permission-tools-title">Tools requested</div>
+        <div class="permission-tool">
+          <span class="permission-tool-check">☑</span>
+          <span class="permission-tool-name">search_products</span>
+          <span class="permission-tool-desc">— Search the product catalog</span>
+        </div>
+        <div class="permission-tool">
+          <span class="permission-tool-check">☑</span>
+          <span class="permission-tool-name">get_product_details</span>
+          <span class="permission-tool-desc">— Get product information</span>
+        </div>
+        <div class="permission-tool">
+          <span class="permission-tool-check">☑</span>
+          <span class="permission-tool-name">add_to_cart</span>
+          <span class="permission-tool-desc">— Add items to your cart</span>
+        </div>
+        <div class="permission-tool">
+          <span class="permission-tool-check">☑</span>
+          <span class="permission-tool-name">get_cart</span>
+          <span class="permission-tool-desc">— View cart contents</span>
+        </div>
+      </div>
+      
+      <div class="permission-note">
+        <strong>Note:</strong> This is a simulated permission prompt. In a real implementation, 
+        this would be shown by your browser, not the website.
+      </div>
+      
+      <div class="permission-actions">
+        <button class="permission-btn permission-btn-deny" id="perm-deny">Deny</button>
+        <button class="permission-btn permission-btn-once" id="perm-once">Allow Once</button>
+        <button class="permission-btn permission-btn-allow" id="perm-allow">Always Allow</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Chatbot Panel -->
+  <div class="chatbot-panel hidden" id="chatbot-panel">
+    <div class="chatbot-header">
+      <div class="chatbot-header-left">
+        <div class="chatbot-header-icon">🛍️</div>
+        <div>
+          <div class="chatbot-header-title">Acme Shop Assistant</div>
+          <div class="chatbot-header-subtitle">Powered by your AI</div>
+        </div>
+      </div>
+      <button class="chatbot-close" id="chatbot-close">×</button>
+    </div>
+    
+    <div class="chatbot-messages" id="chatbot-messages">
+      <!-- Messages will be added here -->
+    </div>
+    
+    <div class="chatbot-input">
+      <textarea 
+        id="chatbot-input" 
+        placeholder="Ask about products, get recommendations..."
+        rows="1"
+      ></textarea>
+      <button id="chatbot-send">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="shop-footer">
+    <p>
+      This is a demo for the <a href="../">Web Agent API</a>. 
+      <a href="README.md">View the implementation plan</a>.
+    </p>
+  </footer>
+
+  <script>
+    // =============================================================================
+    // Mock Product Database (simulates website's MCP server)
+    // =============================================================================
+    
+    const PRODUCTS = {
+      'wireless-headphones': {
+        id: 'wireless-headphones',
+        name: 'Wireless Headphones Pro',
+        price: 149.99,
+        description: 'Premium wireless headphones with active noise cancellation, 30-hour battery life, and crystal-clear audio.',
+        category: 'audio',
+        rating: 5,
+        reviews: 128,
+        inStock: true
+      },
+      'smart-watch': {
+        id: 'smart-watch',
+        name: 'Smart Watch Series X',
+        price: 299.99,
+        description: 'Advanced smartwatch with health monitoring, GPS, and 5-day battery life. Water resistant to 50m.',
+        category: 'wearables',
+        rating: 4,
+        reviews: 89,
+        inStock: true
+      },
+      'laptop-stand': {
+        id: 'laptop-stand',
+        name: 'Ergonomic Laptop Stand',
+        price: 59.99,
+        description: 'Adjustable aluminum laptop stand for better posture. Compatible with laptops up to 17 inches.',
+        category: 'accessories',
+        rating: 5,
+        reviews: 256,
+        inStock: true
+      },
+      'mechanical-keyboard': {
+        id: 'mechanical-keyboard',
+        name: 'Mechanical Keyboard RGB',
+        price: 129.99,
+        description: 'Tactile mechanical keyboard with customizable RGB lighting and programmable keys.',
+        category: 'accessories',
+        rating: 4,
+        reviews: 64,
+        inStock: false
+      },
+      'webcam-hd': {
+        id: 'webcam-hd',
+        name: 'HD Webcam 4K',
+        price: 89.99,
+        description: '4K webcam with auto-focus, noise-canceling microphone, and low-light correction.',
+        category: 'accessories',
+        rating: 5,
+        reviews: 192,
+        inStock: true
+      },
+      'usb-hub': {
+        id: 'usb-hub',
+        name: 'USB-C Hub 7-in-1',
+        price: 49.99,
+        description: 'Compact USB-C hub with HDMI, USB-A, SD card reader, and power delivery support.',
+        category: 'accessories',
+        rating: 4,
+        reviews: 156,
+        inStock: true
+      }
+    };
+
+    let cart = [];
+
+    // Simulated MCP tool functions
+    const SHOP_TOOLS = {
+      search_products: async (args) => {
+        const query = (args.query || '').toLowerCase();
+        const results = Object.values(PRODUCTS).filter(p => 
+          p.name.toLowerCase().includes(query) ||
+          p.description.toLowerCase().includes(query) ||
+          p.category.toLowerCase().includes(query)
+        );
+        return {
+          results: results.map(p => ({
+            id: p.id,
+            name: p.name,
+            price: `$${p.price}`,
+            rating: '⭐'.repeat(p.rating),
+            inStock: p.inStock ? 'In Stock' : 'Out of Stock'
+          })),
+          count: results.length
+        };
+      },
+      
+      get_product_details: async (args) => {
+        const product = PRODUCTS[args.productId];
+        if (!product) {
+          return { error: 'Product not found' };
+        }
+        return {
+          name: product.name,
+          price: `$${product.price}`,
+          description: product.description,
+          rating: `${product.rating}/5 stars (${product.reviews} reviews)`,
+          availability: product.inStock ? 'In Stock' : 'Out of Stock'
+        };
+      },
+      
+      add_to_cart: async (args) => {
+        const product = PRODUCTS[args.productId];
+        if (!product) {
+          return { error: 'Product not found' };
+        }
+        if (!product.inStock) {
+          return { error: 'Product is out of stock' };
+        }
+        cart.push(product);
+        return {
+          success: true,
+          message: `Added ${product.name} to cart`,
+          cartTotal: `$${cart.reduce((sum, p) => sum + p.price, 0).toFixed(2)}`,
+          itemCount: cart.length
+        };
+      },
+      
+      get_cart: async () => {
+        if (cart.length === 0) {
+          return { empty: true, message: 'Your cart is empty' };
+        }
+        return {
+          items: cart.map(p => ({ name: p.name, price: `$${p.price}` })),
+          total: `$${cart.reduce((sum, p) => sum + p.price, 0).toFixed(2)}`,
+          itemCount: cart.length
+        };
+      }
+    };
+
+    // =============================================================================
+    // State
+    // =============================================================================
+    
+    let apiAvailable = false;
+    let permissionGranted = false;
+    let chatOpen = false;
+    let isProcessing = false;
+    let messages = [];
+
+    // =============================================================================
+    // DOM Elements
+    // =============================================================================
+    
+    const chatFab = document.getElementById('chat-fab');
+    const permissionModal = document.getElementById('permission-modal');
+    const chatbotPanel = document.getElementById('chatbot-panel');
+    const chatbotMessages = document.getElementById('chatbot-messages');
+    const chatbotInput = document.getElementById('chatbot-input');
+    const chatbotSend = document.getElementById('chatbot-send');
+    const chatbotClose = document.getElementById('chatbot-close');
+    const noApiBanner = document.getElementById('no-api-banner');
+    const permDeny = document.getElementById('perm-deny');
+    const permOnce = document.getElementById('perm-once');
+    const permAllow = document.getElementById('perm-allow');
+
+    // =============================================================================
+    // API Checking
+    // =============================================================================
+    
+    async function checkApiAvailability() {
+      if (typeof window.ai !== 'undefined' && typeof window.agent !== 'undefined') {
+        apiAvailable = true;
+        chatFab.classList.remove('hidden');
+        console.log('[BYOC Demo] Web Agent API detected');
+        return true;
+      }
+      
+      // API not available - show warning
+      noApiBanner.classList.remove('hidden');
+      chatFab.classList.remove('hidden'); // Still show FAB for demo purposes
+      console.log('[BYOC Demo] Web Agent API not available - running in demo mode');
+      return false;
+    }
+
+    // =============================================================================
+    // Permission Flow
+    // =============================================================================
+    
+    function showPermissionPrompt() {
+      permissionModal.classList.remove('hidden');
+    }
+
+    function hidePermissionPrompt() {
+      permissionModal.classList.add('hidden');
+    }
+
+    async function requestRealPermissions() {
+      try {
+        const result = await window.agent.requestPermissions({
+          scopes: ['model:prompt', 'model:tools', 'mcp:tools.list', 'mcp:tools.call'],
+          reason: 'Acme Shop Assistant needs AI access to help you find products'
+        });
+        return result.granted;
+      } catch (err) {
+        console.error('[BYOC Demo] Permission request failed:', err);
+        return false;
+      }
+    }
+
+    async function handlePermissionChoice(choice) {
+      hidePermissionPrompt();
+      
+      if (choice === 'deny') {
+        console.log('[BYOC Demo] User denied permission');
+        return;
+      }
+      
+      // If real API is available, request actual permissions
+      if (apiAvailable) {
+        const granted = await requestRealPermissions();
+        if (!granted) {
+          console.log('[BYOC Demo] Real permission denied');
+          return;
+        }
+      }
+      
+      permissionGranted = true;
+      openChatbot();
+    }
+
+    // =============================================================================
+    // Chatbot UI
+    // =============================================================================
+    
+    function openChatbot() {
+      chatOpen = true;
+      chatFab.classList.add('hidden');
+      chatbotPanel.classList.remove('hidden');
+      
+      // Add welcome message
+      if (messages.length === 0) {
+        addAssistantMessage(
+          "Hi! I'm your Acme Shop assistant. I can help you find products, check availability, and manage your cart. What are you looking for today?"
+        );
+      }
+      
+      chatbotInput.focus();
+    }
+
+    function closeChatbot() {
+      chatOpen = false;
+      chatbotPanel.classList.add('hidden');
+      chatFab.classList.remove('hidden');
+    }
+
+    function addUserMessage(text) {
+      messages.push({ role: 'user', content: text });
+      
+      const div = document.createElement('div');
+      div.className = 'chat-message user';
+      div.innerHTML = `<div class="chat-message-bubble">${escapeHtml(text)}</div>`;
+      chatbotMessages.appendChild(div);
+      scrollChatToBottom();
+    }
+
+    function addAssistantMessage(text, toolCalls = []) {
+      messages.push({ role: 'assistant', content: text, tools: toolCalls });
+      
+      const div = document.createElement('div');
+      div.className = 'chat-message assistant';
+      
+      let html = `<div class="chat-message-bubble">${escapeHtml(text)}</div>`;
+      
+      for (const tool of toolCalls) {
+        html += `
+          <div class="chat-tool-call">
+            🔧 Used <span class="chat-tool-name">${tool.name}</span>
+          </div>
+        `;
+      }
+      
+      div.innerHTML = html;
+      chatbotMessages.appendChild(div);
+      scrollChatToBottom();
+    }
+
+    function addTypingIndicator() {
+      const div = document.createElement('div');
+      div.className = 'chat-message assistant';
+      div.id = 'typing-indicator';
+      div.innerHTML = `
+        <div class="chat-message-bubble">
+          <div class="chat-typing">
+            <span></span><span></span><span></span>
+          </div>
+        </div>
+      `;
+      chatbotMessages.appendChild(div);
+      scrollChatToBottom();
+    }
+
+    function removeTypingIndicator() {
+      const indicator = document.getElementById('typing-indicator');
+      if (indicator) indicator.remove();
+    }
+
+    function scrollChatToBottom() {
+      chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
+    }
+
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    // =============================================================================
+    // Message Handling
+    // =============================================================================
+    
+    async function sendMessage() {
+      const text = chatbotInput.value.trim();
+      if (!text || isProcessing) return;
+      
+      isProcessing = true;
+      chatbotSend.disabled = true;
+      chatbotInput.value = '';
+      
+      addUserMessage(text);
+      addTypingIndicator();
+      
+      try {
+        if (apiAvailable) {
+          await handleWithRealApi(text);
+        } else {
+          await handleWithMockApi(text);
+        }
+      } catch (err) {
+        console.error('[BYOC Demo] Error:', err);
+        removeTypingIndicator();
+        addAssistantMessage("I'm sorry, I encountered an error. Please try again.");
+      }
+      
+      isProcessing = false;
+      chatbotSend.disabled = false;
+    }
+
+    async function handleWithRealApi(text) {
+      // Build context with shop information
+      const systemPrompt = `You are a helpful shopping assistant for Acme Shop. 
+You help customers find products, answer questions about items, and manage their cart.
+
+Available products in our catalog:
+${Object.values(PRODUCTS).map(p => `- ${p.name}: $${p.price} (${p.inStock ? 'In Stock' : 'Out of Stock'})`).join('\n')}
+
+When discussing products, be helpful and informative. If the customer asks to add something to cart, 
+describe what you would do (in a real implementation, you would call the add_to_cart tool).
+
+Current cart: ${cart.length === 0 ? 'Empty' : cart.map(p => p.name).join(', ')}`;
+
+      let responseText = '';
+      const toolsUsed = [];
+      
+      // Use the real agent API
+      for await (const event of window.agent.run({
+        task: `${systemPrompt}\n\nCustomer: ${text}`,
+        maxToolCalls: 3
+      })) {
+        switch (event.type) {
+          case 'token':
+            responseText += event.token || '';
+            break;
+          case 'tool_call':
+            toolsUsed.push({ name: event.tool, args: event.args });
+            break;
+          case 'final':
+            removeTypingIndicator();
+            addAssistantMessage(event.output || responseText, toolsUsed);
+            break;
+          case 'error':
+            removeTypingIndicator();
+            addAssistantMessage(`Error: ${event.error?.message || 'Unknown error'}`);
+            break;
+        }
+      }
+    }
+
+    async function handleWithMockApi(text) {
+      // Simulate AI thinking time
+      await new Promise(r => setTimeout(r, 1000 + Math.random() * 1000));
+      
+      const toolsUsed = [];
+      let response = '';
+      
+      // Simple keyword-based responses for demo
+      const lowerText = text.toLowerCase();
+      
+      if (lowerText.includes('search') || lowerText.includes('find') || lowerText.includes('looking for')) {
+        // Simulate search
+        const searchTerms = ['headphones', 'watch', 'keyboard', 'webcam', 'laptop', 'usb'];
+        const foundTerm = searchTerms.find(t => lowerText.includes(t));
+        
+        if (foundTerm) {
+          const result = await SHOP_TOOLS.search_products({ query: foundTerm });
+          toolsUsed.push({ name: 'search_products', result });
+          
+          if (result.count > 0) {
+            response = `I found ${result.count} product(s) matching "${foundTerm}":\n\n`;
+            response += result.results.map(p => 
+              `• ${p.name} - ${p.price} (${p.inStock})`
+            ).join('\n');
+            response += '\n\nWould you like more details on any of these?';
+          } else {
+            response = `I couldn't find any products matching "${foundTerm}". Would you like to browse our categories?`;
+          }
+        } else {
+          response = "What type of product are you looking for? We have headphones, smartwatches, keyboards, webcams, and more!";
+        }
+      } else if (lowerText.includes('cart')) {
+        const result = await SHOP_TOOLS.get_cart();
+        toolsUsed.push({ name: 'get_cart', result });
+        
+        if (result.empty) {
+          response = "Your cart is currently empty. Would you like me to help you find some products?";
+        } else {
+          response = `Your cart has ${result.itemCount} item(s):\n\n`;
+          response += result.items.map(i => `• ${i.name} - ${i.price}`).join('\n');
+          response += `\n\nTotal: ${result.total}`;
+        }
+      } else if (lowerText.includes('add') && (lowerText.includes('headphone') || lowerText.includes('watch'))) {
+        const productId = lowerText.includes('headphone') ? 'wireless-headphones' : 'smart-watch';
+        const result = await SHOP_TOOLS.add_to_cart({ productId });
+        toolsUsed.push({ name: 'add_to_cart', result });
+        
+        if (result.success) {
+          response = `${result.message}! Your cart total is now ${result.cartTotal}. Would you like to continue shopping or proceed to checkout?`;
+        } else {
+          response = `Sorry, ${result.error}. Can I help you find something else?`;
+        }
+      } else if (lowerText.includes('recommend') || lowerText.includes('suggestion')) {
+        response = "Based on our top sellers, I'd recommend:\n\n";
+        response += "🎧 **Wireless Headphones Pro** ($149.99) - Great for music lovers\n";
+        response += "⌚ **Smart Watch Series X** ($299.99) - Perfect for fitness tracking\n";
+        response += "💻 **Ergonomic Laptop Stand** ($59.99) - Essential for home office\n\n";
+        response += "Would you like more details on any of these?";
+      } else if (lowerText.includes('hello') || lowerText.includes('hi') || lowerText.includes('hey')) {
+        response = "Hello! Welcome to Acme Shop. I'm here to help you find the perfect products. What are you looking for today?";
+      } else {
+        response = "I'd be happy to help you with that! You can ask me to:\n\n";
+        response += "• Search for products (e.g., 'find headphones')\n";
+        response += "• Get product details\n";
+        response += "• Add items to your cart\n";
+        response += "• Check your cart\n";
+        response += "• Get recommendations\n\n";
+        response += "What would you like to do?";
+      }
+      
+      removeTypingIndicator();
+      addAssistantMessage(response, toolsUsed);
+    }
+
+    // =============================================================================
+    // Event Listeners
+    // =============================================================================
+    
+    // Chat FAB click
+    chatFab.addEventListener('click', () => {
+      if (permissionGranted) {
+        openChatbot();
+      } else {
+        showPermissionPrompt();
+      }
+    });
+
+    // Permission buttons
+    permDeny.addEventListener('click', () => handlePermissionChoice('deny'));
+    permOnce.addEventListener('click', () => handlePermissionChoice('once'));
+    permAllow.addEventListener('click', () => handlePermissionChoice('allow'));
+
+    // Chatbot close
+    chatbotClose.addEventListener('click', closeChatbot);
+
+    // Send message
+    chatbotSend.addEventListener('click', sendMessage);
+    chatbotInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        sendMessage();
+      }
+    });
+
+    // Auto-resize input
+    chatbotInput.addEventListener('input', () => {
+      chatbotInput.style.height = 'auto';
+      chatbotInput.style.height = Math.min(chatbotInput.scrollHeight, 100) + 'px';
+    });
+
+    // =============================================================================
+    // Initialize
+    // =============================================================================
+    
+    async function init() {
+      await checkApiAvailability();
+      
+      console.log('[BYOC Demo] Initialized');
+      console.log('  API Available:', apiAvailable);
+      console.log('');
+      console.log('This demo shows the "Bring Your Own Chatbot" concept.');
+      console.log('Click the chat button to simulate the flow.');
+    }
+
+    // Wait for DOM and potential extension injection
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', () => setTimeout(init, 100));
+    } else {
+      setTimeout(init, 100);
+    }
+  </script>
+</body>
+</html>
+

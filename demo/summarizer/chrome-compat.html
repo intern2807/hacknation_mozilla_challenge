@@ -21,27 +21,27 @@
       flex-direction: column;
       max-width: 720px;
       margin: 0 auto;
-      padding: var(--harbor-space-12) var(--harbor-space-6);
+      padding: var(--demo-space-12) var(--demo-space-6);
       width: 100%;
     }
 
     /* Bookmarklet Section */
     .bookmarklet-section {
       text-align: center;
-      padding: var(--harbor-space-6) 0;
+      padding: var(--demo-space-6) 0;
     }
 
     .bookmarklet-link {
       display: inline-flex;
       align-items: center;
-      gap: var(--harbor-space-3);
-      padding: var(--harbor-space-4) var(--harbor-space-8);
-      background: linear-gradient(135deg, var(--harbor-info), #60a5fa);
+      gap: var(--demo-space-3);
+      padding: var(--demo-space-4) var(--demo-space-8);
+      background: linear-gradient(135deg, var(--demo-info), #60a5fa);
       color: white;
       text-decoration: none;
-      border-radius: var(--harbor-radius-lg);
-      font-size: var(--harbor-text-base);
-      font-weight: var(--harbor-weight-semibold);
+      border-radius: var(--demo-radius-lg);
+      font-size: var(--demo-text-base);
+      font-weight: var(--demo-weight-semibold);
       box-shadow: 0 0 30px rgba(59, 130, 246, 0.25);
       cursor: grab;
       transition: transform 0.2s, box-shadow 0.2s;
@@ -49,7 +49,7 @@
 
     .bookmarklet-link:hover {
       transform: translateY(-2px);
-      box-shadow: var(--harbor-shadow-lg), 0 0 30px rgba(59, 130, 246, 0.3);
+      box-shadow: var(--demo-shadow-lg), 0 0 30px rgba(59, 130, 246, 0.3);
       color: white;
     }
 
@@ -58,57 +58,57 @@
     }
 
     .bookmarklet-hint {
-      margin-top: var(--harbor-space-4);
-      font-size: var(--harbor-text-sm);
-      color: var(--harbor-text-muted);
+      margin-top: var(--demo-space-4);
+      font-size: var(--demo-text-sm);
+      color: var(--demo-text-muted);
     }
 
     .bookmarklet-hint strong {
-      color: var(--harbor-text-secondary);
+      color: var(--demo-text-secondary);
     }
 
     /* Requirements */
     .requirements {
       display: flex;
-      gap: var(--harbor-space-3);
+      gap: var(--demo-space-3);
       flex-wrap: wrap;
-      margin-top: var(--harbor-space-4);
+      margin-top: var(--demo-space-4);
     }
 
     .requirement {
       display: flex;
       align-items: center;
-      gap: var(--harbor-space-2);
-      padding: var(--harbor-space-2) var(--harbor-space-3);
-      background: var(--harbor-bg-elevated);
-      border-radius: var(--harbor-radius-md);
-      font-size: var(--harbor-text-sm);
-      color: var(--harbor-text-secondary);
+      gap: var(--demo-space-2);
+      padding: var(--demo-space-2) var(--demo-space-3);
+      background: var(--demo-bg-elevated);
+      border-radius: var(--demo-radius-md);
+      font-size: var(--demo-text-sm);
+      color: var(--demo-text-secondary);
     }
 
     .requirement-icon {
-      font-size: var(--harbor-text-sm);
+      font-size: var(--demo-text-sm);
     }
 
     /* Preview section */
     .preview-section {
-      margin-top: var(--harbor-space-4);
-      padding-top: var(--harbor-space-4);
-      border-top: 1px dashed var(--harbor-border-default);
+      margin-top: var(--demo-space-4);
+      padding-top: var(--demo-space-4);
+      border-top: 1px dashed var(--demo-border-default);
     }
 
     .preview-label {
-      font-size: var(--harbor-text-xs);
-      color: var(--harbor-text-muted);
+      font-size: var(--demo-text-xs);
+      color: var(--demo-text-muted);
       text-transform: uppercase;
       letter-spacing: 0.05em;
-      margin-bottom: var(--harbor-space-3);
+      margin-bottom: var(--demo-space-3);
     }
 
     .overlay-preview {
       background: rgba(0, 0, 0, 0.85);
-      border-radius: var(--harbor-radius-md);
-      padding: var(--harbor-space-5);
+      border-radius: var(--demo-radius-md);
+      padding: var(--demo-space-5);
       color: white;
     }
 
@@ -116,14 +116,14 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      margin-bottom: var(--harbor-space-3);
-      padding-bottom: var(--harbor-space-3);
+      margin-bottom: var(--demo-space-3);
+      padding-bottom: var(--demo-space-3);
       border-bottom: 1px solid rgba(255,255,255,0.1);
     }
 
     .overlay-preview-title {
-      font-size: var(--harbor-text-sm);
-      font-weight: var(--harbor-weight-semibold);
+      font-size: var(--demo-text-sm);
+      font-weight: var(--demo-weight-semibold);
     }
 
     .overlay-preview-close {
@@ -131,29 +131,29 @@
       height: 24px;
       background: rgba(255,255,255,0.1);
       border: none;
-      border-radius: var(--harbor-radius-sm);
+      border-radius: var(--demo-radius-sm);
       color: white;
       cursor: pointer;
-      font-size: var(--harbor-text-sm);
+      font-size: var(--demo-text-sm);
     }
 
     .overlay-preview-content {
-      font-size: var(--harbor-text-sm);
-      line-height: var(--harbor-leading-relaxed);
+      font-size: var(--demo-text-sm);
+      line-height: var(--demo-leading-relaxed);
       color: rgba(255,255,255,0.85);
     }
 
     /* Comparison table */
     .comparison {
-      margin-top: var(--harbor-space-5);
-      border: 1px solid var(--harbor-border-default);
-      border-radius: var(--harbor-radius-md);
+      margin-top: var(--demo-space-5);
+      border: 1px solid var(--demo-border-default);
+      border-radius: var(--demo-radius-md);
       overflow: hidden;
     }
 
     .comparison-row {
       display: flex;
-      border-bottom: 1px solid var(--harbor-border-default);
+      border-bottom: 1px solid var(--demo-border-default);
     }
 
     .comparison-row:last-child {
@@ -162,58 +162,58 @@
 
     .comparison-label {
       flex: 0 0 140px;
-      padding: var(--harbor-space-3) var(--harbor-space-4);
-      background: var(--harbor-bg-elevated);
-      font-size: var(--harbor-text-sm);
-      font-weight: var(--harbor-weight-semibold);
-      color: var(--harbor-text-secondary);
+      padding: var(--demo-space-3) var(--demo-space-4);
+      background: var(--demo-bg-elevated);
+      font-size: var(--demo-text-sm);
+      font-weight: var(--demo-weight-semibold);
+      color: var(--demo-text-secondary);
     }
 
     .comparison-value {
       flex: 1;
-      padding: var(--harbor-space-3) var(--harbor-space-4);
-      font-size: var(--harbor-text-sm);
-      color: var(--harbor-text-primary);
+      padding: var(--demo-space-3) var(--demo-space-4);
+      font-size: var(--demo-text-sm);
+      color: var(--demo-text-primary);
     }
 
     .comparison-value code {
-      background: var(--harbor-bg-elevated);
+      background: var(--demo-bg-elevated);
       padding: 2px 6px;
-      border-radius: var(--harbor-radius-sm);
-      font-size: var(--harbor-text-xs);
+      border-radius: var(--demo-radius-sm);
+      font-size: var(--demo-text-xs);
     }
 
     /* Other link */
     .link-other {
       display: inline-flex;
       align-items: center;
-      gap: var(--harbor-space-2);
-      margin-top: var(--harbor-space-4);
-      padding: var(--harbor-space-2) var(--harbor-space-4);
-      background: var(--harbor-bg-elevated);
-      border: 1px solid var(--harbor-border-default);
-      border-radius: var(--harbor-radius-md);
-      color: var(--harbor-text-secondary);
+      gap: var(--demo-space-2);
+      margin-top: var(--demo-space-4);
+      padding: var(--demo-space-2) var(--demo-space-4);
+      background: var(--demo-bg-elevated);
+      border: 1px solid var(--demo-border-default);
+      border-radius: var(--demo-radius-md);
+      color: var(--demo-text-secondary);
       text-decoration: none;
-      font-size: var(--harbor-text-sm);
+      font-size: var(--demo-text-sm);
       transition: all 0.15s ease;
     }
 
     .link-other:hover {
-      background: var(--harbor-bg-overlay);
-      border-color: var(--harbor-accent-primary);
-      color: var(--harbor-accent-primary);
+      background: var(--demo-bg-overlay);
+      border-color: var(--demo-accent-primary);
+      color: var(--demo-accent-primary);
     }
 
     /* Why section list */
     .why-list {
-      margin: 0 0 0 var(--harbor-space-5);
-      color: var(--harbor-text-secondary);
-      font-size: var(--harbor-text-sm);
+      margin: 0 0 0 var(--demo-space-5);
+      color: var(--demo-text-secondary);
+      font-size: var(--demo-text-sm);
     }
 
     .why-list li {
-      margin-bottom: var(--harbor-space-3);
+      margin-bottom: var(--demo-space-3);
     }
 
     .why-list li:last-child {
@@ -221,26 +221,26 @@
     }
 
     .why-list strong {
-      color: var(--harbor-text-primary);
+      color: var(--demo-text-primary);
     }
   </style>
 </head>
-<body class="harbor-bg-grid">
+<body class="demo-bg-grid">
   <div class="page-container">
-    <header class="harbor-demo-header">
-      <div class="harbor-demo-logo" style="background: linear-gradient(135deg, var(--harbor-info), #60a5fa);">⚡</div>
-      <h1 class="harbor-demo-title" style="background: linear-gradient(135deg, var(--harbor-info), #60a5fa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">Page Summarizer</h1>
-      <p class="harbor-demo-subtitle">Chrome API Compatible Version</p>
-      <div class="harbor-badge harbor-badge-info" style="margin-top: var(--harbor-space-3);">
+    <header class="demo-header">
+      <div class="demo-logo" style="background: linear-gradient(135deg, var(--demo-info), #60a5fa);">⚡</div>
+      <h1 class="demo-title" style="background: linear-gradient(135deg, var(--demo-info), #60a5fa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">Page Summarizer</h1>
+      <p class="demo-subtitle">Chrome API Compatible Version</p>
+      <div class="demo-badge demo-badge-info" style="margin-top: var(--demo-space-3);">
         <span>🔵</span>
         <span>Uses window.ai.languageModel</span>
       </div>
     </header>
 
-    <div class="harbor-card harbor-mb-6">
-      <div class="harbor-card-header">
-        <div class="harbor-card-icon" style="background: linear-gradient(135deg, var(--harbor-info), #60a5fa);">🔖</div>
-        <h2 class="harbor-card-title">Get the Bookmarklet</h2>
+    <div class="demo-card demo-mb-6">
+      <div class="demo-card-header">
+        <div class="demo-card-icon" style="background: linear-gradient(135deg, var(--demo-info), #60a5fa);">🔖</div>
+        <h2 class="demo-card-title">Get the Bookmarklet</h2>
       </div>
       
       <div class="bookmarklet-section">
@@ -278,17 +278,17 @@
       </div>
     </div>
 
-    <div class="harbor-card harbor-mb-6">
-      <div class="harbor-card-header">
-        <div class="harbor-card-icon" style="background: linear-gradient(135deg, var(--harbor-info), #60a5fa);">💻</div>
-        <h2 class="harbor-card-title">The Code</h2>
+    <div class="demo-card demo-mb-6">
+      <div class="demo-card-header">
+        <div class="demo-card-icon" style="background: linear-gradient(135deg, var(--demo-info), #60a5fa);">💻</div>
+        <h2 class="demo-card-title">The Code</h2>
       </div>
       
-      <p style="color: var(--harbor-text-secondary); font-size: var(--harbor-text-sm); margin-bottom: var(--harbor-space-2);">
-        This version uses the <strong style="color: var(--harbor-text-primary);">Chrome Prompt API</strong> style. The entire logic is just 4 lines:
+      <p style="color: var(--demo-text-secondary); font-size: var(--demo-text-sm); margin-bottom: var(--demo-space-2);">
+        This version uses the <strong style="color: var(--demo-text-primary);">Chrome Prompt API</strong> style. The entire logic is just 4 lines:
       </p>
       
-      <pre class="harbor-code"><span class="comment">// Create session using Chrome's languageModel API</span>
+      <pre class="demo-code"><span class="comment">// Create session using Chrome's languageModel API</span>
 <span class="keyword">const</span> session = <span class="keyword">await</span> window.<span class="property">ai</span>.<span class="property">languageModel</span>.<span class="method">create</span>({
   <span class="property">systemPrompt</span>: <span class="string">'Summarize clearly in 2-3 paragraphs.'</span>
 });
@@ -298,18 +298,18 @@
 
 <span class="comment">// That's it! Permissions are auto-requested.</span></pre>
 
-      <p style="color: var(--harbor-text-muted); font-size: var(--harbor-text-sm); margin-top: var(--harbor-space-4);">
-        <strong style="color: var(--harbor-text-secondary);">No explicit permission request needed!</strong> Web Agent API implementations automatically show the permission dialog when <code>languageModel.create()</code> is called.
+      <p style="color: var(--demo-text-muted); font-size: var(--demo-text-sm); margin-top: var(--demo-space-4);">
+        <strong style="color: var(--demo-text-secondary);">No explicit permission request needed!</strong> Web Agent API implementations automatically show the permission dialog when <code>languageModel.create()</code> is called.
       </p>
     </div>
 
-    <div class="harbor-card harbor-mb-6">
-      <div class="harbor-card-header">
-        <div class="harbor-card-icon" style="background: linear-gradient(135deg, var(--harbor-info), #60a5fa);">🔄</div>
-        <h2 class="harbor-card-title">API Comparison</h2>
+    <div class="demo-card demo-mb-6">
+      <div class="demo-card-header">
+        <div class="demo-card-icon" style="background: linear-gradient(135deg, var(--demo-info), #60a5fa);">🔄</div>
+        <h2 class="demo-card-title">API Comparison</h2>
       </div>
       
-      <p style="color: var(--harbor-text-secondary); font-size: var(--harbor-text-sm); margin-bottom: var(--harbor-space-4);">
+      <p style="color: var(--demo-text-secondary); font-size: var(--demo-text-sm); margin-bottom: var(--demo-space-4);">
         The Web Agent API supports both Chrome's API and its own extended API:
       </p>
       
@@ -346,10 +346,10 @@
       </a>
     </div>
 
-    <div class="harbor-card">
-      <div class="harbor-card-header">
-        <div class="harbor-card-icon" style="background: linear-gradient(135deg, var(--harbor-info), #60a5fa);">✨</div>
-        <h2 class="harbor-card-title">Why Chrome Compatibility?</h2>
+    <div class="demo-card">
+      <div class="demo-card-header">
+        <div class="demo-card-icon" style="background: linear-gradient(135deg, var(--demo-info), #60a5fa);">✨</div>
+        <h2 class="demo-card-title">Why Chrome Compatibility?</h2>
       </div>
       
       <ul class="why-list">
@@ -368,9 +368,9 @@
       </ul>
     </div>
 
-    <footer class="harbor-demo-footer">
+    <footer class="demo-footer">
       <p>Built with <a href="https://github.com/nicholasoxford/harbor" target="_blank">Harbor</a> — Local AI in your browser</p>
-      <p style="margin-top: var(--harbor-space-2);"><a href="../">← Back to Demos</a></p>
+      <p style="margin-top: var(--demo-space-2);"><a href="../">← Back to Demos</a></p>
     </footer>
   </div>
 
@@ -392,10 +392,10 @@
 
   // Create overlay UI
   const overlay = document.createElement('div');
-  overlay.id = 'harbor-summary-overlay';
+  overlay.id = 'demo-summary-overlay';
   overlay.innerHTML = \`
     <style>
-      #harbor-summary-overlay {
+      #demo-summary-overlay {
         position: fixed;
         top: 20px;
         right: 20px;
@@ -415,10 +415,10 @@
           0 0 30px rgba(59, 130, 246, 0.15);
         display: flex;
         flex-direction: column;
-        animation: harborSlideIn 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+        animation: demoSlideIn 0.35s cubic-bezier(0.16, 1, 0.3, 1);
         overflow: hidden;
       }
-      @keyframes harborSlideIn {
+      @keyframes demoSlideIn {
         from { 
           transform: translateX(30px) scale(0.96); 
           opacity: 0; 
@@ -428,12 +428,12 @@
           opacity: 1; 
         }
       }
-      #harbor-summary-overlay * {
+      #demo-summary-overlay * {
         box-sizing: border-box;
         margin: 0;
         padding: 0;
       }
-      .harbor-header {
+      .demo-header {
         display: flex;
         align-items: center;
         justify-content: space-between;
@@ -441,7 +441,7 @@
         background: linear-gradient(180deg, #14141c 0%, #0e0e14 100%);
         border-bottom: 1px solid rgba(255,255,255,0.08);
       }
-      .harbor-title {
+      .demo-title {
         font-size: 13px;
         font-weight: 600;
         letter-spacing: 0.02em;
@@ -451,7 +451,7 @@
         color: #f0f0f5;
         text-transform: uppercase;
       }
-      .harbor-title-icon {
+      .demo-title-icon {
         width: 28px;
         height: 28px;
         background: linear-gradient(135deg, #3b82f6 0%, #60a5fa 100%);
@@ -462,7 +462,7 @@
         font-size: 14px;
         box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
       }
-      .harbor-badge {
+      .demo-badge {
         display: inline-flex;
         align-items: center;
         padding: 3px 8px;
@@ -474,7 +474,7 @@
         color: #3b82f6;
         letter-spacing: 0.03em;
       }
-      .harbor-close {
+      .demo-close {
         width: 28px;
         height: 28px;
         background: rgba(255,255,255,0.05);
@@ -488,44 +488,44 @@
         justify-content: center;
         transition: all 0.15s ease;
       }
-      .harbor-close:hover {
+      .demo-close:hover {
         background: rgba(255,255,255,0.1);
         color: #f0f0f5;
       }
-      .harbor-content {
+      .demo-content {
         flex: 1;
         padding: 24px;
         overflow-y: auto;
         background: #0e0e14;
       }
-      .harbor-content::-webkit-scrollbar {
+      .demo-content::-webkit-scrollbar {
         width: 8px;
       }
-      .harbor-content::-webkit-scrollbar-track {
+      .demo-content::-webkit-scrollbar-track {
         background: transparent;
       }
-      .harbor-content::-webkit-scrollbar-thumb {
+      .demo-content::-webkit-scrollbar-thumb {
         background: rgba(255,255,255,0.1);
         border-radius: 4px;
       }
-      .harbor-content::-webkit-scrollbar-thumb:hover {
+      .demo-content::-webkit-scrollbar-thumb:hover {
         background: rgba(255,255,255,0.15);
       }
-      .harbor-content p {
+      .demo-content p {
         font-size: 15px;
         line-height: 1.75;
         color: #a0a0b0;
         margin-bottom: 16px;
       }
-      .harbor-content p:first-child {
+      .demo-content p:first-child {
         font-size: 16px;
         color: #f0f0f5;
         font-weight: 500;
       }
-      .harbor-content p:last-child {
+      .demo-content p:last-child {
         margin-bottom: 0;
       }
-      .harbor-loading {
+      .demo-loading {
         display: flex;
         flex-direction: column;
         align-items: center;
@@ -534,23 +534,23 @@
         color: #606070;
         gap: 16px;
       }
-      .harbor-spinner {
+      .demo-spinner {
         width: 36px;
         height: 36px;
         border: 3px solid rgba(255,255,255,0.1);
         border-top-color: #3b82f6;
         border-radius: 50%;
-        animation: harborSpin 0.8s linear infinite;
+        animation: demoSpin 0.8s linear infinite;
       }
-      @keyframes harborSpin {
+      @keyframes demoSpin {
         to { transform: rotate(360deg); }
       }
-      .harbor-loading-text {
+      .demo-loading-text {
         font-size: 13px;
         font-weight: 500;
         color: #606070;
       }
-      .harbor-error {
+      .demo-error {
         background: rgba(239, 68, 68, 0.1);
         border: 1px solid rgba(239, 68, 68, 0.3);
         border-radius: 8px;
@@ -559,7 +559,7 @@
         font-size: 13px;
         line-height: 1.5;
       }
-      .harbor-footer {
+      .demo-footer {
         padding: 12px 20px;
         border-top: 1px solid rgba(255,255,255,0.06);
         font-size: 11px;
@@ -567,40 +567,40 @@
         text-align: center;
         background: #0a0a0f;
       }
-      .harbor-footer a {
+      .demo-footer a {
         color: #3b82f6;
         text-decoration: none;
         font-weight: 600;
       }
-      .harbor-footer a:hover {
+      .demo-footer a:hover {
         text-decoration: underline;
       }
     </style>
-    <div class="harbor-header">
-      <span class="harbor-title">
-        <span class="harbor-title-icon">⚡</span>
+    <div class="demo-header">
+      <span class="demo-title">
+        <span class="demo-title-icon">⚡</span>
         Summary
-        <span class="harbor-badge">Chrome API</span>
+        <span class="demo-badge">Chrome API</span>
       </span>
-      <button class="harbor-close" onclick="this.closest('#harbor-summary-overlay').remove()">×</button>
+      <button class="demo-close" onclick="this.closest('#demo-summary-overlay').remove()">×</button>
     </div>
-    <div class="harbor-content" id="harbor-summary-content">
-      <div class="harbor-loading">
-        <div class="harbor-spinner"></div>
-        <span class="harbor-loading-text">Analyzing page...</span>
+    <div class="demo-content" id="demo-summary-content">
+      <div class="demo-loading">
+        <div class="demo-spinner"></div>
+        <span class="demo-loading-text">Analyzing page...</span>
       </div>
     </div>
-    <div class="harbor-footer">
+    <div class="demo-footer">
       Powered by <a href="https://github.com/nicholasoxford/harbor" target="_blank">Harbor</a>
     </div>
   \`;
   
   // Remove existing overlay if present
-  const existing = document.getElementById('harbor-summary-overlay');
+  const existing = document.getElementById('demo-summary-overlay');
   if (existing) existing.remove();
   
   document.body.appendChild(overlay);
-  const contentEl = document.getElementById('harbor-summary-content');
+  const contentEl = document.getElementById('demo-summary-content');
   
   try {
     // Check if model is available
@@ -632,7 +632,7 @@
     await session.destroy();
     
   } catch (err) {
-    contentEl.innerHTML = '<div class="harbor-error">Error: ' + (err.message || 'Failed to summarize') + '</div>';
+    contentEl.innerHTML = '<div class="demo-error">Error: ' + (err.message || 'Failed to summarize') + '</div>';
   }
 })();
     `.trim();

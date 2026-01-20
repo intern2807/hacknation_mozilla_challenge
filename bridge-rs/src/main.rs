@@ -1,4 +1,5 @@
 mod fs;
+mod js;
 mod llm;
 mod native_messaging;
 mod rpc;

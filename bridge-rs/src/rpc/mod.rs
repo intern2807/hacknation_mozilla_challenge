@@ -10,7 +10,7 @@ use futures::stream::Stream;
 use serde::{Deserialize, Serialize};
 use std::{convert::Infallible, pin::Pin};
 
-use crate::{fs, llm};
+use crate::{fs, js, llm};
 
 type SseStream = Pin<Box<dyn Stream<Item = Result<Event, Infallible>> + Send>>;
 
@@ -67,6 +67,12 @@ pub async fn handle(Json(request): Json<RpcRequest>) -> impl IntoResponse {
     "fs.read" => fs::read(request.params.clone()).await,
     "fs.write" => fs::write(request.params.clone()).await,
     "fs.list" => fs::list(request.params.clone()).await,
+
+    // JavaScript MCP servers
+    "js.start_server" => js::start_server(request.params.clone()).await,
+    "js.stop_server" => js::stop_server(request.params.clone()).await,
+    "js.call" => js::call_server(request.params.clone()).await,
+    "js.list_servers" => js::list_servers().await,
 
     _ => Err(RpcError {
       code: -32601,

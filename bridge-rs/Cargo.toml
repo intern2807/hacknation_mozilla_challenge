@@ -13,6 +13,12 @@ tracing-subscriber = { version = "0.3", features = ["fmt"] }
 futures = "0.3"
 dirs = "6"
 tower-http = { version = "0.5", features = ["cors"] }
+reqwest = { version = "0.11", features = ["json"] }
+url = "2.5"
+lazy_static = "1.4"
+
+# QuickJS JavaScript engine
+rquickjs = { version = "0.6", features = ["bindgen", "loader", "parallel"] }
 
 # Local LLM provider library
 any-llm = { path = "any-llm-rust" }

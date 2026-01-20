@@ -4,13 +4,15 @@
  * then receives the actual code to execute via postMessage.
  */
 
-// This runs inside the worker
-declare const self: DedicatedWorkerGlobalScope;
+// Make this a module to avoid global scope conflicts
+export {};
+
+// In worker context, use globalThis which is already the worker scope
 
 // Wait for code injection
-self.addEventListener('message', function initHandler(event) {
+globalThis.addEventListener('message', function initHandler(event: MessageEvent) {
   if (event.data?.type === 'load-code') {
-    self.removeEventListener('message', initHandler);
+    globalThis.removeEventListener('message', initHandler);
     
     const code = event.data.code;
     
@@ -20,7 +22,7 @@ self.addEventListener('message', function initHandler(event) {
       const fn = new Function(code);
       fn();
     } catch (e) {
-      self.postMessage({ 
+      postMessage({ 
         type: 'error', 
         message: e instanceof Error ? e.message : String(e) 
       });
@@ -29,4 +31,4 @@ self.addEventListener('message', function initHandler(event) {
 });
 
 // Signal that loader is ready for code
-self.postMessage({ type: 'loader-ready' });
+postMessage({ type: 'loader-ready' });

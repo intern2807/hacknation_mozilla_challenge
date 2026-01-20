@@ -4,6 +4,9 @@
  * Shows a list of bundled/curated MCP servers that can be installed with one click.
  */
 
+// Make this a module to avoid global scope conflicts
+export {};
+
 type BundledServer = {
   id: string;
   name: string;

@@ -5,6 +5,9 @@
  * Communicates with the bridge via the extension's native messaging.
  */
 
+// Make this a module to avoid global scope conflicts
+export {};
+
 // Types
 interface TextSession {
   sessionId: string;
@@ -194,7 +197,7 @@ const ai = {
       
       async *promptStreaming(input: string): AsyncIterable<{ type: string; token?: string }> {
         // For now, fall back to non-streaming
-        const response = await this.prompt(input);
+        const response = await (this as TextSession).prompt(input);
         
         // Simulate streaming by yielding word by word
         const words = response.split(/(\s+)/);

@@ -1,3 +1,6 @@
+// Make this a module to avoid global scope conflicts
+export {};
+
 type ServerStatus = {
   id: string;
   name: string;

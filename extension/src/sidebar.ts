@@ -180,8 +180,9 @@ function renderServer(server: ServerStatus): HTMLElement {
   const item = document.createElement('div');
   item.className = 'server';
 
-  const title = document.createElement('div');
-  title.className = 'server-title';
+  // Row 1: Header with name, badge, and action buttons
+  const header = document.createElement('div');
+  header.className = 'server-title';
 
   const nameContainer = document.createElement('span');
   nameContainer.style.display = 'flex';
@@ -196,15 +197,11 @@ function renderServer(server: ServerStatus): HTMLElement {
   const runtimeBadge = document.createElement('span');
   runtimeBadge.className = 'badge badge-muted';
   runtimeBadge.textContent = server.runtime === 'js' ? 'JS' : 'WASM';
-  runtimeBadge.style.fontSize = '9px';
   nameContainer.appendChild(runtimeBadge);
 
-  const status = document.createElement('span');
-  status.className = 'server-actions';
-  const dot = document.createElement('span');
-  dot.className = `status-dot ${server.running ? 'status-running' : 'status-stopped'}`;
-  status.appendChild(dot);
-  status.appendChild(document.createTextNode(server.running ? 'Running' : 'Stopped'));
+  // Action buttons container
+  const actions = document.createElement('span');
+  actions.className = 'server-actions';
 
   if (!server.running) {
     const startButton = document.createElement('button');
@@ -222,7 +219,7 @@ function renderServer(server: ServerStatus): HTMLElement {
       await loadServers();
       startButton.disabled = false;
     });
-    status.appendChild(startButton);
+    actions.appendChild(startButton);
   } else {
     const stopButton = document.createElement('button');
     stopButton.className = 'btn btn-secondary btn-sm';
@@ -239,7 +236,7 @@ function renderServer(server: ServerStatus): HTMLElement {
       await loadServers();
       stopButton.disabled = false;
     });
-    status.appendChild(stopButton);
+    actions.appendChild(stopButton);
   }
 
   const removeButton = document.createElement('button');
@@ -257,17 +254,33 @@ function renderServer(server: ServerStatus): HTMLElement {
     await loadServers();
     removeButton.disabled = false;
   });
-  status.appendChild(removeButton);
+  actions.appendChild(removeButton);
 
-  title.appendChild(nameContainer);
-  title.appendChild(status);
+  header.appendChild(nameContainer);
+  header.appendChild(actions);
 
+  // Row 2: Status and tools info
   const meta = document.createElement('div');
   meta.className = 'server-meta';
+  
+  const statusDot = document.createElement('span');
+  statusDot.className = `status-dot ${server.running ? 'status-running' : 'status-stopped'}`;
+  meta.appendChild(statusDot);
+  
+  const statusText = document.createElement('span');
+  statusText.textContent = server.running ? 'Running' : 'Stopped';
+  statusText.style.marginRight = '12px';
+  meta.appendChild(statusText);
+  
   const toolNames = (server.tools || []).map((tool) => tool.name).join(', ');
-  meta.textContent = toolNames.length > 0 ? `Tools: ${toolNames}` : 'No tools registered';
+  if (toolNames.length > 0) {
+    const toolsText = document.createElement('span');
+    toolsText.textContent = `Tools: ${toolNames}`;
+    toolsText.style.color = 'var(--color-text-muted)';
+    meta.appendChild(toolsText);
+  }
 
-  item.appendChild(title);
+  item.appendChild(header);
   item.appendChild(meta);
   return item;
 }

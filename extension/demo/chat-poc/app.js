@@ -113,10 +113,26 @@ function checkExtension() {
 }
 
 /**
- * Check LLM availability by creating a test session
+ * Check LLM availability by checking for configured providers
  */
 async function checkLLM() {
   try {
+    console.log('[Demo] Checking LLM...');
+    
+    // First check if there are any providers configured
+    const providers = await window.ai.providers.list();
+    console.log('[Demo] Providers:', providers);
+    
+    if (!providers || providers.length === 0) {
+      console.log('[Demo] No LLM providers configured');
+      llmStatus.classList.add('warning');
+      llmStatusText.textContent = 'No LLM configured';
+      activeModel = undefined;
+      nativeTools = false;
+      return false;
+    }
+    
+    // Create a test session to verify it works
     console.log('[Demo] Creating test LLM session...');
     const testSession = await window.ai.createTextSession();
     console.log('[Demo] Test session created, destroying...');
@@ -598,7 +614,14 @@ async function runWithTools(content) {
         case 'error':
           console.error('[Demo] Agent error:', event.error);
           removeThinking();
-          addMessageUI('assistant', `Error: ${event.error.message}`);
+          // Provide helpful error messages
+          let errorMsg = event.error.message;
+          if (event.error.code === 'ERR_LLM_FAILED' || errorMsg.includes('NetworkError') || errorMsg.includes('fetch')) {
+            errorMsg = 'LLM connection failed. Please check that an LLM provider (like Ollama) is running and configured in the Harbor sidebar.';
+          } else if (event.error.code === 'ERR_NO_MODEL') {
+            errorMsg = 'No LLM model configured. Please add an LLM provider in the Harbor sidebar.';
+          }
+          addMessageUI('assistant', `Error: ${errorMsg}`);
           break;
       }
     }

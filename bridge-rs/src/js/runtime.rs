@@ -120,7 +120,7 @@ impl JsServer {
             }) {
                 Some(request) => {
                     let response = context.with(|ctx| {
-                        Self::handle_mcp_request(&ctx, request.payload, &config.id)
+                        Self::handle_mcp_request(&ctx, &runtime, request.payload, &config.id)
                     });
                     let _ = request.response_tx.send(response);
                 }
@@ -292,6 +292,7 @@ impl JsServer {
 
     fn handle_mcp_request(
         ctx: &rquickjs::Ctx,
+        runtime: &Runtime,
         request: serde_json::Value,
         server_id: &str,
     ) -> Result<serde_json::Value, String> {
@@ -311,9 +312,17 @@ impl JsServer {
 
         ctx.eval::<(), _>(code.as_str()).map_err(|e| e.to_string())?;
 
-        // Run the event loop to let the JS process the request
-        // This is a simplified approach - in production we'd need proper async handling
-        for _ in 0..1000 {
+        // Run the QuickJS job queue to process Promises
+        // This is critical - Promises won't resolve without executing pending jobs
+        for _ in 0..10000 {
+            // Execute all pending jobs (Promise microtasks)
+            while runtime.is_job_pending() {
+                if let Err(e) = runtime.execute_pending_job() {
+                    tracing::warn!("[JS:{}] Job execution error: {:?}", server_id, e);
+                    break;
+                }
+            }
+            
             // Check if there's a response
             let responses: Vec<String> = ctx.eval(r#"
                 const r = globalThis.__mcp_responses.splice(0);
@@ -329,7 +338,7 @@ impl JsServer {
                     .map_err(|e| format!("Invalid response JSON: {}", e));
             }
 
-            // Small delay to allow JS to process
+            // Small delay before checking again
             std::thread::sleep(std::time::Duration::from_millis(1));
         }
 

@@ -53,21 +53,30 @@ export async function validateAndStartServer(serverId: string): Promise<{ ok: bo
   if (!started) {
     return { ok: false, error: 'Failed to start server' };
   }
-  const response = await callMcpMethod(serverId, 'tools/list');
-  if (response.error) {
-    return { ok: false, error: response.error.message };
+  
+  try {
+    const response = await callMcpMethod(serverId, 'tools/list');
+    if (response.error) {
+      // Stop the server if validation fails
+      stopMcpServer(serverId);
+      return { ok: false, error: response.error.message };
+    }
+    const tools = (response.result as { tools?: McpServerManifest['tools'] })?.tools || [];
+    const handle = getMcpServer(serverId);
+    if (handle) {
+      const updated: McpServerManifest = {
+        ...handle.manifest,
+        tools,
+      };
+      registerMcpServer(updated);
+      await updateInstalledServer(updated);
+    }
+    return { ok: true, tools };
+  } catch (e) {
+    // Stop the server if validation throws
+    stopMcpServer(serverId);
+    return { ok: false, error: e instanceof Error ? e.message : 'Unknown error' };
   }
-  const tools = (response.result as { tools?: McpServerManifest['tools'] })?.tools || [];
-  const handle = getMcpServer(serverId);
-  if (handle) {
-    const updated: McpServerManifest = {
-      ...handle.manifest,
-      tools,
-    };
-    registerMcpServer(updated);
-    await updateInstalledServer(updated);
-  }
-  return { ok: true, tools };
 }
 
 export function stopServer(serverId: string): boolean {

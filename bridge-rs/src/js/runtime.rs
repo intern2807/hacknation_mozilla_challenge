@@ -98,18 +98,25 @@ impl JsServer {
 
         // Run pending jobs to start the async main() function
         // This allows the server to set up __mcp_pendingRead before we send requests
+        let mut jobs_executed = 0;
         for _ in 0..1000 {
             if !runtime.is_job_pending() {
                 break;
             }
-            if let Err(e) = runtime.execute_pending_job() {
-                tracing::warn!("[JS:{}] Startup job error: {:?}", config.id, e);
-                break;
+            match runtime.execute_pending_job() {
+                Ok(_) => jobs_executed += 1,
+                Err(e) => {
+                    tracing::warn!("[JS:{}] Startup job error: {:?}", config.id, e);
+                    break;
+                }
             }
         }
+        tracing::info!("[JS:{}] Executed {} startup jobs", config.id, jobs_executed);
 
-        // Flush any startup logs
+        // Check if __mcp_pendingRead is set up
         context.with(|ctx| {
+            let has_pending: bool = ctx.eval("!!globalThis.__mcp_pendingRead").unwrap_or(false);
+            tracing::info!("[JS:{}] __mcp_pendingRead set up: {}", config.id, has_pending);
             Self::flush_console_logs(&ctx, &config.id);
         });
 
@@ -310,7 +317,13 @@ impl JsServer {
         request: serde_json::Value,
         server_id: &str,
     ) -> Result<serde_json::Value, String> {
+        tracing::info!("[JS:{}] Handling MCP request", server_id);
+        
         let request_json = serde_json::to_string(&request).map_err(|e| e.to_string())?;
+
+        // Check state before sending
+        let has_pending: bool = ctx.eval("!!globalThis.__mcp_pendingRead").unwrap_or(false);
+        tracing::info!("[JS:{}] __mcp_pendingRead before: {}", server_id, has_pending);
 
         // Push the request to the JS side and resolve pending read
         let code = format!(r#"
@@ -325,6 +338,8 @@ impl JsServer {
         "#, request_json.replace("'", "\\'").replace("\n", "\\n"));
 
         ctx.eval::<(), _>(code.as_str()).map_err(|e| e.to_string())?;
+        
+        tracing::info!("[JS:{}] Request injected, running job queue", server_id);
 
         // Run the QuickJS job queue to process Promises
         // This is critical - Promises won't resolve without executing pending jobs

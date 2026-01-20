@@ -124,34 +124,7 @@ export async function createJsSession(
   const loaderUrl = chrome.runtime.getURL('dist/js-runtime/worker-loader.js');
   const worker = new Worker(loaderUrl);
 
-  // Wait for loader to be ready, then inject code
-  await new Promise<void>((resolve, reject) => {
-    const timeout = setTimeout(() => {
-      reject(new Error('Worker loader failed to initialize'));
-    }, 3000);
-
-    const handler = (event: MessageEvent) => {
-      if (event.data?.type === 'loader-ready') {
-        clearTimeout(timeout);
-        worker.removeEventListener('message', handler);
-        // Send the sandboxed code to the worker
-        worker.postMessage({ type: 'load-code', code: wrappedCode });
-        resolve();
-      } else if (event.data?.type === 'error') {
-        clearTimeout(timeout);
-        worker.removeEventListener('message', handler);
-        reject(new Error(event.data.message));
-      }
-    };
-
-    worker.addEventListener('message', handler);
-    worker.addEventListener('error', (e) => {
-      clearTimeout(timeout);
-      reject(new Error(`Worker load error: ${e.message}`));
-    });
-  });
-
-  // Create stdio endpoint
+  // Create stdio endpoint early so we can receive messages
   const { endpoint, attachWorker, close: closeEndpoint } =
     createWorkerStdioEndpoint();
   attachWorker(worker);
@@ -167,28 +140,39 @@ export async function createJsSession(
     }
   });
 
-  // Wait for worker to signal ready
+  // Wait for loader-ready, send code, then wait for ready from sandbox
   await new Promise<void>((resolve, reject) => {
     const timeout = setTimeout(() => {
       reject(new Error('JS server failed to initialize within timeout'));
     }, 5000);
 
-    const readyHandler = (event: MessageEvent) => {
-      if (event.data?.type === 'ready') {
+    let loaderReady = false;
+    let codeReady = false;
+
+    const handler = (event: MessageEvent) => {
+      const data = event.data;
+      if (!data?.type) return;
+
+      if (data.type === 'loader-ready' && !loaderReady) {
+        loaderReady = true;
+        // Send the sandboxed code to the worker
+        worker.postMessage({ type: 'load-code', code: wrappedCode });
+      } else if (data.type === 'ready' && !codeReady) {
+        codeReady = true;
         clearTimeout(timeout);
-        worker.removeEventListener('message', readyHandler);
+        worker.removeEventListener('message', handler);
         resolve();
+      } else if (data.type === 'error') {
+        clearTimeout(timeout);
+        worker.removeEventListener('message', handler);
+        reject(new Error(data.message || 'Worker error'));
       }
     };
 
-    worker.addEventListener('message', readyHandler);
-
-    // Also handle errors during initialization
-    worker.addEventListener('error', (event) => {
+    worker.addEventListener('message', handler);
+    worker.addEventListener('error', (e) => {
       clearTimeout(timeout);
-      reject(
-        new Error(`JS server error during initialization: ${event.message}`),
-      );
+      reject(new Error(`Worker load error: ${e.message}`));
     });
   });
 

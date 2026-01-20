@@ -1,18 +1,8 @@
-use axum::{
-  extract::Json,
-  http::StatusCode,
-  response::{
-    sse::{Event, KeepAlive, Sse},
-    IntoResponse,
-  },
-};
-use futures::stream::Stream;
+//! RPC request handling for the native messaging bridge.
+
 use serde::{Deserialize, Serialize};
-use std::{convert::Infallible, pin::Pin};
 
 use crate::{fs, js, llm};
-
-type SseStream = Pin<Box<dyn Stream<Item = Result<Event, Infallible>> + Send>>;
 
 #[derive(Debug, Deserialize)]
 pub struct RpcRequest {
@@ -35,7 +25,26 @@ pub struct RpcError {
   pub message: String,
 }
 
-pub async fn handle(Json(request): Json<RpcRequest>) -> impl IntoResponse {
+impl RpcResponse {
+  pub fn success(id: serde_json::Value, result: serde_json::Value) -> Self {
+    RpcResponse {
+      id,
+      result: Some(result),
+      error: None,
+    }
+  }
+
+  pub fn error(id: serde_json::Value, error: RpcError) -> Self {
+    RpcResponse {
+      id,
+      result: None,
+      error: Some(error),
+    }
+  }
+}
+
+/// Handle an RPC request and return a response.
+pub async fn handle(request: RpcRequest) -> RpcResponse {
   let result = match request.method.as_str() {
     // System
     "system.health" => Ok(serde_json::json!({ "status": "ok" })),
@@ -80,44 +89,13 @@ pub async fn handle(Json(request): Json<RpcRequest>) -> impl IntoResponse {
     }),
   };
 
-  let response = match result {
-    Ok(value) => RpcResponse {
-      id: request.id,
-      result: Some(value),
-      error: None,
-    },
-    Err(error) => RpcResponse {
-      id: request.id,
-      result: None,
-      error: Some(error),
-    },
-  };
-
-  (StatusCode::OK, Json(response))
+  match result {
+    Ok(value) => RpcResponse::success(request.id, value),
+    Err(error) => RpcResponse::error(request.id, error),
+  }
 }
 
-/// Handle streaming RPC requests (SSE)
-pub async fn handle_stream(
-  Json(request): Json<RpcRequest>,
-) -> Sse<SseStream> {
-  let stream: SseStream = match request.method.as_str() {
-    "llm.chat_stream" => {
-      llm::chat_stream(request.id.clone(), request.params.clone()).await
-    }
-    _ => {
-      // For non-streaming methods, return error as single event
-      let error_stream = futures::stream::once(async move {
-        let event_data = serde_json::json!({
-          "id": request.id,
-          "error": {
-            "code": -32601,
-            "message": format!("Unknown streaming method: {}", request.method)
-          }
-        });
-        Ok::<_, Infallible>(Event::default().data(event_data.to_string()))
-      });
-      Box::pin(error_stream)
-    }
-  };
-  Sse::new(stream).keep_alive(KeepAlive::default())
+/// Check if a method is a streaming method
+pub fn is_streaming_method(method: &str) -> bool {
+  matches!(method, "llm.chat_stream")
 }

@@ -1,6 +1,7 @@
 //! QuickJS runtime for executing JS MCP servers.
 
 use super::sandbox::Capabilities;
+use crate::native_messaging::{get_console_log_sender, ConsoleLogMessage};
 use rquickjs::{Context, Object, Runtime};
 use std::collections::HashMap;
 use tokio::sync::{mpsc, oneshot};
@@ -248,7 +249,7 @@ impl JsServer {
         Ok(())
     }
 
-    /// Flush any pending console logs from JS and emit them via tracing
+    /// Flush any pending console logs from JS and emit them via tracing + broadcast
     fn flush_console_logs(ctx: &rquickjs::Ctx, server_id: &str) {
         // Get logs as JSON string and parse on Rust side
         let logs_json: Result<String, _> = ctx.eval(r#"
@@ -257,6 +258,8 @@ impl JsServer {
 
         if let Ok(json) = logs_json {
             if let Ok(logs) = serde_json::from_str::<Vec<serde_json::Value>>(&json) {
+                let console_tx = get_console_log_sender();
+                
                 for log in logs {
                     let level = log.get("level").and_then(|v| v.as_str()).unwrap_or("log");
                     let args = log.get("args")
@@ -267,6 +270,7 @@ impl JsServer {
                             .join(" "))
                         .unwrap_or_default();
                     
+                    // Log to tracing (file)
                     match level {
                         "error" => tracing::error!("[JS:{}] {}", server_id, args),
                         "warn" => tracing::warn!("[JS:{}] {}", server_id, args),
@@ -274,6 +278,13 @@ impl JsServer {
                         "debug" => tracing::debug!("[JS:{}] {}", server_id, args),
                         _ => tracing::info!("[JS:{}] {}", server_id, args),
                     }
+                    
+                    // Broadcast to extension via native messaging
+                    let _ = console_tx.send(ConsoleLogMessage {
+                        server_id: server_id.to_string(),
+                        level: level.to_string(),
+                        message: args,
+                    });
                 }
             }
         }

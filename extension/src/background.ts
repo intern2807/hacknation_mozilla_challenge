@@ -7,7 +7,7 @@
 
 import { initializePolicyStore } from './policy/store';
 import { initializeBridgeClient, getBridgeConnectionState, checkBridgeHealth, bridgeRequest } from './llm/bridge-client';
-import { connectNativeBridge, getNativeConnectionState } from './llm/native-bridge';
+import { getConnectionState as getNativeConnectionState } from './llm/native-bridge';
 import { initializeMcpHost, addServer, startServer, stopServer, validateAndStartServer, removeServer, listServersWithStatus, callTool } from './mcp/host';
 import { initializeRouter } from './agents/background-router';
 import { cleanupExpiredGrants } from './policy/permissions';
@@ -18,10 +18,7 @@ console.log('[Harbor] WASM MCP extension starting...');
 // Initialize modules
 initializePolicyStore();
 
-// Connect to native bridge first (this starts the HTTP server)
-connectNativeBridge();
-
-// Then initialize the HTTP client (which will connect once bridge is ready)
+// Connect to native bridge (all communication goes through stdio)
 initializeBridgeClient();
 initializeMcpHost();
 initializeRouter();

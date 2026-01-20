@@ -1,20 +1,24 @@
-const BRIDGE_URL = 'http://localhost:9137/rpc';
-const BRIDGE_STREAM_URL = 'http://localhost:9137/rpc/stream';
-const HEALTH_CHECK_INTERVAL = 5000; // 5 seconds
+/**
+ * Bridge Client - Wrapper around native messaging bridge
+ * 
+ * This module provides a simplified interface for making RPC calls to the bridge.
+ * All communication goes through the native messaging bridge (stdio).
+ */
 
-type RpcRequest = {
-  id: string;
-  method: string;
-  params?: unknown;
-};
+import {
+  connectNativeBridge,
+  getConnectionState,
+  isNativeBridgeReady,
+  onConnectionStateChange,
+  rpcRequest,
+  rpcStreamRequest,
+  type ConnectionState,
+} from './native-bridge';
 
-type RpcResponse = {
-  id: string;
-  result?: unknown;
-  error?: { code: number; message: string };
-};
+// Re-export types
+export type BridgeConnectionState = ConnectionState;
 
-type StreamEvent = {
+export type StreamEvent = {
   id: string;
   type: 'token' | 'done' | 'error';
   token?: string;
@@ -23,174 +27,136 @@ type StreamEvent = {
   error?: { code: number; message: string };
 };
 
-export type BridgeConnectionState = {
-  connected: boolean;
-  lastCheck: number;
-  error: string | null;
-};
-
-let connectionState: BridgeConnectionState = {
-  connected: false,
-  lastCheck: 0,
-  error: null,
-};
-
-let healthCheckInterval: ReturnType<typeof setInterval> | null = null;
-
+/**
+ * Get the current bridge connection state
+ */
 export function getBridgeConnectionState(): BridgeConnectionState {
-  return { ...connectionState };
+  return getConnectionState();
 }
 
+/**
+ * Check bridge health by making a simple request
+ */
 export async function checkBridgeHealth(): Promise<boolean> {
   try {
     const result = await bridgeRequest<{ status: string }>('system.health');
-    connectionState = {
-      connected: result.status === 'ok',
-      lastCheck: Date.now(),
-      error: null,
-    };
-    return connectionState.connected;
-  } catch (err) {
-    connectionState = {
-      connected: false,
-      lastCheck: Date.now(),
-      error: err instanceof Error ? err.message : 'Unknown error',
-    };
+    return result.status === 'ok';
+  } catch {
     return false;
   }
 }
 
+/**
+ * Initialize the bridge client (connects to native bridge)
+ */
 export function initializeBridgeClient(): void {
-  console.log('[Harbor] Bridge client initialized', BRIDGE_URL);
-
-  // Initial health check
-  checkBridgeHealth().then((connected) => {
-    console.log('[Harbor] Bridge connection:', connected ? 'connected' : 'disconnected');
+  console.log('[Harbor] Initializing bridge client via native messaging');
+  connectNativeBridge();
+  
+  // Log connection state changes
+  onConnectionStateChange((state) => {
+    console.log('[Harbor] Bridge connection state:', state.bridgeReady ? 'ready' : 'not ready');
   });
-
-  // Set up periodic health checks
-  if (healthCheckInterval) {
-    clearInterval(healthCheckInterval);
-  }
-  healthCheckInterval = setInterval(() => {
-    checkBridgeHealth();
-  }, HEALTH_CHECK_INTERVAL);
-}
-
-export async function bridgeRequest<T>(method: string, params?: unknown, retries = 3): Promise<T> {
-  const payload: RpcRequest = {
-    id: crypto.randomUUID(),
-    method,
-    params,
-  };
-
-  let lastError: Error | null = null;
-  
-  for (let attempt = 0; attempt < retries; attempt++) {
-    try {
-      const response = await fetch(BRIDGE_URL, {
-        method: 'POST',
-        headers: { 'content-type': 'application/json' },
-        body: JSON.stringify(payload),
-      });
-
-      const json = (await response.json()) as RpcResponse;
-      if (json.error) {
-        throw new Error(json.error.message);
-      }
-      
-      // Update connection state on success
-      connectionState = {
-        connected: true,
-        lastCheck: Date.now(),
-        error: null,
-      };
-      
-      return json.result as T;
-    } catch (err) {
-      lastError = err instanceof Error ? err : new Error(String(err));
-      console.log(`[Harbor] Bridge request attempt ${attempt + 1}/${retries} failed:`, lastError.message);
-      
-      // Wait before retry (exponential backoff)
-      if (attempt < retries - 1) {
-        await new Promise(r => setTimeout(r, 500 * (attempt + 1)));
-      }
-    }
-  }
-  
-  // All retries failed
-  connectionState = {
-    connected: false,
-    lastCheck: Date.now(),
-    error: lastError?.message || 'Unknown error',
-  };
-  
-  throw lastError || new Error('Bridge request failed');
 }
 
 /**
- * Make a streaming request to the bridge using SSE.
- * Returns an async generator that yields stream events.
+ * Make an RPC request to the bridge
+ */
+export async function bridgeRequest<T>(method: string, params?: unknown): Promise<T> {
+  if (!isNativeBridgeReady()) {
+    throw new Error('Bridge not connected. Ensure native bridge is installed and running.');
+  }
+
+  return rpcRequest<T>(method, params);
+}
+
+/**
+ * Make a streaming RPC request to the bridge
+ * Returns an async generator that yields stream events
  */
 export async function* bridgeStreamRequest(
   method: string,
   params?: unknown,
 ): AsyncGenerator<StreamEvent> {
-  const payload: RpcRequest = {
-    id: crypto.randomUUID(),
+  if (!isNativeBridgeReady()) {
+    throw new Error('Bridge not connected. Ensure native bridge is installed and running.');
+  }
+
+  // Create a queue to buffer events
+  const eventQueue: StreamEvent[] = [];
+  let resolveWaiting: ((event: StreamEvent | null) => void) | null = null;
+  let done = false;
+  let error: Error | null = null;
+
+  const { cancel, done: streamDone } = rpcStreamRequest(
     method,
     params,
-  };
+    (event) => {
+      if (resolveWaiting) {
+        resolveWaiting(event);
+        resolveWaiting = null;
+      } else {
+        eventQueue.push(event);
+      }
+    },
+  );
 
-  const response = await fetch(BRIDGE_STREAM_URL, {
-    method: 'POST',
-    headers: { 'content-type': 'application/json' },
-    body: JSON.stringify(payload),
-  });
-
-  if (!response.ok) {
-    throw new Error(`Stream request failed: ${response.status} ${response.statusText}`);
-  }
-
-  const reader = response.body?.getReader();
-  if (!reader) {
-    throw new Error('No response body');
-  }
-
-  const decoder = new TextDecoder();
-  let buffer = '';
+  // Handle completion
+  streamDone
+    .then(() => {
+      done = true;
+      if (resolveWaiting) {
+        resolveWaiting(null);
+        resolveWaiting = null;
+      }
+    })
+    .catch((e) => {
+      error = e;
+      done = true;
+      if (resolveWaiting) {
+        resolveWaiting(null);
+        resolveWaiting = null;
+      }
+    });
 
   try {
     while (true) {
-      const { done, value } = await reader.read();
-      if (done) break;
-
-      buffer += decoder.decode(value, { stream: true });
-
-      // Parse SSE events from buffer
-      const lines = buffer.split('\n');
-      buffer = lines.pop() || ''; // Keep incomplete line in buffer
-
-      for (const line of lines) {
-        if (line.startsWith('data: ')) {
-          const data = line.slice(6).trim();
-          if (data) {
-            try {
-              const event = JSON.parse(data) as StreamEvent;
-              yield event;
-
-              // Stop on done or error
-              if (event.type === 'done' || event.type === 'error') {
-                return;
-              }
-            } catch {
-              // Skip invalid JSON
-            }
-          }
+      // Check for queued events first
+      if (eventQueue.length > 0) {
+        const event = eventQueue.shift()!;
+        yield event;
+        if (event.type === 'done' || event.type === 'error') {
+          break;
         }
+        continue;
+      }
+
+      // Check if done
+      if (done) {
+        if (error) {
+          throw error;
+        }
+        break;
+      }
+
+      // Wait for next event
+      const event = await new Promise<StreamEvent | null>((resolve) => {
+        resolveWaiting = resolve;
+      });
+
+      if (event === null) {
+        if (error) {
+          throw error;
+        }
+        break;
+      }
+
+      yield event;
+      if (event.type === 'done' || event.type === 'error') {
+        break;
       }
     }
   } finally {
-    reader.releaseLock();
+    cancel();
   }
 }

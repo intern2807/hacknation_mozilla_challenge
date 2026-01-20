@@ -2,17 +2,31 @@
 //!
 //! The native messaging protocol uses stdin/stdout with length-prefixed JSON messages.
 //! Message format: 4-byte little-endian length prefix, followed by JSON payload.
+//!
+//! Message types:
+//! - `rpc`: RPC request from extension, expects `rpc_response` back
+//! - `rpc_stream`: Streaming RPC request, sends multiple `stream` messages
+//! - `ping`: Health check, responds with `status`
+//! - `shutdown`: Graceful shutdown request
 
 use std::io::{self, Read, Write};
-use tokio::sync::mpsc;
+use std::sync::Arc;
+use tokio::sync::{broadcast, mpsc};
+
+use crate::llm;
+use crate::rpc::{self, RpcRequest};
 
 /// Message from the browser extension
 #[derive(Debug, serde::Deserialize)]
 struct IncomingMessage {
     #[serde(rename = "type")]
     msg_type: String,
-    #[allow(dead_code)]
-    payload: Option<serde_json::Value>,
+    
+    // RPC fields
+    id: Option<serde_json::Value>,
+    method: Option<String>,
+    #[serde(default)]
+    params: serde_json::Value,
 }
 
 /// Message to the browser extension
@@ -20,13 +34,33 @@ struct IncomingMessage {
 struct OutgoingMessage {
     #[serde(rename = "type")]
     msg_type: String,
+    #[serde(flatten)]
     payload: serde_json::Value,
 }
 
+/// Console log message from JS servers
+#[derive(Debug, Clone, serde::Serialize)]
+pub struct ConsoleLogMessage {
+    pub server_id: String,
+    pub level: String,
+    pub message: String,
+}
+
+// Global broadcast channel for console logs
+lazy_static::lazy_static! {
+    static ref CONSOLE_LOG_TX: broadcast::Sender<ConsoleLogMessage> = {
+        let (tx, _) = broadcast::channel(100);
+        tx
+    };
+}
+
+/// Get a sender for console log messages (used by JS runtime)
+pub fn get_console_log_sender() -> broadcast::Sender<ConsoleLogMessage> {
+    CONSOLE_LOG_TX.clone()
+}
+
 /// Read a native messaging message from stdin
-fn read_message() -> io::Result<Option<IncomingMessage>> {
-    let mut stdin = io::stdin().lock();
-    
+fn read_message(stdin: &mut io::StdinLock) -> io::Result<Option<IncomingMessage>> {
     // Read 4-byte length prefix (little-endian)
     let mut len_bytes = [0u8; 4];
     match stdin.read_exact(&mut len_bytes) {
@@ -37,8 +71,8 @@ fn read_message() -> io::Result<Option<IncomingMessage>> {
     
     let len = u32::from_le_bytes(len_bytes) as usize;
     
-    // Sanity check on message length (max 1MB)
-    if len > 1024 * 1024 {
+    // Sanity check on message length (max 10MB for large code transfers)
+    if len > 10 * 1024 * 1024 {
         return Err(io::Error::new(
             io::ErrorKind::InvalidData,
             "Message too large",
@@ -57,14 +91,13 @@ fn read_message() -> io::Result<Option<IncomingMessage>> {
 }
 
 /// Write a native messaging message to stdout
-fn write_message(message: &OutgoingMessage) -> io::Result<()> {
+fn write_message(stdout: &mut io::StdoutLock, message: &OutgoingMessage) -> io::Result<()> {
     let json = serde_json::to_vec(message)
         .map_err(|e| io::Error::new(io::ErrorKind::InvalidData, e))?;
     
     let len = json.len() as u32;
     let len_bytes = len.to_le_bytes();
     
-    let mut stdout = io::stdout().lock();
     stdout.write_all(&len_bytes)?;
     stdout.write_all(&json)?;
     stdout.flush()?;
@@ -72,59 +105,102 @@ fn write_message(message: &OutgoingMessage) -> io::Result<()> {
     Ok(())
 }
 
-/// Send a status message to the extension
-fn send_status(status: &str, message: &str) {
-    let msg = OutgoingMessage {
-        msg_type: "status".to_string(),
-        payload: serde_json::json!({
-            "status": status,
-            "message": message,
-            "port": 9137,
-        }),
-    };
-    
-    if let Err(e) = write_message(&msg) {
-        tracing::error!("Failed to write native message: {}", e);
+/// Thread-safe message writer
+struct MessageWriter {
+    tx: mpsc::Sender<OutgoingMessage>,
+}
+
+impl MessageWriter {
+    fn new() -> (Self, mpsc::Receiver<OutgoingMessage>) {
+        let (tx, rx) = mpsc::channel(100);
+        (Self { tx }, rx)
+    }
+
+    async fn send(&self, msg_type: &str, payload: serde_json::Value) {
+        let msg = OutgoingMessage {
+            msg_type: msg_type.to_string(),
+            payload,
+        };
+        let _ = self.tx.send(msg).await;
+    }
+
+    async fn send_rpc_response(&self, id: serde_json::Value, result: Option<serde_json::Value>, error: Option<serde_json::Value>) {
+        let mut payload = serde_json::json!({ "id": id });
+        if let Some(r) = result {
+            payload["result"] = r;
+        }
+        if let Some(e) = error {
+            payload["error"] = e;
+        }
+        self.send("rpc_response", payload).await;
+    }
+
+    async fn send_stream_event(&self, id: serde_json::Value, event: serde_json::Value) {
+        self.send("stream", serde_json::json!({
+            "id": id,
+            "event": event,
+        })).await;
+    }
+
+    async fn send_console_log(&self, log: &ConsoleLogMessage) {
+        self.send("console", serde_json::json!({
+            "server_id": log.server_id,
+            "level": log.level,
+            "message": log.message,
+        })).await;
     }
 }
 
 /// Run the native messaging event loop.
-/// This keeps the process alive while the extension is connected.
 pub async fn run_native_messaging() {
     tracing::info!("Starting native messaging handler");
     
+    // Create message writer
+    let (writer, mut write_rx) = MessageWriter::new();
+    let writer = Arc::new(writer);
+    
+    // Subscribe to console logs
+    let mut console_rx = CONSOLE_LOG_TX.subscribe();
+    
+    // Spawn stdout writer task
+    let write_handle = tokio::task::spawn_blocking(move || {
+        let mut stdout = io::stdout().lock();
+        while let Some(msg) = write_rx.blocking_recv() {
+            if let Err(e) = write_message(&mut stdout, &msg) {
+                tracing::error!("Failed to write message: {}", e);
+                break;
+            }
+        }
+    });
+
     // Send initial ready message
-    send_status("ready", "Harbor bridge is running");
+    writer.send("status", serde_json::json!({
+        "status": "ready",
+        "message": "Harbor bridge is running",
+    })).await;
+
+    // Spawn console log forwarder
+    let console_writer = writer.clone();
+    tokio::spawn(async move {
+        while let Ok(log) = console_rx.recv().await {
+            console_writer.send_console_log(&log).await;
+        }
+    });
+
+    // Create channel for incoming messages
+    let (msg_tx, mut msg_rx) = mpsc::channel::<IncomingMessage>(32);
     
-    // Create a channel for shutdown signaling
-    let (shutdown_tx, mut shutdown_rx) = mpsc::channel::<()>(1);
-    
-    // Spawn a blocking task to read from stdin
-    let read_handle = tokio::task::spawn_blocking(move || {
+    // Spawn stdin reader task
+    tokio::task::spawn_blocking(move || {
+        let mut stdin = io::stdin().lock();
         loop {
-            match read_message() {
+            match read_message(&mut stdin) {
                 Ok(Some(msg)) => {
-                    tracing::debug!("Received native message: {:?}", msg);
-                    
-                    match msg.msg_type.as_str() {
-                        "ping" => {
-                            send_status("pong", "Bridge is alive");
-                        }
-                        "shutdown" => {
-                            tracing::info!("Received shutdown request");
-                            let _ = shutdown_tx.blocking_send(());
-                            break;
-                        }
-                        "status" => {
-                            send_status("ready", "Harbor bridge is running");
-                        }
-                        _ => {
-                            tracing::debug!("Unknown message type: {}", msg.msg_type);
-                        }
+                    if msg_tx.blocking_send(msg).is_err() {
+                        break;
                     }
                 }
                 Ok(None) => {
-                    // EOF - extension disconnected
                     tracing::info!("Native messaging connection closed (EOF)");
                     break;
                 }
@@ -135,16 +211,119 @@ pub async fn run_native_messaging() {
             }
         }
     });
-    
-    // Wait for either the read task to complete or a shutdown signal
-    tokio::select! {
-        _ = read_handle => {
-            tracing::info!("Native messaging reader finished");
+
+    // Process incoming messages
+    while let Some(msg) = msg_rx.recv().await {
+        let writer = writer.clone();
+        
+        // Handle message in background task
+        tokio::spawn(async move {
+            handle_message(msg, writer).await;
+        });
+    }
+
+    tracing::info!("Native messaging handler exiting");
+    drop(write_handle);
+}
+
+/// Handle an incoming message
+async fn handle_message(msg: IncomingMessage, writer: Arc<MessageWriter>) {
+    tracing::debug!("Received message type: {}", msg.msg_type);
+
+    match msg.msg_type.as_str() {
+        "ping" => {
+            writer.send("status", serde_json::json!({
+                "status": "pong",
+                "message": "Bridge is alive",
+            })).await;
         }
-        _ = shutdown_rx.recv() => {
-            tracing::info!("Shutdown signal received");
+        
+        "shutdown" => {
+            tracing::info!("Received shutdown request");
+            std::process::exit(0);
+        }
+        
+        "status" => {
+            writer.send("status", serde_json::json!({
+                "status": "ready",
+                "message": "Harbor bridge is running",
+            })).await;
+        }
+        
+        "rpc" => {
+            let id = msg.id.clone().unwrap_or(serde_json::Value::Null);
+            let method = msg.method.clone().unwrap_or_default();
+            
+            // Check if this is a streaming method
+            if rpc::is_streaming_method(&method) {
+                handle_streaming_rpc(id, method, msg.params, writer).await;
+            } else {
+                handle_rpc(id, method, msg.params, writer).await;
+            }
+        }
+        
+        _ => {
+            tracing::debug!("Unknown message type: {}", msg.msg_type);
         }
     }
+}
+
+/// Handle a regular RPC request
+async fn handle_rpc(
+    id: serde_json::Value,
+    method: String,
+    params: serde_json::Value,
+    writer: Arc<MessageWriter>,
+) {
+    let request = RpcRequest { id: id.clone(), method, params };
+    let response = rpc::handle(request).await;
     
-    tracing::info!("Native messaging handler exiting");
+    writer.send_rpc_response(
+        id,
+        response.result,
+        response.error.map(|e| serde_json::json!({
+            "code": e.code,
+            "message": e.message,
+        })),
+    ).await;
+}
+
+/// Handle a streaming RPC request
+async fn handle_streaming_rpc(
+    id: serde_json::Value,
+    method: String,
+    params: serde_json::Value,
+    writer: Arc<MessageWriter>,
+) {
+    match method.as_str() {
+        "llm.chat_stream" => {
+            let (event_tx, mut event_rx) = tokio::sync::mpsc::channel(32);
+            
+            // Spawn the streaming task
+            let stream_id = id.clone();
+            tokio::spawn(async move {
+                llm::chat_stream(stream_id, params, event_tx).await;
+            });
+            
+            // Forward events to the extension
+            while let Some(event) = event_rx.recv().await {
+                let event_json = serde_json::to_value(&event).unwrap_or_default();
+                writer.send_stream_event(id.clone(), event_json).await;
+                
+                if event.event_type == "done" || event.event_type == "error" {
+                    break;
+                }
+            }
+        }
+        _ => {
+            writer.send_rpc_response(
+                id,
+                None,
+                Some(serde_json::json!({
+                    "code": -32601,
+                    "message": format!("Unknown streaming method: {}", method),
+                })),
+            ).await;
+        }
+    }
 }

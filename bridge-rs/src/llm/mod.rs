@@ -2,17 +2,17 @@
 
 mod config;
 
-pub use config::{LlmConfig, ModelAlias, ProviderInstance};
+pub use config::{LlmConfig, ProviderInstance};
 
 use crate::rpc::RpcError;
 use any_llm::{
     check_provider, completion, completion_stream, get_supported_providers, list_models as any_llm_list_models,
-    CompletionRequest, Message, ModelInfo, ProviderConfig, Tool, ToolFunction,
+    CompletionRequest, Message, ProviderConfig, Tool, ToolFunction,
 };
-use axum::response::sse::Event;
-use futures::{stream::Stream, StreamExt};
+use futures::StreamExt;
 use serde::{Deserialize, Serialize};
-use std::{convert::Infallible, pin::Pin, sync::RwLock};
+use std::sync::RwLock;
+use tokio::sync::mpsc;
 
 // Global configuration store
 static CONFIG: RwLock<Option<LlmConfig>> = RwLock::new(None);
@@ -779,11 +779,29 @@ pub async fn set_configured_model_default(params: serde_json::Value) -> Result<s
 // Streaming Chat
 // =============================================================================
 
-/// Streaming chat completion (SSE).
+/// Stream event for chat completion
+#[derive(Debug, Clone, Serialize)]
+pub struct StreamEvent {
+    pub id: serde_json::Value,
+    #[serde(rename = "type")]
+    pub event_type: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub token: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub finish_reason: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub model: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub error: Option<serde_json::Value>,
+}
+
+/// Streaming chat completion.
+/// Sends stream events to the provided channel.
 pub async fn chat_stream(
     request_id: serde_json::Value,
     params: serde_json::Value,
-) -> Pin<Box<dyn Stream<Item = Result<Event, Infallible>> + Send>> {
+    event_tx: mpsc::Sender<StreamEvent>,
+) {
     // Parse request
     let request: Result<ChatRequest, _> = serde_json::from_value(params);
     
@@ -795,12 +813,18 @@ pub async fn chat_stream(
             }) {
                 Some(m) => m,
                 None => {
-                    let error_event = Event::default().data(serde_json::json!({
-                        "id": request_id,
-                        "type": "error",
-                        "error": "No model specified and no default model configured"
-                    }).to_string());
-                    return Box::pin(futures::stream::once(async { Ok(error_event) }));
+                    let _ = event_tx.send(StreamEvent {
+                        id: request_id,
+                        event_type: "error".to_string(),
+                        token: None,
+                        finish_reason: None,
+                        model: None,
+                        error: Some(serde_json::json!({
+                            "code": -32602,
+                            "message": "No model specified and no default model configured"
+                        })),
+                    }).await;
+                    return;
                 }
             };
 
@@ -830,83 +854,78 @@ pub async fn chat_stream(
 
             // Try to create stream
             match completion_stream(completion_request).await {
-                Ok(stream) => {
-                    let id = request_id.clone();
-                    let model = model.clone();
-                    
-                    // Transform the stream into SSE events
-                    let sse_stream = stream.map(move |chunk_result| {
-                        match chunk_result {
+                Ok(mut stream) => {
+                    while let Some(chunk_result) = stream.next().await {
+                        let event = match chunk_result {
                             Ok(chunk) => {
                                 let content = chunk.choices.get(0)
                                     .and_then(|c| c.delta.content.as_ref())
-                                    .cloned()
-                                    .unwrap_or_default();
+                                    .cloned();
                                 
                                 let finish_reason = chunk.choices.get(0)
                                     .and_then(|c| c.finish_reason.as_ref())
-                                    .cloned();
+                                    .map(|r| format!("{:?}", r));
                                 
-                                let event_data = serde_json::json!({
-                                    "id": id,
-                                    "type": if finish_reason.is_some() { "done" } else { "token" },
-                                    "token": content,
-                                    "finish_reason": finish_reason,
-                                    "model": model,
-                                });
-                                
-                                Ok(Event::default().data(event_data.to_string()))
+                                StreamEvent {
+                                    id: request_id.clone(),
+                                    event_type: if finish_reason.is_some() { "done".to_string() } else { "token".to_string() },
+                                    token: content,
+                                    finish_reason,
+                                    model: Some(model.clone()),
+                                    error: None,
+                                }
                             }
                             Err(e) => {
-                                let event_data = serde_json::json!({
-                                    "id": id,
-                                    "type": "error",
-                                    "error": {
+                                StreamEvent {
+                                    id: request_id.clone(),
+                                    event_type: "error".to_string(),
+                                    token: None,
+                                    finish_reason: None,
+                                    model: Some(model.clone()),
+                                    error: Some(serde_json::json!({
                                         "code": -32001,
                                         "message": format!("Stream error: {}", e)
-                                    }
-                                });
-                                
-                                Ok(Event::default().data(event_data.to_string()))
+                                    })),
+                                }
                             }
+                        };
+                        
+                        let is_done = event.event_type == "done" || event.event_type == "error";
+                        if event_tx.send(event).await.is_err() {
+                            break; // Receiver dropped
                         }
-                    });
-                    
-                    Box::pin(sse_stream)
+                        if is_done {
+                            break;
+                        }
+                    }
                 }
                 Err(e) => {
-                    // Return error as single event
-                    let error_event = async move {
-                        let event_data = serde_json::json!({
-                            "id": request_id,
-                            "type": "error",
-                            "error": {
-                                "code": -32001,
-                                "message": format!("Failed to start stream: {}", e)
-                            }
-                        });
-                        Ok(Event::default().data(event_data.to_string()))
-                    };
-                    
-                    Box::pin(futures::stream::once(error_event))
+                    let _ = event_tx.send(StreamEvent {
+                        id: request_id,
+                        event_type: "error".to_string(),
+                        token: None,
+                        finish_reason: None,
+                        model: Some(model),
+                        error: Some(serde_json::json!({
+                            "code": -32001,
+                            "message": format!("Failed to start stream: {}", e)
+                        })),
+                    }).await;
                 }
             }
         }
         Err(e) => {
-            // Return parse error as single event
-            let error_event = async move {
-                let event_data = serde_json::json!({
-                    "id": request_id,
-                    "type": "error",
-                    "error": {
-                        "code": -32602,
-                        "message": format!("Invalid params: {}", e)
-                    }
-                });
-                Ok(Event::default().data(event_data.to_string()))
-            };
-            
-            Box::pin(futures::stream::once(error_event))
+            let _ = event_tx.send(StreamEvent {
+                id: request_id,
+                event_type: "error".to_string(),
+                token: None,
+                finish_reason: None,
+                model: None,
+                error: Some(serde_json::json!({
+                    "code": -32602,
+                    "message": format!("Invalid params: {}", e)
+                })),
+            }).await;
         }
     }
 }

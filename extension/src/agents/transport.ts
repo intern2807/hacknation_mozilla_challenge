@@ -318,7 +318,7 @@ export type BackgroundStreamHandler = (
  * Create a handler map for background script message routing.
  */
 export function createBackgroundRouter(
-  handlers: Record<MessageType, BackgroundHandler | BackgroundStreamHandler>,
+  handlers: Record<MessageType, BackgroundHandler>,
 ) {
   const abortControllers = new Map<string, AbortController>();
 
@@ -326,9 +326,9 @@ export function createBackgroundRouter(
     handleConnection(port: RuntimePort) {
       const tabId = port.sender?.tab?.id;
 
-      port.onMessage.addListener(async (message: TransportRequest & { origin?: string; type?: string }) => {
+      port.onMessage.addListener(async (message: TransportRequest & { origin?: string; type?: string | 'abort' }) => {
         // Handle abort
-        if (message.type === 'abort') {
+        if ((message.type as string) === 'abort') {
           const controller = abortControllers.get(message.id);
           if (controller) {
             controller.abort();
@@ -356,7 +356,7 @@ export function createBackgroundRouter(
         }
 
         try {
-          const result = handler(ctx);
+          const result = await handler(ctx);
 
           // Check if it's an async iterable (streaming)
           if (result && typeof result === 'object' && Symbol.asyncIterator in result) {

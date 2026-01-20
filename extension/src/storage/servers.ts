@@ -172,12 +172,18 @@ async function main() {
 main().catch(err => console.error('Echo server error:', err));
 `;
 
+/**
+ * Ensure built-in servers are always installed on startup.
+ * If they were deleted, they get re-added. Only one instance of each.
+ */
 export async function ensureBuiltinServers(): Promise<McpServerManifest[]> {
   const existing = await loadInstalledServers();
-  const hasTime = existing.some((server) => server.id === 'time-wasm');
-  const hasEcho = existing.some((server) => server.id === 'echo-js');
+  
+  const hasTime = existing.some((s) => s.id === 'time-wasm');
+  const hasEcho = existing.some((s) => s.id === 'echo-js');
   
   if (hasTime && hasEcho) {
+    console.log('[Harbor] Built-in servers already present');
     return existing;
   }
   
@@ -252,5 +258,7 @@ export async function ensureBuiltinServers(): Promise<McpServerManifest[]> {
   
   const next = [...existing, ...serversToAdd];
   await saveInstalledServers(next);
+  
+  console.log('[Harbor] Added built-in servers:', serversToAdd.map(s => s.id).join(', '));
   return next;
 }

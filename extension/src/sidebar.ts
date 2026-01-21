@@ -926,12 +926,46 @@ loadPermissions();
 const quickActionsHeader = document.getElementById('quick-actions-header') as HTMLDivElement;
 const quickActionsToggle = document.getElementById('quick-actions-toggle') as HTMLSpanElement;
 const quickActionsBody = document.getElementById('quick-actions-body') as HTMLDivElement;
+const chatAboutPageBtn = document.getElementById('chat-about-page-btn') as HTMLButtonElement;
 const openDirectoryBtn = document.getElementById('open-directory-btn') as HTMLButtonElement;
 const openChatBtn = document.getElementById('open-chat-btn') as HTMLButtonElement;
 const reloadExtensionBtn = document.getElementById('reload-extension-btn') as HTMLButtonElement;
 
 // Set up panel toggle
 setupPanelToggle(quickActionsHeader, quickActionsToggle, quickActionsBody);
+
+// Chat About Page button - injects page chat sidebar into current tab
+chatAboutPageBtn.addEventListener('click', async () => {
+  try {
+    // Get the active tab
+    const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+    if (!tab?.id) {
+      showToast('No active tab found');
+      return;
+    }
+    
+    // Check if we can inject into this tab
+    if (tab.url?.startsWith('chrome://') || tab.url?.startsWith('moz-extension://') || tab.url?.startsWith('about:')) {
+      showToast('Cannot chat on this page');
+      return;
+    }
+    
+    console.log('[Sidebar] Opening page chat on tab:', tab.id);
+    
+    // Send message to background to inject page-chat
+    const response = await chrome.runtime.sendMessage({
+      type: 'open_page_chat',
+      tabId: tab.id,
+    }) as { ok: boolean; error?: string };
+    
+    if (!response.ok) {
+      showToast(response.error || 'Failed to open chat');
+    }
+  } catch (err) {
+    console.error('[Sidebar] Failed to open page chat:', err);
+    showToast('Failed to open page chat');
+  }
+});
 
 // Open Directory button - opens the MCP server directory
 openDirectoryBtn.addEventListener('click', async () => {

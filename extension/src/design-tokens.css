@@ -1666,3 +1666,24 @@ pre.code {
   background: var(--color-border-strong);
 }
 
+/* OAuth styles */
+.btn-oauth {
+  background: #4285f4;
+  color: white;
+  border-color: #4285f4;
+}
+
+.btn-oauth:hover:not(:disabled) {
+  background: #357abd;
+  border-color: #357abd;
+}
+
+.badge-success {
+  background: var(--color-success-subtle);
+  color: var(--color-success);
+}
+
+.badge-warning {
+  background: var(--color-warning-subtle);
+  color: var(--color-warning);
+}

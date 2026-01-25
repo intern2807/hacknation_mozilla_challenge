@@ -18,6 +18,9 @@
     "tabs",
     "nativeMessaging"
   ],
+  "optional_permissions": [
+    "trialML"
+  ],
   "omnibox": {
     "keyword": "h"
   },

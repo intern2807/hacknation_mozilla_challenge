@@ -22,6 +22,8 @@ type PermissionScope =
   | 'mcp:tools.call'
   | 'mcp:servers.register'
   | 'browser:activeTab.read'
+  | 'browser:activeTab.interact'
+  | 'browser:activeTab.screenshot'
   | 'chat:open'
   | 'web:fetch';
 
@@ -63,12 +65,45 @@ interface StreamToken {
 
 interface LLMProviderInfo {
   id: string;
+  type: string;
   name: string;
   available: boolean;
   baseUrl?: string;
   models?: string[];
   isDefault: boolean;
+  isTypeDefault?: boolean;
   supportsTools?: boolean;
+  supportsStreaming?: boolean;
+  // Native provider fields
+  isNative?: boolean;
+  runtime?: 'firefox' | 'chrome' | 'bridge';
+  downloadRequired?: boolean;
+  downloadProgress?: number;
+}
+
+interface FirefoxCapabilities {
+  available: boolean;
+  hasWllama: boolean;
+  hasTransformers: boolean;
+  supportsTools: boolean;
+  models: string[];
+}
+
+interface ChromeCapabilities {
+  available: boolean;
+  supportsTools: boolean;
+}
+
+interface HarborCapabilities {
+  available: boolean;
+  bridgeConnected: boolean;
+  providers: string[];
+}
+
+interface RuntimeCapabilities {
+  firefox: FirefoxCapabilities | null;
+  chrome: ChromeCapabilities | null;
+  harbor: HarborCapabilities;
 }
 
 interface ToolDescriptor {
@@ -82,6 +117,21 @@ interface ActiveTabReadability {
   url: string;
   title: string;
   text: string;
+}
+
+interface ElementInfo {
+  tagName: string;
+  id?: string;
+  className?: string;
+  textContent?: string;
+  isVisible: boolean;
+  isEnabled: boolean;
+  boundingBox?: {
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+  };
 }
 
 type RunEvent =
@@ -321,8 +371,10 @@ interface AiApiInterface {
   };
   runtime: {
     readonly harbor: AiApiInterface;
+    readonly firefox: unknown;
     readonly chrome: unknown;
-    getBest(): Promise<'harbor' | 'chrome' | null>;
+    getBest(): Promise<'firefox' | 'chrome' | 'harbor' | null>;
+    getCapabilities(): Promise<RuntimeCapabilities>;
   };
 }
 
@@ -379,26 +431,52 @@ const aiRuntime: AiApiInterface['runtime'] = Object.freeze({
   get harbor(): AiApiInterface {
     return aiApiBase;
   },
+  get firefox(): unknown {
+    // Return Firefox's browser.trial.ml API if available
+    try {
+      const browserGlobal = typeof browser !== 'undefined' ? browser : null;
+      return (browserGlobal as { trial?: { ml?: unknown } } | null)?.trial?.ml ?? null;
+    } catch {
+      return null;
+    }
+  },
   get chrome(): unknown {
     // Return Chrome's built-in AI if available
     const windowAi = (window as { ai?: unknown }).ai;
     return windowAi && windowAi !== aiApiBase ? windowAi : null;
   },
-  async getBest(): Promise<'harbor' | 'chrome' | null> {
-    const harborAvailable = await aiApiBase.canCreateTextSession();
-    if (harborAvailable === 'readily') return 'harbor';
+  async getBest(): Promise<'firefox' | 'chrome' | 'harbor' | null> {
+    // Check Firefox wllama first (privacy-first local inference)
+    const firefoxMl = this.firefox;
+    if (firefoxMl && typeof firefoxMl === 'object') {
+      const wllama = (firefoxMl as { wllama?: { createEngine?: unknown } }).wllama;
+      if (wllama && typeof wllama.createEngine === 'function') {
+        return 'firefox';
+      }
+    }
 
+    // Check Chrome AI
     const chromeAi = this.chrome;
-    if (chromeAi && typeof chromeAi === 'object' && 'canCreateTextSession' in chromeAi) {
+    if (chromeAi && typeof chromeAi === 'object' && 'languageModel' in chromeAi) {
       try {
-        const chromeAvailable = await (chromeAi as { canCreateTextSession: () => Promise<string> }).canCreateTextSession();
-        if (chromeAvailable === 'readily') return 'chrome';
+        const lm = (chromeAi as { languageModel?: { capabilities?: () => Promise<{ available: string }> } }).languageModel;
+        if (lm?.capabilities) {
+          const caps = await lm.capabilities();
+          if (caps.available === 'readily') return 'chrome';
+        }
       } catch {
         // Chrome AI not available
       }
     }
 
+    // Check Harbor bridge
+    const harborAvailable = await aiApiBase.canCreateTextSession();
+    if (harborAvailable === 'readily') return 'harbor';
+
     return harborAvailable !== 'no' ? 'harbor' : null;
+  },
+  async getCapabilities(): Promise<RuntimeCapabilities> {
+    return sendRequest<RuntimeCapabilities>('ai.runtime.getCapabilities');
   },
 });
 
@@ -437,8 +515,70 @@ const agentApi = Object.freeze({
 
   browser: Object.freeze({
     activeTab: Object.freeze({
+      /**
+       * Extract readable text content from this page.
+       * Requires: browser:activeTab.read permission
+       */
       async readability(): Promise<ActiveTabReadability> {
         return sendRequest<ActiveTabReadability>('agent.browser.activeTab.readability');
+      },
+
+      /**
+       * Click an element on this page.
+       * Requires: browser:activeTab.interact permission
+       * NOTE: Can only click elements on the page that called this API (same-tab only)
+       */
+      async click(selector: string, options?: { button?: 'left' | 'right' | 'middle'; clickCount?: number }): Promise<void> {
+        return sendRequest('agent.browser.activeTab.click', { selector, options });
+      },
+
+      /**
+       * Fill an input element on this page.
+       * Requires: browser:activeTab.interact permission
+       * NOTE: Can only fill inputs on the page that called this API (same-tab only)
+       */
+      async fill(selector: string, value: string): Promise<void> {
+        return sendRequest('agent.browser.activeTab.fill', { selector, value });
+      },
+
+      /**
+       * Select an option in a select element on this page.
+       * Requires: browser:activeTab.interact permission
+       */
+      async select(selector: string, value: string): Promise<void> {
+        return sendRequest('agent.browser.activeTab.select', { selector, value });
+      },
+
+      /**
+       * Scroll the page or scroll an element into view.
+       * Requires: browser:activeTab.interact permission
+       */
+      async scroll(options: { x?: number; y?: number; selector?: string; behavior?: 'auto' | 'smooth' }): Promise<void> {
+        return sendRequest('agent.browser.activeTab.scroll', options);
+      },
+
+      /**
+       * Get information about an element on this page.
+       * Requires: browser:activeTab.read permission
+       */
+      async getElement(selector: string): Promise<ElementInfo | null> {
+        return sendRequest<ElementInfo | null>('agent.browser.activeTab.getElement', { selector });
+      },
+
+      /**
+       * Wait for an element to appear on this page.
+       * Requires: browser:activeTab.read permission
+       */
+      async waitForSelector(selector: string, options?: { timeout?: number; visible?: boolean }): Promise<ElementInfo> {
+        return sendRequest<ElementInfo>('agent.browser.activeTab.waitForSelector', { selector, options });
+      },
+
+      /**
+       * Take a screenshot of this page.
+       * Requires: browser:activeTab.screenshot permission
+       */
+      async screenshot(options?: { format?: 'png' | 'jpeg'; quality?: number }): Promise<string> {
+        return sendRequest<string>('agent.browser.activeTab.screenshot', options);
       },
     }),
   }),

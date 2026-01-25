@@ -26,8 +26,21 @@ import {
   isToolAllowed,
   SCOPE_DESCRIPTIONS,
 } from '../policy/permissions';
+import { isFeatureEnabled } from '../policy/feature-flags';
 import { listServersWithStatus, callTool } from '../mcp/host';
+import {
+  getTabReadability,
+  clickElement,
+  fillInput,
+  selectOption,
+  scrollPage,
+  getElementInfo,
+  waitForSelector,
+  takeScreenshot,
+} from './browser-api';
 import { bridgeRequest } from '../llm/bridge-client';
+import { isNativeBridgeReady } from '../llm/native-bridge';
+import { getRuntimeCapabilities, listAllProviders } from '../llm/provider-registry';
 
 const DEBUG = true;
 
@@ -113,6 +126,31 @@ async function requirePermission(
       code: 'ERR_SCOPE_REQUIRED',
       message: `Permission "${scope}" is required. Call agent.requestPermissions() first.`,
       details: { requiredScope: scope, missingScopes: result.missingScopes },
+    },
+  });
+  return false;
+}
+
+type FeatureFlagName = 'browserInteraction' | 'screenshots' | 'experimental';
+
+async function requireFeature(
+  ctx: RequestContext,
+  sender: ResponseSender,
+  feature: FeatureFlagName,
+  featureDescription: string,
+): Promise<boolean> {
+  const enabled = await isFeatureEnabled(feature);
+  if (enabled) {
+    return true;
+  }
+
+  sender.sendResponse({
+    id: ctx.id,
+    ok: false,
+    error: {
+      code: 'ERR_FEATURE_DISABLED',
+      message: `${featureDescription} is disabled. Enable "${feature}" in Harbor settings.`,
+      details: { feature },
     },
   });
   return false;
@@ -420,8 +458,9 @@ async function handleProviderslist(
   }
 
   try {
-    const result = await bridgeRequest<{ providers: unknown[] }>('llm.list_providers');
-    sender.sendResponse({ id: ctx.id, ok: true, result: result.providers });
+    // Use the provider registry which includes native browser providers
+    const providers = await listAllProviders();
+    sender.sendResponse({ id: ctx.id, ok: true, result: providers });
   } catch (error) {
     sender.sendResponse({
       id: ctx.id,
@@ -429,6 +468,25 @@ async function handleProviderslist(
       error: {
         code: 'ERR_INTERNAL',
         message: error instanceof Error ? error.message : 'Failed to list providers',
+      },
+    });
+  }
+}
+
+async function handleRuntimeGetCapabilities(
+  ctx: RequestContext,
+  sender: ResponseSender,
+): Promise<void> {
+  try {
+    const capabilities = await getRuntimeCapabilities();
+    sender.sendResponse({ id: ctx.id, ok: true, result: capabilities });
+  } catch (error) {
+    sender.sendResponse({
+      id: ctx.id,
+      ok: false,
+      error: {
+        code: 'ERR_INTERNAL',
+        message: error instanceof Error ? error.message : 'Failed to get runtime capabilities',
       },
     });
   }
@@ -766,7 +824,276 @@ Available tools: ${toolNames}`
 }
 
 // =============================================================================
-// Not Implemented Handlers
+// Browser API Handlers (Same-Tab Only)
+// =============================================================================
+
+async function handleActiveTabReadability(ctx: RequestContext, sender: ResponseSender): Promise<void> {
+  if (!(await requirePermission(ctx, sender, 'browser:activeTab.read'))) {
+    return;
+  }
+
+  if (!ctx.tabId) {
+    sender.sendResponse({
+      id: ctx.id,
+      ok: false,
+      error: { code: 'ERR_INTERNAL', message: 'No tab ID available' },
+    });
+    return;
+  }
+
+  try {
+    const result = await getTabReadability(ctx.tabId);
+    sender.sendResponse({ id: ctx.id, ok: true, result });
+  } catch (error) {
+    sender.sendResponse({
+      id: ctx.id,
+      ok: false,
+      error: {
+        code: (error as { code?: string }).code || 'ERR_INTERNAL',
+        message: error instanceof Error ? error.message : 'Failed to read tab',
+      },
+    });
+  }
+}
+
+async function handleActiveTabClick(ctx: RequestContext, sender: ResponseSender): Promise<void> {
+  // Feature flag check first
+  if (!(await requireFeature(ctx, sender, 'browserInteraction', 'Browser interaction'))) {
+    return;
+  }
+
+  if (!(await requirePermission(ctx, sender, 'browser:activeTab.interact'))) {
+    return;
+  }
+
+  if (!ctx.tabId) {
+    sender.sendResponse({
+      id: ctx.id,
+      ok: false,
+      error: { code: 'ERR_INTERNAL', message: 'No tab ID available' },
+    });
+    return;
+  }
+
+  const payload = ctx.payload as { selector: string; options?: { button?: string; clickCount?: number } };
+
+  try {
+    await clickElement(ctx.tabId, payload.selector, payload.options);
+    sender.sendResponse({ id: ctx.id, ok: true, result: undefined });
+  } catch (error) {
+    sender.sendResponse({
+      id: ctx.id,
+      ok: false,
+      error: {
+        code: (error as { code?: string }).code || 'ERR_INTERNAL',
+        message: error instanceof Error ? error.message : 'Click failed',
+      },
+    });
+  }
+}
+
+async function handleActiveTabFill(ctx: RequestContext, sender: ResponseSender): Promise<void> {
+  if (!(await requireFeature(ctx, sender, 'browserInteraction', 'Browser interaction'))) {
+    return;
+  }
+
+  if (!(await requirePermission(ctx, sender, 'browser:activeTab.interact'))) {
+    return;
+  }
+
+  if (!ctx.tabId) {
+    sender.sendResponse({
+      id: ctx.id,
+      ok: false,
+      error: { code: 'ERR_INTERNAL', message: 'No tab ID available' },
+    });
+    return;
+  }
+
+  const payload = ctx.payload as { selector: string; value: string };
+
+  try {
+    await fillInput(ctx.tabId, payload.selector, payload.value);
+    sender.sendResponse({ id: ctx.id, ok: true, result: undefined });
+  } catch (error) {
+    sender.sendResponse({
+      id: ctx.id,
+      ok: false,
+      error: {
+        code: (error as { code?: string }).code || 'ERR_INTERNAL',
+        message: error instanceof Error ? error.message : 'Fill failed',
+      },
+    });
+  }
+}
+
+async function handleActiveTabSelect(ctx: RequestContext, sender: ResponseSender): Promise<void> {
+  if (!(await requireFeature(ctx, sender, 'browserInteraction', 'Browser interaction'))) {
+    return;
+  }
+
+  if (!(await requirePermission(ctx, sender, 'browser:activeTab.interact'))) {
+    return;
+  }
+
+  if (!ctx.tabId) {
+    sender.sendResponse({
+      id: ctx.id,
+      ok: false,
+      error: { code: 'ERR_INTERNAL', message: 'No tab ID available' },
+    });
+    return;
+  }
+
+  const payload = ctx.payload as { selector: string; value: string };
+
+  try {
+    await selectOption(ctx.tabId, payload.selector, payload.value);
+    sender.sendResponse({ id: ctx.id, ok: true, result: undefined });
+  } catch (error) {
+    sender.sendResponse({
+      id: ctx.id,
+      ok: false,
+      error: {
+        code: (error as { code?: string }).code || 'ERR_INTERNAL',
+        message: error instanceof Error ? error.message : 'Select failed',
+      },
+    });
+  }
+}
+
+async function handleActiveTabScroll(ctx: RequestContext, sender: ResponseSender): Promise<void> {
+  if (!(await requireFeature(ctx, sender, 'browserInteraction', 'Browser interaction'))) {
+    return;
+  }
+
+  if (!(await requirePermission(ctx, sender, 'browser:activeTab.interact'))) {
+    return;
+  }
+
+  if (!ctx.tabId) {
+    sender.sendResponse({
+      id: ctx.id,
+      ok: false,
+      error: { code: 'ERR_INTERNAL', message: 'No tab ID available' },
+    });
+    return;
+  }
+
+  const payload = ctx.payload as { x?: number; y?: number; selector?: string; behavior?: 'auto' | 'smooth' };
+
+  try {
+    await scrollPage(ctx.tabId, payload);
+    sender.sendResponse({ id: ctx.id, ok: true, result: undefined });
+  } catch (error) {
+    sender.sendResponse({
+      id: ctx.id,
+      ok: false,
+      error: {
+        code: (error as { code?: string }).code || 'ERR_INTERNAL',
+        message: error instanceof Error ? error.message : 'Scroll failed',
+      },
+    });
+  }
+}
+
+async function handleActiveTabGetElement(ctx: RequestContext, sender: ResponseSender): Promise<void> {
+  if (!(await requirePermission(ctx, sender, 'browser:activeTab.read'))) {
+    return;
+  }
+
+  if (!ctx.tabId) {
+    sender.sendResponse({
+      id: ctx.id,
+      ok: false,
+      error: { code: 'ERR_INTERNAL', message: 'No tab ID available' },
+    });
+    return;
+  }
+
+  const payload = ctx.payload as { selector: string };
+
+  try {
+    const result = await getElementInfo(ctx.tabId, payload.selector);
+    sender.sendResponse({ id: ctx.id, ok: true, result });
+  } catch (error) {
+    sender.sendResponse({
+      id: ctx.id,
+      ok: false,
+      error: {
+        code: (error as { code?: string }).code || 'ERR_INTERNAL',
+        message: error instanceof Error ? error.message : 'Get element failed',
+      },
+    });
+  }
+}
+
+async function handleActiveTabWaitForSelector(ctx: RequestContext, sender: ResponseSender): Promise<void> {
+  if (!(await requirePermission(ctx, sender, 'browser:activeTab.read'))) {
+    return;
+  }
+
+  if (!ctx.tabId) {
+    sender.sendResponse({
+      id: ctx.id,
+      ok: false,
+      error: { code: 'ERR_INTERNAL', message: 'No tab ID available' },
+    });
+    return;
+  }
+
+  const payload = ctx.payload as { selector: string; options?: { timeout?: number; visible?: boolean } };
+
+  try {
+    const result = await waitForSelector(ctx.tabId, payload.selector, payload.options);
+    sender.sendResponse({ id: ctx.id, ok: true, result });
+  } catch (error) {
+    sender.sendResponse({
+      id: ctx.id,
+      ok: false,
+      error: {
+        code: (error as { code?: string }).code || 'ERR_INTERNAL',
+        message: error instanceof Error ? error.message : 'Wait failed',
+      },
+    });
+  }
+}
+
+async function handleActiveTabScreenshot(ctx: RequestContext, sender: ResponseSender): Promise<void> {
+  if (!(await requireFeature(ctx, sender, 'screenshots', 'Screenshots'))) {
+    return;
+  }
+
+  if (!(await requirePermission(ctx, sender, 'browser:activeTab.screenshot'))) {
+    return;
+  }
+
+  if (!ctx.tabId) {
+    sender.sendResponse({
+      id: ctx.id,
+      ok: false,
+      error: { code: 'ERR_INTERNAL', message: 'No tab ID available' },
+    });
+    return;
+  }
+
+  const payload = ctx.payload as { format?: 'png' | 'jpeg'; quality?: number } | undefined;
+
+  try {
+    const result = await takeScreenshot(ctx.tabId, payload);
+    sender.sendResponse({ id: ctx.id, ok: true, result });
+  } catch (error) {
+    sender.sendResponse({
+      id: ctx.id,
+      ok: false,
+      error: {
+        code: (error as { code?: string }).code || 'ERR_INTERNAL',
+        message: error instanceof Error ? error.message : 'Screenshot failed',
+      },
+    });
+  }
+}
+
 // =============================================================================
 // Chat Handlers
 // =============================================================================
@@ -1004,6 +1331,28 @@ async function routeMessage(ctx: RequestContext, sender: ResponseSender): Promis
     case 'agent.chat.close':
       return handleChatClose(ctx, sender);
 
+    // Runtime capabilities
+    case 'ai.runtime.getCapabilities':
+      return handleRuntimeGetCapabilities(ctx, sender);
+
+    // Browser API (same-tab only)
+    case 'agent.browser.activeTab.readability':
+      return handleActiveTabReadability(ctx, sender);
+    case 'agent.browser.activeTab.click':
+      return handleActiveTabClick(ctx, sender);
+    case 'agent.browser.activeTab.fill':
+      return handleActiveTabFill(ctx, sender);
+    case 'agent.browser.activeTab.select':
+      return handleActiveTabSelect(ctx, sender);
+    case 'agent.browser.activeTab.scroll':
+      return handleActiveTabScroll(ctx, sender);
+    case 'agent.browser.activeTab.getElement':
+      return handleActiveTabGetElement(ctx, sender);
+    case 'agent.browser.activeTab.waitForSelector':
+      return handleActiveTabWaitForSelector(ctx, sender);
+    case 'agent.browser.activeTab.screenshot':
+      return handleActiveTabScreenshot(ctx, sender);
+
     // Regular methods not yet implemented
     case 'session.clone':
     case 'ai.providers.getActive':
@@ -1012,7 +1361,6 @@ async function routeMessage(ctx: RequestContext, sender: ResponseSender): Promis
     case 'ai.providers.setDefault':
     case 'ai.providers.setTypeDefault':
     case 'ai.runtime.getBest':
-    case 'agent.browser.activeTab.readability':
     case 'agent.mcp.discover':
     case 'agent.mcp.register':
     case 'agent.mcp.unregister':

@@ -60,6 +60,8 @@ export type PermissionScope =
   | 'mcp:tools.call'
   | 'mcp:servers.register'
   | 'browser:activeTab.read'
+  | 'browser:activeTab.interact'  // click, fill, scroll (same-tab only)
+  | 'browser:activeTab.screenshot' // capture screenshots
   | 'chat:open'
   | 'web:fetch'
   | 'addressBar:suggest'
@@ -364,6 +366,7 @@ export type MessageType =
   | 'ai.providers.setDefault'
   | 'ai.providers.setTypeDefault'
   | 'ai.runtime.getBest'
+  | 'ai.runtime.getCapabilities'
   // Session methods
   | 'session.prompt'
   | 'session.promptStreaming'
@@ -375,6 +378,13 @@ export type MessageType =
   | 'agent.tools.list'
   | 'agent.tools.call'
   | 'agent.browser.activeTab.readability'
+  | 'agent.browser.activeTab.click'
+  | 'agent.browser.activeTab.fill'
+  | 'agent.browser.activeTab.select'
+  | 'agent.browser.activeTab.scroll'
+  | 'agent.browser.activeTab.getElement'
+  | 'agent.browser.activeTab.waitForSelector'
+  | 'agent.browser.activeTab.screenshot'
   | 'agent.run'
   // BYOC methods
   | 'agent.mcp.discover'
@@ -433,6 +443,13 @@ export const REQUIRED_SCOPES: Partial<Record<MessageType, PermissionScope[]>> = 
   'agent.tools.list': ['mcp:tools.list'],
   'agent.tools.call': ['mcp:tools.call'],
   'agent.browser.activeTab.readability': ['browser:activeTab.read'],
+  'agent.browser.activeTab.click': ['browser:activeTab.interact'],
+  'agent.browser.activeTab.fill': ['browser:activeTab.interact'],
+  'agent.browser.activeTab.select': ['browser:activeTab.interact'],
+  'agent.browser.activeTab.scroll': ['browser:activeTab.interact'],
+  'agent.browser.activeTab.getElement': ['browser:activeTab.read'],
+  'agent.browser.activeTab.waitForSelector': ['browser:activeTab.read'],
+  'agent.browser.activeTab.screenshot': ['browser:activeTab.screenshot'],
   'agent.run': ['model:tools'],
   'agent.mcp.register': ['mcp:servers.register'],
   'agent.chat.open': ['chat:open'],

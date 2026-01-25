@@ -17,6 +17,8 @@ const SCOPE_ICONS: Record<string, string> = {
   'mcp:tools.call': '⚡',
   'mcp:servers.register': '📡',
   'browser:activeTab.read': '📄',
+  'browser:activeTab.interact': '👆',
+  'browser:activeTab.screenshot': '📸',
   'chat:open': '💬',
   'web:fetch': '🌐',
   'addressBar:suggest': '🔍',

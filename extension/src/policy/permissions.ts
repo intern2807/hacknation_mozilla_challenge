@@ -99,6 +99,8 @@ export async function getPermissionStatus(origin: string, tabId?: number): Promi
     'mcp:tools.call': 'not-granted',
     'mcp:servers.register': 'not-granted',
     'browser:activeTab.read': 'not-granted',
+    'browser:activeTab.interact': 'not-granted',
+    'browser:activeTab.screenshot': 'not-granted',
     'chat:open': 'not-granted',
     'web:fetch': 'not-granted',
     'addressBar:suggest': 'not-granted',
@@ -319,6 +321,8 @@ export async function listAllPermissions(): Promise<PermissionStatus[]> {
       'mcp:tools.call': 'not-granted',
       'mcp:servers.register': 'not-granted',
       'browser:activeTab.read': 'not-granted',
+      'browser:activeTab.interact': 'not-granted',
+      'browser:activeTab.screenshot': 'not-granted',
       'chat:open': 'not-granted',
       'web:fetch': 'not-granted',
       'addressBar:suggest': 'not-granted',
@@ -583,7 +587,17 @@ export const SCOPE_DESCRIPTIONS: Record<PermissionScope, { title: string; descri
   },
   'browser:activeTab.read': {
     title: 'Read current page',
-    description: 'Extract readable text content from the currently active tab.',
+    description: 'Extract readable text content from this page.',
+    risk: 'medium',
+  },
+  'browser:activeTab.interact': {
+    title: 'Interact with this page',
+    description: 'Click buttons, fill forms, and scroll on this page only.',
+    risk: 'high',
+  },
+  'browser:activeTab.screenshot': {
+    title: 'Take screenshots',
+    description: 'Capture screenshots of this page.',
     risk: 'medium',
   },
   'chat:open': {

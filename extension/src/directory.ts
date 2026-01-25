@@ -9,6 +9,7 @@
  */
 
 import { loadFromUrl, loadFromFile, type LoadResult } from './storage/package-loader';
+import { getFeatureFlags, setFeatureFlags, type FeatureFlags } from './policy/feature-flags';
 
 // Make this a module to avoid global scope conflicts
 export {};
@@ -706,6 +707,52 @@ function cycleTheme(): void {
 }
 
 // Initialize when DOM is ready
+// =============================================================================
+// Settings / Feature Flags
+// =============================================================================
+
+async function initSettings(): Promise<void> {
+  const settingsSection = document.getElementById('settings-section');
+  const settingsToggle = document.getElementById('settings-toggle');
+  const settingsContent = document.getElementById('settings-content');
+
+  if (!settingsSection || !settingsToggle || !settingsContent) {
+    console.warn('[Directory] Settings elements not found');
+    return;
+  }
+
+  // Toggle expand/collapse
+  settingsToggle.addEventListener('click', () => {
+    const isExpanded = settingsSection.classList.toggle('expanded');
+    settingsContent.style.display = isExpanded ? 'block' : 'none';
+  });
+
+  // Load current flags and set checkboxes
+  const flags = await getFeatureFlags();
+  
+  const flagCheckboxes: { id: string; flag: keyof FeatureFlags }[] = [
+    { id: 'flag-browserInteraction', flag: 'browserInteraction' },
+    { id: 'flag-screenshots', flag: 'screenshots' },
+    { id: 'flag-experimental', flag: 'experimental' },
+  ];
+
+  for (const { id, flag } of flagCheckboxes) {
+    const checkbox = document.getElementById(id) as HTMLInputElement | null;
+    if (checkbox) {
+      checkbox.checked = flags[flag];
+      checkbox.addEventListener('change', async () => {
+        await setFeatureFlags({ [flag]: checkbox.checked });
+        showToast(
+          checkbox.checked 
+            ? `${flag} enabled` 
+            : `${flag} disabled`,
+          'success'
+        );
+      });
+    }
+  }
+}
+
 function init(): void {
   console.log('[Directory] Initializing...');
   console.log('[Directory] list element:', list);
@@ -717,6 +764,11 @@ function init(): void {
   // Setup URL and file install handlers
   setupUrlInstall();
   setupDropZone();
+
+  // Setup feature flag settings
+  initSettings().catch((error) => {
+    console.error('[Directory] Failed to init settings:', error);
+  });
 
   if (list) {
     refreshList().catch((error) => {

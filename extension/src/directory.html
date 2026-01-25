@@ -412,6 +412,137 @@
       text-transform: uppercase;
       letter-spacing: 0.5px;
     }
+
+    /* Settings section */
+    .settings-section {
+      margin-bottom: var(--space-4);
+      background: var(--color-surface-primary);
+      border: 1px solid var(--color-border-default);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+    }
+
+    .settings-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: var(--space-3) var(--space-4);
+      cursor: pointer;
+      user-select: none;
+      transition: background var(--transition-fast);
+    }
+
+    .settings-header:hover {
+      background: var(--color-bg-subtle);
+    }
+
+    .settings-title {
+      font-size: var(--text-sm);
+      font-weight: var(--weight-semibold);
+      color: var(--color-text-primary);
+    }
+
+    .settings-chevron {
+      font-size: var(--text-xs);
+      color: var(--color-text-muted);
+      transition: transform var(--transition-fast);
+    }
+
+    .settings-section.expanded .settings-chevron {
+      transform: rotate(180deg);
+    }
+
+    .settings-content {
+      padding: 0 var(--space-4) var(--space-4);
+      border-top: 1px solid var(--color-border-subtle);
+    }
+
+    .settings-desc {
+      font-size: var(--text-xs);
+      color: var(--color-text-muted);
+      margin-bottom: var(--space-3);
+      padding-top: var(--space-3);
+    }
+
+    .setting-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: var(--space-2) 0;
+      border-bottom: 1px solid var(--color-border-subtle);
+    }
+
+    .setting-row:last-child {
+      border-bottom: none;
+    }
+
+    .setting-info {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .setting-name {
+      font-size: var(--text-sm);
+      font-weight: var(--weight-medium);
+      color: var(--color-text-primary);
+    }
+
+    .setting-description {
+      font-size: var(--text-xs);
+      color: var(--color-text-muted);
+    }
+
+    /* Toggle switch */
+    .toggle {
+      position: relative;
+      display: inline-block;
+      width: 40px;
+      height: 22px;
+      flex-shrink: 0;
+    }
+
+    .toggle input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .toggle-slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: var(--color-border-default);
+      transition: var(--transition-fast);
+      border-radius: 22px;
+    }
+
+    .toggle-slider:before {
+      position: absolute;
+      content: "";
+      height: 16px;
+      width: 16px;
+      left: 3px;
+      bottom: 3px;
+      background-color: white;
+      transition: var(--transition-fast);
+      border-radius: 50%;
+    }
+
+    .toggle input:checked + .toggle-slider {
+      background-color: var(--color-accent-primary);
+    }
+
+    .toggle input:checked + .toggle-slider:before {
+      transform: translateX(18px);
+    }
+
+    .toggle input:focus + .toggle-slider {
+      box-shadow: 0 0 0 2px var(--color-accent-primary-subtle);
+    }
   </style>
 </head>
 <body>
@@ -432,6 +563,50 @@
         These MCP servers are bundled with Harbor and can be installed with one click.
         They run entirely in your browser using WebAssembly or JavaScript sandboxes.
       </p>
+    </div>
+
+    <!-- Advanced Features Settings -->
+    <div class="settings-section" id="settings-section">
+      <div class="settings-header" id="settings-toggle">
+        <span class="settings-title">Advanced Features</span>
+        <span class="settings-chevron">▼</span>
+      </div>
+      <div class="settings-content" id="settings-content" style="display: none;">
+        <p class="settings-desc">
+          These features are experimental and disabled by default. Enable them to allow web pages
+          to use additional browser control APIs.
+        </p>
+        <div class="setting-row">
+          <div class="setting-info">
+            <span class="setting-name">Browser Interaction</span>
+            <span class="setting-description">Allow pages to click, fill forms, and scroll (same-tab only)</span>
+          </div>
+          <label class="toggle">
+            <input type="checkbox" id="flag-browserInteraction">
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+        <div class="setting-row">
+          <div class="setting-info">
+            <span class="setting-name">Screenshots</span>
+            <span class="setting-description">Allow pages to capture screenshots of themselves</span>
+          </div>
+          <label class="toggle">
+            <input type="checkbox" id="flag-screenshots">
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+        <div class="setting-row">
+          <div class="setting-info">
+            <span class="setting-name">Experimental APIs</span>
+            <span class="setting-description">Enable unstable features in active development</span>
+          </div>
+          <label class="toggle">
+            <input type="checkbox" id="flag-experimental">
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+      </div>
     </div>
 
     <!-- Install from URL/File section -->

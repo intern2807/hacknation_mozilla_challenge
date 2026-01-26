@@ -253,6 +253,58 @@
       border: 1px solid var(--color-border-subtle);
       border-radius: var(--radius-sm);
     }
+
+    /* Session context */
+    .session-context {
+      background: var(--color-surface-secondary);
+      border: 1px solid var(--color-border-default);
+      border-left: 3px solid var(--color-accent-primary);
+      border-radius: var(--radius-sm);
+      padding: var(--space-3);
+      margin-bottom: var(--space-3);
+    }
+
+    .session-name {
+      font-weight: var(--weight-semibold);
+      font-size: var(--text-sm);
+      color: var(--color-text-primary);
+      margin-bottom: var(--space-2);
+    }
+
+    .session-badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-1);
+    }
+
+    .session-badge {
+      font-size: 9px;
+      padding: 2px 8px;
+      border-radius: var(--radius-sm);
+      font-weight: var(--weight-medium);
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+
+    .session-badge.llm {
+      background: rgba(99, 102, 241, 0.15);
+      color: var(--color-accent-primary);
+    }
+
+    .session-badge.tools {
+      background: rgba(234, 179, 8, 0.15);
+      color: var(--color-warning);
+    }
+
+    .session-badge.browser {
+      background: rgba(16, 185, 129, 0.15);
+      color: var(--color-success);
+    }
+
+    .session-badge.explicit {
+      background: var(--color-surface-tertiary);
+      color: var(--color-text-muted);
+    }
   </style>
 </head>
 <body>
@@ -263,6 +315,12 @@
     </div>
 
     <div class="origin-badge" id="origin"></div>
+
+    <!-- Session context (for explicit sessions) -->
+    <div class="session-context" id="session-context" style="display: none;">
+      <div class="session-name" id="session-name"></div>
+      <div class="session-badges" id="session-badges"></div>
+    </div>
 
     <div class="reason" id="reason-container" style="display: none;">
       <span id="reason"></span>

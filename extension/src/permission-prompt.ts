@@ -73,6 +73,11 @@ const origin = params.get('origin') || 'Unknown';
 const scopesParam = params.get('scopes') || '';
 const reason = params.get('reason') || '';
 const toolsParam = params.get('tools') || '';
+const sessionName = params.get('sessionName') || '';
+const sessionType = params.get('sessionType') || '';
+const requestedLLM = params.get('llm') === 'true';
+const requestedTools = params.get('toolsCount') || '0';
+const requestedBrowser = params.get('browser') || '';
 
 const scopes = scopesParam.split(',').filter(Boolean) as PermissionScope[];
 const tools = toolsParam.split(',').filter(Boolean);
@@ -81,6 +86,38 @@ const tools = toolsParam.split(',').filter(Boolean);
 const originEl = document.getElementById('origin');
 if (originEl) {
   originEl.textContent = origin;
+}
+
+// Render session context (for explicit sessions)
+if (sessionName || sessionType === 'explicit') {
+  const sessionContext = document.getElementById('session-context');
+  const sessionNameEl = document.getElementById('session-name');
+  const sessionBadges = document.getElementById('session-badges');
+  
+  if (sessionContext && sessionNameEl && sessionBadges) {
+    sessionContext.style.display = 'block';
+    sessionNameEl.textContent = sessionName || 'Agent Session';
+    
+    // Add capability badges
+    const badges: string[] = [];
+    if (sessionType === 'explicit') {
+      badges.push('<span class="session-badge explicit">Explicit Session</span>');
+    }
+    if (requestedLLM) {
+      badges.push('<span class="session-badge llm">LLM</span>');
+    }
+    if (parseInt(requestedTools, 10) > 0) {
+      badges.push(`<span class="session-badge tools">${requestedTools} Tools</span>`);
+    }
+    if (requestedBrowser) {
+      const browserCaps = requestedBrowser.split(',').filter(Boolean);
+      if (browserCaps.length > 0) {
+        badges.push(`<span class="session-badge browser">Browser: ${browserCaps.join(', ')}</span>`);
+      }
+    }
+    
+    sessionBadges.innerHTML = badges.join('');
+  }
 }
 
 // Render reason

@@ -376,6 +376,17 @@ let pendingPromptResolve: ((result: {
 }) => void) | null = null;
 
 /**
+ * Session context for permission prompts.
+ */
+export interface SessionPromptContext {
+  name?: string;
+  type?: 'implicit' | 'explicit';
+  requestedLLM?: boolean;
+  requestedToolsCount?: number;
+  requestedBrowser?: ('read' | 'interact' | 'screenshot')[];
+}
+
+/**
  * Show permission prompt to user.
  */
 export async function showPermissionPrompt(
@@ -383,13 +394,14 @@ export async function showPermissionPrompt(
   scopes: PermissionScope[],
   reason?: string,
   requestedTools?: string[],
+  sessionContext?: SessionPromptContext,
 ): Promise<{
   granted: boolean;
   grantType?: 'granted-once' | 'granted-always';
   allowedTools?: string[];
   explicitDeny?: boolean;
 }> {
-  console.log('[Permissions] showPermissionPrompt called:', { origin, scopes, reason });
+  console.log('[Permissions] showPermissionPrompt called:', { origin, scopes, reason, sessionContext });
 
   // Close any existing prompt
   if (promptWindowId !== null) {
@@ -414,6 +426,19 @@ export async function showPermissionPrompt(
   if (requestedTools && requestedTools.length > 0) {
     params.set('tools', requestedTools.join(','));
   }
+  
+  // Add session context if provided
+  if (sessionContext) {
+    if (sessionContext.name) params.set('sessionName', sessionContext.name);
+    if (sessionContext.type) params.set('sessionType', sessionContext.type);
+    if (sessionContext.requestedLLM) params.set('llm', 'true');
+    if (sessionContext.requestedToolsCount !== undefined) {
+      params.set('toolsCount', String(sessionContext.requestedToolsCount));
+    }
+    if (sessionContext.requestedBrowser && sessionContext.requestedBrowser.length > 0) {
+      params.set('browser', sessionContext.requestedBrowser.join(','));
+    }
+  }
 
   const promptUrl = chrome.runtime.getURL(`dist/permission-prompt.html?${params.toString()}`);
   console.log('[Permissions] Opening prompt URL:', promptUrl);
@@ -426,7 +451,7 @@ export async function showPermissionPrompt(
       url: promptUrl,
       type: 'popup',
       width: 450,
-      height: 500,
+      height: 550, // Slightly taller to accommodate session context
       focused: true,
     });
 
@@ -634,3 +659,216 @@ export const SCOPE_DESCRIPTIONS: Record<PermissionScope, { title: string; descri
 
 // Start cleanup interval
 setInterval(cleanupExpiredGrants, 60000); // Every minute
+
+// =============================================================================
+// Session Capability Checking
+// =============================================================================
+
+import type {
+  SessionCapabilities,
+  AgentSession,
+} from '../sessions/types';
+import { SessionRegistry } from '../sessions/registry';
+
+/**
+ * Check if a session has the required capability, validating against origin permissions.
+ * This bridges session-level capabilities with origin-level permissions.
+ */
+export async function checkSessionCapability(
+  session: AgentSession,
+  capability: 'llm' | 'tools' | 'browser.read' | 'browser.interact' | 'browser.screenshot',
+  tabId?: number,
+): Promise<{ allowed: boolean; reason?: string }> {
+  const origin = session.origin;
+
+  // Map capability to required origin scope
+  const scopeMap: Record<string, PermissionScope> = {
+    'llm': 'model:prompt',
+    'tools': 'mcp:tools.call',
+    'browser.read': 'browser:activeTab.read',
+    'browser.interact': 'browser:activeTab.interact',
+    'browser.screenshot': 'browser:activeTab.screenshot',
+  };
+
+  const requiredScope = scopeMap[capability];
+  if (!requiredScope) {
+    return { allowed: false, reason: 'Unknown capability' };
+  }
+
+  // Check if session has the capability
+  let sessionHasCapability = false;
+  switch (capability) {
+    case 'llm':
+      sessionHasCapability = session.capabilities.llm.allowed;
+      break;
+    case 'tools':
+      sessionHasCapability = session.capabilities.tools.allowed;
+      break;
+    case 'browser.read':
+      sessionHasCapability = session.capabilities.browser.readActiveTab;
+      break;
+    case 'browser.interact':
+      sessionHasCapability = session.capabilities.browser.interact;
+      break;
+    case 'browser.screenshot':
+      sessionHasCapability = session.capabilities.browser.screenshot;
+      break;
+  }
+
+  if (!sessionHasCapability) {
+    return { allowed: false, reason: `Session does not have ${capability} capability` };
+  }
+
+  // Check if origin has permission for this scope
+  const check = await checkPermissions(origin, [requiredScope], tabId);
+  if (!check.granted) {
+    if (check.deniedScopes.length > 0) {
+      return { allowed: false, reason: `Origin permission denied for ${requiredScope}` };
+    }
+    return { allowed: false, reason: `Origin permission not granted for ${requiredScope}` };
+  }
+
+  return { allowed: true };
+}
+
+/**
+ * Check if a session can call a specific tool, validating against both
+ * session capabilities and origin permissions.
+ */
+export async function checkSessionToolAccess(
+  session: AgentSession,
+  toolName: string,
+  tabId?: number,
+): Promise<{ allowed: boolean; reason?: string }> {
+  // First check session capability
+  if (!session.capabilities.tools.allowed) {
+    return { allowed: false, reason: 'Session does not have tool access' };
+  }
+
+  // Check if tool is in session's allowed list
+  if (!session.capabilities.tools.allowedTools.includes(toolName)) {
+    return { allowed: false, reason: `Tool "${toolName}" not in session's allowed tools` };
+  }
+
+  // Check origin permission
+  const originAllowed = await isToolAllowed(session.origin, toolName);
+  if (!originAllowed) {
+    return { allowed: false, reason: `Origin does not have permission for tool "${toolName}"` };
+  }
+
+  // Check if session has exceeded tool budget
+  const budget = SessionRegistry.getRemainingToolBudget(session.sessionId);
+  if (budget !== undefined && budget <= 0) {
+    return { allowed: false, reason: 'Session tool budget exceeded' };
+  }
+
+  return { allowed: true };
+}
+
+/**
+ * Request permissions for a session's capabilities.
+ * Shows permission prompt if needed, bounded by what the session requests.
+ */
+export async function requestSessionPermissions(
+  session: AgentSession,
+  tabId?: number,
+): Promise<PermissionGrantResult> {
+  const requiredScopes: PermissionScope[] = [];
+
+  // Determine required scopes from session capabilities
+  if (session.capabilities.llm.allowed) {
+    requiredScopes.push('model:prompt');
+  }
+  if (session.capabilities.tools.allowed) {
+    requiredScopes.push('mcp:tools.call');
+    if (session.capabilities.tools.allowedTools.length > 0) {
+      requiredScopes.push('mcp:tools.list');
+    }
+  }
+  if (session.capabilities.browser.readActiveTab) {
+    requiredScopes.push('browser:activeTab.read');
+  }
+  if (session.capabilities.browser.interact) {
+    requiredScopes.push('browser:activeTab.interact');
+  }
+  if (session.capabilities.browser.screenshot) {
+    requiredScopes.push('browser:activeTab.screenshot');
+  }
+
+  if (requiredScopes.length === 0) {
+    // No permissions needed
+    return {
+      granted: true,
+      scopes: {} as Record<PermissionScope, PermissionGrant>,
+    };
+  }
+
+  // Build reason string
+  const reason = session.reason ||
+    (session.name ? `Session "${session.name}" requests access` : undefined);
+
+  // Request permissions through the standard flow
+  return requestPermissions(
+    session.origin,
+    {
+      scopes: requiredScopes,
+      reason,
+      tools: session.capabilities.tools.allowedTools.length > 0
+        ? session.capabilities.tools.allowedTools
+        : undefined,
+    },
+    tabId,
+  );
+}
+
+/**
+ * Validate that a session's capabilities are still permitted by origin permissions.
+ * Useful after permissions may have been revoked.
+ */
+export async function validateSessionCapabilities(
+  session: AgentSession,
+  tabId?: number,
+): Promise<{ valid: boolean; invalidCapabilities: string[] }> {
+  const invalid: string[] = [];
+
+  // Check LLM
+  if (session.capabilities.llm.allowed) {
+    const result = await checkSessionCapability(session, 'llm', tabId);
+    if (!result.allowed) {
+      invalid.push('llm');
+    }
+  }
+
+  // Check tools
+  if (session.capabilities.tools.allowed) {
+    const check = await checkPermissions(session.origin, ['mcp:tools.call'], tabId);
+    if (!check.granted) {
+      invalid.push('tools');
+    }
+  }
+
+  // Check browser capabilities
+  if (session.capabilities.browser.readActiveTab) {
+    const result = await checkSessionCapability(session, 'browser.read', tabId);
+    if (!result.allowed) {
+      invalid.push('browser.read');
+    }
+  }
+  if (session.capabilities.browser.interact) {
+    const result = await checkSessionCapability(session, 'browser.interact', tabId);
+    if (!result.allowed) {
+      invalid.push('browser.interact');
+    }
+  }
+  if (session.capabilities.browser.screenshot) {
+    const result = await checkSessionCapability(session, 'browser.screenshot', tabId);
+    if (!result.allowed) {
+      invalid.push('browser.screenshot');
+    }
+  }
+
+  return {
+    valid: invalid.length === 0,
+    invalidCapabilities: invalid,
+  };
+}

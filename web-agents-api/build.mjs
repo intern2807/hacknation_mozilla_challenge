@@ -19,11 +19,13 @@ const entryPoints = [
   'src/content-script.ts',
   'src/injected.ts',
   'src/permission-prompt.ts',
+  'src/sidebar.ts',
 ];
 
 async function copyStatic() {
   await mkdir('dist', { recursive: true });
   await copyFile('src/permission-prompt.html', 'dist/permission-prompt.html');
+  await copyFile('src/sidebar.html', 'dist/sidebar.html');
   await copyFile('src/design-tokens.css', 'dist/design-tokens.css');
   
   // Copy appropriate manifest

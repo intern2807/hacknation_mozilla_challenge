@@ -12,7 +12,8 @@
     "scripts": ["dist/background.js"]
   },
   "permissions": [
-    "storage"
+    "storage",
+    "tabs"
   ],
   "host_permissions": [
     "http://localhost/*",
@@ -44,6 +45,15 @@
   },
   "action": {
     "default_title": "Web Agents API",
+    "default_icon": {
+      "16": "assets/icon.svg",
+      "32": "assets/icon.svg",
+      "48": "assets/icon.svg"
+    }
+  },
+  "sidebar_action": {
+    "default_title": "Web Agents API",
+    "default_panel": "dist/sidebar.html",
     "default_icon": {
       "16": "assets/icon.svg",
       "32": "assets/icon.svg",

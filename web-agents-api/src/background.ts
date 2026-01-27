@@ -13,6 +13,7 @@ import {
   getHarborState,
   type StreamEvent,
 } from './harbor-client';
+import { getFeatureFlags, type FeatureFlags } from './policy/feature-flags';
 import type {
   TransportResponse,
   TransportStreamEvent,
@@ -1232,6 +1233,108 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     setHarborExtensionId(message.extensionId);
     sendResponse({ ok: true });
   }
+  return false;
+});
+
+// =============================================================================
+// Sidebar Message Handlers
+// =============================================================================
+
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  // Check Harbor connection status
+  if (message?.type === 'checkHarborConnection') {
+    (async () => {
+      const state = getHarborState();
+      if (!state.connected) {
+        // Try to discover Harbor
+        const id = await discoverHarbor();
+        sendResponse({ connected: !!id, extensionId: id });
+      } else {
+        sendResponse({ connected: true, extensionId: state.extensionId });
+      }
+    })();
+    return true;
+  }
+
+  // Get permissions for a specific origin
+  if (message?.type === 'getPermissionsForOrigin') {
+    const { origin } = message as { origin?: string };
+    if (!origin) {
+      sendResponse({ scopes: {}, allowedTools: [] });
+      return true;
+    }
+
+    (async () => {
+      const permissions = await getPermissions(origin);
+      const scopes: Record<string, string> = {};
+      
+      for (const [scope, grant] of Object.entries(permissions.scopes || {})) {
+        if (grant.type === 'granted-once' && grant.expiresAt && Date.now() > grant.expiresAt) {
+          scopes[scope] = 'not-granted';
+        } else {
+          scopes[scope] = grant.type;
+        }
+      }
+
+      sendResponse({ scopes, allowedTools: permissions.allowedTools || [] });
+    })();
+    return true;
+  }
+
+  // List all permissions
+  if (message?.type === 'listAllPermissions') {
+    (async () => {
+      const permissions = await listAllPermissions();
+      sendResponse({ permissions });
+    })();
+    return true;
+  }
+
+  // Revoke permissions for an origin
+  if (message?.type === 'revokePermissions') {
+    const { origin } = message as { origin?: string };
+    if (!origin) {
+      sendResponse({ ok: false, error: 'Missing origin' });
+      return true;
+    }
+
+    (async () => {
+      await revokeOriginPermissions(origin);
+      sendResponse({ ok: true });
+    })();
+    return true;
+  }
+
+  // Revoke all permissions
+  if (message?.type === 'revokeAllPermissions') {
+    (async () => {
+      const result = await chrome.storage.local.get(null);
+      const keysToRemove: string[] = [];
+      
+      for (const key of Object.keys(result)) {
+        if (key.startsWith('permissions:')) {
+          keysToRemove.push(key);
+        }
+      }
+      
+      if (keysToRemove.length > 0) {
+        await chrome.storage.local.remove(keysToRemove);
+      }
+      
+      sendResponse({ ok: true });
+    })();
+    return true;
+  }
+
+  // Get feature flags for content script injection
+  if (message?.type === 'getFeatureFlags') {
+    (async () => {
+      const flags = await getFeatureFlags();
+      sendResponse(flags);
+    })();
+    return true;
+  }
+
   return false;
 });
 

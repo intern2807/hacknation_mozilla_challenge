@@ -82,10 +82,77 @@ function getBackgroundPort(): RuntimePort {
   return backgroundPort;
 }
 
+// Feature flags type
+interface FeatureFlags {
+  textGeneration: boolean;
+  toolAccess: boolean;
+  browserInteraction: boolean;
+  browserControl: boolean;
+  autonomousAgents: boolean;
+  multiAgent: boolean;
+}
+
+const DEFAULT_FLAGS: FeatureFlags = {
+  textGeneration: true,
+  toolAccess: true,
+  browserInteraction: false,
+  browserControl: false,
+  autonomousAgents: false,
+  multiAgent: false,
+};
+
 /**
- * Inject the Web Agents API script into the page.
+ * Fetch feature flags from background script.
  */
-function injectAgentsAPI(): void {
+async function getFeatureFlags(): Promise<FeatureFlags> {
+  return new Promise((resolve) => {
+    chrome.runtime.sendMessage({ type: 'getFeatureFlags' }, (response) => {
+      if (chrome.runtime.lastError || !response) {
+        // Default to safe mode if we can't get flags
+        resolve(DEFAULT_FLAGS);
+      } else {
+        resolve(response as FeatureFlags);
+      }
+    });
+  });
+}
+
+let injected = false;
+
+function appendInjectedScripts(flags: FeatureFlags): boolean {
+  if (injected) return true;
+  const root = document.head || document.documentElement;
+  if (!root) return false;
+
+  // First, inject the feature flags as a JSON element
+  const flagsScript = document.createElement('script');
+  flagsScript.type = 'application/json';
+  flagsScript.id = 'web-agents-api-flags';
+  flagsScript.textContent = JSON.stringify(flags);
+  root.appendChild(flagsScript);
+
+  // Then inject the main script
+  const script = document.createElement('script');
+  script.src = chrome.runtime.getURL('dist/injected.js');
+  script.async = false;
+  script.onload = () => {
+    script.remove();
+  };
+  script.onerror = () => {
+    script.remove();
+  };
+  root.appendChild(script);
+  injected = true;
+  return true;
+}
+
+/**
+ * Inject the Web Agents API script into the page with feature flags.
+ */
+async function injectAgentsAPI(): Promise<void> {
+  // Mark content script presence for debugging.
+  document.documentElement?.setAttribute('data-web-agents-content-script', 'true');
+
   // Wait for Harbor discovery to be available
   const checkHarbor = () => {
     const harborInfo = (window as { __harbor?: { extensionId: string } }).__harbor;
@@ -102,12 +169,20 @@ function injectAgentsAPI(): void {
   checkHarbor();
   window.addEventListener('harbor-discovered', checkHarbor);
 
-  // Inject the API script
-  const script = document.createElement('script');
-  script.src = chrome.runtime.getURL('dist/injected.js');
-  script.async = false;
-  (document.head || document.documentElement).appendChild(script);
-  script.remove();
+  // Get feature flags from background
+  const flags = await getFeatureFlags();
+
+  if (appendInjectedScripts(flags)) return;
+
+  const retry = () => {
+    if (appendInjectedScripts(flags)) {
+      document.removeEventListener('readystatechange', retry);
+      window.removeEventListener('DOMContentLoaded', retry);
+    }
+  };
+
+  document.addEventListener('readystatechange', retry);
+  window.addEventListener('DOMContentLoaded', retry);
 }
 
 /**
@@ -163,4 +238,4 @@ window.addEventListener('message', async (event: MessageEvent) => {
 });
 
 // Initialize
-injectAgentsAPI();
+injectAgentsAPI().catch(console.error);

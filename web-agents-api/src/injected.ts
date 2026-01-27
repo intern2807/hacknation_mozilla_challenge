@@ -1,15 +1,76 @@
 /**
- * Web Agents API - Injected Script (v1)
+ * Web Agents API - Injected Script
  *
  * This script is injected into web pages to expose:
  * - window.ai - Text generation API (Chrome Prompt API compatible)
- * - window.agent - Basic tool calling (permissions, tools.list, tools.call)
+ * - window.agent - Tools, browser access, and autonomous agent capabilities
  *
- * v1 API - Simplified version without browser interaction or autonomous agents.
+ * APIs are gated by feature flags configured in the Web Agents API sidebar.
  */
 
 // Make this a module to avoid global scope conflicts
 export {};
+
+// =============================================================================
+// Feature Flags
+// =============================================================================
+
+interface FeatureFlags {
+  textGeneration: boolean;
+  toolAccess: boolean;
+  browserInteraction: boolean;
+  browserControl: boolean;
+  autonomousAgents: boolean;
+  multiAgent: boolean;
+}
+
+// Read feature flags from injected JSON element
+function getFeatureFlags(): FeatureFlags {
+  const defaults: FeatureFlags = {
+    textGeneration: true,
+    toolAccess: true,
+    browserInteraction: false,
+    browserControl: false,
+    autonomousAgents: false,
+    multiAgent: false,
+  };
+
+  try {
+    const flagsElement = document.getElementById('web-agents-api-flags');
+    if (flagsElement?.textContent) {
+      const parsed = JSON.parse(flagsElement.textContent) as Partial<FeatureFlags>;
+      return { ...defaults, ...parsed };
+    }
+  } catch {
+    // Ignore parse errors, use defaults
+  }
+
+  return defaults;
+}
+
+const FEATURE_FLAGS = getFeatureFlags();
+
+/**
+ * Create a function that throws ERR_FEATURE_DISABLED for disabled features.
+ */
+function featureDisabled(featureName: string): () => never {
+  return () => {
+    const err = new Error(`Feature "${featureName}" is not enabled. Enable it in Web Agents API settings.`);
+    (err as Error & { code?: string }).code = 'ERR_FEATURE_DISABLED';
+    throw err;
+  };
+}
+
+/**
+ * Create an async function that rejects with ERR_FEATURE_DISABLED for disabled features.
+ */
+function featureDisabledAsync(featureName: string): () => Promise<never> {
+  return async () => {
+    const err = new Error(`Feature "${featureName}" is not enabled. Enable it in Web Agents API settings.`);
+    (err as Error & { code?: string }).code = 'ERR_FEATURE_DISABLED';
+    throw err;
+  };
+}
 
 // =============================================================================
 // Types
@@ -17,9 +78,16 @@ export {};
 
 type PermissionScope =
   | 'model:prompt'
+  | 'model:tools'
   | 'model:list'
   | 'mcp:tools.list'
-  | 'mcp:tools.call';
+  | 'mcp:tools.call'
+  | 'mcp:servers.register'
+  | 'browser:activeTab.read'
+  | 'browser:activeTab.interact'
+  | 'browser:activeTab.screenshot'
+  | 'chat:open'
+  | 'web:fetch';
 
 type PermissionGrant = 'granted-once' | 'granted-always' | 'denied' | 'not-granted';
 
@@ -478,7 +546,131 @@ function createAgentSessionObject(
 }
 
 // =============================================================================
-// window.agent Implementation (v1 - simplified)
+// Browser API Implementation
+// =============================================================================
+
+// Browser API types
+interface ReadabilityContent {
+  title: string;
+  content: string;
+  textContent: string;
+  excerpt: string;
+  byline: string | null;
+  siteName: string | null;
+}
+
+interface BrowserElement {
+  ref: string;
+  role: string;
+  text?: string;
+  placeholder?: string;
+  value?: string;
+  checked?: boolean;
+  rect?: { x: number; y: number; width: number; height: number };
+}
+
+// Create browser API object
+function createBrowserApi() {
+  return Object.freeze({
+    activeTab: Object.freeze({
+      /**
+       * Get readable content from the current page using readability parser.
+       */
+      readability: FEATURE_FLAGS.browserInteraction || FEATURE_FLAGS.browserControl
+        ? async function(): Promise<ReadabilityContent> {
+            return sendRequest<ReadabilityContent>('agent.browser.activeTab.readability');
+          }
+        : featureDisabledAsync('browserInteraction'),
+
+      /**
+       * Get visible interactive elements on the page.
+       */
+      getElements: FEATURE_FLAGS.browserInteraction
+        ? async function(): Promise<BrowserElement[]> {
+            return sendRequest<BrowserElement[]>('agent.browser.activeTab.getElements');
+          }
+        : featureDisabledAsync('browserInteraction'),
+
+      /**
+       * Click an element by ref.
+       */
+      click: FEATURE_FLAGS.browserInteraction
+        ? async function(ref: string): Promise<{ success: boolean }> {
+            return sendRequest('agent.browser.activeTab.click', { ref });
+          }
+        : featureDisabledAsync('browserInteraction'),
+
+      /**
+       * Fill a form field.
+       */
+      fill: FEATURE_FLAGS.browserInteraction
+        ? async function(ref: string, value: string): Promise<{ success: boolean }> {
+            return sendRequest('agent.browser.activeTab.fill', { ref, value });
+          }
+        : featureDisabledAsync('browserInteraction'),
+
+      /**
+       * Scroll the page.
+       */
+      scroll: FEATURE_FLAGS.browserInteraction
+        ? async function(direction: 'up' | 'down' | 'left' | 'right', amount?: number): Promise<{ success: boolean }> {
+            return sendRequest('agent.browser.activeTab.scroll', { direction, amount });
+          }
+        : featureDisabledAsync('browserInteraction'),
+
+      /**
+       * Take a screenshot.
+       */
+      screenshot: FEATURE_FLAGS.browserInteraction
+        ? async function(): Promise<{ dataUrl: string }> {
+            return sendRequest('agent.browser.activeTab.screenshot');
+          }
+        : featureDisabledAsync('browserInteraction'),
+    }),
+
+    /**
+     * Navigate to a URL.
+     */
+    navigate: FEATURE_FLAGS.browserControl
+      ? async function(url: string): Promise<{ success: boolean }> {
+          return sendRequest('agent.browser.navigate', { url });
+        }
+      : featureDisabledAsync('browserControl'),
+
+    /**
+     * Fetch a URL (CORS-bypassing).
+     */
+    fetch: FEATURE_FLAGS.browserControl
+      ? async function(url: string, options?: RequestInit): Promise<{ body: string; status: number; headers: Record<string, string> }> {
+          return sendRequest('agent.browser.fetch', { url, options });
+        }
+      : featureDisabledAsync('browserControl'),
+
+    /**
+     * Tab management (browserControl required).
+     */
+    tabs: FEATURE_FLAGS.browserControl
+      ? Object.freeze({
+          async list(): Promise<Array<{ id: number; url: string; title: string; active: boolean }>> {
+            return sendRequest('agent.browser.tabs.list');
+          },
+          async create(url: string): Promise<{ id: number }> {
+            return sendRequest('agent.browser.tabs.create', { url });
+          },
+          async close(tabId: number): Promise<{ success: boolean }> {
+            return sendRequest('agent.browser.tabs.close', { tabId });
+          },
+        })
+      : {
+          list: featureDisabledAsync('browserControl'),
+          create: featureDisabledAsync('browserControl'),
+          close: featureDisabledAsync('browserControl'),
+        },
+  });
+}
+
+// =============================================================================
+// window.agent Implementation
 // =============================================================================
 
 const agentApi = Object.freeze({
@@ -496,15 +688,22 @@ const agentApi = Object.freeze({
     },
   }),
 
-  tools: Object.freeze({
-    async list(): Promise<ToolDescriptor[]> {
-      return sendRequest<ToolDescriptor[]>('agent.tools.list');
-    },
+  tools: FEATURE_FLAGS.toolAccess
+    ? Object.freeze({
+        async list(): Promise<ToolDescriptor[]> {
+          return sendRequest<ToolDescriptor[]>('agent.tools.list');
+        },
 
-    async call(options: { tool: string; args?: Record<string, unknown> }): Promise<unknown> {
-      return sendRequest('agent.tools.call', options);
-    },
-  }),
+        async call(options: { tool: string; args?: Record<string, unknown> }): Promise<unknown> {
+          return sendRequest('agent.tools.call', options);
+        },
+      })
+    : {
+        list: featureDisabledAsync('toolAccess'),
+        call: featureDisabledAsync('toolAccess'),
+      },
+
+  browser: createBrowserApi(),
 
   /**
    * Run an autonomous agent that can use tools to complete a task.
@@ -522,73 +721,75 @@ const agentApi = Object.freeze({
    *   }
    * }
    */
-  run(options: {
-    task: string;
-    maxToolCalls?: number;
-    systemPrompt?: string;
-  }): AsyncIterable<
-    | { type: 'thinking'; content: string }
-    | { type: 'tool_call'; tool: string; args: Record<string, unknown> }
-    | { type: 'tool_result'; tool: string; result: unknown }
-    | { type: 'final'; output: string }
-    | { type: 'error'; error: string }
-  > {
-    type AgentEvent =
-      | { type: 'thinking'; content: string }
-      | { type: 'tool_call'; tool: string; args: Record<string, unknown> }
-      | { type: 'tool_result'; tool: string; result: unknown }
-      | { type: 'final'; output: string }
-      | { type: 'error'; error: string };
+  run: FEATURE_FLAGS.autonomousAgents
+    ? function(options: {
+        task: string;
+        maxToolCalls?: number;
+        systemPrompt?: string;
+      }): AsyncIterable<
+        | { type: 'thinking'; content: string }
+        | { type: 'tool_call'; tool: string; args: Record<string, unknown> }
+        | { type: 'tool_result'; tool: string; result: unknown }
+        | { type: 'final'; output: string }
+        | { type: 'error'; error: string }
+      > {
+        type AgentEvent =
+          | { type: 'thinking'; content: string }
+          | { type: 'tool_call'; tool: string; args: Record<string, unknown> }
+          | { type: 'tool_result'; tool: string; result: unknown }
+          | { type: 'final'; output: string }
+          | { type: 'error'; error: string };
 
-    const tokenStream = createStreamIterable<StreamToken>('agent.run', options);
-
-    return {
-      [Symbol.asyncIterator](): AsyncIterator<AgentEvent> {
-        const tokenIterator = tokenStream[Symbol.asyncIterator]();
+        const tokenStream = createStreamIterable<StreamToken>('agent.run', options);
 
         return {
-          async next(): Promise<IteratorResult<AgentEvent>> {
-            while (true) {
-              const result = await tokenIterator.next();
-              
-              if (result.done) {
-                return { done: true, value: undefined };
-              }
+          [Symbol.asyncIterator](): AsyncIterator<AgentEvent> {
+            const tokenIterator = tokenStream[Symbol.asyncIterator]();
 
-              const token = result.value;
-              
-              if (token.type === 'done') {
-                return { done: true, value: undefined };
-              }
+            return {
+              async next(): Promise<IteratorResult<AgentEvent>> {
+                while (true) {
+                  const result = await tokenIterator.next();
+                  
+                  if (result.done) {
+                    return { done: true, value: undefined };
+                  }
 
-              if (token.type === 'error') {
-                return {
-                  done: false,
-                  value: { type: 'error', error: token.error?.message || 'Unknown error' },
-                };
-              }
+                  const token = result.value;
+                  
+                  if (token.type === 'done') {
+                    return { done: true, value: undefined };
+                  }
 
-              if (token.type === 'token' && token.token) {
-                try {
-                  // Parse the JSON event from the token
-                  const event = JSON.parse(token.token) as AgentEvent;
-                  return { done: false, value: event };
-                } catch {
-                  // If it's not JSON, skip this token
-                  continue;
+                  if (token.type === 'error') {
+                    return {
+                      done: false,
+                      value: { type: 'error', error: token.error?.message || 'Unknown error' },
+                    };
+                  }
+
+                  if (token.type === 'token' && token.token) {
+                    try {
+                      // Parse the JSON event from the token
+                      const event = JSON.parse(token.token) as AgentEvent;
+                      return { done: false, value: event };
+                    } catch {
+                      // If it's not JSON, skip this token
+                      continue;
+                    }
+                  }
                 }
-              }
-            }
-          },
+              },
 
-          async return(): Promise<IteratorResult<AgentEvent>> {
-            await tokenIterator.return?.();
-            return { done: true, value: undefined };
+              async return(): Promise<IteratorResult<AgentEvent>> {
+                await tokenIterator.return?.();
+                return { done: true, value: undefined };
+              },
+            };
           },
         };
-      },
-    };
-  },
+      }
+    : featureDisabled('autonomousAgents'),
 
   // Session management API (explicit sessions)
   sessions: Object.freeze({
@@ -678,9 +879,11 @@ try {
   const existingAi = (window as { ai?: unknown }).ai;
   const chromeAiDetected = existingAi !== undefined && existingAi !== null;
 
-  // Register window.ai (skip if Chrome AI is present)
-  if (!chromeAiDetected) {
+  // Register window.ai (skip if Chrome AI is present, or if textGeneration is disabled)
+  if (FEATURE_FLAGS.textGeneration && !chromeAiDetected) {
     safeDefineProperty('ai', aiApi);
+  } else if (!FEATURE_FLAGS.textGeneration) {
+    console.debug('[Web Agents API] Text generation disabled, window.ai not registered.');
   } else {
     console.debug('[Web Agents API] Chrome AI detected, window.ai not overridden.');
   }
@@ -691,15 +894,25 @@ try {
     safeDefineProperty('agent', agentApi);
   }
 
-  // Dispatch ready event
+  // Dispatch ready event with feature flags info
   window.dispatchEvent(
     new CustomEvent('agent-ready', {
       detail: {
         version: '1.0.0',
         chromeAiDetected,
+        features: {
+          textGeneration: FEATURE_FLAGS.textGeneration,
+          toolAccess: FEATURE_FLAGS.toolAccess,
+          browserInteraction: FEATURE_FLAGS.browserInteraction,
+          browserControl: FEATURE_FLAGS.browserControl,
+          autonomousAgents: FEATURE_FLAGS.autonomousAgents,
+          multiAgent: FEATURE_FLAGS.multiAgent,
+        },
       },
     }),
   );
+  
+  console.debug('[Web Agents API] Registered with features:', FEATURE_FLAGS);
 } catch (error) {
   console.warn('[Web Agents API] Failed to register API', error);
 }

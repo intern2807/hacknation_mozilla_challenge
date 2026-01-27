@@ -9,10 +9,13 @@
 // =============================================================================
 
 export type PermissionScope =
-  | 'model:prompt'      // Text generation
-  | 'model:list'        // List providers/models
-  | 'mcp:tools.list'    // List available tools
-  | 'mcp:tools.call';   // Execute tools
+  | 'model:prompt'              // Text generation
+  | 'model:list'                // List providers/models
+  | 'mcp:tools.list'            // List available tools
+  | 'mcp:tools.call'            // Execute tools
+  | 'browser:activeTab.read'    // Read page content
+  | 'browser:activeTab.interact'// Click, fill, scroll
+  | 'browser:activeTab.screenshot'; // Take screenshots
 
 export type PermissionGrantType =
   | 'granted-once'     // Valid for 10 minutes, tab-scoped

@@ -615,13 +615,46 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
 // Permission Management Handlers
 // =============================================================================
 
+const WEB_AGENTS_API_EXTENSION_ID = 'web-agents-api@mozilla.org';
+
+type ExternalPermissionStatusEntry = {
+  origin: string;
+  scopes: Record<string, string>;
+  allowedTools?: string[];
+  source?: 'harbor' | 'web-agents-api';
+};
+
+async function fetchWebAgentsPermissions(): Promise<ExternalPermissionStatusEntry[]> {
+  try {
+    const response = await chrome.runtime.sendMessage(WEB_AGENTS_API_EXTENSION_ID, {
+      type: 'web_agents_permissions.list_all',
+    }) as { ok?: boolean; permissions?: ExternalPermissionStatusEntry[] };
+
+    if (!response?.ok || !response.permissions) {
+      return [];
+    }
+
+    return response.permissions.map((entry) => ({
+      ...entry,
+      source: 'web-agents-api',
+    }));
+  } catch {
+    return [];
+  }
+}
+
 chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
   if (message?.type !== 'list_all_permissions') {
     return false;
   }
   (async () => {
     const permissions = await listAllPermissions();
-    sendResponse({ type: 'list_all_permissions_result', permissions });
+    const webAgentsPermissions = await fetchWebAgentsPermissions();
+    const merged: ExternalPermissionStatusEntry[] = [
+      ...permissions.map((entry) => ({ ...entry, source: 'harbor' as const })),
+      ...webAgentsPermissions,
+    ];
+    sendResponse({ type: 'list_all_permissions_result', permissions: merged });
   })().catch((error) => {
     sendResponse({
       type: 'list_all_permissions_result',
@@ -636,13 +669,21 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
   if (message?.type !== 'revoke_origin_permissions') {
     return false;
   }
-  const { origin } = message as { origin?: string };
+  const { origin, source } = message as { origin?: string; source?: 'harbor' | 'web-agents-api' };
   if (!origin) {
     sendResponse({ ok: false, error: 'Missing origin' });
     return true;
   }
   (async () => {
-    await revokePermissions(origin);
+    if (source === 'web-agents-api') {
+      await chrome.runtime.sendMessage(WEB_AGENTS_API_EXTENSION_ID, {
+        type: 'web_agents_permissions.revoke_origin',
+        origin,
+      });
+    } else {
+      await revokePermissions(origin);
+    }
+
     // Notify sidebar to refresh
     chrome.runtime.sendMessage({ type: 'permissions_changed' }).catch(() => {});
     sendResponse({ ok: true });

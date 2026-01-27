@@ -27,6 +27,53 @@ import type {
 console.log('[Web Agents API] Extension starting...');
 
 // =============================================================================
+// Browser Compatibility Layer
+// =============================================================================
+
+// Firefox uses `browser.*` APIs, Chrome uses `chrome.*`
+// This provides a unified interface for script execution
+const browserAPI = (typeof browser !== 'undefined' ? browser : chrome) as typeof chrome;
+
+/**
+ * Execute a script in a tab, compatible with both Chrome and Firefox.
+ */
+async function executeScriptInTab<T>(
+  tabId: number,
+  func: (...args: unknown[]) => T,
+  args: unknown[] = []
+): Promise<T | undefined> {
+  // Try chrome.scripting first (Chrome MV3, Firefox MV3 with scripting)
+  if (chrome?.scripting?.executeScript) {
+    const results = await chrome.scripting.executeScript({
+      target: { tabId },
+      func: func as () => T,
+      args,
+    });
+    return results?.[0]?.result as T | undefined;
+  }
+  
+  // Try browser.scripting (Firefox MV3)
+  if (typeof browser !== 'undefined' && browser?.scripting?.executeScript) {
+    const results = await browser.scripting.executeScript({
+      target: { tabId },
+      func: func as () => T,
+      args,
+    });
+    return results?.[0]?.result as T | undefined;
+  }
+
+  // Fallback: browser.tabs.executeScript (Firefox MV2 style, but still works)
+  if (typeof browser !== 'undefined' && browser?.tabs?.executeScript) {
+    // For this fallback, we need to serialize the function
+    const code = `(${func.toString()}).apply(null, ${JSON.stringify(args)})`;
+    const results = await browser.tabs.executeScript(tabId, { code });
+    return results?.[0] as T | undefined;
+  }
+
+  throw new Error('No script execution API available');
+}
+
+// =============================================================================
 // State Management
 // =============================================================================
 
@@ -1119,6 +1166,481 @@ async function handleSessionPromptStreaming(
 }
 
 // =============================================================================
+// Browser Interaction Handlers
+// =============================================================================
+
+/**
+ * Find an element by selector/ref and click it.
+ */
+async function handleBrowserClick(ctx: RequestContext): HandlerResponse {
+  if (!await hasPermission(ctx.origin, 'browser:activeTab.interact')) {
+    return {
+      id: ctx.id,
+      ok: false,
+      error: { code: 'ERR_PERMISSION_DENIED', message: 'Permission browser:activeTab.interact required' },
+    };
+  }
+
+  const { ref } = ctx.payload as { ref: string };
+  if (!ref) {
+    return { id: ctx.id, ok: false, error: { code: 'ERR_INVALID_REQUEST', message: 'Missing ref parameter' } };
+  }
+
+  if (!ctx.tabId) {
+    return { id: ctx.id, ok: false, error: { code: 'ERR_INTERNAL', message: 'No tab context available' } };
+  }
+
+  try {
+    const result = await executeScriptInTab<{ success: boolean; error?: string }>(
+      ctx.tabId,
+      (selector: string) => {
+        const el = document.querySelector(selector);
+        if (!el) {
+          return { success: false, error: `Element not found: ${selector}` };
+        }
+        if (el instanceof HTMLElement) {
+          el.click();
+          return { success: true };
+        }
+        return { success: false, error: 'Element is not clickable' };
+      },
+      [ref]
+    );
+
+    if (!result) {
+      return { id: ctx.id, ok: false, error: { code: 'ERR_INTERNAL', message: 'Script execution failed' } };
+    }
+    if (!result.success) {
+      return { id: ctx.id, ok: false, error: { code: 'ERR_ELEMENT_NOT_FOUND', message: result.error || 'Click failed' } };
+    }
+    return { id: ctx.id, ok: true, result: { success: true } };
+  } catch (e) {
+    return {
+      id: ctx.id,
+      ok: false,
+      error: { code: 'ERR_INTERNAL', message: e instanceof Error ? e.message : 'Click failed' },
+    };
+  }
+}
+
+/**
+ * Find an element by selector/ref and fill it with a value.
+ */
+async function handleBrowserFill(ctx: RequestContext): HandlerResponse {
+  if (!await hasPermission(ctx.origin, 'browser:activeTab.interact')) {
+    return {
+      id: ctx.id,
+      ok: false,
+      error: { code: 'ERR_PERMISSION_DENIED', message: 'Permission browser:activeTab.interact required' },
+    };
+  }
+
+  const { ref, value } = ctx.payload as { ref: string; value: string };
+  if (!ref) {
+    return { id: ctx.id, ok: false, error: { code: 'ERR_INVALID_REQUEST', message: 'Missing ref parameter' } };
+  }
+
+  if (!ctx.tabId) {
+    return { id: ctx.id, ok: false, error: { code: 'ERR_INTERNAL', message: 'No tab context available' } };
+  }
+
+  try {
+    const result = await executeScriptInTab<{ success: boolean; error?: string }>(
+      ctx.tabId,
+      (selector: string, fillValue: string) => {
+        const el = document.querySelector(selector);
+        if (!el) {
+          return { success: false, error: `Element not found: ${selector}` };
+        }
+        if (el instanceof HTMLInputElement || el instanceof HTMLTextAreaElement) {
+          el.value = fillValue;
+          el.dispatchEvent(new Event('input', { bubbles: true }));
+          el.dispatchEvent(new Event('change', { bubbles: true }));
+          return { success: true };
+        }
+        if (el instanceof HTMLElement && el.isContentEditable) {
+          el.textContent = fillValue;
+          el.dispatchEvent(new Event('input', { bubbles: true }));
+          return { success: true };
+        }
+        return { success: false, error: 'Element is not fillable' };
+      },
+      [ref, value ?? '']
+    );
+
+    if (!result) {
+      return { id: ctx.id, ok: false, error: { code: 'ERR_INTERNAL', message: 'Script execution failed' } };
+    }
+    if (!result.success) {
+      return { id: ctx.id, ok: false, error: { code: 'ERR_ELEMENT_NOT_FOUND', message: result.error || 'Fill failed' } };
+    }
+    return { id: ctx.id, ok: true, result: { success: true } };
+  } catch (e) {
+    return {
+      id: ctx.id,
+      ok: false,
+      error: { code: 'ERR_INTERNAL', message: e instanceof Error ? e.message : 'Fill failed' },
+    };
+  }
+}
+
+/**
+ * Select an option from a dropdown by selector/ref.
+ */
+async function handleBrowserSelect(ctx: RequestContext): HandlerResponse {
+  if (!await hasPermission(ctx.origin, 'browser:activeTab.interact')) {
+    return {
+      id: ctx.id,
+      ok: false,
+      error: { code: 'ERR_PERMISSION_DENIED', message: 'Permission browser:activeTab.interact required' },
+    };
+  }
+
+  const { ref, value } = ctx.payload as { ref: string; value: string };
+  if (!ref) {
+    return { id: ctx.id, ok: false, error: { code: 'ERR_INVALID_REQUEST', message: 'Missing ref parameter' } };
+  }
+
+  if (!ctx.tabId) {
+    return { id: ctx.id, ok: false, error: { code: 'ERR_INTERNAL', message: 'No tab context available' } };
+  }
+
+  try {
+    const result = await executeScriptInTab<{ success: boolean; error?: string }>(
+      ctx.tabId,
+      (selector: string, selectValue: string) => {
+        const el = document.querySelector(selector);
+        if (!el) {
+          return { success: false, error: `Element not found: ${selector}` };
+        }
+        if (el instanceof HTMLSelectElement) {
+          el.value = selectValue;
+          el.dispatchEvent(new Event('change', { bubbles: true }));
+          return { success: true };
+        }
+        return { success: false, error: 'Element is not a select' };
+      },
+      [ref, value ?? '']
+    );
+
+    if (!result) {
+      return { id: ctx.id, ok: false, error: { code: 'ERR_INTERNAL', message: 'Script execution failed' } };
+    }
+    if (!result.success) {
+      return { id: ctx.id, ok: false, error: { code: 'ERR_ELEMENT_NOT_FOUND', message: result.error || 'Select failed' } };
+    }
+    return { id: ctx.id, ok: true, result: { success: true } };
+  } catch (e) {
+    return {
+      id: ctx.id,
+      ok: false,
+      error: { code: 'ERR_INTERNAL', message: e instanceof Error ? e.message : 'Select failed' },
+    };
+  }
+}
+
+/**
+ * Scroll the page in a direction.
+ */
+async function handleBrowserScroll(ctx: RequestContext): HandlerResponse {
+  if (!await hasPermission(ctx.origin, 'browser:activeTab.interact')) {
+    return {
+      id: ctx.id,
+      ok: false,
+      error: { code: 'ERR_PERMISSION_DENIED', message: 'Permission browser:activeTab.interact required' },
+    };
+  }
+
+  const { direction, amount } = ctx.payload as { direction: 'up' | 'down' | 'left' | 'right'; amount?: number };
+  if (!direction) {
+    return { id: ctx.id, ok: false, error: { code: 'ERR_INVALID_REQUEST', message: 'Missing direction parameter' } };
+  }
+
+  if (!ctx.tabId) {
+    return { id: ctx.id, ok: false, error: { code: 'ERR_INTERNAL', message: 'No tab context available' } };
+  }
+
+  try {
+    const result = await executeScriptInTab<{ success: boolean }>(
+      ctx.tabId,
+      (dir: string, scrollAmount: number) => {
+        const px = scrollAmount || 300;
+        switch (dir) {
+          case 'up':
+            window.scrollBy(0, -px);
+            break;
+          case 'down':
+            window.scrollBy(0, px);
+            break;
+          case 'left':
+            window.scrollBy(-px, 0);
+            break;
+          case 'right':
+            window.scrollBy(px, 0);
+            break;
+        }
+        return { success: true };
+      },
+      [direction, amount ?? 300]
+    );
+
+    if (!result) {
+      return { id: ctx.id, ok: false, error: { code: 'ERR_INTERNAL', message: 'Script execution failed' } };
+    }
+    return { id: ctx.id, ok: true, result: { success: true } };
+  } catch (e) {
+    return {
+      id: ctx.id,
+      ok: false,
+      error: { code: 'ERR_INTERNAL', message: e instanceof Error ? e.message : 'Scroll failed' },
+    };
+  }
+}
+
+/**
+ * Take a screenshot of the active tab.
+ */
+async function handleBrowserScreenshot(ctx: RequestContext): HandlerResponse {
+  if (!await hasPermission(ctx.origin, 'browser:activeTab.screenshot')) {
+    return {
+      id: ctx.id,
+      ok: false,
+      error: { code: 'ERR_PERMISSION_DENIED', message: 'Permission browser:activeTab.screenshot required' },
+    };
+  }
+
+  if (!ctx.tabId) {
+    return { id: ctx.id, ok: false, error: { code: 'ERR_INTERNAL', message: 'No tab context available' } };
+  }
+
+  try {
+    // Use browser-compatible API
+    const tabsApi = (typeof browser !== 'undefined' ? browser.tabs : chrome.tabs);
+    const dataUrl = await tabsApi.captureVisibleTab({ format: 'png' });
+    return { id: ctx.id, ok: true, result: { dataUrl } };
+  } catch (e) {
+    return {
+      id: ctx.id,
+      ok: false,
+      error: { code: 'ERR_INTERNAL', message: e instanceof Error ? e.message : 'Screenshot failed' },
+    };
+  }
+}
+
+/**
+ * Get interactive elements on the page.
+ */
+async function handleBrowserGetElements(ctx: RequestContext): HandlerResponse {
+  if (!await hasPermission(ctx.origin, 'browser:activeTab.read')) {
+    return {
+      id: ctx.id,
+      ok: false,
+      error: { code: 'ERR_PERMISSION_DENIED', message: 'Permission browser:activeTab.read required' },
+    };
+  }
+
+  if (!ctx.tabId) {
+    return { id: ctx.id, ok: false, error: { code: 'ERR_INTERNAL', message: 'No tab context available' } };
+  }
+
+  type ElementInfo = {
+    ref: string;
+    tag: string;
+    type?: string;
+    text?: string;
+    placeholder?: string;
+    value?: string;
+    role?: string;
+  };
+
+  try {
+    const result = await executeScriptInTab<ElementInfo[]>(
+      ctx.tabId,
+      () => {
+        const elements: Array<{
+          ref: string;
+          tag: string;
+          type?: string;
+          text?: string;
+          placeholder?: string;
+          value?: string;
+          role?: string;
+        }> = [];
+
+        // Find interactive elements
+        const selectors = [
+          'a[href]',
+          'button',
+          'input',
+          'select',
+          'textarea',
+          '[role="button"]',
+          '[role="link"]',
+          '[onclick]',
+          '[contenteditable="true"]',
+        ];
+
+        const seen = new Set<Element>();
+        
+        for (const selector of selectors) {
+          for (const el of document.querySelectorAll(selector)) {
+            if (seen.has(el)) continue;
+            seen.add(el);
+
+            // Skip hidden elements
+            const style = window.getComputedStyle(el);
+            if (style.display === 'none' || style.visibility === 'hidden') continue;
+
+            const rect = el.getBoundingClientRect();
+            if (rect.width === 0 || rect.height === 0) continue;
+
+            // Generate a unique ref (prefer id, then create a path)
+            let ref = '';
+            if (el.id) {
+              ref = `#${el.id}`;
+            } else {
+              // Generate a simple CSS path
+              const parts: string[] = [];
+              let current: Element | null = el;
+              while (current && current !== document.body) {
+                let pathSelector = current.tagName.toLowerCase();
+                if (current.id) {
+                  pathSelector = `#${current.id}`;
+                  parts.unshift(pathSelector);
+                  break;
+                }
+                const parent = current.parentElement;
+                if (parent) {
+                  const siblings = Array.from(parent.children).filter(c => c.tagName === current!.tagName);
+                  if (siblings.length > 1) {
+                    const index = siblings.indexOf(current) + 1;
+                    pathSelector += `:nth-of-type(${index})`;
+                  }
+                }
+                parts.unshift(pathSelector);
+                current = parent;
+              }
+              ref = parts.join(' > ');
+            }
+
+            const info: typeof elements[0] = {
+              ref,
+              tag: el.tagName.toLowerCase(),
+            };
+
+            if (el instanceof HTMLInputElement) {
+              info.type = el.type;
+              if (el.placeholder) info.placeholder = el.placeholder;
+              if (el.value && el.type !== 'password') info.value = el.value;
+            } else if (el instanceof HTMLTextAreaElement) {
+              if (el.placeholder) info.placeholder = el.placeholder;
+            } else if (el instanceof HTMLSelectElement) {
+              info.value = el.value;
+            }
+
+            const text = el.textContent?.trim().slice(0, 100);
+            if (text) info.text = text;
+
+            const role = el.getAttribute('role');
+            if (role) info.role = role;
+
+            elements.push(info);
+          }
+        }
+
+        return elements;
+      },
+      []
+    );
+
+    if (!result) {
+      return { id: ctx.id, ok: false, error: { code: 'ERR_INTERNAL', message: 'Script execution failed' } };
+    }
+    return { id: ctx.id, ok: true, result };
+  } catch (e) {
+    return {
+      id: ctx.id,
+      ok: false,
+      error: { code: 'ERR_INTERNAL', message: e instanceof Error ? e.message : 'GetElements failed' },
+    };
+  }
+}
+
+/**
+ * Get page content using readability-like extraction.
+ */
+async function handleBrowserReadability(ctx: RequestContext): HandlerResponse {
+  if (!await hasPermission(ctx.origin, 'browser:activeTab.read')) {
+    return {
+      id: ctx.id,
+      ok: false,
+      error: { code: 'ERR_PERMISSION_DENIED', message: 'Permission browser:activeTab.read required' },
+    };
+  }
+
+  if (!ctx.tabId) {
+    return { id: ctx.id, ok: false, error: { code: 'ERR_INTERNAL', message: 'No tab context available' } };
+  }
+
+  type ReadabilityResult = {
+    title: string;
+    url: string;
+    content: string;
+    length: number;
+  };
+
+  try {
+    const result = await executeScriptInTab<ReadabilityResult>(
+      ctx.tabId,
+      () => {
+        // Simple text extraction (a full readability implementation would be more complex)
+        const title = document.title;
+        const url = window.location.href;
+        
+        // Try to find main content
+        const mainSelectors = ['main', 'article', '[role="main"]', '.content', '#content', '.post', '.article'];
+        let content = '';
+        
+        for (const selector of mainSelectors) {
+          const el = document.querySelector(selector);
+          if (el) {
+            content = el.textContent?.trim() || '';
+            break;
+          }
+        }
+        
+        // Fallback to body text
+        if (!content) {
+          content = document.body.textContent?.trim() || '';
+        }
+        
+        // Clean up whitespace
+        content = content.replace(/\s+/g, ' ').trim();
+        
+        return {
+          title,
+          url,
+          content: content.slice(0, 50000), // Limit size
+          length: content.length,
+        };
+      },
+      []
+    );
+
+    if (!result) {
+      return { id: ctx.id, ok: false, error: { code: 'ERR_INTERNAL', message: 'Script execution failed' } };
+    }
+    return { id: ctx.id, ok: true, result };
+  } catch (e) {
+    return {
+      id: ctx.id,
+      ok: false,
+      error: { code: 'ERR_INTERNAL', message: e instanceof Error ? e.message : 'Readability extraction failed' },
+    };
+  }
+}
+
+// =============================================================================
 // Message Router
 // =============================================================================
 
@@ -1162,6 +1684,22 @@ async function routeMessage(ctx: RequestContext): HandlerResponse {
       return handleSessionsList(ctx);
     case 'agent.sessions.terminate':
       return handleSessionsTerminate(ctx);
+
+    // Browser interaction operations
+    case 'agent.browser.activeTab.click':
+      return handleBrowserClick(ctx);
+    case 'agent.browser.activeTab.fill':
+      return handleBrowserFill(ctx);
+    case 'agent.browser.activeTab.scroll':
+      return handleBrowserScroll(ctx);
+    case 'agent.browser.activeTab.screenshot':
+      return handleBrowserScreenshot(ctx);
+    case 'agent.browser.activeTab.getElements':
+      return handleBrowserGetElements(ctx);
+    case 'agent.browser.activeTab.readability':
+      return handleBrowserReadability(ctx);
+    case 'agent.browser.activeTab.select':
+      return handleBrowserSelect(ctx);
 
     default:
       return {

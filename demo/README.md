@@ -16,9 +16,9 @@ These demos require **Harbor**, an implementation of the Web Agent API.
 | **Time Agent** | Simple MCP time tool demo | `/demo/web-agents/time-agent/` |
 | **Page Chat Bookmarklet** | Bookmarklet to chat about any page | `/demo/web-agents/bookmarklet/` |
 | **Bring Your Own Chatbot** | Website-provided MCP servers demo | `/demo/web-agents/bring-your-chatbot/` |
-| **Basic Actions** | Practice click, fill, and select | `/demo/web-agent-control/step-1-basic-actions/` |
-| **Multi-step Form** | Form validation and step navigation | `/demo/web-agent-control/step-2-multi-step-form/` |
-| **Research Agent** | Multi-tab search and synthesis | `/demo/web-agent-control/step-3-research-agent/` |
+| **Basic Actions** | Practice click, fill, and select | `/demo/web-agent-control/basic-actions/` |
+| **Multi-step Form** | Form validation and step navigation | `/demo/web-agent-control/multi-step-form/` |
+| **Research Agent** | Multi-tab search and synthesis | `/demo/web-agent-control/research-agent/` |
 | **Research Pipeline** | Multi-agent collaboration demo | `/demo/multi-web-agent/research-writer/` |
 
 ## Quick Start

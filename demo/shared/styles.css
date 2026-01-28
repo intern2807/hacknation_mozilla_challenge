@@ -1062,3 +1062,24 @@ textarea.demo-input {
   background: var(--demo-bg-overlay);
   color: var(--demo-text-primary);
 }
+
+/* Back link */
+.back-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  background: var(--demo-bg-elevated);
+  border: 1px solid var(--demo-border-default);
+  border-radius: var(--demo-radius-md);
+  color: var(--demo-text-secondary);
+  text-decoration: none;
+  transition: all var(--demo-transition-fast);
+}
+
+.back-link:hover {
+  background: var(--demo-bg-overlay);
+  border-color: var(--demo-border-strong);
+  color: var(--demo-text-primary);
+}

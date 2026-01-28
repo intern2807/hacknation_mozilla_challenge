@@ -1,19 +1,93 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <title>Time Agent — Web Agent API</title>
-    <style>
-      body { font-family: sans-serif; margin: 2rem; }
-      button { padding: 0.5rem 1rem; }
-      pre { background: #f5f5f5; padding: 1rem; }
-    </style>
-  </head>
-  <body>
-    <h1>Time MCP Tool Demo</h1>
-    <p>Calls <code>navigator.agents.runTool</code> with <code>time.now</code>.</p>
-    <button id="call">Get Time</button>
-    <pre id="output">Waiting...</pre>
-    <script type="module" src="./time-agent.js"></script>
-  </body>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Time Agent — Web Agent API</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../shared/styles.css">
+  <style>
+    body {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      padding: var(--demo-space-10) var(--demo-space-6);
+    }
+
+    .output {
+      background: var(--demo-bg-elevated);
+      border: 1px solid var(--demo-border-default);
+      border-radius: var(--demo-radius-md);
+      padding: var(--demo-space-4);
+      font-family: var(--demo-font-mono);
+      font-size: var(--demo-text-sm);
+      color: var(--demo-text-secondary);
+      min-height: 60px;
+      white-space: pre-wrap;
+    }
+
+    .footer {
+      margin-top: var(--demo-space-12);
+      text-align: center;
+      font-size: var(--demo-text-sm);
+      color: var(--demo-text-muted);
+    }
+
+    .footer a {
+      color: var(--demo-text-secondary);
+      text-decoration: none;
+    }
+
+    .footer a:hover {
+      color: var(--demo-accent-primary);
+    }
+  </style>
+</head>
+<body class="demo-bg-grid">
+  <div class="page-container">
+    <header class="demo-header">
+      <div class="demo-logo">⏰</div>
+      <h1 class="demo-title demo-text-gradient">Time Agent</h1>
+      <p class="demo-subtitle">A simple demo that calls the <code>time.now</code> MCP tool.</p>
+    </header>
+
+    <div class="demo-card demo-mb-6">
+      <div class="demo-card-header">
+        <div class="demo-card-icon">🔧</div>
+        <h2 class="demo-card-title">MCP Tool Call</h2>
+      </div>
+      
+      <p style="color: var(--demo-text-secondary); font-size: var(--demo-text-sm); margin-bottom: var(--demo-space-4);">
+        Click the button to call the <code>time.now</code> tool via the Web Agent API.
+      </p>
+
+      <button id="call" class="demo-btn demo-btn-primary demo-mb-4">Get Current Time</button>
+
+      <div class="output" id="output">Waiting...</div>
+    </div>
+
+    <div class="demo-card">
+      <div class="demo-card-header">
+        <div class="demo-card-icon">💻</div>
+        <h2 class="demo-card-title">Code</h2>
+      </div>
+      
+      <pre class="demo-code"><span class="comment">// Call an MCP tool directly</span>
+<span class="keyword">const</span> result = <span class="keyword">await</span> window.<span class="property">agent</span>.<span class="property">tools</span>.<span class="method">call</span>({
+  <span class="property">tool</span>: <span class="string">'time.now'</span>,
+  <span class="property">args</span>: {}
+});
+console.<span class="method">log</span>(result);</pre>
+    </div>
+
+    <footer class="footer">
+      <a href="../../">← Back to Demos</a>
+    </footer>
+  </div>
+
+  <script type="module" src="./time-agent.js"></script>
+</body>
 </html>

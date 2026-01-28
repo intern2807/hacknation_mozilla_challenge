@@ -11,11 +11,11 @@
 
 /**
  * Get the Web Agent API (lazy lookup).
- * Prefers window.harbor.agent, falls back to window.agent.
+ * Uses window.agent provided by the Web Agents API extension.
  * @returns {object|undefined} The agent API or undefined if not available.
  */
 function getWebAgent() {
-  return window.harbor?.agent ?? window.agent;
+  return window.agent;
 }
 
 /**
@@ -36,7 +36,7 @@ function waitForWebAgent(timeoutMs = 5000) {
     // Set up timeout
     const timeoutId = setTimeout(() => {
       cleanup();
-      reject(new Error('Web Agent API not detected (timeout)'));
+      reject(new Error('Web Agent API not detected. Make sure the Web Agents API extension is installed and enabled.'));
     }, timeoutMs);
 
     // Listen for ready events
@@ -50,11 +50,9 @@ function waitForWebAgent(timeoutMs = 5000) {
 
     const cleanup = () => {
       clearTimeout(timeoutId);
-      window.removeEventListener('harbor-provider-ready', onReady);
       window.removeEventListener('agent-ready', onReady);
     };
 
-    window.addEventListener('harbor-provider-ready', onReady);
     window.addEventListener('agent-ready', onReady);
   });
 }

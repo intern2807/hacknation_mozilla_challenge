@@ -200,7 +200,7 @@
     </div>
 
     <footer class="demo-footer">
-      <a href="../../">← Back to demos</a>
+      <a href="../../">← Back to Demos</a>
     </footer>
   </main>
 
@@ -226,7 +226,7 @@
       {
         title: 'Detect Web Agent API',
         description: 'Confirm the Web Agent API is available in this page.',
-        code: `const agent = window.harbor?.agent ?? window.agent;\nif (!agent) {\n  throw new Error('Web Agent API not detected');\n}`,
+        code: `const agent = window.agent;\nif (!agent) {\n  throw new Error('Web Agent API not detected');\n}`,
         run: async () => {
           const agent = getWebAgent();
           if (!agent) {
@@ -238,7 +238,7 @@
       {
         title: 'Request permission',
         description: 'Ask for access to active-tab interactions.',
-        code: `const agent = window.harbor?.agent ?? window.agent;\nconst result = await agent.requestPermissions({\n  scopes: ['browser:activeTab.interact'],\n  reason: 'Basic actions demo'\n});\nif (!result.granted) throw new Error('Permission denied');`,
+        code: `const agent = window.agent;\nconst result = await agent.requestPermissions({\n  scopes: ['browser:activeTab.interact'],\n  reason: 'Basic actions demo'\n});\nif (!result.granted) throw new Error('Permission denied');`,
         run: async () => {
           const agent = getWebAgent();
           if (!agent?.requestPermissions) {
@@ -257,7 +257,7 @@
       {
         title: 'Confirm browser control',
         description: 'Verify browser control is available after permissions.',
-        code: `const agent = window.harbor?.agent ?? window.agent;\nif (!agent?.browser?.activeTab) {\n  throw new Error('Browser control not available. Enable Browser Control and reload this page.');\n}`,
+        code: `const agent = window.agent;\nif (!agent?.browser?.activeTab) {\n  throw new Error('Browser control not available. Enable Browser Control and reload this page.');\n}`,
         run: async () => {
           const agent = getWebAgent();
           if (!agent?.browser?.activeTab) {
@@ -269,7 +269,7 @@
       {
         title: 'Interact: fill inputs',
         description: 'Use fill() to populate text fields.',
-        code: `const agent = window.harbor?.agent ?? window.agent;\nawait agent.browser.activeTab.fill('#name-input', 'Ada Lovelace');\nawait agent.browser.activeTab.fill('#email-input', 'ada@harbor.dev');`,
+        code: `const agent = window.agent;\nawait agent.browser.activeTab.fill('#name-input', 'Ada Lovelace');\nawait agent.browser.activeTab.fill('#email-input', 'ada@harbor.dev');`,
         run: async () => {
           const agent = getWebAgent();
           await agent.browser.activeTab.fill('#name-input', 'Ada Lovelace');
@@ -280,7 +280,7 @@
       {
         title: 'Interact: select plan',
         description: 'Use select() to change a dropdown value.',
-        code: `const agent = window.harbor?.agent ?? window.agent;\nawait agent.browser.activeTab.select('#plan-select', 'team');`,
+        code: `const agent = window.agent;\nawait agent.browser.activeTab.select('#plan-select', 'team');`,
         run: async () => {
           const agent = getWebAgent();
           await agent.browser.activeTab.select('#plan-select', 'team');
@@ -290,7 +290,7 @@
       {
         title: 'Interact: toggle checkbox',
         description: 'Use click() to toggle a checkbox.',
-        code: `const agent = window.harbor?.agent ?? window.agent;\nawait agent.browser.activeTab.click('#agree-check');`,
+        code: `const agent = window.agent;\nawait agent.browser.activeTab.click('#agree-check');`,
         run: async () => {
           const agent = getWebAgent();
           await agent.browser.activeTab.click('#agree-check');
@@ -300,7 +300,7 @@
       {
         title: 'Interact: submit',
         description: 'Click the primary button to submit.',
-        code: `const agent = window.harbor?.agent ?? window.agent;\nawait agent.browser.activeTab.click('#submit-btn');`,
+        code: `const agent = window.agent;\nawait agent.browser.activeTab.click('#submit-btn');`,
         run: async () => {
           const agent = getWebAgent();
           await agent.browser.activeTab.click('#submit-btn');

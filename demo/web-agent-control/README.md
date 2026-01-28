@@ -4,9 +4,9 @@ Self-contained demos that exercise active-tab interaction APIs. Each step increa
 
 ## Demos
 
-- **Basic Actions** (`step-1-basic-actions/`) — Click, fill, and select on a simple form.
-- **Multi-step Form** (`step-2-multi-step-form/`) — Validation + delayed transitions with `waitForSelector`.
-- **Research Agent** (`step-3-research-agent/`) — Multi-tab research: search Google, open results in new tabs, extract content, and synthesize with AI.
+- **Basic Actions** (`basic-actions/`) — Click, fill, and select on a simple form.
+- **Multi-step Form** (`multi-step-form/`) — Validation + delayed transitions with `waitForSelector`.
+- **Research Agent** (`research-agent/`) — Multi-tab search: search Google, open results in new tabs, extract content, and synthesize with AI.
 
 ## APIs Covered
 

@@ -1,29 +1,19 @@
-# Web Agents Demos (Extension 1)
+# Web Agents Demos
 
 Basic Web Agent API demos for LLM and MCP server access.
 
 ## Demos
 
-### Getting Started
-Interactive walkthrough of the Web Agent API basics.
-
-### Chat Demo
-Full-featured chat interface using `window.agent.run()`.
-
-### Page Summarizer
-Simple page summarization using `window.ai.createTextSession()`.
-
-### Chrome Compat Demo
-Demonstrates Chrome Prompt API compatibility.
-
-### Email Chat
-Chat with your Gmail inbox using MCP tools.
-
-### Page Chat Bookmarklet
-Drag-and-drop bookmarklet for chatting about any page.
-
-### Bring Your Own Chatbot
-Demo of BYOC integration using `<link rel="mcp-server">`.
+| Demo | Description | Path |
+|------|-------------|------|
+| **Getting Started** | Interactive walkthrough of the Web Agent API basics | `getting-started/` |
+| **Chat Demo** | Full-featured chat interface using `window.agent.run()` | `chat-poc/` |
+| **Page Summarizer** | Simple page summarization using `window.ai.createTextSession()` | `summarizer/` |
+| **Chrome Compat Demo** | Demonstrates Chrome Prompt API compatibility | `summarizer/chrome-compat.html` |
+| **Email Chat** | Chat with your Gmail inbox using MCP tools | `email-chat/` |
+| **Time Agent** | Simple MCP time tool demo | `time-agent/` |
+| **Page Chat Bookmarklet** | Drag-and-drop bookmarklet for chatting about any page | `bookmarklet/` |
+| **Bring Your Own Chatbot** | BYOC integration using `<link rel="mcp-server">` | `bring-your-chatbot/` |
 
 ## APIs Covered
 

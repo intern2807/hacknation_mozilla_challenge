@@ -8,12 +8,18 @@ These demos require **Harbor**, an implementation of the Web Agent API.
 
 | Demo | Description | Path |
 |------|-------------|------|
-| **Main Demo** | Full-featured chat with permissions flow | `/demo/index.html` |
-| **Getting Started** | Interactive walkthrough of the Web Agent API | `/demo/getting-started/` |
-| **Chat POC** | Minimal example code for developers | `/demo/chat-poc/` |
-| **Page Summarizer** | Simple one-click page summarization | `/demo/summarizer/` |
-| **Email Chat** | Chat with your email using Gmail MCP tools | `/demo/email-chat/` |
-| **Bring Your Own Chatbot** | Concept demo for website-provided MCP servers | `/demo/bring-your-chatbot/` |
+| **Demo Index** | Index page linking to all demos | `/demo/index.html` |
+| **Getting Started** | Interactive walkthrough of the Web Agent API | `/demo/web-agents/getting-started/` |
+| **Chat Demo** | Full-featured chat with MCP tools | `/demo/web-agents/chat-poc/` |
+| **Page Summarizer** | Simple one-click page summarization | `/demo/web-agents/summarizer/` |
+| **Email Chat** | Chat with your email using Gmail MCP tools | `/demo/web-agents/email-chat/` |
+| **Time Agent** | Simple MCP time tool demo | `/demo/web-agents/time-agent/` |
+| **Page Chat Bookmarklet** | Bookmarklet to chat about any page | `/demo/web-agents/bookmarklet/` |
+| **Bring Your Own Chatbot** | Website-provided MCP servers demo | `/demo/web-agents/bring-your-chatbot/` |
+| **Basic Actions** | Practice click, fill, and select | `/demo/web-agent-control/step-1-basic-actions/` |
+| **Multi-step Form** | Form validation and step navigation | `/demo/web-agent-control/step-2-multi-step-form/` |
+| **Research Agent** | Multi-tab search and synthesis | `/demo/web-agent-control/step-4-research-agent/` |
+| **Research Pipeline** | Multi-agent collaboration demo | `/demo/multi-web-agent/research-writer/` |
 
 ## Quick Start
 
@@ -27,11 +33,11 @@ These demos require **Harbor**, an implementation of the Web Agent API.
    ```
 
 3. **Open a demo in your browser**:
-   - Main demo: `http://localhost:8000`
-   - Getting Started: `http://localhost:8000/getting-started/`
-   - Chat POC: `http://localhost:8000/chat-poc/`
-   - Page Summarizer: `http://localhost:8000/summarizer/`
-   - Email Chat: `http://localhost:8000/email-chat/`
+   - Demo Index: `http://localhost:8000`
+   - Getting Started: `http://localhost:8000/web-agents/getting-started/`
+   - Chat Demo: `http://localhost:8000/web-agents/chat-poc/`
+   - Page Summarizer: `http://localhost:8000/web-agents/summarizer/`
+   - Email Chat: `http://localhost:8000/web-agents/email-chat/`
 
 4. **Grant Permissions**:
    - The demo will request Web Agent API permissions
@@ -66,7 +72,7 @@ The "Bring Your Own Chatbot" (BYOC) demo is a **concept demonstration** showing 
 3. **Permission Flow**: Users explicitly grant permission for websites to register MCP servers
 4. **Graceful Degradation**: Works without the Web Agent API by falling back to a simulated mode
 
-**Note**: This demo proposes new APIs (`agent.mcp.register()`, `agent.chat.open()`) that are not yet implemented. See the [implementation plan](bring-your-chatbot/README.md) for details on proposed API extensions.
+**Note**: This demo proposes new APIs (`agent.mcp.register()`, `agent.chat.open()`) that are not yet implemented. See the [implementation plan](web-agents/bring-your-chatbot/README.md) for details on proposed API extensions.
 
 ## Email Chat Demo
 

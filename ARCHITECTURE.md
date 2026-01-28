@@ -30,12 +30,85 @@ Harbor implements the Web Agent API, providing:
 
 ---
 
+## How Harbor Works
+
+Harbor exposes AI capabilities to web pages through a layered architecture involving four key components:
+
+1. **Browser Extension** — Injects JavaScript APIs into web pages and manages permissions
+2. **Native Bridge (Rust)** — Handles LLM inference and native MCP server communication
+3. **WASM Runtime** — Runs MCP servers compiled to WebAssembly in the browser
+4. **JavaScript Runtime** — Runs JS MCP servers in sandboxed Web Workers
+
+### The Web Agent API
+
+When a web page loads with Harbor installed, the extension injects a script that exposes two global JavaScript objects:
+
+```javascript
+// window.ai — Text generation (Chrome Prompt API compatible)
+const session = await window.ai.createTextSession({
+  systemPrompt: 'You are helpful.'
+});
+const response = await session.prompt('Hello!');
+
+// window.agent — Tools, browser access, autonomous agents
+await window.agent.requestPermissions({
+  scopes: ['model:prompt', 'mcp:tools.list', 'mcp:tools.call'],
+  reason: 'Enable AI features'
+});
+
+const tools = await window.agent.tools.list();
+for await (const event of window.agent.run({ task: 'Search for news' })) {
+  console.log(event);
+}
+```
+
+These APIs are **permission-gated** — web pages must request explicit user consent before accessing AI capabilities.
+
+### Message Flow: Web Page → Extension → Bridge
+
+```
+Web Page                Content Script             Background              Bridge
+   │                         │                         │                      │
+   │ window.ai.prompt()      │                         │                      │
+   ├────────────────────────►│                         │                      │
+   │      postMessage        │ browser.runtime.Port    │                      │
+   │                         ├────────────────────────►│                      │
+   │                         │                         │ Native Messaging     │
+   │                         │                         ├─────────────────────►│
+   │                         │                         │                      │ LLM API call
+   │                         │                         │◄─────────────────────┤
+   │                         │◄────────────────────────┤                      │
+   │◄────────────────────────┤                         │                      │
+   │  "Hello! How can I..."  │                         │                      │
+```
+
+### Execution Paths
+
+Harbor supports two execution paths for different capabilities:
+
+#### Path 1: In-Browser Execution (No Bridge Required)
+
+MCP servers can run entirely in the browser using:
+
+- **WASM Runtime** — Servers compiled to WebAssembly (e.g., `mcp-time.wasm`)
+- **JavaScript Runtime** — Servers written in JavaScript running in Web Workers
+
+This path is ideal for:
+- Privacy-sensitive operations (data never leaves the browser)
+- Offline functionality
+- Simple tools that don't need external resources
+
+#### Path 2: Native Bridge Execution
+
+For LLM inference and native MCP servers, Harbor uses a Rust native messaging bridge:
+
+- **LLM Communication** — Connects to Ollama, OpenAI, Anthropic, and other providers
+- **Native MCP Servers** — Runs stdio-based MCP servers as child processes
+- **OAuth Flows** — Handles authentication with external services
+
+---
+
 ## System Architecture
-
-Harbor has a hybrid architecture with two execution paths:
-
-1. **In-Browser Execution** — MCP servers run as WASM or JavaScript directly in the extension (no native bridge required)
-2. **Native Bridge Execution** — LLM inference and native MCP servers via Rust bridge
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
@@ -43,14 +116,17 @@ Harbor has a hybrid architecture with two execution paths:
 │                                                                              │
 │  window.ai                           window.agent                            │
 │  ├── createTextSession()             ├── requestPermissions()                │
-│  └── session.prompt()                ├── tools.list() / tools.call()        │
-│                                      ├── browser.activeTab.readability()    │
+│  ├── languageModel.create()          ├── capabilities()                      │
+│  ├── providers.list()                ├── tools.list() / tools.call()        │
+│  └── runtime.getBest()               ├── browser.activeTab.*                 │
 │                                      ├── run({ task })                       │
+│                                      ├── sessions.create()                   │
 │                                      ├── addressBar.registerProvider()      │
 │                                      ├── mcp.discover/register() [BYOC]     │
-│                                      └── chat.open/close() [BYOC]           │
+│                                      ├── chat.open/close() [BYOC]           │
+│                                      └── agents.* [Multi-Agent]             │
 └───────────────────────────────────────┬─────────────────────────────────────┘
-                                        │ postMessage
+                                        │ postMessage (harbor_web_agent channel)
                                         ▼
 ┌─────────────────────────────────────────────────────────────────────────────┐
 │                       BROWSER EXTENSION (Chrome/Firefox)                     │
@@ -61,8 +137,8 @@ Harbor has a hybrid architecture with two execution paths:
 │  │  (injected.ts)    │  │   (background.ts) │  │      (sidebar.ts)     │   │
 │  │                   │  │                   │  │                       │   │
 │  │  • Inject APIs    │  │  • Message router │  │  • Server management  │   │
-│  │  • Route messages │  │  • Permissions    │  │  • LLM config         │   │
-│  │                   │  │  • Orchestration  │  │  • Settings           │   │
+│  │  • Route messages │  │  • Permissions    │  │  • LLM configuration  │   │
+│  │  • Feature flags  │  │  • Orchestration  │  │  • Feature flags      │   │
 │  └─────────┬─────────┘  └─────────┬─────────┘  └───────────┬───────────┘   │
 │            │                      │                        │                │
 │            └──────────────────────┼────────────────────────┘                │
@@ -103,15 +179,207 @@ Harbor has a hybrid architecture with two execution paths:
 │  │    response     │  │  • Anthropic    │  │    permissions         │      │
 │  └─────────────────┘  └─────────────────┘  └─────────────────────────┘      │
 │                                                                              │
+│  ┌─────────────────┐  ┌─────────────────────────────────────────────────┐   │
+│  │  OAuth Manager  │  │           File System Access (fs/)              │   │
+│  │  (oauth/)       │  │                                                 │   │
+│  │                 │  │  • Configuration storage (~/.harbor/)           │   │
+│  │  • OAuth flows  │  │  • Credential management                        │   │
+│  │  • Token cache  │  │  • Session persistence                          │   │
+│  │  • Providers    │  │                                                 │   │
+│  └─────────────────┘  └─────────────────────────────────────────────────┘   │
+│                                                                              │
 └──────────────────────────────────────────────────────────────────────────────┘
                                     │
-                                    │ HTTP (OpenAI-compatible)
+                                    │ HTTP (OpenAI-compatible API)
                                     ▼
                         ┌─────────────────────────┐
                         │     LLM Providers       │
-                        │  (Ollama, OpenAI, etc.) │
+                        │  Ollama, OpenAI,        │
+                        │  Anthropic, llamafile   │
                         └─────────────────────────┘
 ```
+
+---
+
+## Web Agents API Extension
+
+The **web-agents-api** (`web-agents-api/`) is a companion extension that provides a streamlined way to access Harbor's capabilities. It can operate in two modes:
+
+### Standalone Mode
+When Harbor is not installed, the Web Agents API extension provides a simplified API surface with configurable feature flags.
+
+### Bridge Mode
+When Harbor is installed, the Web Agents API connects to Harbor via `chrome.runtime.sendMessage` to access the full Harbor backend:
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                              WEB PAGE                                        │
+│                        window.ai / window.agent                              │
+└───────────────────────────────────────┬─────────────────────────────────────┘
+                                        │ postMessage
+                                        ▼
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                     WEB AGENTS API EXTENSION                                 │
+│                                                                              │
+│  ┌───────────────────┐  ┌───────────────────┐  ┌───────────────────────┐   │
+│  │  Content Script   │  │   Background      │  │   Harbor Client       │   │
+│  │  (injected.ts)    │  │   (background.ts) │  │   (harbor-client.ts)  │   │
+│  │                   │  │                   │  │                       │   │
+│  │  • Inject APIs    │  │  • Feature flags  │  │  • Discover Harbor    │   │
+│  │  • Route messages │  │  • Local handling │  │  • Forward requests   │   │
+│  │  • Feature gates  │  │  • Harbor proxy   │  │  • Stream responses   │   │
+│  └───────────────────┘  └─────────┬─────────┘  └───────────┬───────────┘   │
+│                                   │                        │                │
+│                                   └────────────────────────┘                │
+└───────────────────────────────────────────────────────────────────────────────┘
+                                    │ chrome.runtime.sendMessage
+                                    ▼
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                        HARBOR EXTENSION                                      │
+│                   (Full implementation as above)                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+### Feature Flags
+
+The Web Agents API extension uses feature flags to control which capabilities are exposed:
+
+| Flag | Description | Default |
+|------|-------------|---------|
+| `textGeneration` | Enable `window.ai` for text generation | `true` |
+| `toolCalling` | Enable `agent.run()` for autonomous tasks | `false` |
+| `toolAccess` | Enable `agent.tools.list()` and `call()` | `true` |
+| `browserInteraction` | Enable click/fill/scroll on pages | `false` |
+| `browserControl` | Enable navigation and tab management | `false` |
+| `multiAgent` | Enable multi-agent orchestration | `false` |
+
+---
+
+## Runtimes in Detail
+
+### Native Bridge (Rust)
+
+The native bridge (`bridge-rs/`) is a Rust binary that communicates with the browser extension via **native messaging** — a protocol where the browser spawns the binary and communicates over stdin/stdout with length-prefixed JSON frames.
+
+**Key responsibilities:**
+
+1. **LLM Provider Abstraction** — Unified interface to multiple LLM backends:
+   - **Ollama** — Local models via HTTP API
+   - **OpenAI** — GPT models via OpenAI API
+   - **Anthropic** — Claude models via Anthropic API
+   - **llamafile** — Single-file local models
+
+2. **Configuration Management** — Stores settings in `~/.harbor/`:
+   ```
+   ~/.harbor/
+   ├── harbor.db         # SQLite database for server configs
+   ├── catalog.db        # Cached MCP server catalog
+   ├── installed_servers.json
+   ├── secrets/
+   │   └── credentials.json  # API keys (mode 600)
+   └── sessions/         # Chat session history
+   ```
+
+3. **OAuth Handling** — Browser-based OAuth flows for services requiring authentication
+
+4. **RPC Dispatch** — Routes incoming requests to appropriate handlers:
+   ```rust
+   // Example RPC message
+   { "type": "llm_chat", "request_id": "abc123", "messages": [...] }
+   ```
+
+### WASM Runtime
+
+The WASM runtime (`extension/src/wasm/`) executes MCP servers compiled to WebAssembly directly in the browser using **WASI** (WebAssembly System Interface).
+
+**How it works:**
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                    WASM MCP Server                               │
+│                                                                  │
+│  ┌──────────────┐    ┌──────────────┐    ┌──────────────────┐  │
+│  │ .wasm file   │───►│ WASI Runtime │───►│  MCP Protocol    │  │
+│  │ (compiled)   │    │ (jco/wasmer) │    │  (JSON-RPC)      │  │
+│  └──────────────┘    └──────────────┘    └──────────────────┘  │
+│                                                                  │
+│  Features:                                                       │
+│  • Isolated memory (no access to host memory)                   │
+│  • Sandboxed execution (limited syscalls)                       │
+│  • Controlled I/O through WASI interface                        │
+│  • MCP stdio transport emulation                                │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+**Example WASM server lifecycle:**
+
+```typescript
+// 1. Register the server
+const handle = registerMcpServer({
+  id: 'time-wasm',
+  wasmUrl: 'mcp-time.wasm',
+  tools: [{ name: 'time.now', description: 'Get current time' }]
+});
+
+// 2. Start the server (loads WASM, creates session)
+await startMcpServer('time-wasm');
+
+// 3. Call tools via MCP protocol
+const result = await callMcpTool('time-wasm', 'time.now', {});
+// { ok: true, result: { iso: "2026-01-27T10:30:00Z" } }
+```
+
+### JavaScript Runtime
+
+The JS runtime (`extension/src/js-runtime/`) executes JavaScript MCP servers in **sandboxed Web Workers**.
+
+**How it works:**
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                    JS MCP Server (Web Worker)                    │
+│                                                                  │
+│  ┌──────────────────────────────────────────────────────────┐  │
+│  │                   SANDBOX PREAMBLE                        │  │
+│  │                                                           │  │
+│  │  • Removes dangerous globals (fetch, XMLHttpRequest,      │  │
+│  │    WebSocket, importScripts)                              │  │
+│  │  • Provides controlled fetch via postMessage proxy        │  │
+│  │  • Provides MCP.readLine() / MCP.writeLine() for stdio    │  │
+│  │  • Provides process.env for secrets injection             │  │
+│  │  • Forwards console.* to host for logging                 │  │
+│  └──────────────────────────────────────────────────────────┘  │
+│                              │                                   │
+│  ┌───────────────────────────▼──────────────────────────────┐  │
+│  │                   SERVER CODE                             │  │
+│  │                                                           │  │
+│  │  // MCP server implementation                             │  │
+│  │  while (true) {                                           │  │
+│  │    const request = JSON.parse(await MCP.readLine());      │  │
+│  │    const response = handleRequest(request);               │  │
+│  │    MCP.writeLine(JSON.stringify(response));               │  │
+│  │  }                                                        │  │
+│  └──────────────────────────────────────────────────────────┘  │
+└─────────────────────────────────────────────────────────────────┘
+            │                               ▲
+            │ stdout (MCP responses)        │ stdin (MCP requests)
+            ▼                               │
+┌─────────────────────────────────────────────────────────────────┐
+│                    HOST (Extension Background)                   │
+│                                                                  │
+│  • Routes fetch requests through allowlist                      │
+│  • Injects environment variables (API keys)                     │
+│  • Manages server lifecycle                                      │
+│  • Translates MCP protocol                                       │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+**Security features of the JS sandbox:**
+
+1. **Network isolation** — `fetch`, `XMLHttpRequest`, and `WebSocket` are removed; network access is only available through a controlled proxy
+2. **No dynamic imports** — `importScripts` is removed
+3. **Environment injection** — Secrets are passed via `process.env`, not hardcoded
+4. **Console forwarding** — All console output is captured for debugging
 
 ---
 
@@ -177,6 +445,155 @@ User: "Find my recent GitHub PRs and summarize them"
               │
               ▼
 "You have 3 open PRs: #123 fixes auth bug, #124 adds dark mode..."
+```
+
+### 4. In-Browser Tool Call (WASM/JS)
+
+```
+Web Page                    Extension                   WASM/JS Runtime
+   │                           │                              │
+   │ tools.call('time/now')    │                              │
+   ├──────────────────────────►│                              │
+   │                           │ ① Check permission           │
+   │                           │ ② Route to runtime           │
+   │                           ├─────────────────────────────►│
+   │                           │                              │ ③ Execute tool
+   │                           │                              │    (no network)
+   │                           │◄─────────────────────────────┤
+   │◄──────────────────────────┤                              │
+   │ { iso: "2026-01-27T..." } │                              │
+```
+
+Note: In-browser tools execute entirely within the extension — no native bridge communication is required, making them faster and available offline.
+
+---
+
+## Injected API Architecture
+
+The `injected.ts` script is the heart of the Web Agent API. It's injected into every web page and creates the `window.ai` and `window.agent` objects.
+
+### How Injection Works
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                         CONTENT SCRIPT                           │
+│                                                                  │
+│  1. Create <script> element with injected.ts code               │
+│  2. Inject feature flags via <script id="harbor-feature-flags"> │
+│  3. Insert script at document_start (before page scripts)       │
+│  4. Set up postMessage listener for bidirectional communication │
+└───────────────────────────────────────────────────────────────────┘
+         │                                           ▲
+         │ Injects script                            │ postMessage
+         ▼                                           │
+┌─────────────────────────────────────────────────────────────────┐
+│                         WEB PAGE CONTEXT                         │
+│                                                                  │
+│  window.ai = {                                                   │
+│    canCreateTextSession(),                                       │
+│    createTextSession(options),                                   │
+│    languageModel: { capabilities(), create() },                  │
+│    providers: { list(), getActive() },                           │
+│    runtime: { harbor, firefox, chrome, getBest() }               │
+│  }                                                               │
+│                                                                  │
+│  window.agent = {                                                │
+│    capabilities(),                                               │
+│    requestPermissions(options),                                  │
+│    permissions: { list() },                                      │
+│    tools: { list(), call() },                                    │
+│    browser: { activeTab: { readability(), click(), ... } },      │
+│    run(options),  // Returns AsyncIterable<RunEvent>             │
+│    sessions: { create(), list(), terminate() },                  │
+│    mcp: { discover(), register() },     // BYOC                  │
+│    chat: { canOpen(), open(), close() } // BYOC                  │
+│    addressBar: { ... },                 // Omnibox integration   │
+│    agents: { ... }                      // Multi-agent           │
+│  }                                                               │
+│                                                                  │
+│  window.harbor = { ai, agent, version, chromeAiDetected }        │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+### Transport Protocol
+
+Communication between the injected script and content script uses `postMessage` with a dedicated channel:
+
+```javascript
+// Injected script → Content script (request)
+window.postMessage({
+  channel: 'harbor_web_agent',
+  request: {
+    id: 'uuid-here',
+    type: 'ai.createTextSession',
+    payload: { systemPrompt: 'Be helpful', temperature: 0.7 }
+  }
+}, '*');
+
+// Content script → Injected script (response)
+window.postMessage({
+  channel: 'harbor_web_agent',
+  response: {
+    id: 'uuid-here',
+    ok: true,
+    result: 'session-id-here'
+  }
+}, '*');
+
+// Streaming events (for promptStreaming, agent.run)
+window.postMessage({
+  channel: 'harbor_web_agent',
+  streamEvent: {
+    id: 'uuid-here',
+    event: { type: 'token', token: 'Hello' },
+    done: false
+  }
+}, '*');
+```
+
+### Streaming with AsyncIterables
+
+The `agent.run()` and `session.promptStreaming()` methods return `AsyncIterable` objects that yield events as they arrive:
+
+```javascript
+// Implementation pattern
+function createStreamIterable(type, payload) {
+  const id = crypto.randomUUID();
+  
+  return {
+    [Symbol.asyncIterator]() {
+      const queue = [];
+      let resolveNext = null;
+      let done = false;
+      
+      // Register listener BEFORE sending request
+      streamListeners.set(id, (event, isDone) => {
+        if (isDone) done = true;
+        if (resolveNext) {
+          resolveNext({ done: false, value: event });
+          resolveNext = null;
+        } else {
+          queue.push(event);
+        }
+      });
+      
+      // Send the request
+      window.postMessage({ channel, request: { id, type, payload } }, '*');
+      
+      return {
+        async next() {
+          if (queue.length > 0) return { done: false, value: queue.shift() };
+          if (done) return { done: true, value: undefined };
+          return new Promise(resolve => { resolveNext = resolve; });
+        },
+        async return() {
+          window.postMessage({ channel, abort: { id } }, '*');
+          return { done: true, value: undefined };
+        }
+      };
+    }
+  };
+}
 ```
 
 ---

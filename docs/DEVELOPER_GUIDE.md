@@ -13,6 +13,7 @@ Harbor is an implementation of the Web Agent API. If you're looking to install H
 | Resource | Description |
 |----------|-------------|
 | [Web Agent API Spec](../spec/) | The specification this guide helps you use |
+| [Web Agents API Docs](./WEB_AGENTS_API.md) | Complete injected API documentation with examples |
 | [LLMS.txt](./LLMS.txt) | Token-efficient version for AI coding assistants |
 | [JS API Reference](./JS_AI_PROVIDER_API.md) | Detailed `window.ai` and `window.agent` reference |
 | [Sessions Guide](./SESSIONS_GUIDE.md) | When to use `window.ai` vs `agent.sessions` |

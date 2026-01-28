@@ -1,6 +1,6 @@
 # Web Agent API - AI Agent Reference
 
-> This document is optimized for AI coding assistants. For human-readable documentation, see DEVELOPER_GUIDE.md and JS_AI_PROVIDER_API.md.
+> This document is optimized for AI coding assistants. For human-readable documentation, see DEVELOPER_GUIDE.md, WEB_AGENTS_API.md, and JS_AI_PROVIDER_API.md.
 
 The Web Agent API is a proposed specification for AI agent capabilities in web pages. Harbor is an implementation (Firefox extension + Node.js bridge).
 
@@ -11,6 +11,20 @@ The Web Agent API is a proposed specification for AI agent capabilities in web p
 3. MCP tools are namespaced as `serverId/toolName`
 4. Harbor implements this via extension + native messaging bridge
 5. The bridge manages MCP servers, LLM providers, and chat orchestration
+6. APIs are gated by feature flags (see web-agents-api/src/policy/feature-flags.ts)
+
+## Feature Flags (Web Agents API Extension)
+
+| Flag | Default | APIs Enabled |
+|------|---------|--------------|
+| textGeneration | ON | window.ai.* |
+| toolAccess | ON | agent.tools.list/call |
+| toolCalling | OFF | agent.run() |
+| browserInteraction | OFF | agent.browser.activeTab.click/fill/scroll |
+| browserControl | OFF | agent.browser.navigate/tabs/fetch |
+| multiAgent | OFF | agent.agents.* |
+
+When disabled, APIs throw ERR_FEATURE_DISABLED.
 
 ## Quick Start
 
@@ -27,16 +41,51 @@ await window.agent.requestPermissions({
 
 ## Permissions
 
-SCOPES:
-- model:prompt     → Basic text generation
-- model:tools      → AI with tool calling
-- mcp:tools.list   → List available MCP tools
-- mcp:tools.call   → Execute MCP tools
-- mcp:servers.register → Register website MCP servers (BYOC)
-- browser:activeTab.read → Read active tab content
-- chat:open        → Open browser chat UI (BYOC)
+### Permission Flow
+1. Page calls `agent.requestPermissions({ scopes, reason, tools })`
+2. Prompt popup shows: origin, reason, scope list (with risk badges), tool checkboxes
+3. User chooses "This time only" (10min TTL) or "Always allow" (persistent)
+4. User clicks Allow/Deny → grants stored in extension storage keyed by origin
+5. All API calls check permissions before executing
 
-GRANTS: granted-always | granted-once | denied | not-granted
+### Scopes
+| Scope | Risk | Description |
+|-------|------|-------------|
+| model:prompt | Low | Text generation |
+| model:tools | Medium | AI with tool calling |
+| model:list | Low | List providers/models |
+| mcp:tools.list | Low | List MCP tools |
+| mcp:tools.call | Medium | Execute MCP tools |
+| mcp:servers.register | Medium | Register BYOC servers |
+| browser:activeTab.read | Medium | Read page content |
+| browser:activeTab.interact | High | Click/fill/scroll |
+| browser:activeTab.screenshot | Medium | Capture screenshots |
+| browser:tabs.read | Medium | List tabs |
+| browser:tabs.create | High | Create/control tabs |
+| chat:open | Low | Open chat sidebar |
+| web:fetch | High | CORS-bypassing fetch |
+
+### Grants
+- `granted-always` → Persistent until revoked
+- `granted-once` → 10 minutes or until tab closes
+- `denied` → User explicitly rejected (persistent)
+- `not-granted` → Never requested or expired
+
+### Tool Allowlisting
+```js
+await agent.requestPermissions({
+  scopes: ['mcp:tools.call'],
+  tools: ['time-wasm/time.now', 'memory/save'],  // Shows checkboxes in prompt
+  reason: 'To check time and save notes'
+});
+// User can uncheck tools they don't want to allow
+```
+
+### Check Permissions
+```js
+const { scopes, allowedTools } = await agent.permissions.list();
+if (scopes['model:prompt'] === 'granted-always') { /* ... */ }
+```
 
 ## window.ai - Text Generation
 
@@ -150,8 +199,94 @@ await window.agent.chat.close(chat.chatId);
 await window.agent.mcp.unregister(reg.serverId);
 ```
 
+## Sessions API
+
+Create explicit sessions with defined capabilities and limits.
+
+```js
+// Create session
+const session = await window.agent.sessions.create({
+  name: 'Research Assistant',
+  capabilities: {
+    llm: { provider: 'ollama', model: 'llama3.2' },
+    tools: ['web-search/search', 'memory/save'],
+    browser: ['read', 'screenshot']
+  },
+  limits: { maxToolCalls: 20, ttlMinutes: 30 }
+});
+
+// Use session
+const response = await session.prompt('Search for AI news');
+const result = await session.callTool('web-search/search', { query: 'AI' });
+for await (const token of session.promptStreaming('Summarize')) { ... }
+
+// Session management
+const sessions = await window.agent.sessions.list();
+await window.agent.sessions.terminate(sessionId);
+```
+
+## Multi-Agent API (agent.agents.*)
+
+Agent-to-agent communication and orchestration.
+
+```js
+// Register as agent
+const agent = await window.agent.agents.register({
+  name: 'Research Agent',
+  capabilities: ['search', 'summarize'],
+  acceptsInvocations: true,
+  acceptsMessages: true
+});
+
+// Handle invocations
+window.agent.agents.onInvoke(async (req) => {
+  if (req.task === 'search') return { results: [...] };
+  throw new Error('Unknown task');
+});
+
+// Discover & invoke other agents
+const { agents } = await window.agent.agents.discover({ capabilities: ['analyze'] });
+const response = await window.agent.agents.invoke(agentId, { task: 'analyze', input: data });
+
+// Orchestration patterns
+await window.agent.agents.orchestrate.pipeline({ steps: [...] }, input);
+await window.agent.agents.orchestrate.parallel({ tasks: [...], combineStrategy: 'merge' });
+await window.agent.agents.orchestrate.route({ routes: [...], defaultAgentId }, input, task);
+
+// Event broadcasting
+await window.agent.agents.subscribe('event-type', handler);
+await window.agent.agents.broadcast('event-type', data);
+
+// Cleanup
+await window.agent.agents.unregister();
+```
+
+## Browser APIs
+
+### browserInteraction (agent.browser.activeTab.*)
+```js
+const content = await window.agent.browser.activeTab.readability();
+const elements = await window.agent.browser.activeTab.getElements();
+await window.agent.browser.activeTab.click('ref-123');
+await window.agent.browser.activeTab.fill('ref-456', 'text');
+await window.agent.browser.activeTab.scroll('down', 500);
+const { dataUrl } = await window.agent.browser.activeTab.screenshot();
+```
+
+### browserControl
+```js
+await window.agent.browser.navigate('https://example.com');
+const tabs = await window.agent.browser.tabs.list();
+const newTab = await window.agent.browser.tabs.create({ url: '...', active: false });
+await window.agent.browser.tab.waitForLoad(newTab.id);
+const html = await window.agent.browser.tab.getHtml(tabId, 'main');
+await window.agent.browser.tabs.close(tabId);
+const response = await window.agent.browser.fetch(url, { method: 'GET' });
+```
+
 ## Error Codes
 
+ERR_FEATURE_DISABLED    → Feature flag is off
 ERR_NOT_INSTALLED       → Extension not installed
 ERR_PERMISSION_DENIED   → User denied
 ERR_SCOPE_REQUIRED      → Missing permission scope

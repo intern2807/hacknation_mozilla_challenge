@@ -27,10 +27,10 @@ const CONFIG = {
 
 /**
  * Get the Web Agent API.
- * Prefers window.harbor.agent, falls back to window.agent.
+ * Uses window.agent provided by the Web Agents API extension.
  */
 function getWebAgent() {
-  return window.harbor?.agent ?? window.agent;
+  return window.agent;
 }
 
 /**
@@ -93,9 +93,17 @@ const state = {
   startTime: null,
   apiAvailable: false,
   browserControlAvailable: false,
+  multiAgentAvailable: false,
   messageCount: 0,
   sources: [],
   spawnedTabs: [],
+  // Registered agent IDs
+  agents: {
+    orchestrator: null,
+    searcher: null,
+    reader: null,
+    writer: null,
+  },
 };
 
 // ============================================================================
@@ -285,6 +293,11 @@ function setAgentActive(agent, active) {
 async function checkApiAvailability() {
   const statusEl = elements.apiStatus;
   
+  // Reset state
+  state.browserControlAvailable = false;
+  state.multiAgentAvailable = false;
+  elements.startBtn.disabled = true;
+  
   // Wait for Web Agent API
   console.log('[Init] Waiting for Web Agent API...');
   
@@ -292,7 +305,15 @@ async function checkApiAvailability() {
     await waitForWebAgent(3000);
   } catch (e) {
     statusEl.className = 'api-status error';
-    statusEl.querySelector('.status-text').textContent = 'No API';
+    statusEl.querySelector('.status-text').textContent = 'Web Agent API not found';
+    elements.emptyState.innerHTML = `
+      <div style="text-align: center;">
+        <p style="margin-bottom: var(--demo-space-3);">❌ Web Agent API not detected</p>
+        <p style="font-size: var(--demo-text-xs); color: var(--demo-text-muted);">
+          Make sure the Web Agents API extension is installed and enabled.
+        </p>
+      </div>
+    `;
     console.log('[Init] Web Agent API not found');
     return;
   }
@@ -301,28 +322,60 @@ async function checkApiAvailability() {
   state.apiAvailable = true;
   console.log('[Init] Web Agent API available:', agent);
   
-  // Check if browser control APIs exist
+  // Check required features and collect missing ones
+  const missingFeatures = [];
+  
+  // Check browser control
   if (!agent.browser?.tabs?.create) {
-    statusEl.className = 'api-status warning';
-    statusEl.querySelector('.status-text').textContent = 'No Browser Control';
+    missingFeatures.push('Browser Control');
     console.log('[Init] browser.tabs.create not available');
+  } else {
+    const fnStr = agent.browser.tabs.create.toString();
+    if (fnStr.includes('ERR_FEATURE_DISABLED')) {
+      missingFeatures.push('Browser Control');
+      console.log('[Init] Browser control feature is disabled');
+    } else {
+      state.browserControlAvailable = true;
+      console.log('[Init] Browser control available!');
+    }
+  }
+  
+  // Check multi-agent
+  if (!agent.agents?.register) {
+    missingFeatures.push('Multi-Agent');
+    console.log('[Init] agent.agents.register not available');
+  } else {
+    const fnStr = agent.agents.register.toString();
+    if (fnStr.includes('ERR_FEATURE_DISABLED')) {
+      missingFeatures.push('Multi-Agent');
+      console.log('[Init] Multi-Agent feature is disabled');
+    } else {
+      state.multiAgentAvailable = true;
+      console.log('[Init] Multi-Agent available!');
+    }
+  }
+  
+  // Show error if any features are missing
+  if (missingFeatures.length > 0) {
+    statusEl.className = 'api-status error';
+    statusEl.querySelector('.status-text').textContent = 'Features Missing';
+    const featureList = missingFeatures.map(f => `<strong>${f}</strong>`).join(' and ');
+    elements.emptyState.innerHTML = `
+      <div style="text-align: center;">
+        <p style="margin-bottom: var(--demo-space-3);">❌ Required features not enabled</p>
+        <p style="font-size: var(--demo-text-xs); color: var(--demo-text-muted);">
+          Enable ${featureList} in the Web Agents API sidebar, then reload this page.
+        </p>
+      </div>
+    `;
     return;
   }
   
-  // Check if it's a disabled stub
-  const fnStr = agent.browser.tabs.create.toString();
-  if (fnStr.includes('ERR_FEATURE_DISABLED')) {
-    statusEl.className = 'api-status warning';
-    statusEl.querySelector('.status-text').textContent = 'Browser Control Disabled';
-    console.log('[Init] Browser control feature is disabled');
-    return;
-  }
-  
-  // Browser control looks available
-  state.browserControlAvailable = true;
+  // All features available - enable the start button
+  elements.startBtn.disabled = false;
   statusEl.className = 'api-status ready';
   statusEl.querySelector('.status-text').textContent = 'Ready';
-  console.log('[Init] Browser control available!');
+  elements.emptyState.innerHTML = '<p>Enter a topic and click "Start Research" to see the agents collaborate.</p>';
   
   // Log available APIs
   console.log('[Init] Available APIs:');
@@ -330,7 +383,274 @@ async function checkApiAvailability() {
   console.log('  - tabs.close:', !!agent.browser?.tabs?.close);
   console.log('  - tab.getHtml:', !!agent.browser?.tab?.getHtml);
   console.log('  - tab.readability:', !!agent.browser?.tab?.readability);
+  console.log('  - agents.register:', !!agent.agents?.register);
+  console.log('  - agents.invoke:', !!agent.agents?.invoke);
   console.log('  - requestPermissions:', !!agent.requestPermissions);
+}
+
+// ============================================================================
+// Multi-Agent Registration
+// ============================================================================
+
+/**
+ * Register all agents using the Multi-Agent API.
+ * Each agent registers itself and sets up invocation handlers.
+ */
+async function registerAgents() {
+  const agent = getWebAgent();
+  
+  console.log('[MultiAgent] Registering agents...');
+  
+  // Register Searcher Agent
+  const searcherReg = await agent.agents.register({
+    name: 'Searcher',
+    description: 'Searches Google and extracts result URLs',
+    capabilities: ['search', 'google'],
+    tags: ['research', 'web'],
+    acceptsInvocations: true,
+    acceptsMessages: false,
+  });
+  state.agents.searcher = searcherReg.id;
+  console.log('[MultiAgent] Registered Searcher:', searcherReg.id);
+  
+  // Register Reader Agent
+  const readerReg = await agent.agents.register({
+    name: 'Reader',
+    description: 'Opens web pages and extracts content',
+    capabilities: ['read', 'extract', 'parse'],
+    tags: ['research', 'web'],
+    acceptsInvocations: true,
+    acceptsMessages: false,
+  });
+  state.agents.reader = readerReg.id;
+  console.log('[MultiAgent] Registered Reader:', readerReg.id);
+  
+  // Register Writer Agent
+  const writerReg = await agent.agents.register({
+    name: 'Writer',
+    description: 'Synthesizes content into articles',
+    capabilities: ['write', 'summarize', 'synthesize'],
+    tags: ['research', 'writing'],
+    acceptsInvocations: true,
+    acceptsMessages: false,
+  });
+  state.agents.writer = writerReg.id;
+  console.log('[MultiAgent] Registered Writer:', writerReg.id);
+  
+  // Register Orchestrator Agent (the coordinator)
+  const orchestratorReg = await agent.agents.register({
+    name: 'Orchestrator',
+    description: 'Coordinates the research pipeline',
+    capabilities: ['orchestrate', 'coordinate'],
+    tags: ['research', 'coordination'],
+    acceptsInvocations: true,
+    acceptsMessages: false,
+  });
+  state.agents.orchestrator = orchestratorReg.id;
+  console.log('[MultiAgent] Registered Orchestrator:', orchestratorReg.id);
+  
+  // Set up invocation handlers
+  setupInvocationHandlers();
+  
+  console.log('[MultiAgent] All agents registered!');
+}
+
+// Track the cleanup function for invocation handlers
+let cleanupInvocationHandler = null;
+let handlersSetUp = false;
+
+/**
+ * Set up handlers for incoming invocations to each agent.
+ * Only sets up once per page load to avoid duplicates.
+ */
+function setupInvocationHandlers() {
+  // Only set up handlers once
+  if (handlersSetUp) {
+    console.log('[MultiAgent] Handlers already set up, skipping');
+    return;
+  }
+  
+  const agent = getWebAgent();
+  
+  // Clean up any previous handler to avoid duplicates
+  if (cleanupInvocationHandler) {
+    console.log('[MultiAgent] Cleaning up previous handler');
+    cleanupInvocationHandler();
+    cleanupInvocationHandler = null;
+  }
+  
+  console.log('[MultiAgent] Setting up invocation handlers');
+  handlersSetUp = true;
+  
+  cleanupInvocationHandler = agent.agents.onInvoke(async (request) => {
+    console.log('[MultiAgent] === RECEIVED INVOCATION ===', request.task, 'from:', request.from);
+    
+    switch (request.task) {
+      case 'search':
+        return await handleSearchInvocation(request.input);
+      
+      case 'read':
+        return await handleReadInvocation(request.input);
+      
+      case 'write':
+        return await handleWriteInvocation(request.input);
+      
+      default:
+        throw new Error(`Unknown task: ${request.task}`);
+    }
+  });
+  
+  console.log('[MultiAgent] Invocation handlers set up');
+}
+
+/**
+ * Handle search invocation - performs the actual Google search.
+ */
+async function handleSearchInvocation(input) {
+  const { topic } = input;
+  console.log('[Searcher] Handling search for:', topic);
+  
+  setAgentActive('searcher', true);
+  const statusRow = addStatus('searcher', 'Opening Google Search...');
+  
+  try {
+    const results = await searchGoogleReal(topic, statusRow);
+    
+    // Show results in the UI
+    updateStatus(statusRow, `Found ${results.length} pages`, 'success');
+    state.sources = results;
+    
+    for (const result of results) {
+      const shortTitle = result.title.length > 35 ? result.title.slice(0, 32) + '...' : result.title;
+      addStatus('searcher', shortTitle, 'success');
+      await delay(100);
+    }
+    
+    setAgentActive('searcher', false);
+    return { results };
+    
+  } catch (error) {
+    updateStatus(statusRow, `Error: ${error.message}`, 'error');
+    setAgentActive('searcher', false);
+    throw error;
+  }
+}
+
+/**
+ * Handle read invocation - reads content from URLs.
+ */
+async function handleReadInvocation(input) {
+  const { urls } = input;
+  console.log('[Reader] Handling read for', urls.length, 'URLs');
+  
+  setAgentActive('reader', true);
+  
+  const contents = [];
+  
+  for (let i = 0; i < urls.length; i++) {
+    const { url, title } = urls[i];
+    const shortTitle = title.length > 30 ? title.slice(0, 27) + '...' : title;
+    const statusRow = addStatus('reader', `Opening page ${i + 1}...`);
+    
+    try {
+      const content = await readPageReal(url, title, statusRow);
+      
+      if (content && content.content && content.content.length > 50) {
+        contents.push(content);
+        updateStatus(statusRow, `✓ ${shortTitle}`, 'success');
+        console.log('[Reader] Successfully read:', title.slice(0, 50));
+      } else {
+        updateStatus(statusRow, `✗ ${shortTitle}`, 'error');
+        console.log('[Reader] Failed to read:', title.slice(0, 50));
+      }
+    } catch (error) {
+      updateStatus(statusRow, `✗ ${shortTitle}`, 'error');
+      console.log('[Reader] Error reading:', title.slice(0, 50), error.message);
+    }
+    
+    await delay(300);
+  }
+  
+  // Show summary
+  if (contents.length === 0) {
+    addStatus('reader', 'No content extracted', 'error');
+    setAgentActive('reader', false);
+    throw new Error('Failed to extract content from any pages.');
+  }
+  
+  addStatus('reader', `Extracted ${contents.length} articles`, 'success');
+  setAgentActive('reader', false);
+  
+  return { contents };
+}
+
+/**
+ * Handle write invocation - synthesizes content into an article.
+ */
+async function handleWriteInvocation(input) {
+  const { topic, sources } = input;
+  console.log('[Writer] Handling write for topic:', topic, 'with', sources.length, 'sources');
+  
+  setAgentActive('writer', true);
+  const statusRow = addStatus('writer', 'Analyzing sources...');
+  
+  try {
+    await delay(500);
+    updateStatus(statusRow, 'Writing article...');
+    
+    // Use the existing write function
+    const article = await writeSimulated(topic, sources, statusRow);
+    
+    updateStatus(statusRow, '✓ Article complete!', 'success');
+    setAgentActive('writer', false);
+    
+    return { article };
+    
+  } catch (error) {
+    updateStatus(statusRow, `Error: ${error.message}`, 'error');
+    setAgentActive('writer', false);
+    throw error;
+  }
+}
+
+/**
+ * Unregister all agents.
+ */
+async function unregisterAgents() {
+  const agent = getWebAgent();
+  
+  if (!agent?.agents) {
+    console.log('[MultiAgent] Cannot unregister - API not available');
+    return;
+  }
+  
+  console.log('[MultiAgent] Unregistering agents...');
+  
+  // Unregister each agent by its ID
+  const agentIds = [
+    state.agents.searcher,
+    state.agents.reader,
+    state.agents.writer,
+    state.agents.orchestrator,
+  ].filter(id => id != null);
+  
+  for (const agentId of agentIds) {
+    try {
+      await agent.agents.unregister(agentId);
+      console.log('[MultiAgent] Unregistered:', agentId);
+    } catch (error) {
+      console.log('[MultiAgent] Error unregistering', agentId, ':', error.message);
+    }
+  }
+  
+  // Clear agent IDs
+  state.agents.orchestrator = null;
+  state.agents.searcher = null;
+  state.agents.reader = null;
+  state.agents.writer = null;
+  
+  // Also reset the handlers flag so they can be re-setup on next run
+  handlersSetUp = false;
 }
 
 // ============================================================================
@@ -338,17 +658,32 @@ async function checkApiAvailability() {
 // ============================================================================
 
 async function orchestratorAgent(topic) {
+  const agent = getWebAgent();
+  
   setAgentActive('orchestrator', true);
   const shortTopic = topic.length > 40 ? topic.slice(0, 37) + '...' : topic;
-  addStatus('orchestrator', `Starting research on "${shortTopic}"`);
+  const startingRow = addStatus('orchestrator', `Starting research on "${shortTopic}"`);
   
   await delay(300);
   
-  // Step 1: Request search
+  // Step 1: Invoke Searcher agent via Multi-Agent API
   addMessage('orchestrator', 'searcher', 'Search Google for relevant pages');
   setAgentActive('orchestrator', false);
   
-  const searchResults = await searcherAgent(topic);
+  console.log('[Orchestrator] Invoking Searcher agent:', state.agents.searcher);
+  const searchResponse = await agent.agents.invoke(state.agents.searcher, {
+    task: 'search',
+    input: { topic },
+    timeout: 60000, // 60 second timeout for search
+  });
+  
+  if (!searchResponse.success) {
+    setAgentActive('orchestrator', true);
+    addStatus('orchestrator', `Search failed: ${searchResponse.error?.message || 'Unknown error'}`, 'error');
+    return null;
+  }
+  
+  const searchResults = searchResponse.result?.results || [];
   
   if (searchResults.length === 0) {
     setAgentActive('orchestrator', true);
@@ -356,66 +691,60 @@ async function orchestratorAgent(topic) {
     return null;
   }
   
-  // Step 2: Searcher reports success, then orchestrator sends to reader
+  // Step 2: Invoke Reader agent via Multi-Agent API
   await delay(300);
   setAgentActive('orchestrator', true);
   addMessage('orchestrator', 'reader', `Read these ${searchResults.length} pages`);
   setAgentActive('orchestrator', false);
   
-  const contents = await readerAgent(searchResults);
+  console.log('[Orchestrator] Invoking Reader agent:', state.agents.reader);
+  const readResponse = await agent.agents.invoke(state.agents.reader, {
+    task: 'read',
+    input: { urls: searchResults },
+    timeout: 120000, // 120 second timeout for reading multiple pages
+  });
   
-  // Step 3: Reader reports success, then orchestrator sends to writer
+  if (!readResponse.success) {
+    setAgentActive('orchestrator', true);
+    addStatus('orchestrator', `Read failed: ${readResponse.error?.message || 'Unknown error'}`, 'error');
+    return null;
+  }
+  
+  const contents = readResponse.result?.contents || [];
+  
+  // Step 3: Invoke Writer agent via Multi-Agent API
   const sourceCount = contents.filter(c => c.content.length > 100).length;
   await delay(300);
   setAgentActive('orchestrator', true);
   addMessage('orchestrator', 'writer', `Write a summary from ${sourceCount} sources`);
   setAgentActive('orchestrator', false);
   
-  const article = await writerAgent(topic, contents);
+  console.log('[Orchestrator] Invoking Writer agent:', state.agents.writer);
+  const writeResponse = await agent.agents.invoke(state.agents.writer, {
+    task: 'write',
+    input: { topic, sources: contents },
+    timeout: 60000, // 60 second timeout for writing
+  });
   
-  // Complete
+  if (!writeResponse.success) {
+    setAgentActive('orchestrator', true);
+    addStatus('orchestrator', `Write failed: ${writeResponse.error?.message || 'Unknown error'}`, 'error');
+    return null;
+  }
+  
+  const article = writeResponse.result?.article;
+  
+  // Complete - update the starting row to show success
   setAgentActive('orchestrator', true);
-  addStatus('orchestrator', 'Research complete!', 'success');
+  updateStatus(startingRow, `Research on "${shortTopic}" complete!`, 'success');
   setAgentActive('orchestrator', false);
   
   return article;
 }
 
 // ============================================================================
-// Searcher Agent
+// Searcher Agent - Helper Functions
 // ============================================================================
-
-async function searcherAgent(topic) {
-  setAgentActive('searcher', true);
-  const statusRow = addStatus('searcher', 'Opening Google Search...');
-  
-  let results = [];
-  
-  console.log('[Searcher] browserControlAvailable:', state.browserControlAvailable);
-  
-  if (state.browserControlAvailable) {
-    console.log('[Searcher] Using REAL Google search with browser tabs');
-    results = await searchGoogleReal(topic, statusRow);
-  } else {
-    console.log('[Searcher] Using SIMULATED search (browser control not available)');
-    results = await searchGoogleSimulated(topic, statusRow);
-  }
-  
-  // Show result as status under Searcher column
-  updateStatus(statusRow, `Found ${results.length} pages`, 'success');
-  state.sources = results;
-  
-  // List the found URLs
-  for (const result of results) {
-    const shortTitle = result.title.length > 35 ? result.title.slice(0, 32) + '...' : result.title;
-    addStatus('searcher', shortTitle, 'success');
-    await delay(100);
-  }
-  
-  setAgentActive('searcher', false);
-  
-  return results;
-}
 
 /**
  * Real Google search by opening a browser tab.
@@ -622,80 +951,9 @@ function getWikipediaFallback(topic) {
   ];
 }
 
-/**
- * Simulated search results for demo without browser control.
- * Uses real Wikipedia URLs so the demo is realistic.
- */
-async function searchGoogleSimulated(topic, statusRow) {
-  await delay(800);
-  updateStatus(statusRow, 'Parsing results...');
-  await delay(400);
-  
-  // Use real Wikipedia URLs
-  const wikiTerm = topic.replace(/ /g, '_');
-  
-  return [
-    { 
-      title: `${topic} - Wikipedia`,
-      url: `https://en.wikipedia.org/wiki/${encodeURIComponent(wikiTerm)}`
-    },
-    {
-      title: `${topic} - Simple English Wikipedia`,
-      url: `https://simple.wikipedia.org/wiki/${encodeURIComponent(wikiTerm)}`
-    },
-  ];
-}
-
 // ============================================================================
-// Reader Agent
+// Reader Agent - Helper Functions
 // ============================================================================
-
-async function readerAgent(urls) {
-  setAgentActive('reader', true);
-  
-  const contents = [];
-  
-  for (let i = 0; i < urls.length; i++) {
-    const { url, title } = urls[i];
-    const shortTitle = title.length > 30 ? title.slice(0, 27) + '...' : title;
-    const statusRow = addStatus('reader', `Opening page ${i + 1}...`);
-    
-    let content;
-    if (state.browserControlAvailable) {
-      content = await readPageReal(url, title, statusRow);
-    } else {
-      content = await readPageSimulated(url, title, statusRow);
-    }
-    
-    if (content && content.content && content.content.length > 50) {
-      contents.push(content);
-      updateStatus(statusRow, `✓ ${shortTitle}`, 'success');
-      console.log('[Reader] Successfully read:', title.slice(0, 50));
-    } else {
-      updateStatus(statusRow, `✗ ${shortTitle}`, 'error');
-      console.log('[Reader] Failed to read:', title.slice(0, 50));
-    }
-    
-    await delay(300);
-  }
-  
-  // Show summary
-  addStatus('reader', `Extracted ${contents.length} articles`, 'success');
-  
-  setAgentActive('reader', false);
-  
-  // If we got no content, provide fallback content
-  if (contents.length === 0) {
-    console.log('[Reader] No content extracted, providing fallback');
-    contents.push({
-      url: urls[0]?.url || 'https://example.com',
-      title: urls[0]?.title || 'Research Topic',
-      content: `Information about ${urls[0]?.title || 'this topic'} from various sources indicates this is an important subject with multiple perspectives to consider.`
-    });
-  }
-  
-  return contents;
-}
 
 /**
  * Real page reading using browser.tabs API.
@@ -809,55 +1067,9 @@ async function readPageWithFetch(url, title, statusRow) {
   }
 }
 
-/**
- * Simulated page reading for demo without browser control.
- */
-async function readPageSimulated(url, title, statusRow) {
-  await delay(600);
-  updateStatus(statusRow, 'Extracting content...');
-  await delay(800);
-  
-  // Generate plausible content based on the title
-  const topic = title.replace(/[-_|:]/g, ' ').toLowerCase();
-  
-  const content = `
-This comprehensive resource explores the topic of ${topic}. 
-Research has shown that understanding this subject is essential for making informed decisions.
-
-Key findings include:
-- Multiple studies have demonstrated significant effects in this area
-- Experts recommend considering various factors when approaching this topic
-- Recent developments have shed new light on long-standing questions
-
-The evidence suggests that ${topic} has important implications for both individuals and society.
-Further research is ongoing to better understand the mechanisms involved.
-  `.trim();
-  
-  return { url, title, content };
-}
-
 // ============================================================================
-// Writer Agent
+// Writer Agent - Helper Functions
 // ============================================================================
-
-async function writerAgent(topic, sources) {
-  setAgentActive('writer', true);
-  const statusRow = addStatus('writer', 'Analyzing sources...');
-  
-  let article;
-  
-  await delay(500);
-  updateStatus(statusRow, 'Writing article...');
-  
-  // Use simulated for reliability (LLM can be slow/hang)
-  // TODO: Re-enable LLM once streaming is more reliable
-  article = await writeSimulated(topic, sources, statusRow);
-  
-  updateStatus(statusRow, '✓ Article complete!', 'success');
-  setAgentActive('writer', false);
-  
-  return article;
-}
 
 /**
  * Write article using real LLM.
@@ -1043,22 +1255,42 @@ async function runPipeline(topic) {
   try {
     const agent = getWebAgent();
     
-    // Request permissions if browser control is available
-    if (state.browserControlAvailable && agent.requestPermissions) {
-      console.log('[Pipeline] Requesting permissions...');
-      addStatus('orchestrator', 'Requesting permissions...');
-      
-      const permResult = await agent.requestPermissions({
-        scopes: ['browser:tabs.create', 'browser:tabs.read', 'model:prompt'],
-        reason: 'Research agent: search Google, read pages, and synthesize findings'
-      });
-      
-      if (!permResult.granted) {
-        throw new Error('Permissions denied. Please grant access to continue.');
-      }
-      
-      console.log('[Pipeline] Permissions granted!');
+    // Verify required features are available
+    if (!state.browserControlAvailable) {
+      throw new Error('Browser Control is not available. Enable it in the Web Agents API sidebar and reload this page.');
     }
+    
+    if (!state.multiAgentAvailable) {
+      throw new Error('Multi-Agent is not available. Enable it in the Web Agents API sidebar and reload this page.');
+    }
+    
+    // Request permissions
+    console.log('[Pipeline] Requesting permissions...');
+    addStatus('orchestrator', 'Requesting permissions...');
+    
+    const permResult = await agent.requestPermissions({
+      scopes: [
+        'browser:tabs.create', 
+        'browser:tabs.read', 
+        'model:prompt',
+        // Multi-agent permissions
+        'agents:register',
+        'agents:invoke',
+        'agents:discover'
+      ],
+      reason: 'Research agent: search Google, read pages, synthesize findings, and coordinate multiple agents'
+    });
+    
+    if (!permResult.granted) {
+      throw new Error('Permissions denied. Please grant access to continue.');
+    }
+    
+    console.log('[Pipeline] Permissions granted!');
+    
+    // Register all agents
+    addStatus('orchestrator', 'Registering agents...');
+    await registerAgents();
+    console.log('[Pipeline] Agents registered!');
     
     const article = await orchestratorAgent(topic);
     
@@ -1078,8 +1310,12 @@ async function runPipeline(topic) {
       } catch {}
     }
     
+    // Unregister agents
+    await unregisterAgents();
+    
     state.isRunning = false;
-    elements.startBtn.disabled = false;
+    // Only re-enable the button if all features are available
+    elements.startBtn.disabled = !canStartPipeline();
     elements.topicInput.disabled = false;
     
     // Reset all agent active states
@@ -1099,19 +1335,34 @@ function delay(ms) {
 // Event Listeners
 // ============================================================================
 
+function canStartPipeline() {
+  return state.browserControlAvailable && state.multiAgentAvailable;
+}
+
+function getMissingFeaturesMessage() {
+  const missing = [];
+  if (!state.browserControlAvailable) missing.push('Browser Control');
+  if (!state.multiAgentAvailable) missing.push('Multi-Agent');
+  return `Required features not enabled.\n\nEnable ${missing.join(' and ')} in the Web Agents API sidebar, then reload this page.`;
+}
+
 elements.startBtn.addEventListener('click', () => {
   const topic = elements.topicInput.value.trim();
-  if (topic && !state.isRunning) {
+  if (topic && !state.isRunning && canStartPipeline()) {
     runPipeline(topic);
+  } else if (!canStartPipeline()) {
+    alert(getMissingFeaturesMessage());
   }
 });
 
 elements.topicInput.addEventListener('keydown', (e) => {
-  if (e.key === 'Enter' && !state.isRunning) {
+  if (e.key === 'Enter' && !state.isRunning && canStartPipeline()) {
     const topic = e.target.value.trim();
     if (topic) {
       runPipeline(topic);
     }
+  } else if (e.key === 'Enter' && !canStartPipeline()) {
+    alert(getMissingFeaturesMessage());
   }
 });
 

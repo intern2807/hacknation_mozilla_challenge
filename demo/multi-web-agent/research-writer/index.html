@@ -11,36 +11,25 @@
   <link rel="stylesheet" href="styles.css">
 </head>
 <body class="demo-bg-glow">
-  <header class="header">
-    <div class="header-left">
-      <a href="../../" class="back-link">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M19 12H5M12 19l-7-7 7-7"/>
-        </svg>
-      </a>
-      <div class="header-brand">
-        <div class="header-logo">H</div>
-        <span class="header-title">Research Pipeline</span>
-        <span class="header-badge">Multi-Agent</span>
+  <main class="page-container">
+    <header class="demo-header">
+      <div class="header-badge">
+        <span class="dot"></span>
+        <span>Multi-Agent Demo</span>
       </div>
-    </div>
-    <div class="header-right">
-      <div class="api-status" id="api-status">
-        <span class="status-dot"></span>
-        <span class="status-text">Checking...</span>
-      </div>
-      <button class="icon-btn" id="theme-toggle" title="Toggle theme">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <circle cx="12" cy="12" r="5"/>
-          <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
-        </svg>
-      </button>
-    </div>
-  </header>
+      <h1 class="demo-title demo-text-gradient">Research Pipeline</h1>
+      <p class="demo-subtitle">Four agents collaborate: Orchestrator coordinates, Searcher queries Google, Reader extracts content, and Writer synthesizes findings.</p>
+    </header>
 
-  <main class="main-container">
     <!-- Input Section -->
-    <section class="input-section">
+    <section class="demo-card">
+      <div class="demo-card-header">
+        <div class="demo-card-icon">🔬</div>
+        <div>
+          <div class="demo-card-title">Research Topic</div>
+          <p class="demo-text-sm">Enter a topic to research using browser control.</p>
+        </div>
+      </div>
       <div class="input-row">
         <input 
           type="text" 
@@ -55,13 +44,24 @@
           Start Research
         </button>
       </div>
-      <div class="input-hint">
-        Uses browser control to search Google, read pages, and synthesize findings.
-      </div>
     </section>
 
+    <!-- API Status -->
+    <div class="api-status" id="api-status">
+      <span class="status-dot"></span>
+      <span class="status-text">Checking API...</span>
+    </div>
+
     <!-- Sequence Diagram -->
-    <section class="sequence-section">
+    <section class="demo-card sequence-card">
+      <div class="demo-card-header">
+        <div class="demo-card-icon">📊</div>
+        <div>
+          <div class="demo-card-title">Agent Collaboration</div>
+          <p class="demo-text-sm">Watch the agents work together in real-time.</p>
+        </div>
+      </div>
+
       <!-- Agent Columns Header -->
       <div class="sequence-header">
         <div class="agent-column" data-agent="orchestrator">
@@ -131,19 +131,40 @@
     </section>
 
     <!-- Output Section -->
-    <section class="output-section" id="output-section" style="display: none;">
-      <div class="output-header">
-        <h2 class="output-title" id="output-title">Research Results</h2>
-        <div class="output-meta">
-          <span id="output-sources">0 sources</span>
-          <span class="meta-sep">|</span>
-          <span id="output-words">0 words</span>
-          <span class="meta-sep">|</span>
-          <span id="output-time">0s</span>
+    <section class="demo-card output-section" id="output-section" style="display: none;">
+      <div class="demo-card-header">
+        <div class="demo-card-icon">📝</div>
+        <div>
+          <div class="demo-card-title" id="output-title">Research Results</div>
+          <div class="output-meta">
+            <span id="output-sources">0 sources</span>
+            <span class="meta-sep">·</span>
+            <span id="output-words">0 words</span>
+            <span class="meta-sep">·</span>
+            <span id="output-time">0s</span>
+          </div>
         </div>
       </div>
       <div class="output-body" id="output-body"></div>
     </section>
+
+    <section class="demo-card">
+      <div class="demo-card-header">
+        <div class="demo-card-icon">🔐</div>
+        <div>
+          <div class="demo-card-title">Requirements</div>
+          <p class="demo-text-sm">Required for this demo.</p>
+        </div>
+      </div>
+      <div class="requirements">
+        <p><strong>Feature flags:</strong> <code>browserControl</code> and <code>multiAgent</code> must be enabled.</p>
+        <p><strong>Permissions:</strong> <code>browser:tabs.create</code>, <code>browser:tabs.read</code>, <code>model:prompt</code></p>
+      </div>
+    </section>
+
+    <footer class="demo-footer">
+      <a href="../../">← Back to Demos</a>
+    </footer>
   </main>
 
   <script type="module" src="app.js"></script>

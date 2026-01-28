@@ -351,7 +351,7 @@ export async function getElementInfo(tabId: number, selector: string): Promise<E
 }
 
 /**
- * Wait for an element to appear.
+ * Wait for an element to appear using MutationObserver (not polling).
  */
 export async function waitForSelector(
   tabId: number, 
@@ -361,25 +361,102 @@ export async function waitForSelector(
   await getRequestingTab(tabId);
 
   const timeout = options?.timeout ?? 30000;
-  const startTime = Date.now();
+  const checkVisible = options?.visible ?? false;
 
-  while (Date.now() - startTime < timeout) {
-    const info = await getElementInfo(tabId, selector);
-    
-    if (info) {
-      if (!options?.visible || info.isVisible) {
-        return info;
-      }
-    }
+  // Inject a script that uses MutationObserver to efficiently wait for the element
+  const results = await chrome.scripting.executeScript({
+    target: { tabId },
+    func: (sel: string, timeoutMs: number, mustBeVisible: boolean) => {
+      return new Promise<{
+        tag: string;
+        id: string | null;
+        className: string;
+        textContent: string | null;
+        isVisible: boolean;
+        rect: { x: number; y: number; width: number; height: number };
+      } | null>((resolve, reject) => {
+        const getElementInfo = (el: Element) => {
+          const rect = el.getBoundingClientRect();
+          const isVisible = rect.width > 0 && rect.height > 0 && 
+            window.getComputedStyle(el).visibility !== 'hidden' &&
+            window.getComputedStyle(el).display !== 'none';
+          return {
+            tag: el.tagName.toLowerCase(),
+            id: el.id || null,
+            className: el.className || '',
+            textContent: el.textContent?.slice(0, 100) || null,
+            isVisible,
+            rect: { x: rect.x, y: rect.y, width: rect.width, height: rect.height },
+          };
+        };
 
-    // Wait a bit before checking again
-    await new Promise(resolve => setTimeout(resolve, 100));
+        const checkElement = () => {
+          const el = document.querySelector(sel);
+          if (el) {
+            const info = getElementInfo(el);
+            if (!mustBeVisible || info.isVisible) {
+              return info;
+            }
+          }
+          return null;
+        };
+
+        // Check immediately
+        const immediate = checkElement();
+        if (immediate) {
+          resolve(immediate);
+          return;
+        }
+
+        // Set up MutationObserver
+        let observer: MutationObserver | null = null;
+        let timeoutId: number | null = null;
+
+        const cleanup = () => {
+          if (observer) {
+            observer.disconnect();
+            observer = null;
+          }
+          if (timeoutId) {
+            clearTimeout(timeoutId);
+            timeoutId = null;
+          }
+        };
+
+        observer = new MutationObserver(() => {
+          const result = checkElement();
+          if (result) {
+            cleanup();
+            resolve(result);
+          }
+        });
+
+        observer.observe(document.body, {
+          childList: true,
+          subtree: true,
+          attributes: true,
+          attributeFilter: ['class', 'style', 'hidden'],
+        });
+
+        // Timeout
+        timeoutId = window.setTimeout(() => {
+          cleanup();
+          reject(new Error(`Timeout waiting for selector: ${sel}`));
+        }, timeoutMs);
+      });
+    },
+    args: [selector, timeout, checkVisible],
+  });
+
+  const result = results[0]?.result;
+  if (!result) {
+    throw Object.assign(
+      new Error(`Timeout waiting for selector: ${selector}`),
+      { code: 'ERR_TIMEOUT' }
+    );
   }
 
-  throw Object.assign(
-    new Error(`Timeout waiting for selector: ${selector}`),
-    { code: 'ERR_TIMEOUT' }
-  );
+  return result;
 }
 
 /**

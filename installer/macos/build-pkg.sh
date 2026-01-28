@@ -10,7 +10,7 @@ set -e
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
-BRIDGE_DIR="$PROJECT_ROOT/bridge-ts"
+BRIDGE_DIR="$PROJECT_ROOT/bridge-rs"
 EXTENSION_DIR="$PROJECT_ROOT/extension"
 INSTALLER_DIR="$SCRIPT_DIR"
 CREDENTIALS_FILE="$PROJECT_ROOT/installer/credentials.env"
@@ -32,10 +32,10 @@ COMPONENT_PKG="$BUILD_DIR/harbor-bridge.pkg"
 # Architecture detection
 ARCH=$(uname -m)
 if [ "$ARCH" = "arm64" ]; then
-    PKG_TARGET="node18-macos-arm64"
+    RUST_TARGET="aarch64-apple-darwin"
     BINARY_SUFFIX="arm64"
 else
-    PKG_TARGET="node18-macos-x64"
+    RUST_TARGET="x86_64-apple-darwin"
     BINARY_SUFFIX="x64"
 fi
 
@@ -94,7 +94,7 @@ load_credentials() {
 # Cleanup
 # =============================================================================
 
-# Deep clean - removes all build artifacts including node_modules
+# Deep clean - removes all build artifacts
 clean_all() {
     echo_step "Deep cleaning all build artifacts..."
     
@@ -102,20 +102,12 @@ clean_all() {
     rm -rf "$BUILD_DIR"
     rm -rf "$PAYLOAD_DIR"
     
-    # Clean bridge-ts
-    rm -rf "$BRIDGE_DIR/dist"
-    rm -rf "$BRIDGE_DIR/node_modules"
-    rm -rf "$BRIDGE_DIR/build"
+    # Clean bridge-rs
+    rm -rf "$BRIDGE_DIR/target"
     
     # Clean extension
     rm -rf "$EXTENSION_DIR/dist"
     rm -rf "$EXTENSION_DIR/node_modules"
-    
-    # Clean any-llm-ts submodule if present
-    if [ -d "$BRIDGE_DIR/src/any-llm-ts" ]; then
-        rm -rf "$BRIDGE_DIR/src/any-llm-ts/dist"
-        rm -rf "$BRIDGE_DIR/src/any-llm-ts/node_modules"
-    fi
     
     echo_success "Deep clean complete"
 }
@@ -249,192 +241,25 @@ sign_extension() {
 }
 
 # =============================================================================
-# Build Bridge (with esbuild + pkg, bundled Node.js)
+# Build Bridge (Rust)
 # =============================================================================
 
-# Node version - MUST be exact same for building AND bundling
-# This ensures native modules are 100% compatible
-# Use v20.19.6 because that's what pkg has available
-BUNDLED_NODE_FULL="20.19.6"
-BUNDLED_NODE_MAJOR="20"
-
-setup_build_node() {
-    echo_step "Setting up Node.js $BUNDLED_NODE_FULL for building..."
-    
-    NODE_BUILD_DIR="$BUILD_DIR/node-build"
-    mkdir -p "$NODE_BUILD_DIR"
-    
-    # Determine platform
-    if [ "$ARCH" = "arm64" ]; then
-        NODE_PLATFORM="darwin-arm64"
-    else
-        NODE_PLATFORM="darwin-x64"
-    fi
-    
-    NODE_TARBALL="node-v${BUNDLED_NODE_FULL}-${NODE_PLATFORM}.tar.gz"
-    NODE_URL="https://nodejs.org/dist/v${BUNDLED_NODE_FULL}/${NODE_TARBALL}"
-    NODE_DIR="$NODE_BUILD_DIR/node-v${BUNDLED_NODE_FULL}-${NODE_PLATFORM}"
-    
-    # Download if not cached
-    if [ ! -d "$NODE_DIR" ]; then
-        echo "  Downloading Node.js $BUNDLED_NODE_FULL..."
-        curl -sL "$NODE_URL" -o "$NODE_BUILD_DIR/$NODE_TARBALL"
-        tar -xzf "$NODE_BUILD_DIR/$NODE_TARBALL" -C "$NODE_BUILD_DIR"
-        rm "$NODE_BUILD_DIR/$NODE_TARBALL"
-    fi
-    
-    # Set up PATH to use this Node
-    export PATH="$NODE_DIR/bin:$PATH"
-    export npm_config_nodedir="$NODE_DIR"
-    
-    echo "  Using Node: $(which node)"
-    echo "  Version: $(node --version)"
-    echo_success "Build Node.js ready"
-}
-
 build_bridge() {
-    echo_step "Building native bridge (standalone with bundled Node)..."
-    
-    # Set up specific Node version for building
-    setup_build_node
+    echo_step "Building native bridge (Rust)..."
     
     cd "$BRIDGE_DIR"
     
-    # Build the any-llm-ts submodule if needed
-    if [ -d "src/any-llm-ts" ] && [ ! -d "src/any-llm-ts/dist" ]; then
-        echo "  Building any-llm-ts submodule..."
-        cd src/any-llm-ts
-        npm install
-        npm run build
-        cd ../..
-    fi
+    # Build for the current architecture
+    echo "  Compiling Rust for $RUST_TARGET..."
+    cargo build --release --target "$RUST_TARGET"
     
-    # Clean and reinstall to ensure native modules match build Node version
-    echo "  Installing dependencies with Node $BUNDLED_NODE_FULL..."
-    rm -rf node_modules/better-sqlite3 2>/dev/null || true
-    npm install
-    
-    # Rebuild native modules explicitly for this Node version
-    echo "  Rebuilding native modules for Node $BUNDLED_NODE_FULL..."
-    npm rebuild better-sqlite3
-    
-    # Verify the native module is built for correct version
-    echo "  Verifying native module version..."
-    node -e "require('better-sqlite3')" && echo "  Native module OK" || {
-        echo_error "Native module verification failed"
-        exit 1
-    }
-    
-    # Build TypeScript
-    echo "  Compiling TypeScript..."
-    npm run build
-    
-    # Bundle with esbuild (fixes ESM issues with pkg)
-    echo "  Bundling with esbuild..."
-    mkdir -p build
-    
-    npx esbuild dist/main.js \
-        --bundle \
-        --platform=node \
-        --target=node${BUNDLED_NODE_MAJOR} \
-        --format=cjs \
-        --outfile=build/bundle.cjs \
-        --external:better-sqlite3 2>&1 | grep -v "empty-import-meta" || true
-    
-    # Create standalone binary with pkg (EXACT same Node version as we built with)
-    echo "  Creating standalone binary for $ARCH with bundled Node $BUNDLED_NODE_FULL..."
-    
-    # pkg expects assets at the same relative path as the original source
-    # The bundle was built in bridge-ts/, so assets should be at bridge-ts/node_modules/...
-    # We need to create that structure in the build dir
-    
-    # Create pkg.json for assets config
-    # Note: pkg uses major version format (node20) not full version (node20.19.6)
-    cat > build/pkg.json << EOF
-{
-  "pkg": {
-    "assets": ["../node_modules/better-sqlite3/build/Release/better_sqlite3.node"]
-  }
-}
-EOF
-    
-    # IMPORTANT: Pass bundle.cjs directly to pkg, not package.json - the bin field doesn't work properly
-    cd build
-    npx @yao-pkg/pkg bundle.cjs \
-        --config pkg.json \
-        --target "node${BUNDLED_NODE_MAJOR}-macos-${BINARY_SUFFIX}" \
-        --output "$BUILD_DIR/harbor-bridge" 2>&1 | grep -v "^> Warning" || true
-    cd ..
+    # Copy binary to build dir
+    cp "target/$RUST_TARGET/release/harbor-bridge" "$BUILD_DIR/harbor-bridge"
     
     # Copy binary to payload
     cp "$BUILD_DIR/harbor-bridge" "$PAYLOAD_DIR/Library/Application Support/Harbor/"
     
-    echo_success "Bridge built: $BUILD_DIR/harbor-bridge (standalone)"
-}
-
-# =============================================================================
-# Alternative: Bundle without pkg (uses system Node.js)
-# =============================================================================
-
-build_bridge_node() {
-    echo_step "Building native bridge (Node.js bundle)..."
-    
-    cd "$BRIDGE_DIR"
-    
-    # Build the any-llm-ts submodule if needed
-    if [ -d "src/any-llm-ts" ] && [ ! -d "src/any-llm-ts/dist" ]; then
-        echo "  Building any-llm-ts submodule..."
-        cd src/any-llm-ts
-        npm install
-        npm run build
-        cd ../..
-    fi
-    
-    # Install production dependencies
-    echo "  Installing dependencies..."
-    npm install
-    
-    # Build TypeScript
-    echo "  Compiling TypeScript..."
-    npm run build
-    
-    # Bundle with esbuild (creates single file, only external is better-sqlite3)
-    echo "  Bundling with esbuild..."
-    mkdir -p build
-    npx esbuild dist/main.js \
-        --bundle \
-        --platform=node \
-        --target=node18 \
-        --format=cjs \
-        --outfile=build/bundle.cjs \
-        --external:better-sqlite3 2>&1 | grep -v "empty-import-meta" || true
-    
-    # Create a distribution bundle
-    BUNDLE_DIR="$BUILD_DIR/harbor-bridge-bundle"
-    mkdir -p "$BUNDLE_DIR/node_modules"
-    
-    # Copy the esbuild bundle
-    cp build/bundle.cjs "$BUNDLE_DIR/"
-    
-    # Copy better-sqlite3 and its dependencies
-    cp -r node_modules/better-sqlite3 "$BUNDLE_DIR/node_modules/"
-    cp -r node_modules/bindings "$BUNDLE_DIR/node_modules/"
-    cp -r node_modules/file-uri-to-path "$BUNDLE_DIR/node_modules/"
-    
-    # Create launcher that uses system Node
-    cat > "$BUNDLE_DIR/harbor-bridge" << 'EOF'
-#!/bin/bash
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-export NODE_NO_WARNINGS=1
-export NODE_PATH="$SCRIPT_DIR/node_modules"
-exec node "$SCRIPT_DIR/bundle.cjs" "$@"
-EOF
-    chmod +x "$BUNDLE_DIR/harbor-bridge"
-    
-    # Copy to payload
-    cp -r "$BUNDLE_DIR"/* "$PAYLOAD_DIR/Library/Application Support/Harbor/"
-    
-    echo_success "Bridge bundle created"
+    echo_success "Bridge built: $BUILD_DIR/harbor-bridge"
 }
 
 # =============================================================================
@@ -601,110 +426,36 @@ notarize_package() {
 
 # =============================================================================
 # Universal Binary (both arm64 and x64)
-# Note: This requires native modules to be built for both architectures.
-# For now, we build for the current architecture only.
-# True universal support requires cross-compilation setup.
 # =============================================================================
 
 build_universal() {
-    echo_warn "Universal binary build is limited - native modules only built for current arch"
-    echo "  For true universal support, build on both Intel and Apple Silicon, then combine"
-    
-    # Set up specific Node version for building
-    setup_build_node
+    echo_step "Building universal binary (Rust)..."
     
     cd "$BRIDGE_DIR"
     
-    # Build the any-llm-ts submodule if needed
-    if [ -d "src/any-llm-ts" ] && [ ! -d "src/any-llm-ts/dist" ]; then
-        echo "  Building any-llm-ts submodule..."
-        cd src/any-llm-ts
-        npm install
-        npm run build
-        cd ../..
-    fi
+    # Ensure both Rust targets are installed
+    rustup target add aarch64-apple-darwin 2>/dev/null || true
+    rustup target add x86_64-apple-darwin 2>/dev/null || true
     
-    # Clean and reinstall to ensure native modules match build Node version
-    echo "  Installing dependencies with Node $BUNDLED_NODE_FULL..."
-    rm -rf node_modules/better-sqlite3 2>/dev/null || true
-    npm install
+    # Build for arm64
+    echo "  Compiling for aarch64-apple-darwin (Apple Silicon)..."
+    cargo build --release --target aarch64-apple-darwin
     
-    # Rebuild native modules for this Node version
-    echo "  Rebuilding native modules for Node $BUNDLED_NODE_FULL..."
-    npm rebuild better-sqlite3
+    # Build for x64
+    echo "  Compiling for x86_64-apple-darwin (Intel)..."
+    cargo build --release --target x86_64-apple-darwin
     
-    # Build TypeScript
-    echo "  Compiling TypeScript..."
-    npm run build
+    # Create universal binary with lipo
+    echo "  Creating universal binary with lipo..."
+    lipo -create \
+        "target/aarch64-apple-darwin/release/harbor-bridge" \
+        "target/x86_64-apple-darwin/release/harbor-bridge" \
+        -output "$BUILD_DIR/harbor-bridge"
     
-    # Bundle with esbuild
-    echo "  Bundling with esbuild..."
-    mkdir -p build
+    # Copy to payload
+    cp "$BUILD_DIR/harbor-bridge" "$PAYLOAD_DIR/Library/Application Support/Harbor/"
     
-    npx esbuild dist/main.js \
-        --bundle \
-        --platform=node \
-        --target=node${BUNDLED_NODE_MAJOR} \
-        --format=cjs \
-        --outfile=build/bundle.cjs \
-        --external:better-sqlite3 2>&1 | grep -v "empty-import-meta" || true
-    
-    # Create pkg.json for the bundle - use EXACT version
-    cat > build/pkg.json << EOF
-{
-  "name": "harbor-bridge",
-  "bin": "bundle.cjs",
-  "pkg": {
-    "assets": [
-      "../node_modules/better-sqlite3/build/**/*.node"
-    ]
-  }
-}
-EOF
-    
-    # Build for both architectures
-    # NOTE: We do NOT use lipo! pkg binaries have embedded bytecode that lipo corrupts.
-    # Instead, we include both binaries and let postinstall choose the right one.
-    cd build
-    
-    # Note: pkg uses major version format (node20) not full version (node20.19.6)
-    # IMPORTANT: Pass bundle.cjs directly, not pkg.json - the bin field doesn't work properly
-    echo "  Building for arm64 with Node $BUNDLED_NODE_MAJOR..."
-    npx @yao-pkg/pkg bundle.cjs \
-        --config pkg.json \
-        --target "node${BUNDLED_NODE_MAJOR}-macos-arm64" \
-        --output "$BUILD_DIR/harbor-bridge-arm64" 2>&1 | grep -v "^> Warning" || true
-    
-    echo "  Building for x64 with Node $BUNDLED_NODE_MAJOR..."
-    npx @yao-pkg/pkg bundle.cjs \
-        --config pkg.json \
-        --target "node${BUNDLED_NODE_MAJOR}-macos-x64" \
-        --output "$BUILD_DIR/harbor-bridge-x64" 2>&1 | grep -v "^> Warning" || true
-    
-    cd ..
-    
-    # Copy the native module alongside the binary
-    echo "  Copying native modules..."
-    mkdir -p "$BUILD_DIR/native"
-    
-    # Find and copy better-sqlite3 native binding
-    NATIVE_BINDING=$(find node_modules/better-sqlite3 -name "*.node" -type f 2>/dev/null | head -1)
-    if [ -n "$NATIVE_BINDING" ]; then
-        cp "$NATIVE_BINDING" "$BUILD_DIR/native/"
-        echo "  Copied: $(basename "$NATIVE_BINDING")"
-    fi
-    
-    # Copy BOTH binaries to payload - postinstall will choose the right one
-    echo "  Including both architecture binaries (postinstall will select correct one)..."
-    cp "$BUILD_DIR/harbor-bridge-arm64" "$PAYLOAD_DIR/Library/Application Support/Harbor/"
-    cp "$BUILD_DIR/harbor-bridge-x64" "$PAYLOAD_DIR/Library/Application Support/Harbor/"
-    
-    # Copy native modules to payload
-    if [ -d "$BUILD_DIR/native" ] && [ "$(ls -A "$BUILD_DIR/native" 2>/dev/null)" ]; then
-        cp -r "$BUILD_DIR/native" "$PAYLOAD_DIR/Library/Application Support/Harbor/"
-    fi
-    
-    echo_success "Universal binary created"
+    echo_success "Universal binary created: $BUILD_DIR/harbor-bridge"
 }
 
 # =============================================================================
@@ -721,8 +472,6 @@ main() {
     echo ""
     
     # Parse arguments
-    # Default to standalone binary with bundled Node
-    USE_PKG=true
     BUILD_UNIVERSAL=true    # Universal by default
     # Auto-detect: sign if credentials are available (can be overridden)
     SIGN_EXT=auto
@@ -731,11 +480,6 @@ main() {
     
     while [[ $# -gt 0 ]]; do
         case $1 in
-            --node)
-                # Use system Node.js (smaller but requires Node installed)
-                USE_PKG=false
-                shift
-                ;;
             --arch-only|--current-arch)
                 # Build only for current architecture (faster for dev)
                 BUILD_UNIVERSAL=false
@@ -798,7 +542,6 @@ main() {
                 echo "  --sign            Force pkg signing (default: auto-detect)"
                 echo "  --notarize        Force notarization (default: auto-detect)"
                 echo "  --all             Enable all signing options + universal build"
-                echo "  --node            Use system Node.js instead of bundling"
                 echo ""
                 echo "By default, signing and notarization happen automatically if"
                 echo "credentials are configured in installer/credentials.env"
@@ -865,14 +608,10 @@ main() {
     # Build Chrome extension
     build_chrome_extension
     
-    if [ "$USE_PKG" = true ]; then
-        if [ "$BUILD_UNIVERSAL" = true ]; then
-            build_universal
-        else
-            build_bridge
-        fi
+    if [ "$BUILD_UNIVERSAL" = true ]; then
+        build_universal
     else
-        build_bridge_node
+        build_bridge
     fi
     
     copy_extension

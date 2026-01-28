@@ -18,19 +18,13 @@ This document provides comprehensive testing guidance for the MCP Host implement
 ### Running Tests
 
 ```bash
-cd bridge-ts
+# Run Rust bridge tests
+cd bridge-rs
+cargo test
 
-# Run all tests
+# Run extension tests  
+cd extension
 npm test
-
-# Run tests in watch mode (during development)
-npm run test:watch
-
-# Run with coverage report
-npm run test:coverage
-
-# Run specific test file
-npm test -- src/host/__tests__/permissions.test.ts
 ```
 
 ### Test Suite Overview
@@ -99,18 +93,18 @@ npm test -- src/host/__tests__/permissions.test.ts
 ### Prerequisites
 
 1. Firefox Developer Edition (for extension testing)
-2. Node.js 18+ installed
-3. Python 3.9+ with uv/uvx installed
-4. Docker installed (optional, for isolation tests)
-5. Test MCP servers installed (see Test Data section)
+2. Rust (latest stable) installed
+3. Node.js 18+ installed
+4. Python 3.9+ with uv/uvx installed
+5. Docker installed (optional, for isolation tests)
+6. Test MCP servers installed (see Test Data section)
 
 ### Test Environment Setup
 
 ```bash
-# 1. Build the bridge
-cd bridge-ts
-npm install
-npm run build
+# 1. Build the Rust bridge
+cd bridge-rs
+cargo build --release
 
 # 2. Build the extension
 cd ../extension
@@ -118,7 +112,8 @@ npm install
 npm run build
 
 # 3. Install the native messaging manifest
-# (Follow instructions in README.md)
+cd ../bridge-rs
+./install.sh
 
 # 4. Load extension in Firefox
 # about:debugging -> Load Temporary Add-on -> extension/dist/manifest.json
@@ -377,25 +372,17 @@ uvx mcp-server-time
 
 ```bash
 # Clone and setup
-git clone https://github.com/your-org/harbor.git
+git clone --recurse-submodules https://github.com/anthropics/harbor.git
 cd harbor
 
-# Install dependencies
-cd bridge-ts && npm install && cd ..
-cd extension && npm install && cd ..
+# Build the Rust bridge
+cd bridge-rs && cargo build --release && cd ..
 
-# Build everything
-cd bridge-ts && npm run build && cd ..
-cd extension && npm run build && cd ..
+# Build the extension
+cd extension && npm install && npm run build && cd ..
 
 # Install native messaging manifest
-# macOS:
-mkdir -p ~/Library/Application\ Support/Mozilla/NativeMessagingHosts
-cp scripts/harbor.json ~/Library/Application\ Support/Mozilla/NativeMessagingHosts/
-
-# Linux:
-mkdir -p ~/.mozilla/native-messaging-hosts
-cp scripts/harbor.json ~/.mozilla/native-messaging-hosts/
+cd bridge-rs && ./install.sh && cd ..
 ```
 
 ### CI/CD Setup
@@ -411,24 +398,25 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
       
-      - name: Install dependencies
+      - uses: dtolnay/rust-toolchain@stable
+      
+      - name: Run Rust tests
         run: |
-          cd bridge-ts
+          cd bridge-rs
+          cargo test
+      
+      - name: Run extension tests
+        run: |
+          cd extension
           npm install
-      
-      - name: Run tests
-        run: |
-          cd bridge-ts
           npm test
-      
-      - name: Upload coverage
-        uses: codecov/codecov-action@v3
-        with:
-          directory: ./bridge-ts/coverage
 ```
 
 ---

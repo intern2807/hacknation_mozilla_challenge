@@ -1,4 +1,4 @@
-# Web Agent Control Demos (Extension 2)
+# Web Agent Control Demos
 
 Self-contained demos that exercise active-tab interaction APIs. Each step increases complexity and uses the same-tab security model.
 
@@ -6,7 +6,7 @@ Self-contained demos that exercise active-tab interaction APIs. Each step increa
 
 - **Basic Actions** (`step-1-basic-actions/`) — Click, fill, and select on a simple form.
 - **Multi-step Form** (`step-2-multi-step-form/`) — Validation + delayed transitions with `waitForSelector`.
-- **Research Agent** (`step-4-research-agent/`) — Multi-tab research: search Google, open results in new tabs, extract content, and synthesize with AI.
+- **Research Agent** (`step-3-research-agent/`) — Multi-tab research: search Google, open results in new tabs, extract content, and synthesize with AI.
 
 ## APIs Covered
 

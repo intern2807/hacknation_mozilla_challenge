@@ -328,7 +328,7 @@ chat_delete_session, chat_update_session, chat_clear_messages
 
 Web Page (window.ai/agent) ←postMessage→ Content Script ←runtime→ Background
     ↓ native messaging (stdio JSON)
-Node.js Bridge (bridge-ts/)
+Rust Bridge (bridge-rs/)
     ↓ MCP Protocol
 MCP Servers (stdio/HTTP/Docker)
 
@@ -489,9 +489,14 @@ extension/src/
 │   ├── provider-bridge.ts # Message routing to extension
 │   └── provider-injected.ts # window.ai/agent injection
 
-bridge-ts/src/
-├── main.ts              # Bridge entry point
-├── handlers.ts          # All message handlers
+bridge-rs/src/
+├── main.rs              # Bridge entry point
+├── native_messaging.rs  # Stdin/stdout JSON framing
+├── rpc/                 # RPC method handlers
+├── llm/                 # LLM provider configuration
+├── js/                  # QuickJS runtime for JS MCP servers
+├── oauth/               # OAuth flow handling
+└── fs/                  # Filesystem utilities
 ├── host/
 │   ├── permissions.ts   # Permission system
 │   ├── tool-registry.ts # Tool namespacing

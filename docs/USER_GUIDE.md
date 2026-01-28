@@ -330,8 +330,8 @@ rm -rf ~/.harbor
 
 ## Next Steps
 
-- Try the [Chat POC Demo](../demo/chat-poc/) to see the full API in action
+- Try the [Chat POC Demo](../demo/web-agents/chat-poc/) to see the full API in action
 - Read the [Developer Guide](DEVELOPER_GUIDE.md) to build apps with Harbor
-- Explore more MCP servers in the [Curated Directory](../bridge-ts/src/directory/curated-servers.ts)
+- Explore the [MCP Servers](../mcp-servers/) for examples and templates
 
 

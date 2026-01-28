@@ -18,7 +18,7 @@ These demos require **Harbor**, an implementation of the Web Agent API.
 | **Bring Your Own Chatbot** | Website-provided MCP servers demo | `/demo/web-agents/bring-your-chatbot/` |
 | **Basic Actions** | Practice click, fill, and select | `/demo/web-agent-control/step-1-basic-actions/` |
 | **Multi-step Form** | Form validation and step navigation | `/demo/web-agent-control/step-2-multi-step-form/` |
-| **Research Agent** | Multi-tab search and synthesis | `/demo/web-agent-control/step-4-research-agent/` |
+| **Research Agent** | Multi-tab search and synthesis | `/demo/web-agent-control/step-3-research-agent/` |
 | **Research Pipeline** | Multi-agent collaboration demo | `/demo/multi-web-agent/research-writer/` |
 
 ## Quick Start

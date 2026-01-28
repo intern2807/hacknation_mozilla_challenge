@@ -123,9 +123,9 @@ All capabilities are **opt-in** and enforced by the extension host.
 - Debug logs and status panel.
 
 ## Migration Strategy
-- Remove old `extension/` and `bridge-ts/` code after preserving design tokens.
+- The `bridge-rs/` Rust bridge is now the primary native messaging bridge.
 - Keep `demo/` and any Web Agents API examples.
-- Replace with new extension skeleton + Rust bridge.
+- In-browser MCP execution (WASM + JS) runs in the extension itself.
 
 ## Testing Strategy
 - Unit tests for WASM runtime and capability gating.

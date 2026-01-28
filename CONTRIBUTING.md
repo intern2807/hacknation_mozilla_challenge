@@ -17,8 +17,9 @@ This guide is for developers who want to contribute to Harbor itself. If you're 
 
 ### Prerequisites
 
-- **Node.js** 18+ (with npm)
-- **Firefox** 109+ (for testing the extension)
+- **Rust** (latest stable, for the native bridge)
+- **Node.js** 18+ (with npm, for the extension)
+- **Firefox** 109+ or **Chrome** 120+ (for testing the extension)
 - **Python 3.9+** with uvx (for Python MCP servers)
 - **Docker** (optional, for isolated server execution)
 - **Git** (with submodule support)
@@ -37,16 +38,9 @@ git submodule update --init --recursive
 ### Full Build
 
 ```bash
-# Build the any-llm-ts dependency (submodule)
-cd bridge-ts/src/any-llm-ts
-npm install
-npm run build
-cd ../../..
-
-# Build the bridge
-cd bridge-ts
-npm install
-npm run build
+# Build the Rust bridge
+cd bridge-rs
+cargo build --release
 cd ..
 
 # Build the extension
@@ -56,9 +50,9 @@ npm run build
 cd ..
 
 # Install native messaging manifest
-cd bridge-ts/scripts
-./install_native_manifest_macos.sh  # or linux version
-cd ../..
+cd bridge-rs
+./install.sh
+cd ..
 ```
 
 ### Load Extension for Testing
@@ -74,31 +68,39 @@ cd ../..
 
 ```
 harbor/
-├── extension/              # Firefox Extension (TypeScript + Vite)
+├── extension/              # Browser Extension (TypeScript + esbuild)
 │   ├── src/
 │   │   ├── background.ts   # Native messaging, server management
 │   │   ├── sidebar.ts      # Main sidebar UI
-│   │   ├── provider/       # JS AI Provider injection
-│   │   └── catalog/        # Catalog UI components
+│   │   ├── agents/         # Web Agent API (injected.ts, orchestrator.ts)
+│   │   ├── js-runtime/     # In-browser JS MCP runtime
+│   │   ├── wasm/           # In-browser WASM MCP runtime
+│   │   ├── llm/            # Native bridge client
+│   │   ├── mcp/            # MCP protocol & host
+│   │   └── policy/         # Permission system
 │   └── dist/               # Built output
 │
-├── bridge-ts/              # Node.js Native Messaging Bridge
+├── bridge-rs/              # Rust Native Messaging Bridge
 │   ├── src/
-│   │   ├── main.ts         # Entry point
-│   │   ├── handlers.ts     # Message handlers
-│   │   ├── host/           # MCP execution environment
-│   │   ├── mcp/            # MCP protocol client
-│   │   ├── chat/           # Chat orchestration
-│   │   ├── llm/            # LLM provider abstraction
-│   │   ├── installer/      # Server installation
-│   │   ├── catalog/        # Directory system
-│   │   ├── auth/           # OAuth and credentials
-│   │   └── any-llm-ts/     # LLM library (git submodule)
-│   └── dist/               # Built output
+│   │   ├── main.rs         # Entry point
+│   │   ├── native_messaging.rs  # Stdin/stdout JSON framing
+│   │   ├── rpc/            # RPC method handlers
+│   │   ├── llm/            # LLM provider configuration
+│   │   ├── js/             # QuickJS runtime for JS MCP servers
+│   │   ├── oauth/          # OAuth flow handling
+│   │   └── fs/             # Filesystem utilities
+│   └── any-llm-rust/       # Multi-provider LLM library (submodule)
+│
+├── web-agents-api/         # Companion extension (standalone/bridge mode)
 │
 ├── demo/                   # Demo web pages
-│   ├── chat-poc/           # Full chat demo
-│   └── summarizer/         # Page summarization demo
+│   ├── web-agents/         # Web Agent API demos
+│   └── web-agent-control/  # Browser interaction demos
+│
+├── mcp-servers/            # MCP server examples and templates
+│   ├── builtin/            # Built-in servers (echo, time)
+│   ├── examples/           # Example implementations
+│   └── templates/          # Starter templates
 │
 ├── docs/                   # Documentation
 │   ├── USER_GUIDE.md       # End-user guide
@@ -120,14 +122,12 @@ harbor/
 
 | Component | Path | Description |
 |-----------|------|-------------|
-| **Native Messaging** | `bridge-ts/src/native-messaging.ts` | Stdin/stdout JSON framing |
-| **Message Handlers** | `bridge-ts/src/handlers.ts` | All bridge message types |
-| **MCP Host** | `bridge-ts/src/host/` | Permission, rate limiting, tool registry |
-| **MCP Client** | `bridge-ts/src/mcp/` | MCP protocol implementation |
-| **Chat Orchestrator** | `bridge-ts/src/chat/orchestrator.ts` | Agent loop with tool calling |
-| **LLM Manager** | `bridge-ts/src/llm/manager.ts` | LLM provider abstraction |
-| **Installer** | `bridge-ts/src/installer/manager.ts` | Server installation/lifecycle |
-| **Provider Injection** | `extension/src/provider/` | window.ai/agent injection |
+| **Native Messaging** | `bridge-rs/src/native_messaging.rs` | Stdin/stdout JSON framing |
+| **RPC Handlers** | `bridge-rs/src/rpc/` | All bridge message types |
+| **LLM Config** | `bridge-rs/src/llm/` | LLM provider configuration |
+| **QuickJS Runtime** | `bridge-rs/src/js/` | Sandboxed JS MCP server execution |
+| **OAuth** | `bridge-rs/src/oauth/` | OAuth flow handling |
+| **Web Agent API** | `extension/src/agents/` | window.ai/agent injection |
 
 ---
 
@@ -135,12 +135,12 @@ harbor/
 
 ### Watch Mode
 
-For active development, use watch mode to auto-rebuild on changes:
+For active development:
 
 ```bash
-# Terminal 1: Watch bridge
-cd bridge-ts
-npm run dev
+# Terminal 1: Build bridge (rerun after changes)
+cd bridge-rs
+cargo build --release
 
 # Terminal 2: Watch extension
 cd extension
@@ -159,11 +159,15 @@ Cmd+Shift+J (Mac) or Ctrl+Shift+J
 ```
 
 **Bridge (Logs):**
-The bridge logs to stderr. In production, logs are captured by the extension. For development, you can run the bridge manually:
+The bridge logs to a file. Check:
+- macOS: `~/Library/Caches/harbor-bridge.log`
+- Linux: `~/.cache/harbor-bridge.log`
+
+For development, you can run the bridge manually:
 
 ```bash
-cd bridge-ts
-echo '{"type":"hello","request_id":"1"}' | node dist/main.js
+cd bridge-rs
+echo '{"type":"hello","request_id":"1"}' | cargo run
 ```
 
 **MCP Server Logs:**
@@ -197,59 +201,19 @@ rm -rf ~/.harbor
 
 | Package | Command | Coverage |
 |---------|---------|----------|
-| Bridge | `cd bridge-ts && npm test` | Host, chat, permissions |
+| Bridge | `cd bridge-rs && cargo test` | RPC, LLM, JS runtime |
 | Extension | `cd extension && npm test` | Provider injection |
-| LLM Library | `cd bridge-ts/src/any-llm-ts && npm test` | LLM providers |
 
 ### Running Tests
 
 ```bash
-# Run all bridge tests
-cd bridge-ts
+# Run Rust bridge tests
+cd bridge-rs
+cargo test
+
+# Run extension tests
+cd extension
 npm test
-
-# Watch mode (during development)
-npm run test:watch
-
-# With coverage report
-npm run test:coverage
-
-# Run specific test file
-npm test -- src/host/__tests__/permissions.test.ts
-```
-
-### Test Files
-
-**Host Tests** (`bridge-ts/src/host/__tests__/`):
-- `permissions.test.ts` — Permission grants, expiry, allowlists
-- `tool-registry.test.ts` — Tool namespacing, registration
-- `rate-limiter.test.ts` — Budgets, concurrency limits
-- `observability.test.ts` — Metrics recording
-- `host.integration.test.ts` — End-to-end host flows
-
-**Chat Tests** (`bridge-ts/src/chat/__tests__/`):
-- `orchestrator.test.ts` — Agent loop, tool routing
-
-### Writing Tests
-
-We use [Vitest](https://vitest.dev/) for testing. Example:
-
-```typescript
-import { describe, it, expect, beforeEach } from 'vitest';
-import { grantPermission, checkPermission } from '../permissions.js';
-
-describe('permissions', () => {
-  beforeEach(() => {
-    // Reset state before each test
-  });
-
-  it('should grant and check permissions', async () => {
-    await grantPermission('https://example.com', 'default', 'mcp:tools.list', 'ALLOW_ALWAYS');
-    
-    const result = checkPermission('https://example.com', 'default', 'mcp:tools.list');
-    expect(result.granted).toBe(true);
-  });
-});
 ```
 
 ### Manual QA
@@ -259,12 +223,18 @@ See [TESTING_PLAN.md](docs/TESTING_PLAN.md) for comprehensive manual QA scenario
 - Permission flows
 - Tool invocation
 - Rate limiting
-- VS Code button detection
 - JSON configuration import
 
 ---
 
 ## Code Style
+
+### Rust
+
+- Follow standard Rust conventions
+- Use `cargo fmt` for formatting
+- Use `cargo clippy` for linting
+- Document public APIs with doc comments
 
 ### TypeScript
 
@@ -277,25 +247,11 @@ See [TESTING_PLAN.md](docs/TESTING_PLAN.md) for comprehensive manual QA scenario
 
 | Type | Convention | Example |
 |------|------------|---------|
-| Files | `kebab-case.ts` | `tool-registry.ts` |
-| Classes | `PascalCase` | `McpHost` |
-| Functions | `camelCase` | `listTools()` |
-| Constants | `SCREAMING_SNAKE` | `MAX_RETRIES` |
-| Interfaces | `PascalCase` | `ToolDescriptor` |
-
-### Error Handling
-
-Use typed error codes for all errors:
-
-```typescript
-interface ApiError {
-  code: string;      // e.g., 'ERR_PERMISSION_DENIED'
-  message: string;   // Human-readable message
-  details?: unknown; // Additional context
-}
-```
-
-Standard error codes are defined in `bridge-ts/src/host/types.ts`.
+| Rust files | `snake_case.rs` | `native_messaging.rs` |
+| TS files | `kebab-case.ts` | `tool-registry.ts` |
+| Rust structs | `PascalCase` | `LlmConfig` |
+| TS classes | `PascalCase` | `McpHost` |
+| Functions | `snake_case` (Rust) / `camelCase` (TS) | `list_tools()` / `listTools()` |
 
 ### Commit Messages
 
@@ -306,7 +262,7 @@ feat: add tool router for intelligent server selection
 fix: handle server crash during tool call
 docs: update developer guide with new APIs
 test: add integration tests for permissions
-chore: upgrade vitest to v1.0
+chore: upgrade dependencies
 ```
 
 ---
@@ -317,16 +273,21 @@ chore: upgrade vitest to v1.0
 
 1. **Run tests**:
    ```bash
-   cd bridge-ts && npm test
+   cd bridge-rs && cargo test
    cd extension && npm test
    ```
 
-2. **Test manually**:
+2. **Format and lint**:
+   ```bash
+   cd bridge-rs && cargo fmt && cargo clippy
+   ```
+
+3. **Test manually**:
    - Load the extension in Firefox
    - Verify your changes work as expected
    - Check the Browser Console for errors
 
-3. **Update documentation** if you're changing:
+4. **Update documentation** if you're changing:
    - APIs → Update `DEVELOPER_GUIDE.md` and `LLMS.txt`
    - Architecture → Update `ARCHITECTURE.md`
    - User-facing features → Update `USER_GUIDE.md`
@@ -341,7 +302,8 @@ chore: upgrade vitest to v1.0
 <!-- How did you test this? -->
 
 ## Checklist
-- [ ] Tests pass (`npm test`)
+- [ ] Tests pass (`cargo test`, `npm test`)
+- [ ] Code formatted (`cargo fmt`)
 - [ ] Extension loads without errors
 - [ ] Documentation updated (if applicable)
 ```
@@ -358,36 +320,18 @@ chore: upgrade vitest to v1.0
 
 ## Common Tasks
 
-### Adding a New Message Type
+### Adding a New RPC Message Type
 
-1. Define the message type in `bridge-ts/src/types.ts`
-2. Add handler in `bridge-ts/src/handlers.ts`
+1. Define the message type in `bridge-rs/src/rpc/mod.rs`
+2. Add handler function
 3. Add response handling in `extension/src/background.ts`
 4. Update documentation in `README.md` or `DEVELOPER_GUIDE.md`
 
-### Adding a New MCP Server to Curated List
-
-Edit `bridge-ts/src/directory/curated-servers.ts`:
-
-```typescript
-{
-  id: 'my-new-server',
-  title: 'My Server',
-  description: 'What it does',
-  source: 'npm',
-  package: '@scope/my-mcp-server',
-  runtime: 'node',
-  tools: [/* tool descriptions */],
-  category: 'utilities',
-}
-```
-
 ### Adding a New LLM Provider
 
-1. Create provider file in `bridge-ts/src/llm/` (e.g., `newprovider.ts`)
-2. Implement the `LLMProvider` interface
-3. Register in `bridge-ts/src/llm/manager.ts`
-4. Update detection logic
+1. Add provider implementation in `bridge-rs/any-llm-rust/src/providers/`
+2. Register in the provider registry
+3. Update detection logic in `bridge-rs/src/llm/`
 
 ---
 
@@ -397,7 +341,7 @@ Before a release:
 
 - [ ] All tests pass
 - [ ] Manual QA completed (see TESTING_PLAN.md)
-- [ ] Version bumped in `package.json` files
+- [ ] Version bumped
 - [ ] CHANGELOG updated
 - [ ] Documentation reviewed and up-to-date
 - [ ] Extension signed (for production)

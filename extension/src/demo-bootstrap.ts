@@ -47,7 +47,7 @@ let sessionCounter = 0;
  * Native tool calling means the model can receive tools in the API request
  * and return structured tool_calls in the response.
  * 
- * Copied from main branch: bridge-ts/src/chat/orchestrator.ts
+ * Based on chat orchestrator logic
  */
 function modelSupportsNativeTools(modelId?: string): boolean {
   if (!modelId) return false;
@@ -406,7 +406,7 @@ const agent = {
           }
           
           // Build system prompt based on whether model supports native tool calling
-          // (copied from main branch bridge-ts/src/chat/orchestrator.ts)
+          // Build system prompt based on model capabilities
           let systemPrompt: string;
           const useNativeTools = modelSupportsNativeTools(activeModel);
           console.log(`[Demo] Active model: ${activeModel}, native tools: ${useNativeTools}`);

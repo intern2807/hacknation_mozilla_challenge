@@ -2,8 +2,14 @@
  * Runtime type for MCP servers.
  * - 'wasm': WebAssembly module running in WASI sandbox
  * - 'js': JavaScript running in sandboxed Web Worker
+ * - 'remote': Remote server accessed via HTTP/SSE or WebSocket
  */
-export type McpServerRuntime = 'wasm' | 'js';
+export type McpServerRuntime = 'wasm' | 'js' | 'remote';
+
+/**
+ * Transport type for remote MCP servers.
+ */
+export type RemoteTransport = 'sse' | 'websocket';
 
 /**
  * Network capability configuration.
@@ -75,6 +81,14 @@ export type McpServerManifest = {
   scriptUrl?: string;
   /** Base64-encoded JS bundle */
   scriptBase64?: string;
+
+  // Remote server fields
+  /** URL of the remote MCP server endpoint (for runtime: 'remote') */
+  remoteUrl?: string;
+  /** Transport type for remote servers: 'sse' (default) or 'websocket' */
+  remoteTransport?: RemoteTransport;
+  /** Optional authentication header value (e.g., 'Bearer <token>') */
+  remoteAuthHeader?: string;
 
   // Capability configuration
   /** Legacy permissions array (kept for compatibility) */

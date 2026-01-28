@@ -4,6 +4,7 @@ import type { McpTransport } from '../mcp/transport';
 import { McpStdioTransport } from '../mcp/stdio-transport';
 import { createWasmSession } from './session';
 import { createJsSession } from '../js-runtime/session';
+import { createRemoteTransport, type McpSseTransport, type McpWebSocketTransport } from '../mcp/remote-transport';
 
 type ToolEntry = {
   serverId: string;
@@ -13,6 +14,8 @@ type ToolEntry = {
 const runningServers = new Map<string, McpServerHandle>();
 const toolIndex = new Map<string, ToolEntry>();
 const activeSessions = new Map<string, { transport: McpTransport; close: () => void }>();
+// Track remote transports separately for connection status
+const remoteTransports = new Map<string, McpSseTransport | McpWebSocketTransport>();
 
 /**
  * Initialize the MCP runtime (both WASM and JS).
@@ -96,11 +99,14 @@ export const unregisterWasmServer = unregisterMcpServer;
  * Determine the runtime type for a manifest.
  * Defaults to 'wasm' for backward compatibility.
  */
-function getServerRuntime(manifest: McpServerManifest): 'wasm' | 'js' {
+function getServerRuntime(manifest: McpServerManifest): 'wasm' | 'js' | 'remote' {
   if (manifest.runtime) {
     return manifest.runtime;
   }
   // Infer from available fields
+  if (manifest.remoteUrl) {
+    return 'remote';
+  }
   if (manifest.scriptUrl || manifest.scriptBase64) {
     return 'js';
   }
@@ -108,7 +114,7 @@ function getServerRuntime(manifest: McpServerManifest): 'wasm' | 'js' {
 }
 
 /**
- * Start an MCP server (WASM or JS).
+ * Start an MCP server (WASM, JS, or Remote).
  * Dispatches to the appropriate runtime based on manifest.runtime.
  */
 export async function startMcpServer(serverId: string): Promise<boolean> {
@@ -123,7 +129,24 @@ export async function startMcpServer(serverId: string): Promise<boolean> {
   const runtime = getServerRuntime(handle.manifest);
 
   try {
-    if (runtime === 'js') {
+    if (runtime === 'remote') {
+      // Create remote transport (SSE or WebSocket)
+      if (!handle.manifest.remoteUrl) {
+        throw new Error('Remote server missing remoteUrl');
+      }
+      const transport = createRemoteTransport({
+        url: handle.manifest.remoteUrl,
+        transport: handle.manifest.remoteTransport || 'sse',
+        authHeader: handle.manifest.remoteAuthHeader,
+      });
+      await transport.connect();
+      remoteTransports.set(serverId, transport);
+      activeSessions.set(serverId, {
+        transport,
+        close: () => transport.disconnect(),
+      });
+      console.log('[Harbor] Connected to remote MCP server:', serverId);
+    } else if (runtime === 'js') {
       // Create JS worker session
       const session = await createJsSession({
         ...handle.manifest,
@@ -163,8 +186,31 @@ export function stopMcpServer(serverId: string): boolean {
   const session = activeSessions.get(serverId);
   session?.close();
   activeSessions.delete(serverId);
+  remoteTransports.delete(serverId);
   console.log('[Harbor] Stopped MCP server:', serverId);
   return true;
+}
+
+/**
+ * Get the connection status of a remote server.
+ */
+export function getRemoteServerStatus(serverId: string): 'disconnected' | 'connecting' | 'connected' | 'error' {
+  const transport = remoteTransports.get(serverId);
+  if (!transport) {
+    return 'disconnected';
+  }
+  return transport.getState();
+}
+
+/**
+ * Check if a server is a remote server.
+ */
+export function isRemoteServer(serverId: string): boolean {
+  const handle = runningServers.get(serverId);
+  if (!handle) {
+    return false;
+  }
+  return getServerRuntime(handle.manifest) === 'remote';
 }
 
 /** @deprecated Use stopMcpServer instead */

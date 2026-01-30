@@ -5,7 +5,7 @@
   "description": "Infrastructure extension for AI and MCP capabilities. Provides LLM access and tool execution for other extensions.",
   "browser_specific_settings": {
     "gecko": {
-      "id": "raffi.krikorian.harbor@gmail.com"
+      "id": "harbor@mozilla.org"
     }
   },
   "background": {

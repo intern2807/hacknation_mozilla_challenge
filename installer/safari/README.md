@@ -1,190 +1,233 @@
 # Harbor Safari Extension
 
-This directory contains the build infrastructure for the Safari version of Harbor.
+This directory contains the build infrastructure for the Safari version of Harbor, including full native messaging support via harbor-bridge.
 
 ## Overview
 
-Safari Web Extensions require a macOS app wrapper created in Xcode. The extension files (JavaScript, HTML, CSS) are bundled inside the app as resources.
+Safari Web Extensions require a macOS app wrapper. Unlike Chrome/Firefox where native messaging uses a separate executable with a JSON manifest, Safari bundles everything inside the app. Our `SafariWebExtensionHandler` spawns harbor-bridge as a subprocess to provide the same LLM and MCP capabilities.
 
 ## Prerequisites
 
-1. **Xcode** (latest version recommended)
-2. **Apple Developer Account** (for code signing)
-3. **macOS 12.0+** (Monterey or later)
+1. **Xcode 13+** (for `safari-web-extension-converter`)
+2. **Rust toolchain** (for building harbor-bridge)
+3. **Node.js and npm** (for building the extension)
+4. **Apple Developer Account** (optional for development, required for distribution)
+5. **macOS 12.0+** (Monterey or later)
 
 ## Quick Start
 
-### 1. Build the Extension
+### One-Command Build
 
-First, build the Safari version of the extension:
-
-```bash
-cd extension
-npm run build:safari
-```
-
-This creates the `dist/` directory with Safari-compatible JavaScript bundles.
-
-### 2. Create Xcode Project
-
-Safari extensions require an Xcode project wrapper. Create one using Xcode:
-
-1. Open Xcode
-2. File → New → Project
-3. Select "Safari Extension App" template (macOS tab)
-4. Configure:
-   - **Product Name**: Harbor
-   - **Team**: Your Apple Developer Team
-   - **Organization Identifier**: org.harbor
-   - **Language**: Swift
-   - **Include Tests**: No
-5. Save to `installer/safari/Harbor/`
-
-### 3. Copy Extension Files
-
-Copy the built extension files to the Xcode project:
-
-```bash
-# From project root
-cp -r extension/dist "installer/safari/Harbor/Harbor Extension/Resources/"
-cp extension/manifest.safari.json "installer/safari/Harbor/Harbor Extension/Resources/manifest.json"
-cp -r extension/assets "installer/safari/Harbor/Harbor Extension/Resources/"
-cp -r extension/demo "installer/safari/Harbor/Harbor Extension/Resources/"
-cp -r extension/bundled "installer/safari/Harbor/Harbor Extension/Resources/"
-```
-
-### 4. Build and Run
-
-Build using the provided script or Xcode directly:
+The simplest way to get started:
 
 ```bash
 ./build.sh
 ```
 
-Or in Xcode:
+This will:
+1. Run the setup script if no Xcode project exists (uses `safari-web-extension-converter`)
+2. Build harbor-bridge with Cargo
+3. Build the extension with npm
+4. Build the macOS app with Xcode
+5. Copy harbor-bridge into the app bundle
+
+### Step-by-Step Setup
+
+If you prefer more control:
+
+#### 1. Create the Xcode Project
+
+```bash
+./setup-xcode-project.sh
+```
+
+This uses Apple's `safari-web-extension-converter` to create the Xcode project wrapper, then patches it with our custom `SafariWebExtensionHandler.swift` that enables native messaging.
+
+#### 2. Configure Signing in Xcode
+
 1. Open `Harbor/Harbor.xcodeproj`
-2. Select "Harbor (macOS)" scheme
-3. Build and Run (⌘R)
+2. Select the "Harbor" target → Signing & Capabilities
+3. Select your development team (or "Sign to Run Locally")
+4. Repeat for the "Harbor Extension" target
 
-## Native Messaging (Optional)
+#### 3. Build
 
-For full LLM functionality via the native bridge:
+```bash
+./build.sh          # Development build
+./build.sh release  # Release archive
+```
 
-### App Extension Approach
+## Native Messaging Architecture
 
-Safari uses App Extensions for native messaging, which is more restrictive than Firefox/Chrome.
+Safari's native messaging works differently from Chrome/Firefox:
 
-1. **Add a Native Helper Target**:
-   - In Xcode, File → New → Target
-   - Select "App Extension" or create a helper tool
+```
+┌─────────────────────────────────────────────────────────────┐
+│                      Harbor.app                              │
+├─────────────────────────────────────────────────────────────┤
+│  Contents/                                                   │
+│  ├── MacOS/                                                  │
+│  │   ├── Harbor              (main app)                     │
+│  │   └── harbor-bridge       (native helper)                │
+│  └── PlugIns/                                                │
+│      └── Harbor Extension.appex/                            │
+│          └── SafariWebExtensionHandler.swift                │
+│              ↓                                               │
+│              Spawns harbor-bridge as subprocess              │
+│              Relays messages via stdin/stdout                │
+└─────────────────────────────────────────────────────────────┘
+```
 
-2. **Bundle the Bridge Binary**:
-   ```bash
-   # Build the bridge
-   cd bridge-rs
-   cargo build --release
-   
-   # Copy to app bundle (done during Xcode build phase)
-   ```
-
-3. **Configure Entitlements**:
-   - Add App Groups entitlement for IPC
-   - Configure sandbox exceptions if needed
-
-### Alternative: External Helper
-
-For development, you can run the bridge as a separate process:
-
-1. Build and install the bridge normally:
-   ```bash
-   cd bridge-rs
-   ./install.sh
-   ```
-
-2. The extension will attempt to connect via alternative mechanisms.
-
-## Distribution
-
-### Development/Testing
-
-1. Enable "Allow Unsigned Extensions" in Safari:
-   - Safari → Develop → Allow Unsigned Extensions
-   
-2. Enable the extension in Safari Preferences → Extensions
-
-### App Store Distribution
-
-1. **Archive** the app in Xcode (Product → Archive)
-2. **Validate** the archive for App Store
-3. **Upload** via Xcode Organizer or Transporter
-4. Submit for review in App Store Connect
-
-### Direct Distribution (Developer ID)
-
-1. Archive with "Developer ID" signing
-2. Notarize the app:
-   ```bash
-   xcrun notarytool submit Harbor.zip --apple-id YOUR_ID --password APP_PASSWORD --team-id TEAM_ID
-   ```
-3. Staple the notarization ticket:
-   ```bash
-   xcrun stapler staple Harbor.app
-   ```
+The `SafariWebExtensionHandler`:
+- Receives messages from the extension via `beginRequest(with:)`
+- Spawns harbor-bridge with `--native-messaging` flag
+- Communicates using the same length-prefixed JSON protocol as Chrome/Firefox
+- Returns responses back to the extension
 
 ## Project Structure
 
 ```
 installer/safari/
-├── README.md           # This file
-├── build.sh           # Build script
-└── Harbor/            # Xcode project (created manually)
+├── README.md                      # This file
+├── setup-xcode-project.sh         # Creates Xcode project using converter
+├── build.sh                       # Main build script
+├── SafariWebExtensionHandler.swift # Custom handler with native messaging
+└── Harbor/                        # Xcode project (generated)
     ├── Harbor.xcodeproj
-    ├── Harbor/        # macOS app target
-    │   ├── AppDelegate.swift
-    │   ├── ViewController.swift
-    │   └── ...
-    └── Harbor Extension/  # Safari extension target
-        ├── SafariWebExtensionHandler.swift
+    ├── Harbor/                    # macOS app target
+    └── Harbor Extension/          # Safari extension target
+        ├── SafariWebExtensionHandler.swift  # Patched with our version
         └── Resources/
-            ├── manifest.json    # Copied from manifest.safari.json
-            ├── dist/            # Built extension files
-            ├── assets/
-            ├── demo/
-            └── bundled/
+            ├── manifest.json
+            ├── dist/
+            └── assets/
 ```
+
+## Development
+
+### Enable Unsigned Extensions
+
+For development without code signing:
+
+1. Safari → Settings → Advanced → "Show Develop menu in menu bar"
+2. Safari → Develop → Allow Unsigned Extensions
+
+### View Extension Logs
+
+- Safari → Develop → Web Extension Background Content
+
+### View Native Handler Logs
+
+The `SafariWebExtensionHandler` logs to the unified logging system:
+
+```bash
+log stream --predicate 'subsystem == "org.harbor.extension"'
+```
+
+### Debugging harbor-bridge
+
+Check the bridge log file:
+```bash
+tail -f ~/Library/Caches/harbor-bridge.log
+```
+
+## Distribution
+
+### Development/Testing
+
+1. Enable "Allow Unsigned Extensions" in Safari
+2. Run the app: `open build/Debug/Harbor.app`
+3. Enable the extension in Safari Settings → Extensions
+
+### App Store Distribution
+
+1. Build a release archive:
+   ```bash
+   ./build.sh release
+   ```
+
+2. Open in Xcode Organizer:
+   ```bash
+   open build/Harbor.xcarchive
+   ```
+
+3. Click "Distribute App" and follow the App Store flow
+
+### Direct Distribution (Developer ID)
+
+1. Build release archive
+2. Export with Developer ID signing
+3. Notarize:
+   ```bash
+   xcrun notarytool submit Harbor.zip \
+     --apple-id YOUR_ID \
+     --password APP_PASSWORD \
+     --team-id TEAM_ID \
+     --wait
+   ```
+4. Staple the ticket:
+   ```bash
+   xcrun stapler staple Harbor.app
+   ```
 
 ## Differences from Firefox/Chrome
 
 | Feature | Firefox/Chrome | Safari |
 |---------|---------------|--------|
-| Distribution | Self-hosted or store | App Store or notarized |
-| Native Messaging | Separate manifest | App Extension |
-| Sidebar | `sidebar_action` | Not supported |
-| Permissions | Browser-based | System + browser |
-| Updates | Extension store | App Store / direct |
+| Distribution | Extension store or self-hosted | App Store or notarized app |
+| Native Messaging | Separate binary + JSON manifest | Bundled in app, Swift handler |
+| Sidebar | `sidebar_action` | Not supported (use popup) |
+| Permissions | Browser prompts | System + browser |
+| Updates | Extension store auto-update | App Store or manual |
+| Installation | Browser-managed | App installation |
 
 ## Troubleshooting
 
 ### "Extension not loaded"
 
-1. Check Safari → Develop → Allow Unsigned Extensions
-2. Verify manifest.json syntax
-3. Check Xcode console for errors
+1. Ensure "Allow Unsigned Extensions" is enabled (Develop menu)
+2. Check that the extension is enabled in Safari Settings → Extensions
+3. Look for errors in Xcode console when building
 
 ### "Cannot connect to native messaging host"
 
-1. Safari's App Extension messaging is more restrictive
-2. Ensure proper entitlements are configured
-3. Check sandboxing settings
+1. Verify harbor-bridge exists in the app bundle:
+   ```bash
+   ls -la "build/Debug/Harbor.app/Contents/MacOS/"
+   ```
+2. Check the handler logs:
+   ```bash
+   log stream --predicate 'subsystem == "org.harbor.extension"'
+   ```
+3. Ensure harbor-bridge was built:
+   ```bash
+   ls -la ../../bridge-rs/target/release/harbor-bridge
+   ```
 
-### Build errors
+### "harbor-bridge binary not found"
 
-1. Update Xcode to latest version
-2. Check Swift/iOS SDK versions
-3. Verify signing certificate is valid
+The build script should copy it automatically. If not:
+```bash
+cp ../../bridge-rs/target/release/harbor-bridge \
+   "build/Debug/Harbor.app/Contents/MacOS/"
+```
+
+### Xcode build errors
+
+1. Ensure Xcode 13+ is installed
+2. Check that signing is configured (even "Sign to Run Locally" works)
+3. Clean build folder: Product → Clean Build Folder
+
+### safari-web-extension-converter errors
+
+If the converter fails:
+1. Ensure the extension builds successfully: `cd extension && npm run build`
+2. Check manifest.safari.json is valid JSON
+3. Try running the converter manually to see detailed errors
 
 ## Resources
 
 - [Safari Web Extensions Guide](https://developer.apple.com/documentation/safariservices/safari_web_extensions)
-- [Converting a Chrome Extension](https://developer.apple.com/documentation/safariservices/safari_web_extensions/converting_a_web_extension_for_safari)
-- [App Extension Programming Guide](https://developer.apple.com/library/archive/documentation/General/Conceptual/ExtensibilityPG/)
+- [Converting a Web Extension for Safari](https://developer.apple.com/documentation/safariservices/safari_web_extensions/converting_a_web_extension_for_safari)
+- [safari-web-extension-converter](https://developer.apple.com/documentation/safariservices/safari_web_extensions/converting_a_web_extension_for_safari#3744459)
+- [NSExtensionRequestHandling](https://developer.apple.com/documentation/foundation/nsextensionrequesthandling)

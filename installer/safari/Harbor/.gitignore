@@ -1,0 +1,31 @@
+# Xcode user data
+xcuserdata/
+*.xcuserdatad/
+
+# Build products
+build/
+DerivedData/
+
+# macOS
+.DS_Store
+*.dSYM
+
+# Extension built files (copied at build time)
+Harbor Extension/Resources/*.js
+Harbor Extension/Resources/*.js.map
+Harbor Extension/Resources/*.css
+Harbor Extension/Resources/*.wasm
+Harbor Extension/Resources/assets/
+Harbor Extension/Resources/bundled/
+Harbor Extension/Resources/demo/
+Harbor Extension/Resources/js-runtime/*.js
+Harbor Extension/Resources/js-runtime/*.js.map
+
+# Web Agents Extension built files
+Web Agents Extension/Resources/*.js
+Web Agents Extension/Resources/*.js.map
+Web Agents Extension/Resources/*.css
+
+# Binary (copied at build time)
+Harbor/harbor-bridge
+harbor-bridge

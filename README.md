@@ -35,23 +35,44 @@ const response = await session.prompt("Summarize this page");
 **Just want to see it work? Get running in 5 minutes.**
 
 ### 1. Prerequisites
-- Firefox 109+ or Chrome 120+
-- [Node.js 18+](https://nodejs.org)
-- [Rust](https://rustup.rs) (`curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh`)
+- Firefox 109+, Chrome 120+, or Safari 16+ (macOS)
 - [Ollama](https://ollama.com) for local AI (`brew install ollama && ollama serve && ollama pull llama3.2`)
 
-### 2. Build & Install
+For building from source: [Node.js 18+](https://nodejs.org) and [Rust](https://rustup.rs)
+
+### 2. Install
+
+**macOS Package Installers (Recommended):**
 
 ```bash
-# Clone and build
 git clone --recurse-submodules https://github.com/anthropics/harbor.git
 cd harbor
+
+# Firefox
+cd installer/firefox && ./build-pkg.sh && cd ../..
+sudo installer -pkg installer/firefox/build/Harbor-Firefox-*.pkg -target /
+
+# Chrome / Edge / Brave / Arc / Vivaldi
+cd installer/chrome && ./build-pkg.sh && cd ../..
+sudo installer -pkg installer/chrome/build/Harbor-Chrome-*.pkg -target /
+# Load extension from: /Library/Application Support/Harbor/chrome-extension
+# Then run: /Library/Application\ Support/Harbor/configure-extension-id.sh
+
+# Safari
+cd installer/safari && ./build-installer.sh --fast && cd ../..
+open installer/safari/build/Debug/Harbor.app
+# Enable in Safari → Settings → Extensions
+```
+
+**Or build from source:**
+
+```bash
 cd extension && npm install && npm run build && cd ..
 cd bridge-rs && cargo build --release && ./install.sh && cd ..
 
 # Load extension
 # Firefox: about:debugging → Load Temporary Add-on → extension/dist/manifest.json
-# Chrome: chrome://extensions → Developer mode → Load unpacked → extension/dist/
+# Chrome: chrome://extensions → Developer mode → Load unpacked → extension/dist-chrome/
 ```
 
 ### 3. Run the Demos
@@ -64,6 +85,8 @@ Open http://localhost:8000 and try:
 - **[Getting Started](http://localhost:8000/web-agents/getting-started/)** — Interactive tutorial
 - **[Chat Demo](http://localhost:8000/web-agents/chat-poc/)** — Full chat with tools
 - **[Page Summarizer](http://localhost:8000/web-agents/summarizer/)** — One-click summaries
+
+→ **[Firefox Quickstart](docs/QUICKSTART_FIREFOX.md)** | **[Chrome Quickstart](docs/QUICKSTART_CHROME.md)** | **[Safari Setup](installer/safari/README.md)**
 
 → **[Full installation guide](docs/USER_GUIDE.md)** | **[More demos](demo/README.md)**
 

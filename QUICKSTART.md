@@ -19,7 +19,7 @@ This guide covers:
 |------|---------|
 | **Node.js 18+** | [nodejs.org](https://nodejs.org) |
 | **Rust** | `curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs \| sh` |
-| **Firefox 109+** or **Chrome 120+** | Already have it |
+| **Browser** | Firefox 109+, Chrome 120+, or Safari 16+ (macOS only) |
 | **Ollama** | [ollama.com](https://ollama.com) or `brew install ollama` |
 
 ## Step 1: Start Ollama
@@ -53,6 +53,23 @@ cd bridge-rs && cargo build --release && ./install.sh && cd ..
 1. Go to `chrome://extensions`
 2. Enable "Developer mode"
 3. Click "Load unpacked" → select `extension/dist/`
+
+**Safari (macOS only):**
+
+Safari requires building a macOS app. Use the installer script:
+
+```bash
+cd installer/safari
+./build-installer.sh --fast    # Quick dev build
+```
+
+Then:
+1. Open the built app: `open build/Debug/Harbor.app`
+2. In Safari: **Settings → Extensions**
+3. Enable both **Harbor** and **Web Agents API** extensions
+4. For unsigned extensions: **Safari → Develop → Allow Unsigned Extensions**
+
+→ See [installer/safari/README.md](installer/safari/README.md) for full Safari setup
 
 ## Step 4: Run Demos
 
@@ -296,12 +313,16 @@ try {
 ## Troubleshooting
 
 **"Web Agent API not detected"**
-- Is Harbor loaded? Check `about:debugging` (Firefox) or `chrome://extensions`
+- Is Harbor loaded? Check `about:debugging` (Firefox), `chrome://extensions` (Chrome), or Safari → Settings → Extensions
 - Refresh the page after loading the extension
 
 **"Bridge Disconnected" in sidebar**
 ```bash
+# Firefox/Chrome:
 cd bridge-rs && ./install.sh
+
+# Safari: The bridge is bundled in the app - rebuild with:
+cd installer/safari && ./build-installer.sh --fast
 ```
 
 **"No LLM Provider Found"**
@@ -313,6 +334,15 @@ curl http://localhost:11434/api/tags  # Should return models
 **"No tools available"**
 - Start an MCP server in the Harbor sidebar first
 - Check the "Curated Servers" section and install one
+
+**Safari: "Extension not loaded"**
+1. Ensure Harbor.app is running (check Dock)
+2. Go to Safari → Develop → Allow Unsigned Extensions (for dev builds)
+3. Go to Safari → Settings → Extensions and enable both extensions
+
+**Safari: "Cannot connect to native messaging host"**
+- Verify Harbor.app contains harbor-bridge: `ls build/Debug/Harbor.app/Contents/MacOS/`
+- Rebuild: `./build-installer.sh --clean --fast`
 
 ---
 

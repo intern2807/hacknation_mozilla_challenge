@@ -4,9 +4,9 @@ Welcome to Harbor! This guide will help you install, configure, and start using 
 
 ## What is Harbor?
 
-Harbor is a Firefox browser extension that implements the **Web Agent API** — a proposed standard for bringing AI agent capabilities to web applications.
+Harbor is a browser extension that implements the **Web Agent API** — a proposed standard for bringing AI agent capabilities to web applications.
 
-**The Web Agent API** lets websites use AI models and tools (with your permission). Harbor is an implementation that makes it work in Firefox.
+**The Web Agent API** lets websites use AI models and tools (with your permission). Harbor works in Firefox, Chrome, and Safari.
 
 **With Harbor, you can:**
 - Use AI-powered features on websites that support the Web Agent API
@@ -22,10 +22,11 @@ Before installing Harbor, make sure you have:
 
 | Requirement | Details |
 |-------------|---------|
-| **Firefox or Chrome** | Firefox 109+ or Chrome 120+ |
+| **Browser** | Firefox 109+, Chrome 120+, or Safari 16+ (macOS) |
 | **LLM Provider** | Ollama or llamafile (optional, for AI features) |
 | **Rust** | For building from source (not needed for pkg install) |
 | **Node.js** | Version 18+ (for development/manual install only) |
+| **Xcode** | Required for Safari (macOS only) |
 
 ### Setting up an LLM Provider
 
@@ -66,7 +67,37 @@ chmod +x ./your-model.llamafile
 4. **Restart Firefox** after installation completes
 5. **Look for the Harbor icon** in the Firefox sidebar
 
-### Option 2: Manual Installation (Developers)
+### Option 2: Safari Installation (macOS)
+
+Safari requires a macOS app that wraps the extension. Build it with:
+
+```bash
+# Clone and build
+git clone --recurse-submodules https://github.com/anthropics/harbor.git
+cd harbor
+
+# Build Safari installer (quick dev build)
+cd installer/safari
+./build-installer.sh --fast
+
+# Open the app
+open build/Debug/Harbor.app
+```
+
+Then in Safari:
+1. Go to **Safari → Settings → Extensions**
+2. Enable both **Harbor** and **Web Agents API**
+3. For unsigned builds: **Safari → Develop → Allow Unsigned Extensions**
+
+For a distributable installer:
+```bash
+./build-installer.sh release              # Creates .pkg installer
+./build-installer.sh release --notarize   # Creates notarized .pkg
+```
+
+→ See [installer/safari/README.md](../installer/safari/README.md) for full details.
+
+### Option 3: Manual Installation (Developers)
 
 If you're building from source:
 
@@ -219,6 +250,8 @@ Some MCP servers require API keys (e.g., GitHub, Brave Search):
 
 ### "Bridge Disconnected"
 
+**Firefox/Chrome:**
+
 1. **Check the bridge is installed**:
    ```bash
    ls -la "/Library/Application Support/Harbor/"
@@ -241,6 +274,36 @@ Some MCP servers require API keys (e.g., GitHub, Brave Search):
    ```
 
 4. **Check Browser Console** (`Cmd+Shift+J` in Firefox, `Cmd+Option+J` in Chrome) for errors
+
+**Safari:**
+
+1. **Make sure Harbor.app is running** (check the Dock)
+
+2. **Check harbor-bridge is in the app**:
+   ```bash
+   ls -la "installer/safari/build/Debug/Harbor.app/Contents/MacOS/"
+   # Should show: Harbor, harbor-bridge
+   ```
+
+3. **Rebuild the app**:
+   ```bash
+   cd installer/safari
+   ./build-installer.sh --clean --fast
+   ```
+
+4. **Check Safari logs**:
+   ```bash
+   log stream --predicate 'subsystem == "org.harbor.extension"'
+   ```
+
+### Safari: "Extension not enabled"
+
+1. Open **Safari → Settings → Extensions**
+2. Make sure both are checked:
+   - ☑️ Harbor
+   - ☑️ Web Agents API
+3. For unsigned extensions, first enable: **Safari → Develop → Allow Unsigned Extensions**
+   - If Develop menu is missing: **Safari → Settings → Advanced → Show Develop menu**
 
 ### "No LLM Provider Found"
 
@@ -300,7 +363,7 @@ rm -rf ~/.harbor
 
 ## Uninstalling
 
-### macOS (Installer)
+### macOS Firefox/Chrome (Installer)
 
 ```bash
 # Remove Harbor files
@@ -312,9 +375,20 @@ sudo rm "/Library/Application Support/Mozilla/policies/policies.json"
 rm -rf ~/.harbor
 ```
 
-### Manual Installation
+### Safari
 
-1. Go to `about:debugging#/runtime/this-firefox`
+1. Delete `/Applications/Harbor.app` (if installed via .pkg)
+2. Or delete `installer/safari/build/` (if built manually)
+3. The extensions are automatically removed when the app is deleted
+
+```bash
+# Remove user data
+rm -rf ~/.harbor
+```
+
+### Manual Installation (Firefox/Chrome)
+
+1. Go to `about:debugging#/runtime/this-firefox` (Firefox) or `chrome://extensions` (Chrome)
 2. Click "Remove" next to the Harbor extension
 3. Delete the harbor directory
 

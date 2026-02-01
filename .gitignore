@@ -63,8 +63,13 @@ htmlcov/
 
 # Build credentials (DO NOT COMMIT)
 installer/credentials.env
+
+# Installer build artifacts
 installer/firefox/build/
 installer/firefox/payload/
+installer/chrome/build/
+installer/chrome/payload/
+installer/safari/build/
 
 # Signed extension artifacts
 *.xpi

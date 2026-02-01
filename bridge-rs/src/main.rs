@@ -2,6 +2,7 @@ mod fs;
 mod http_server;
 mod js;
 mod llm;
+mod mcp;
 mod native_messaging;
 mod oauth;
 mod rpc;

@@ -2,7 +2,7 @@
 
 use serde::{Deserialize, Serialize};
 
-use crate::{fs, js, llm, oauth};
+use crate::{fs, js, llm, mcp, oauth};
 
 #[derive(Debug, Deserialize)]
 pub struct RpcRequest {
@@ -92,6 +92,14 @@ pub async fn handle(request: RpcRequest) -> RpcResponse {
     "oauth.get_credentials_status" => oauth::rpc_get_credentials_status(request.params.clone()).await,
     "oauth.set_credentials" => oauth::rpc_set_credentials(request.params.clone()).await,
     "oauth.remove_credentials" => oauth::rpc_remove_credentials(request.params.clone()).await,
+
+    // MCP tool registry (for Safari compatibility)
+    "mcp.register_tools" => mcp::register_tools(request.params.clone()).await,
+    "mcp.unregister_tools" => mcp::unregister_tools(request.params.clone()).await,
+    "mcp.list_tools" => mcp::list_tools().await,
+    "mcp.call_tool" => mcp::call_tool(request.params.clone()).await,
+    "mcp.poll_pending_calls" => mcp::poll_pending_calls().await,
+    "mcp.submit_call_result" => mcp::submit_call_result(request.params.clone()).await,
 
     _ => Err(RpcError {
       code: -32601,

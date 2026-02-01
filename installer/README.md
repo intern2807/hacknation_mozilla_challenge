@@ -287,6 +287,41 @@ For pkg signing/notarization:
 - Choose a different unique ID (e.g., `yourname.harbor@yourdomain.com`)
 - Remember: No `+` characters allowed in the extension ID!
 
+## Safari (.pkg / .dmg)
+
+Creates a macOS app bundle for Safari with:
+1. **Universal harbor-bridge binary** - Works on Intel and Apple Silicon Macs
+2. **Harbor Safari Extension** - Core LLM and MCP infrastructure
+3. **Web Agents API Extension** - Provides window.ai API to web pages
+4. **Installer package or DMG** - Easy distribution
+
+### Quick Start
+
+```bash
+cd installer/safari
+
+# Development build (quick, current arch)
+./build-installer.sh --fast
+
+# Full release build with .pkg
+./build-installer.sh release
+
+# Create .dmg disk image
+./build-installer.sh dmg
+
+# Full production build with signing and notarization
+./build-installer.sh release --notarize
+```
+
+See `installer/safari/README.md` for detailed instructions.
+
+### Safari-Specific Notes
+
+- Safari extensions must be bundled in a macOS app
+- No separate extension installation - users enable in Safari Settings
+- The harbor-bridge runs as an HTTP server started by the app
+- Both extensions (Harbor + Web Agents API) are included
+
 ## Windows (.msi)
 
 Coming soon.

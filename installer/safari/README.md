@@ -16,9 +16,33 @@ Safari Web Extensions require a macOS app wrapper. Unlike Chrome/Firefox where n
 
 ## Quick Start
 
-### One-Command Build
+### Build Distributable Installer (Recommended)
 
-The simplest way to get started:
+To create a `.pkg` installer or `.dmg` for distribution:
+
+```bash
+# Quick development build (current architecture, no signing)
+./build-installer.sh --fast
+
+# Full release build with .pkg installer
+./build-installer.sh release
+
+# Create a DMG disk image
+./build-installer.sh dmg
+
+# Full production build with signing and notarization
+./build-installer.sh release --notarize
+```
+
+The installer includes:
+- **Harbor.app** - The macOS app container
+- **Harbor Extension** - Main Safari extension for LLM/MCP
+- **Web Agents API Extension** - Provides window.ai to web pages
+- **harbor-bridge** - Universal binary (arm64 + x64) native bridge
+
+### Development Build
+
+For local testing without creating an installer:
 
 ```bash
 ./build.sh
@@ -56,6 +80,64 @@ This uses Apple's `safari-web-extension-converter` to create the Xcode project w
 ./build.sh          # Development build
 ./build.sh release  # Release archive
 ```
+
+## Installer Build Options
+
+The `build-installer.sh` script supports various options:
+
+```bash
+# Modes
+./build-installer.sh              # Debug build (unsigned .app)
+./build-installer.sh release      # Release .pkg installer
+./build-installer.sh dmg          # Create .dmg disk image
+./build-installer.sh app-only     # Release .app without installer
+
+# Options
+--fast              # Current architecture only (faster builds)
+--universal         # Force universal binary (default for release)
+--sign              # Sign with Developer ID
+--notarize          # Notarize for distribution (requires --sign)
+--clean             # Clean all artifacts before building
+--clean-only        # Just clean, don't build
+--skip-bridge       # Skip rebuilding harbor-bridge
+--skip-extensions   # Skip rebuilding extensions
+--help              # Show all options
+```
+
+### Credentials Setup
+
+For signing and notarization, create `installer/credentials.env`:
+
+```bash
+cp installer/credentials.env.example installer/credentials.env
+```
+
+Then edit it with your Apple Developer credentials:
+
+```bash
+# Apple Developer Team ID (required for signing)
+DEVELOPMENT_TEAM="XXXXXXXXXX"
+
+# Code signing identity
+CODE_SIGN_IDENTITY="Developer ID Application: Your Name (XXXXXXXXXX)"
+
+# For package signing
+DEVELOPER_ID_INSTALLER="Developer ID Installer: Your Name (XXXXXXXXXX)"
+
+# For notarization
+APPLE_ID="your@email.com"
+APPLE_TEAM_ID="XXXXXXXXXX"
+```
+
+### Output Files
+
+After building, find outputs in `build/output/`:
+
+| File | Description |
+|------|-------------|
+| `Harbor.app` | The macOS application bundle |
+| `Harbor-{version}.pkg` | Installer package (with `release` mode) |
+| `Harbor-{version}.dmg` | Disk image (with `dmg` mode) |
 
 ## Native Messaging Architecture
 

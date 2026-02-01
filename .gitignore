@@ -63,8 +63,8 @@ htmlcov/
 
 # Build credentials (DO NOT COMMIT)
 installer/credentials.env
-installer/macos/build/
-installer/macos/payload/
+installer/firefox/build/
+installer/firefox/payload/
 
 # Signed extension artifacts
 *.xpi

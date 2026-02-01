@@ -2,14 +2,14 @@
 
 Build distributable packages for Harbor.
 
-## macOS (.pkg)
+## Firefox (.pkg)
 
-Creates a standard macOS installer package that:
+Creates a standard macOS installer package for Firefox that:
 
 1. **Checks requirements** - Firefox (required) and Docker (recommended)
-2. **Installs the native bridge** - Standalone binary with bundled Node.js
-3. **Installs the Firefox extension** - Signed XPI opened in Firefox
-4. **Sets up native messaging** - So Firefox can communicate with the bridge
+2. **Installs the native bridge** - Universal Rust binary (Intel + Apple Silicon)
+3. **Installs both Firefox extensions** - Harbor and Web Agents API (signed XPIs)
+4. **Sets up native messaging** - So extensions can communicate with the bridge
 5. **Installs uninstaller** - Both GUI app and CLI
 
 ### User Dependencies
@@ -23,7 +23,7 @@ No Node.js or other development tools required!
 ### Quick Start
 
 ```bash
-cd installer/macos
+cd installer/firefox
 
 # First time or after major changes
 ./build-pkg.sh --clean
@@ -32,9 +32,9 @@ cd installer/macos
 ./build-pkg.sh
 ```
 
-**Signing happens automatically** when credentials are configured in `credentials.env`. The build will sign the extension, sign the package, and notarize it if the respective credentials are available.
+**Signing happens automatically** when credentials are configured in `credentials.env`. The build will sign both extensions, sign the package, and notarize it if the respective credentials are available.
 
-The output will be at `installer/macos/build/Harbor-<version>.pkg`.
+The output will be at `installer/firefox/build/Harbor-Firefox-<version>.pkg`.
 
 ### Credentials Setup (Required)
 
@@ -117,14 +117,14 @@ By default, all signing and notarization happens **automatically** when credenti
 
 ### How the Build Works
 
-1. **Downloads Node.js v20.19.6** - Specific version for building native modules
-2. **Builds native modules** - `better-sqlite3` compiled for that exact Node version
-3. **Bundles with esbuild** - All JavaScript into single CommonJS file
-4. **Packages with pkg** - Creates standalone binaries with Node.js v20.19.6 bundled
-5. **Signs extension** - Uses Mozilla Add-ons API for trusted installation
+1. **Builds Harbor extension** - TypeScript compiled to JavaScript with esbuild
+2. **Builds Web Agents extension** - TypeScript compiled to JavaScript with esbuild
+3. **Signs both extensions** - Uses Mozilla Add-ons API for trusted installation
+4. **Builds native bridge** - Rust binary compiled for both Intel and Apple Silicon
+5. **Creates universal binary** - Uses `lipo` to combine both architectures
 6. **Creates .pkg** - Standard macOS installer with pre/post-install scripts
 
-**Universal builds** (default): Both arm64 and x64 binaries are included in the package. The `postinstall` script detects the architecture and installs the correct one. This avoids using `lipo` which corrupts `pkg` binaries.
+**Universal builds** (default): Both arm64 and x64 binaries are combined with `lipo`.
 
 **Fast builds** (`--fast`): Only builds for the current architecture (faster for development).
 
@@ -226,8 +226,9 @@ sudo installer -pkg build/Harbor-*.pkg -target /
 
 | Path | Description |
 |------|-------------|
-| `/Library/Application Support/Harbor/harbor-bridge` | Native bridge binary (standalone, includes Node.js) |
-| `/Library/Application Support/Harbor/harbor.xpi` | Firefox extension (signed) |
+| `/Library/Application Support/Harbor/harbor-bridge` | Native bridge binary (universal Rust binary) |
+| `/Library/Application Support/Harbor/harbor.xpi` | Harbor Firefox extension (signed) |
+| `/Library/Application Support/Harbor/web-agents.xpi` | Web Agents API Firefox extension (signed) |
 | `/Library/Application Support/Harbor/uninstall.sh` | CLI uninstaller |
 | `/Library/Application Support/Harbor/Uninstall Harbor.app` | GUI uninstaller |
 | `/Library/Application Support/Mozilla/NativeMessagingHosts/harbor_bridge_host.json` | Native messaging manifest |
@@ -366,20 +367,24 @@ User downloads .pkg
 installer/
 ├── credentials.env          # Your signing credentials (gitignored)
 ├── README.md               # This file
-└── macos/
-    ├── build-pkg.sh        # Main build script
-    ├── distribution.xml    # Package distribution settings
-    ├── resources/
-    │   ├── welcome.html    # Installer welcome screen
-    │   ├── license.html    # License agreement
-    │   ├── conclusion.html # Post-install instructions
-    │   └── uninstall-app.applescript
-    ├── scripts/
-    │   ├── preinstall      # Pre-installation checks
-    │   ├── postinstall     # Post-installation setup
-    │   └── uninstall.sh    # Uninstaller script
-    └── build/              # Build output (gitignored)
-        ├── Harbor-*.pkg    # Final installer
-        ├── harbor-bridge   # Standalone binary
-        └── harbor.xpi      # Signed extension
+├── firefox/
+│   ├── build-pkg.sh        # Main build script
+│   ├── distribution.xml    # Package distribution settings
+│   ├── resources/
+│   │   ├── welcome.html    # Installer welcome screen
+│   │   ├── license.html    # License agreement
+│   │   ├── conclusion.html # Post-install instructions
+│   │   └── uninstall-app.applescript
+│   ├── scripts/
+│   │   ├── preinstall      # Pre-installation checks
+│   │   ├── postinstall     # Post-installation setup
+│   │   └── uninstall.sh    # Uninstaller script
+│   └── build/              # Build output (gitignored)
+│       ├── Harbor-Firefox-*.pkg  # Final installer
+│       ├── harbor-bridge         # Universal Rust binary
+│       ├── harbor.xpi            # Harbor extension (signed)
+│       └── web-agents.xpi        # Web Agents extension (signed)
+└── safari/
+    ├── build-installer.sh  # Safari build script
+    └── ...                 # Safari-specific files
 ```

@@ -1,6 +1,6 @@
 #!/bin/bash
-# Harbor macOS Installer Build Script
-# Creates a .pkg installer that includes the native bridge and Firefox extension
+# Harbor Firefox Installer Build Script
+# Creates a .pkg installer that includes the native bridge and Firefox extensions
 
 set -e
 
@@ -12,6 +12,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
 BRIDGE_DIR="$PROJECT_ROOT/bridge-rs"
 EXTENSION_DIR="$PROJECT_ROOT/extension"
+WEB_AGENTS_DIR="$PROJECT_ROOT/web-agents-api"
 INSTALLER_DIR="$SCRIPT_DIR"
 CREDENTIALS_FILE="$PROJECT_ROOT/installer/credentials.env"
 
@@ -24,7 +25,7 @@ fi
 # Output paths
 BUILD_DIR="$INSTALLER_DIR/build"
 PAYLOAD_DIR="$INSTALLER_DIR/payload"
-OUTPUT_PKG="$BUILD_DIR/Harbor-${VERSION}.pkg"
+OUTPUT_PKG="$BUILD_DIR/Harbor-Firefox-${VERSION}.pkg"
 
 # Component package
 COMPONENT_PKG="$BUILD_DIR/harbor-bridge.pkg"
@@ -81,7 +82,14 @@ load_credentials() {
             echo "       This is required for the extension to connect to the native bridge."
             exit 1
         fi
-        echo "  Extension ID: $EXTENSION_ID"
+        echo "  Harbor Extension ID: $EXTENSION_ID"
+        
+        if [ -z "$WEB_AGENTS_EXTENSION_ID" ]; then
+            echo_warn "WEB_AGENTS_EXTENSION_ID not set in credentials.env"
+            echo "       Web Agents extension will not be built."
+        else
+            echo "  Web Agents Extension ID: $WEB_AGENTS_EXTENSION_ID"
+        fi
     else
         echo_warn "No credentials file found at $CREDENTIALS_FILE"
         echo "       Create it from credentials.env.example for extension signing"
@@ -107,7 +115,15 @@ clean_all() {
     
     # Clean extension
     rm -rf "$EXTENSION_DIR/dist"
+    rm -rf "$EXTENSION_DIR/dist-firefox"
+    rm -rf "$EXTENSION_DIR/dist-chrome"
     rm -rf "$EXTENSION_DIR/node_modules"
+    
+    # Clean web-agents-api
+    rm -rf "$WEB_AGENTS_DIR/dist"
+    rm -rf "$WEB_AGENTS_DIR/dist-firefox"
+    rm -rf "$WEB_AGENTS_DIR/dist-chrome"
+    rm -rf "$WEB_AGENTS_DIR/node_modules"
     
     echo_success "Deep clean complete"
 }
@@ -250,6 +266,95 @@ sign_extension() {
 }
 
 # =============================================================================
+# Build Web Agents Extension (Firefox)
+# =============================================================================
+
+build_web_agents_extension() {
+    if [ -z "$WEB_AGENTS_EXTENSION_ID" ]; then
+        echo_warn "Skipping Web Agents extension (WEB_AGENTS_EXTENSION_ID not set)"
+        return 0
+    fi
+    
+    echo_step "Building Web Agents Firefox extension..."
+    
+    cd "$WEB_AGENTS_DIR"
+    
+    # Install dependencies if needed
+    if [ ! -d "node_modules" ]; then
+        echo "  Installing Web Agents dependencies..."
+        npm install
+    fi
+    
+    # Update manifest.json with current version and extension ID
+    echo "  Setting version to $VERSION..."
+    sed -i '' "s/\"version\": \"[^\"]*\"/\"version\": \"$VERSION\"/" manifest.json
+    
+    echo "  Setting extension ID to $WEB_AGENTS_EXTENSION_ID..."
+    # Update the gecko ID in browser_specific_settings
+    sed -i '' "s/\"id\": \"[^\"]*@[^\"]*\"/\"id\": \"$WEB_AGENTS_EXTENSION_ID\"/" manifest.json
+    
+    # Build for Firefox (default)
+    npm run build
+    
+    # Create XPI (unsigned) from the dist-firefox folder
+    echo "  Creating XPI from dist-firefox/..."
+    cd dist-firefox
+    zip -r "$BUILD_DIR/web-agents-unsigned.xpi" . \
+        -x "*.map" "**/*.map"
+    cd "$WEB_AGENTS_DIR"
+    
+    echo_success "Web Agents extension built: $BUILD_DIR/web-agents-unsigned.xpi"
+}
+
+# =============================================================================
+# Sign Web Agents Extension with web-ext
+# =============================================================================
+
+sign_web_agents_extension() {
+    if [ -z "$WEB_AGENTS_EXTENSION_ID" ]; then
+        return 0
+    fi
+    
+    if [ -z "$AMO_JWT_ISSUER" ] || [ -z "$AMO_JWT_SECRET" ]; then
+        echo_warn "AMO credentials not set, skipping Web Agents extension signing"
+        cp "$BUILD_DIR/web-agents-unsigned.xpi" "$BUILD_DIR/web-agents.xpi"
+        return 0
+    fi
+    
+    echo_step "Signing Web Agents extension with Mozilla Add-ons..."
+    
+    cd "$WEB_AGENTS_DIR"
+    
+    # Clear previous signed artifacts for this extension
+    rm -rf "$BUILD_DIR/signed-web-agents"
+    
+    # Sign the extension
+    web-ext sign \
+        --api-key="$AMO_JWT_ISSUER" \
+        --api-secret="$AMO_JWT_SECRET" \
+        --channel=unlisted \
+        --artifacts-dir="$BUILD_DIR/signed-web-agents" \
+        --source-dir="$WEB_AGENTS_DIR/dist-firefox" \
+        --ignore-files="*.map" --ignore-files="**/*.map" \
+        2>&1 || {
+            echo_warn "Web Agents extension signing failed, using unsigned XPI"
+            cp "$BUILD_DIR/web-agents-unsigned.xpi" "$BUILD_DIR/web-agents.xpi"
+            return 0
+        }
+    
+    # Find the signed XPI
+    SIGNED_XPI=$(find "$BUILD_DIR/signed-web-agents" -name "*.xpi" -type f | head -1)
+    
+    if [ -n "$SIGNED_XPI" ]; then
+        cp "$SIGNED_XPI" "$BUILD_DIR/web-agents.xpi"
+        echo_success "Web Agents extension signed: $BUILD_DIR/web-agents.xpi"
+    else
+        echo_warn "Signed XPI not found, using unsigned"
+        cp "$BUILD_DIR/web-agents-unsigned.xpi" "$BUILD_DIR/web-agents.xpi"
+    fi
+}
+
+# =============================================================================
 # Build Bridge (Rust)
 # =============================================================================
 
@@ -278,9 +383,15 @@ build_bridge() {
 copy_extension() {
     echo_step "Copying extensions to payload..."
     
-    # Copy Firefox extension
+    # Copy Harbor Firefox extension
     cp "$BUILD_DIR/harbor.xpi" "$PAYLOAD_DIR/Library/Application Support/Harbor/"
-    echo "  ✓ Firefox extension (harbor.xpi)"
+    echo "  ✓ Harbor Firefox extension (harbor.xpi)"
+    
+    # Copy Web Agents Firefox extension (if built)
+    if [ -f "$BUILD_DIR/web-agents.xpi" ]; then
+        cp "$BUILD_DIR/web-agents.xpi" "$PAYLOAD_DIR/Library/Application Support/Harbor/"
+        echo "  ✓ Web Agents Firefox extension (web-agents.xpi)"
+    fi
     
     # Copy Chrome extension (unpacked folder for dev mode loading)
     if [ -d "$BUILD_DIR/chrome-extension" ]; then
@@ -336,6 +447,7 @@ create_component_pkg() {
     
     # Stamp postinstall with extension IDs and URLs
     sed -e "s/__EXTENSION_ID__/$EXTENSION_ID/g" \
+        -e "s/__WEB_AGENTS_EXTENSION_ID__/${WEB_AGENTS_EXTENSION_ID:-}/g" \
         -e "s/__CHROME_EXTENSION_ID__/${CHROME_EXTENSION_ID:-}/g" \
         -e "s|__CHROME_WEBSTORE_URL__|${CHROME_WEBSTORE_URL:-}|g" \
         "$INSTALLER_DIR/scripts/postinstall" > "$SCRIPTS_TEMP/postinstall"
@@ -474,7 +586,7 @@ build_universal() {
 main() {
     echo ""
     echo "═══════════════════════════════════════════════════════════════"
-    echo "  Harbor macOS Installer Builder"
+    echo "  Harbor Firefox Installer Builder"
     echo "  Version: $VERSION"
     echo "  Architecture: $ARCH"
     echo "═══════════════════════════════════════════════════════════════"
@@ -606,12 +718,20 @@ main() {
     # Run build steps
     cleanup
     
-    # Build Firefox extension
+    # Build Harbor Firefox extension
     build_extension
     if [ "$SIGN_EXT" = true ]; then
         sign_extension
     else
         cp "$BUILD_DIR/harbor-unsigned.xpi" "$BUILD_DIR/harbor.xpi"
+    fi
+    
+    # Build Web Agents Firefox extension
+    build_web_agents_extension
+    if [ "$SIGN_EXT" = true ]; then
+        sign_web_agents_extension
+    elif [ -f "$BUILD_DIR/web-agents-unsigned.xpi" ]; then
+        cp "$BUILD_DIR/web-agents-unsigned.xpi" "$BUILD_DIR/web-agents.xpi"
     fi
     
     # Build Chrome extension
@@ -653,9 +773,12 @@ main() {
     # Signing status summary
     echo "  Signing status:"
     if [ "$SIGN_EXT" = true ]; then
-        echo "    ✓ Extension: Signed with Mozilla Add-ons"
+        echo "    ✓ Harbor Extension: Signed with Mozilla Add-ons"
+        if [ -n "$WEB_AGENTS_EXTENSION_ID" ]; then
+            echo "    ✓ Web Agents Extension: Signed with Mozilla Add-ons"
+        fi
     else
-        echo "    ○ Extension: Unsigned (set AMO_JWT_ISSUER/AMO_JWT_SECRET)"
+        echo "    ○ Extensions: Unsigned (set AMO_JWT_ISSUER/AMO_JWT_SECRET)"
     fi
     if [ "$SIGN_PKG" = true ]; then
         echo "    ✓ Package: Signed with Developer ID"

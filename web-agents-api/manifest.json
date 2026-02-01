@@ -1,11 +1,14 @@
 {
   "manifest_version": 3,
   "name": "Web Agents API",
-  "version": "0.1.0",
+  "version": "0.260131.2109",
   "description": "Exposes AI capabilities to web pages. Requires Harbor extension.",
   "browser_specific_settings": {
     "gecko": {
-      "id": "web-agents-api@mozilla.org"
+      "id": "web-agents@krikorian.co",
+      "data_collection_permissions": {
+        "required": ["none"]
+      }
     }
   },
   "background": {

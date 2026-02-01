@@ -11,6 +11,7 @@ echo "Harbor post-install started at $(date)" >> "$LOG_FILE"
 HARBOR_DIR="/Library/Application Support/Harbor"
 HARBOR_BIN="$HARBOR_DIR/harbor-bridge"
 HARBOR_XPI="$HARBOR_DIR/harbor.xpi"
+WEB_AGENTS_XPI="$HARBOR_DIR/web-agents.xpi"
 
 # =============================================================================
 # Select correct binary for current architecture
@@ -60,8 +61,9 @@ CHROMIUM_NATIVE_HOSTS="/Library/Application Support/Chromium/NativeMessagingHost
 MANIFEST_NAME="harbor_bridge_host"
 
 # Extension IDs (stamped by build-pkg.sh from credentials.env)
-# Firefox extension ID (email format, e.g., "raffi.krikorian.harbor@gmail.com")
+# Firefox extension IDs (email format, e.g., "harbor@krikorian.co")
 EXTENSION_ID="__EXTENSION_ID__"
+WEB_AGENTS_EXTENSION_ID="__WEB_AGENTS_EXTENSION_ID__"
 # Chrome extension ID (32-char string, e.g., "abcdefghijklmnopqrstuvwxyzabcdef")
 CHROME_EXTENSION_ID="__CHROME_EXTENSION_ID__"
 
@@ -119,13 +121,20 @@ install_firefox_native_manifest() {
     # Create the system-wide manifest
     MANIFEST_FILE="$FIREFOX_NATIVE_HOSTS/${MANIFEST_NAME}.json"
     
+    # Build allowed_extensions array (include Web Agents if configured)
+    if [ -n "$WEB_AGENTS_EXTENSION_ID" ] && [ "$WEB_AGENTS_EXTENSION_ID" != "__WEB_AGENTS_EXTENSION_ID__" ]; then
+        ALLOWED_EXTENSIONS="[\"$EXTENSION_ID\", \"$WEB_AGENTS_EXTENSION_ID\"]"
+    else
+        ALLOWED_EXTENSIONS="[\"$EXTENSION_ID\"]"
+    fi
+    
     cat > "$MANIFEST_FILE" << EOF
 {
   "name": "$MANIFEST_NAME",
   "description": "Harbor Bridge - AI Agent Platform with MCP Tools",
   "path": "$LAUNCHER_PATH",
   "type": "stdio",
-  "allowed_extensions": ["$EXTENSION_ID"]
+  "allowed_extensions": $ALLOWED_EXTENSIONS
 }
 EOF
 
@@ -150,7 +159,7 @@ EOF
   "description": "Harbor Bridge - AI Agent Platform with MCP Tools",
   "path": "$LAUNCHER_PATH",
   "type": "stdio",
-  "allowed_extensions": ["$EXTENSION_ID"]
+  "allowed_extensions": $ALLOWED_EXTENSIONS
 }
 EOF
             chown "$ACTUAL_USER" "$USER_MANIFEST"
@@ -255,10 +264,10 @@ install_native_manifest() {
 }
 
 # =============================================================================
-# Install Firefox extension via policy
+# Install Firefox extensions via policy
 # =============================================================================
 install_firefox_extension() {
-    echo "Setting up Firefox extension..."
+    echo "Setting up Firefox extensions..."
     
     # Method 1: Try enterprise policies (works on some Firefox installs)
     POLICIES_DIR="/Library/Application Support/Mozilla/policies"
@@ -266,10 +275,36 @@ install_firefox_extension() {
     
     mkdir -p "$POLICIES_DIR"
     
-    # URL-encode the path (spaces -> %20)
+    # URL-encode the paths (spaces -> %20)
     HARBOR_XPI_URL="file://$(echo "$HARBOR_XPI" | sed 's/ /%20/g')"
+    WEB_AGENTS_XPI_URL="file://$(echo "$WEB_AGENTS_XPI" | sed 's/ /%20/g')"
     
-    cat > "$POLICIES_FILE" << EOF
+    # Build policy JSON based on whether Web Agents extension exists
+    if [ -f "$WEB_AGENTS_XPI" ] && [ -n "$WEB_AGENTS_EXTENSION_ID" ] && [ "$WEB_AGENTS_EXTENSION_ID" != "__WEB_AGENTS_EXTENSION_ID__" ]; then
+        cat > "$POLICIES_FILE" << EOF
+{
+  "policies": {
+    "Extensions": {
+      "Install": [
+        "$HARBOR_XPI_URL",
+        "$WEB_AGENTS_XPI_URL"
+      ]
+    },
+    "ExtensionSettings": {
+      "$EXTENSION_ID": {
+        "installation_mode": "normal_installed",
+        "install_url": "$HARBOR_XPI_URL"
+      },
+      "$WEB_AGENTS_EXTENSION_ID": {
+        "installation_mode": "normal_installed",
+        "install_url": "$WEB_AGENTS_XPI_URL"
+      }
+    }
+  }
+}
+EOF
+    else
+        cat > "$POLICIES_FILE" << EOF
 {
   "policies": {
     "Extensions": {
@@ -286,9 +321,10 @@ install_firefox_extension() {
   }
 }
 EOF
+    fi
     echo "  ✓ Firefox policy configured (fallback)"
     
-    # Method 2: Open the XPI file to trigger Firefox install prompt
+    # Method 2: Open the XPI files to trigger Firefox install prompts
     # Run as the actual user so it opens in their Firefox session
     # Try multiple methods to find the actual user
     ACTUAL_USER="${SUDO_USER:-}"
@@ -304,20 +340,30 @@ EOF
     echo "  Detected user: $ACTUAL_USER"
     
     if [ -n "$ACTUAL_USER" ] && [ "$ACTUAL_USER" != "root" ]; then
-        echo "  Opening extension in Firefox for user: $ACTUAL_USER"
-        echo "  Opening extension in Firefox for user: $ACTUAL_USER" >> "$LOG_FILE"
+        echo "  Opening extensions in Firefox for user: $ACTUAL_USER"
+        echo "  Opening extensions in Firefox for user: $ACTUAL_USER" >> "$LOG_FILE"
         
-        # Open the XPI file with Firefox - this triggers the install prompt
+        # Open the Harbor XPI file with Firefox - this triggers the install prompt
         # Run in background so it doesn't block the installer
         # Use su to run as the actual user (not root)
         su "$ACTUAL_USER" -c "open -a Firefox '$HARBOR_XPI'" 2>> "$LOG_FILE" &
+        echo "  ✓ Harbor extension install prompt triggered"
         
-        echo "  ✓ Firefox extension install prompt triggered"
-        echo "Extension XPI opened for $ACTUAL_USER" >> "$LOG_FILE"
+        # Wait a moment, then open Web Agents extension if it exists
+        if [ -f "$WEB_AGENTS_XPI" ]; then
+            sleep 2
+            su "$ACTUAL_USER" -c "open -a Firefox '$WEB_AGENTS_XPI'" 2>> "$LOG_FILE" &
+            echo "  ✓ Web Agents extension install prompt triggered"
+        fi
+        
+        echo "Extensions XPIs opened for $ACTUAL_USER" >> "$LOG_FILE"
     else
-        echo "  ⚠ Could not determine user (got: '$ACTUAL_USER'), please install extension manually"
+        echo "  ⚠ Could not determine user (got: '$ACTUAL_USER'), please install extensions manually"
         echo "Could not determine user: SUDO_USER='$SUDO_USER' USER='$USER'" >> "$LOG_FILE"
         echo "  Open: $HARBOR_XPI"
+        if [ -f "$WEB_AGENTS_XPI" ]; then
+            echo "  Open: $WEB_AGENTS_XPI"
+        fi
     fi
 }
 
@@ -549,11 +595,20 @@ echo ""
 echo "✓ Harbor has been installed successfully!"
 echo ""
 echo "FIREFOX:"
-echo "  Firefox will open with an extension install prompt."
-echo "  Click 'Add' to install, then look for ⚓ in the sidebar."
+echo "  Firefox will open with extension install prompts."
+echo "  Click 'Add' for each extension:"
+echo "    • Harbor - Core AI agent platform"
+if [ -f "$WEB_AGENTS_XPI" ]; then
+echo "    • Web Agents API - Exposes AI to web pages"
+fi
 echo ""
-echo "  If Firefox doesn't open, manually open this file:"
+echo "  Then look for ⚓ in the sidebar."
+echo ""
+echo "  If Firefox doesn't open, manually open these files:"
 echo "    $HARBOR_XPI"
+if [ -f "$WEB_AGENTS_XPI" ]; then
+echo "    $WEB_AGENTS_XPI"
+fi
 echo ""
 if [ -n "$CHROME_WEBSTORE_URL" ] && [ "$CHROME_WEBSTORE_URL" != "__CHROME_WEBSTORE_URL__" ]; then
 echo "CHROME:"

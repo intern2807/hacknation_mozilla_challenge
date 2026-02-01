@@ -33,6 +33,18 @@
 		070CB6312F2D7A82002C7CAD /* manifest.json in Resources */ = {isa = PBXBuildFile; fileRef = 070CB6202F2D7A82002C7CAD /* manifest.json */; };
 		070CB6322F2D7A82002C7CAD /* sidebar.html in Resources */ = {isa = PBXBuildFile; fileRef = 070CB6222F2D7A82002C7CAD /* sidebar.html */; };
 		070CB6332F2D7A82002C7CAD /* assets in Resources */ = {isa = PBXBuildFile; fileRef = 070CB6232F2D7A82002C7CAD /* assets */; };
+		07E86FFC2F2E91CD00642C64 /* Web Agents Extension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 07E86FE42F2E91CD00642C64 /* Web Agents Extension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		07WA00012F30000100000001 /* SafariWebExtensionHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07WA00012F30000100000010 /* SafariWebExtensionHandler.swift */; };
+		07WA00012F30000100000002 /* manifest.json in Resources */ = {isa = PBXBuildFile; fileRef = 07WA00012F30000100000011 /* manifest.json */; };
+		07WA00012F30000100000003 /* background.js in Resources */ = {isa = PBXBuildFile; fileRef = 07WA00012F30000100000012 /* background.js */; };
+		07WA00012F30000100000004 /* content-script.js in Resources */ = {isa = PBXBuildFile; fileRef = 07WA00012F30000100000013 /* content-script.js */; };
+		07WA00012F30000100000005 /* injected.js in Resources */ = {isa = PBXBuildFile; fileRef = 07WA00012F30000100000014 /* injected.js */; };
+		07WA00012F30000100000006 /* sidebar.html in Resources */ = {isa = PBXBuildFile; fileRef = 07WA00012F30000100000015 /* sidebar.html */; };
+		07WA00012F30000100000007 /* sidebar.js in Resources */ = {isa = PBXBuildFile; fileRef = 07WA00012F30000100000016 /* sidebar.js */; };
+		07WA00012F30000100000008 /* permission-prompt.html in Resources */ = {isa = PBXBuildFile; fileRef = 07WA00012F30000100000017 /* permission-prompt.html */; };
+		07WA00012F30000100000009 /* permission-prompt.js in Resources */ = {isa = PBXBuildFile; fileRef = 07WA00012F30000100000018 /* permission-prompt.js */; };
+		07WA0001300000000000000A /* design-tokens.css in Resources */ = {isa = PBXBuildFile; fileRef = 07WA00012F30000100000019 /* design-tokens.css */; };
+		07WA0001300000000000000B /* assets in Resources */ = {isa = PBXBuildFile; fileRef = 07WA0001300000000000001A /* assets */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -42,6 +54,13 @@
 			proxyType = 1;
 			remoteGlobalIDString = 070CB5FA2F2D7A82002C7CAD;
 			remoteInfo = "Harbor Extension";
+		};
+		07E86FFA2F2E91CD00642C64 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 070CB5D82F2D7A81002C7CAD /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 07E86FE32F2E91CD00642C64;
+			remoteInfo = "Web Agents Extension";
 		};
 /* End PBXContainerItemProxy section */
 
@@ -53,6 +72,7 @@
 			dstSubfolderSpec = 13;
 			files = (
 				070CB5FC2F2D7A82002C7CAD /* Harbor Extension.appex in Embed Foundation Extensions */,
+				07E86FFC2F2E91CD00642C64 /* Web Agents Extension.appex in Embed Foundation Extensions */,
 			);
 			name = "Embed Foundation Extensions";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -96,7 +116,21 @@
 		070CB6212F2D7A82002C7CAD /* background.js.map */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.module-map"; name = background.js.map; path = Resources/background.js.map; sourceTree = "<group>"; };
 		070CB6222F2D7A82002C7CAD /* sidebar.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; name = sidebar.html; path = Resources/sidebar.html; sourceTree = "<group>"; };
 		070CB6232F2D7A82002C7CAD /* assets */ = {isa = PBXFileReference; lastKnownFileType = folder; name = assets; path = Resources/assets; sourceTree = "<group>"; };
+		07E86FE42F2E91CD00642C64 /* Web Agents Extension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "Web Agents Extension.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
+		07WA00012F30000100000010 /* SafariWebExtensionHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SafariWebExtensionHandler.swift; sourceTree = "<group>"; };
+		07WA0001300000000000001B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		07WA00012F30000100000011 /* manifest.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; name = manifest.json; path = Resources/manifest.json; sourceTree = "<group>"; };
+		07WA00012F30000100000012 /* background.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; name = background.js; path = Resources/background.js; sourceTree = "<group>"; };
+		07WA00012F30000100000013 /* content-script.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; name = "content-script.js"; path = "Resources/content-script.js"; sourceTree = "<group>"; };
+		07WA00012F30000100000014 /* injected.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; name = injected.js; path = Resources/injected.js; sourceTree = "<group>"; };
+		07WA00012F30000100000015 /* sidebar.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; name = sidebar.html; path = Resources/sidebar.html; sourceTree = "<group>"; };
+		07WA00012F30000100000016 /* sidebar.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; name = sidebar.js; path = Resources/sidebar.js; sourceTree = "<group>"; };
+		07WA00012F30000100000017 /* permission-prompt.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; name = "permission-prompt.html"; path = "Resources/permission-prompt.html"; sourceTree = "<group>"; };
+		07WA00012F30000100000018 /* permission-prompt.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; name = "permission-prompt.js"; path = "Resources/permission-prompt.js"; sourceTree = "<group>"; };
+		07WA00012F30000100000019 /* design-tokens.css */ = {isa = PBXFileReference; lastKnownFileType = text.css; name = "design-tokens.css"; path = "Resources/design-tokens.css"; sourceTree = "<group>"; };
+		07WA0001300000000000001A /* assets */ = {isa = PBXFileReference; lastKnownFileType = folder; name = assets; path = Resources/assets; sourceTree = "<group>"; };
 /* End PBXFileReference section */
+
 
 /* Begin PBXFrameworksBuildPhase section */
 		070CB5DD2F2D7A81002C7CAD /* Frameworks */ = {
@@ -113,6 +147,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		07E86FE12F2E91CD00642C64 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -121,15 +162,45 @@
 			children = (
 				070CB5E22F2D7A81002C7CAD /* Harbor */,
 				070CB5FF2F2D7A82002C7CAD /* Harbor Extension */,
+				07WA0001300000000000001C /* Web Agents Extension */,
 				070CB5E12F2D7A81002C7CAD /* Products */,
 			);
 			sourceTree = "<group>";
+		};
+		07WA0001300000000000001C /* Web Agents Extension */ = {
+			isa = PBXGroup;
+			children = (
+				07WA0001300000000000001D /* Resources */,
+				07WA00012F30000100000010 /* SafariWebExtensionHandler.swift */,
+				07WA0001300000000000001B /* Info.plist */,
+			);
+			path = "Web Agents Extension";
+			sourceTree = "<group>";
+		};
+		07WA0001300000000000001D /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				07WA00012F30000100000011 /* manifest.json */,
+				07WA00012F30000100000012 /* background.js */,
+				07WA00012F30000100000013 /* content-script.js */,
+				07WA00012F30000100000014 /* injected.js */,
+				07WA00012F30000100000015 /* sidebar.html */,
+				07WA00012F30000100000016 /* sidebar.js */,
+				07WA00012F30000100000017 /* permission-prompt.html */,
+				07WA00012F30000100000018 /* permission-prompt.js */,
+				07WA00012F30000100000019 /* design-tokens.css */,
+				07WA0001300000000000001A /* assets */,
+			);
+			name = Resources;
+			path = "Web Agents Extension";
+			sourceTree = SOURCE_ROOT;
 		};
 		070CB5E12F2D7A81002C7CAD /* Products */ = {
 			isa = PBXGroup;
 			children = (
 				070CB5E02F2D7A81002C7CAD /* Harbor.app */,
 				070CB5FB2F2D7A82002C7CAD /* Harbor Extension.appex */,
+				07E86FE42F2E91CD00642C64 /* Web Agents Extension.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -216,6 +287,7 @@
 			);
 			dependencies = (
 				070CB5FE2F2D7A82002C7CAD /* PBXTargetDependency */,
+				07E86FFB2F2E91CD00642C64 /* PBXTargetDependency */,
 			);
 			name = Harbor;
 			packageProductDependencies = (
@@ -243,6 +315,25 @@
 			productReference = 070CB5FB2F2D7A82002C7CAD /* Harbor Extension.appex */;
 			productType = "com.apple.product-type.app-extension";
 		};
+		07E86FE32F2E91CD00642C64 /* Web Agents Extension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 07E870002F2E91CD00642C64 /* Build configuration list for PBXNativeTarget "Web Agents Extension" */;
+			buildPhases = (
+				07E86FE02F2E91CD00642C64 /* Sources */,
+				07E86FE12F2E91CD00642C64 /* Frameworks */,
+				07E86FE22F2E91CD00642C64 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "Web Agents Extension";
+			packageProductDependencies = (
+			);
+			productName = "Web Agents Extension";
+			productReference = 07E86FE42F2E91CD00642C64 /* Web Agents Extension.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -257,6 +348,9 @@
 						CreatedOnToolsVersion = 26.2;
 					};
 					070CB5FA2F2D7A82002C7CAD = {
+						CreatedOnToolsVersion = 26.2;
+					};
+					07E86FE32F2E91CD00642C64 = {
 						CreatedOnToolsVersion = 26.2;
 					};
 				};
@@ -277,6 +371,7 @@
 			targets = (
 				070CB5DF2F2D7A81002C7CAD /* Harbor */,
 				070CB5FA2F2D7A82002C7CAD /* Harbor Extension */,
+				07E86FE32F2E91CD00642C64 /* Web Agents Extension */,
 			);
 		};
 /* End PBXProject section */
@@ -315,6 +410,23 @@
 				070CB62A2F2D7A82002C7CAD /* sidebar.js in Resources */,
 				070CB6302F2D7A82002C7CAD /* design-tokens.css in Resources */,
 				070CB62B2F2D7A82002C7CAD /* discovery.js in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		07E86FE22F2E91CD00642C64 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				07WA00012F30000100000002 /* manifest.json in Resources */,
+				07WA00012F30000100000003 /* background.js in Resources */,
+				07WA00012F30000100000004 /* content-script.js in Resources */,
+				07WA00012F30000100000005 /* injected.js in Resources */,
+				07WA00012F30000100000006 /* sidebar.html in Resources */,
+				07WA00012F30000100000007 /* sidebar.js in Resources */,
+				07WA00012F30000100000008 /* permission-prompt.html in Resources */,
+				07WA00012F30000100000009 /* permission-prompt.js in Resources */,
+				07WA0001300000000000000A /* design-tokens.css in Resources */,
+				07WA0001300000000000000B /* assets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -358,6 +470,14 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		07E86FE02F2E91CD00642C64 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				07WA00012F30000100000001 /* SafariWebExtensionHandler.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -365,6 +485,11 @@
 			isa = PBXTargetDependency;
 			target = 070CB5FA2F2D7A82002C7CAD /* Harbor Extension */;
 			targetProxy = 070CB5FD2F2D7A82002C7CAD /* PBXContainerItemProxy */;
+		};
+		07E86FFB2F2E91CD00642C64 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 07E86FE32F2E91CD00642C64 /* Web Agents Extension */;
+			targetProxy = 07E86FFA2F2E91CD00642C64 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -660,6 +785,76 @@
 			};
 			name = Release;
 		};
+		07E86FFD2F2E91CD00642C64 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = ZP27QXR4R3;
+				ENABLE_APP_SANDBOX = YES;
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_USER_SELECTED_FILES = readonly;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "Web Agents Extension/Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "Web Agents Extension";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@executable_path/../../../../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 13.0;
+				MARKETING_VERSION = 1.0;
+				OTHER_LDFLAGS = (
+					"-framework",
+					SafariServices,
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "org.harbor.Web-Agents-Extension";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		07E86FFE2F2E91CD00642C64 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = ZP27QXR4R3;
+				ENABLE_APP_SANDBOX = YES;
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_USER_SELECTED_FILES = readonly;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "Web Agents Extension/Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "Web Agents Extension";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@executable_path/../../../../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 13.0;
+				MARKETING_VERSION = 1.0;
+				OTHER_LDFLAGS = (
+					"-framework",
+					SafariServices,
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "org.harbor.Web-Agents-Extension";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -686,6 +881,15 @@
 			buildConfigurations = (
 				070CB60A2F2D7A82002C7CAD /* Debug */,
 				070CB60B2F2D7A82002C7CAD /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		07E870002F2E91CD00642C64 /* Build configuration list for PBXNativeTarget "Web Agents Extension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				07E86FFD2F2E91CD00642C64 /* Debug */,
+				07E86FFE2F2E91CD00642C64 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

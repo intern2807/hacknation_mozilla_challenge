@@ -7,6 +7,9 @@
 
 import Cocoa
 import os
+import SafariServices
+
+// extensionBundleIdentifier is defined in ViewController.swift
 
 @main
 class AppDelegate: NSObject, NSApplicationDelegate {
@@ -14,10 +17,15 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     private static let log = OSLog(subsystem: "org.harbor", category: "App")
     private var bridgeProcess: Process?
     private var statusItem: NSStatusItem?
+    private var bridgeLogHandle: FileHandle?
+    
+    // Log file paths
+    private static let appLogPath = "/tmp/harbor-app.log"
+    private static let bridgeLogPath = "/tmp/harbor-bridge.log"
     
     // File-based logging for debugging - use /tmp to avoid sandbox issues
     private func debugLog(_ message: String) {
-        let logPath = "/tmp/harbor-app.log"
+        let logPath = Self.appLogPath
         let timestamp = ISO8601DateFormatter().string(from: Date())
         let line = "[\(timestamp)] \(message)\n"
         
@@ -74,8 +82,49 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         let menu = NSMenu()
         menu.addItem(NSMenuItem(title: "Harbor Bridge Running", action: nil, keyEquivalent: ""))
         menu.addItem(NSMenuItem.separator())
+        menu.addItem(NSMenuItem(title: "Open Safari Extensions…", action: #selector(openSafariExtensions), keyEquivalent: ","))
+        menu.addItem(NSMenuItem(title: "View Logs…", action: #selector(viewLogs), keyEquivalent: "l"))
+        menu.addItem(NSMenuItem.separator())
+        menu.addItem(NSMenuItem(title: "Restart Bridge Server", action: #selector(restartBridgeServer), keyEquivalent: "r"))
+        menu.addItem(NSMenuItem.separator())
         menu.addItem(NSMenuItem(title: "Quit Harbor", action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q"))
         statusItem?.menu = menu
+    }
+    
+    @objc private func openSafariExtensions() {
+        SFSafariApplication.showPreferencesForExtension(withIdentifier: extensionBundleIdentifier) { error in
+            if let error = error {
+                self.debugLog("Failed to open Safari extensions: \(error.localizedDescription)")
+            }
+        }
+    }
+    
+    @objc private func restartBridgeServer() {
+        debugLog("Restarting bridge server...")
+        stopBridgeServer()
+        
+        // Small delay to ensure clean shutdown
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            self.startBridgeServer()
+        }
+    }
+    
+    @objc private func viewLogs() {
+        // Open the bridge log file in Console.app for a nice log viewing experience
+        let bridgeLogURL = URL(fileURLWithPath: Self.bridgeLogPath)
+        let appLogURL = URL(fileURLWithPath: Self.appLogPath)
+        
+        // Try to open in Console.app first (best log viewing experience)
+        if let consoleURL = NSWorkspace.shared.urlForApplication(withBundleIdentifier: "com.apple.Console") {
+            let configuration = NSWorkspace.OpenConfiguration()
+            configuration.activates = true
+            
+            // Open both log files
+            NSWorkspace.shared.open([bridgeLogURL, appLogURL], withApplicationAt: consoleURL, configuration: configuration)
+        } else {
+            // Fallback: reveal in Finder
+            NSWorkspace.shared.selectFile(Self.bridgeLogPath, inFileViewerRootedAtPath: "/tmp")
+        }
     }
     
     // MARK: - Bridge Server Management
@@ -96,8 +145,12 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         process.executableURL = URL(fileURLWithPath: bridgePath)
         process.arguments = ["--http-server"]
         
-        // Let output go to inherited handles (don't redirect)
-        // This avoids issues with the process crashing when pipes are closed
+        // Redirect output to a log file for debugging
+        setupBridgeLogFile()
+        if let logHandle = bridgeLogHandle {
+            process.standardOutput = logHandle
+            process.standardError = logHandle
+        }
         
         do {
             debugLog("Attempting to run process...")
@@ -109,6 +162,18 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             debugLog("ERROR: Failed to start bridge: \(error.localizedDescription)")
             updateStatusBar(running: false, error: error.localizedDescription)
         }
+    }
+    
+    private func setupBridgeLogFile() {
+        let logPath = Self.bridgeLogPath
+        
+        // Create or truncate the log file with a header
+        let header = "=== Harbor Bridge Log ===\nStarted: \(ISO8601DateFormatter().string(from: Date()))\n\n"
+        try? header.write(toFile: logPath, atomically: true, encoding: .utf8)
+        
+        // Open file handle for appending
+        bridgeLogHandle = FileHandle(forWritingAtPath: logPath)
+        bridgeLogHandle?.seekToEndOfFile()
     }
     
     private func updateStatusBar(running: Bool, error: String?) {
@@ -128,6 +193,10 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         os_log(.info, log: Self.log, "Stopping bridge HTTP server...")
         process.terminate()
         bridgeProcess = nil
+        
+        // Close the log file handle
+        try? bridgeLogHandle?.close()
+        bridgeLogHandle = nil
     }
     
     private func findBridgeBinary() -> String? {

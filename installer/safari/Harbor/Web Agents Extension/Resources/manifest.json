@@ -1,11 +1,11 @@
 {
   "manifest_version": 3,
-  "name": "Harbor",
+  "name": "Web Agents API",
   "version": "0.1.0",
-  "description": "Infrastructure extension for AI and MCP capabilities. Provides LLM access and tool execution for other extensions.",
+  "description": "Exposes AI capabilities to web pages. Requires Harbor extension.",
   "browser_specific_settings": {
     "safari": {
-      "strict_min_version": "16.4"
+      "strict_min_version": "16.0"
     }
   },
   "background": {
@@ -14,9 +14,9 @@
   },
   "permissions": [
     "storage",
+    "tabs",
     "scripting",
-    "activeTab",
-    "tabs"
+    "activeTab"
   ],
   "host_permissions": [
     "http://localhost/*",
@@ -26,21 +26,17 @@
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
-      "js": ["discovery.js"],
+      "js": ["content-script.js"],
       "run_at": "document_start"
     }
   ],
   "web_accessible_resources": [
     {
       "resources": [
-        "page-chat.js",
-        "design-tokens.css",
-        "demo-bootstrap.js",
-        "js-runtime/builtin-echo-worker.js",
-        "wasmer_wasi_js_bg.wasm",
-        "demo/*",
-        "assets/*",
-        "bundled/*"
+        "injected.js",
+        "permission-prompt.html",
+        "permission-prompt.js",
+        "design-tokens.css"
       ],
       "matches": ["<all_urls>"]
     }
@@ -52,15 +48,12 @@
     "128": "assets/icon-128.png"
   },
   "action": {
-    "default_title": "Harbor",
+    "default_title": "Web Agents API",
     "default_popup": "sidebar.html",
     "default_icon": {
       "16": "assets/icon-16.png",
       "32": "assets/icon-32.png",
       "48": "assets/icon-48.png"
     }
-  },
-  "content_security_policy": {
-    "extension_pages": "script-src 'self' 'wasm-unsafe-eval'; object-src 'self'"
   }
 }

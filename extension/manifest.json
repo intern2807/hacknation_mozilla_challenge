@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Harbor",
-  "version": "0.260202.1725",
+  "version": "0.260202.2145",
   "description": "Infrastructure extension for AI and MCP capabilities. Provides LLM access and tool execution for other extensions.",
   "browser_specific_settings": {
     "gecko": {

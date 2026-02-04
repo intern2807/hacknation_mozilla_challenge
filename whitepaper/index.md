@@ -80,7 +80,15 @@ what the sketch demonstrates:
 
 ### how it works
 
-websites declare their tools:
+**you configure your browser.**
+
+you add the LLMs you want to use — Claude, GPT, Gemini, a local model. you add your API keys. you add credentials for services you use (Gmail, calendar, etc). you connect MCP servers that give your AI access to context — your files, your email, your tools.
+
+this configuration lives in the browser. it travels with you across websites.
+
+**websites can expose their own tools.**
+
+when you visit a site, your browser detects if the site offers MCP servers:
 
 ```html
 <link rel="mcp-server" 
@@ -88,14 +96,17 @@ websites declare their tools:
       title="Archive Search">
 ```
 
-the API exposes capabilities:
+a news site might expose its archive. a shopping site might expose product search. a SaaS app might expose workflow automation. you choose which to connect.
+
+**the API exposes capabilities.**
+
+websites can request AI capabilities through a browser API:
 
 ```javascript
 // text generation
-const session = await window.ai.createTextSession();
-const response = await session.prompt("summarize this article");
+const response = await window.ai.prompt("summarize this article");
 
-// tools and autonomous execution
+// autonomous tasks with tools
 for await (const event of window.agent.run({
   task: 'find coverage of the 2008 financial crisis'
 })) {
@@ -104,7 +115,9 @@ for await (const event of window.agent.run({
 }
 ```
 
-permissions follow patterns established for cameras and location:
+**permissions mediate access.**
+
+just like camera and location access, AI capabilities require permission:
 
 | scope | what it allows |
 |-------|----------------|
@@ -113,7 +126,7 @@ permissions follow patterns established for cameras and location:
 | `mcp:tools.call` | execute specific tools |
 | `browser:activeTab.read` | read page content |
 
-permissions are per-origin. revocable. auditable.
+permissions are per-origin. revocable. auditable. you stay in control.
 
 ---
 

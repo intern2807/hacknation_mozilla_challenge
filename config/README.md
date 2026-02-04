@@ -17,7 +17,7 @@ config/
 ### 1. Build Credentials (`build.env`)
 
 **Used during**: Build and release process  
-**Who sets these**: Raffi Krikorian &lt;raffi@mozilla.org&gt;  
+**Who sets these**: Project maintainer  
 **Examples**: Mozilla AMO keys, Apple signing certificates
 
 These are used to sign and publish Harbor. Not shipped with the app.
@@ -25,7 +25,7 @@ These are used to sign and publish Harbor. Not shipped with the app.
 ### 2. OAuth Provider Credentials (`oauth.env`)
 
 **Used during**: Build (baked into app) and runtime  
-**Who sets these**: Raffi Krikorian (defaults), Users (overrides)  
+**Who sets these**: Project maintainer (defaults), Users (overrides)  
 **Examples**: Google Client ID, GitHub Client ID
 
 These enable Harbor's "clientIdSource: harbor" feature where Harbor handles OAuth on behalf of MCP servers. The official release includes Harbor's OAuth credentials. Users can override with their own.

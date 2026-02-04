@@ -1,7 +1,7 @@
 # Harbor Web AI APIs Explainer
 
 **Status**: Draft Proposal  
-**Author**: Harbor Contributors  
+**Author**: Raffi Krikorian  
 **Last Updated**: January 2026  
 **Version**: 1.0
 

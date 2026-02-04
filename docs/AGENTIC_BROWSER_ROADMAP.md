@@ -1,7 +1,7 @@
 # Agentic Browser Roadmap
 
 **Status**: Design Document  
-**Author**: Harbor Contributors  
+**Author**: Raffi Krikorian  
 **Last Updated**: January 2026
 
 ---

@@ -327,7 +327,7 @@ When building applications with Harbor APIs:
 If you discover a security issue with the Web Agent API specification itself, please report it to the editors:
 
 1. **Do not** open a public GitHub issue for security vulnerabilities
-2. Email security concerns to raffi@mozilla.org
+2. Open a security issue on GitHub (or email the maintainer)
 3. Allow reasonable time for a fix before public disclosure
 
 ### For Implementations
@@ -336,7 +336,7 @@ Report implementation-specific vulnerabilities to the relevant implementation ma
 
 ---
 
-**Author**: Raffi Krikorian &lt;raffi@mozilla.org&gt;
+**Author**: Raffi Krikorian
 
 *Last updated: January 2026*
 

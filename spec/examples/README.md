@@ -95,5 +95,5 @@ These examples are part of the Web Agent API specification and are available und
 
 ---
 
-**Author**: Raffi Krikorian &lt;raffi@mozilla.org&gt;
+**Author**: Raffi Krikorian
 

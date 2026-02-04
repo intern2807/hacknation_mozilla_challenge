@@ -1,7 +1,7 @@
 # Web Agent API Explainer
 
 **Status**: Draft Proposal  
-**Author**: Raffi Krikorian &lt;raffi@mozilla.org&gt;  
+**Author**: Raffi Krikorian  
 **Last Updated**: January 2026  
 **Version**: 1.4
 

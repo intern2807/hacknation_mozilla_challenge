@@ -1,0 +1,14 @@
+# GitHub Pages configuration for the Web Agent API Whitepaper
+title: Web Agent API
+description: A proposal for user-controlled AI on the web
+theme: jekyll-theme-minimal
+
+# Optional: if you want nicer rendering
+markdown: kramdown
+highlighter: rouge
+
+# Navigation
+header_pages:
+  - index.md
+  - values.md
+  - feedback.md

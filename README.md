@@ -262,6 +262,7 @@ Harbor is an *implementation* of the Web Agent API. The specification itself is 
 
 | Document | Description |
 |----------|-------------|
+| **[Whitepaper](whitepaper/)** | The vision: user-controlled AI on the web |
 | **[Specification Overview](spec/README.md)** | What the Web Agent API is and why it matters |
 | **[Full Explainer](spec/explainer.md)** | Complete spec with Web IDL and security model |
 | **[Security & Privacy](spec/security-privacy.md)** | Threat model and mitigations |
@@ -272,6 +273,7 @@ Harbor is an *implementation* of the Web Agent API. The specification itself is 
 
 ```
 harbor/
+├── whitepaper/         # Public whitepaper (GitHub Pages)
 ├── spec/               # Web Agent API specification (browser-agnostic)
 ├── extension/          # Harbor browser extension (TypeScript)
 ├── web-agents-api/     # Web Agents API extension (injects window.ai/window.agent)

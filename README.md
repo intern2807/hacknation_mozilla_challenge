@@ -2,7 +2,7 @@
 
 **Browser infrastructure for AI-powered web applications.**
 
-> **Note**: Harbor is an invitation to explore what user-controlled AI on the web could look like. I'm [Raffi Krikorian](https://github.com/r), CTO of Mozilla, and I built this to start a conversation—not to announce a product. This is a personal project, not an official Mozilla effort, and nothing here is a commitment that these ideas will appear in Firefox or any Mozilla product. But if we're going to shape how AI works on the web, it helps to have something concrete to talk about.
+> **Note**: Harbor is an invitation to explore what user-controlled AI on the web could look like. This is meant to start a conversation—not announce a product. Nothing here is a commitment that these ideas will appear in Firefox or any Mozilla product. But if we're going to shape how AI works on the web, it helps to have something concrete to talk about.
 
 This repository contains two browser extensions that work together:
 

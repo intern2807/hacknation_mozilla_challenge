@@ -694,14 +694,13 @@ export HARBOR_MCP_ISOLATION=1
 
 ### How It Works
 
-1. **Fork Pattern**: When connecting to a server, the bridge forks itself with a special flag (`--mcp-runner <serverId>`)
-2. **IPC Communication**: The main bridge sends commands to runners via Node.js IPC
-3. **Crash Recovery**: If a runner crashes, only that server is affected; the bridge survives and can restart it
-4. **PKG Compatibility**: The fork pattern works in pkg-compiled binaries (uses `process.execPath`)
+1. **Process Spawning**: When connecting to a server, the Rust bridge spawns the MCP server as a child process
+2. **Stdio Communication**: The bridge communicates with servers via stdin/stdout using JSON-RPC
+3. **Crash Recovery**: If a server crashes, only that server is affected; the bridge survives and can restart it
 
-### Runner Commands
+### Server Commands
 
-The runner process handles these operations via IPC:
+The bridge manages servers via stdio JSON-RPC:
 
 | Command | Description |
 |---------|-------------|

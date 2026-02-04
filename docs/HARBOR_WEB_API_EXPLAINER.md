@@ -1562,7 +1562,7 @@ The implementation uses a multi-process architecture:
                                │ Native Messaging
                                ▼
 ┌─────────────────────────────────────────────────────────────────┐
-│                    Node.js Bridge                                │
+│                    Rust Bridge (Native)                          │
 │  • MCP server management                                         │
 │  • LLM provider abstraction                                      │
 │  • Chat orchestration                                            │

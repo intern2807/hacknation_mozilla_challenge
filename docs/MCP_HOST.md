@@ -33,7 +33,7 @@ The MCP Host is responsible for:
 └──────────────────────┼────────────────────────────────────────┘
                        │
 ┌──────────────────────┼────────────────────────────────────────┐
-│                 Node.js Bridge (Main Process)                 │
+│                 Rust Bridge (Native Process)                  │
 │                      │                                        │
 │  ┌───────────────────┴───────────────────┐                   │
 │  │              MCP Host                  │                   │
@@ -49,25 +49,23 @@ The MCP Host is responsible for:
 │  │         MCP Client Manager             │                   │
 │  │  ┌────────────┐  ┌────────────────┐   │                   │
 │  │  │ Stdio/     │  │ HTTP/SSE       │   │                   │
-│  │  │ Runner     │  │ Client         │   │                   │
+│  │  │ Subprocess │  │ Client         │   │                   │
 │  │  │ Client     │  │                │   │                   │
 │  │  └─────┬──────┘  └───────┬────────┘   │                   │
 │  └────────┼─────────────────┼────────────┘                   │
-│           │ IPC (isolated)  │                                 │
+│           │ stdio (isolated)│                                 │
 └───────────┼─────────────────┼─────────────────────────────────┘
             │                 │
 ┌───────────┴───────────┐     │
-│    MCP Runner         │     │
-│    (forked process)   │     │
+│    MCP Server         │     │
+│  (spawned process)    │     │
 │  ┌─────────────────┐  │     │
-│  │ StdioMcpClient  │  │     │
-│  └────────┬────────┘  │     │
-│           │ stdio     │     │
-│  ┌────────┴────────┐  │     │
-│  │   MCP Server    │  │   ┌─┴───────────┐
-│  │   (npx/uvx)     │  │   │ Remote MCP  │
-│  └─────────────────┘  │   │ (HTTP/SSE)  │
-└───────────────────────┘   └─────────────┘
+│  │ MCP Server CLI  │  │     │
+│  │   (npx/uvx)     │  │     │
+│  └────────┬────────┘  │   ┌─┴───────────┐
+│           │ stdio     │   │ Remote MCP  │
+└───────────────────────┘   │ (HTTP/SSE)  │
+                            └─────────────┘
 ```
 
 ## Components
@@ -304,10 +302,9 @@ Without isolation, a problematic server could:
 
 When process isolation is enabled:
 
-1. **Forked Runners**: Each server runs in a forked Node.js process (MCP Runner)
-2. **IPC Communication**: Main bridge communicates with runners via IPC
-3. **Crash Isolation**: If a runner crashes, only that server is affected
-4. **PKG Compatibility**: Uses `process.execPath` fork pattern for packaged binaries
+1. **Spawned Processes**: Each MCP server runs as a spawned child process
+2. **Stdio Communication**: Main bridge communicates with servers via stdio (stdin/stdout)
+3. **Crash Isolation**: If a server crashes, only that server is affected; the bridge survives
 
 ### Enabling Isolation
 
@@ -316,46 +313,28 @@ When process isolation is enabled:
 export HARBOR_MCP_ISOLATION=1
 ```
 
-Or in code:
+### Server Management
 
-```typescript
-import { setProcessIsolation } from './mcp/index.js';
-setProcessIsolation(true);
-```
+Each MCP server process is managed via stdio:
 
-### Runner Architecture
-
-Each MCP Runner process manages a single server:
-
-| Component | Location |
-|-----------|----------|
-| Runner process | `mcp/runner.ts` |
-| Runner client | `mcp/runner-client.ts` |
-| Entry point flag | `--mcp-runner <serverId>` |
-
-The runner handles commands via IPC:
-
-```typescript
-interface RunnerCommand {
-  type: 'connect' | 'disconnect' | 'list_tools' | 'call_tool' | 'shutdown';
-  // ... command-specific fields
-}
-```
+| Component | Description |
+|-----------|-------------|
+| Server process | Spawned via `npx`, `uvx`, or direct binary |
+| Communication | JSON-RPC over stdio (stdin/stdout) |
+| Lifecycle | Managed by the Rust bridge |
 
 ### Isolation Modes
 
 | Mode | Description | Use Case |
 |------|-------------|----------|
 | **Direct** (default) | Server runs as child process of bridge | Development, trusted servers |
-| **Isolated** | Server runs in forked runner process | Production, untrusted servers |
 | **Docker** | Server runs in Docker container | Maximum isolation |
 
 ### Performance Considerations
 
 Process isolation adds some overhead:
-- **Startup**: ~50-100ms additional for fork
-- **Communication**: IPC adds ~1-5ms per message
-- **Memory**: Each runner has its own Node.js runtime
+- **Startup**: ~50-100ms for process spawn
+- **Communication**: stdio adds ~1-5ms per message
 
 For most use cases, this overhead is negligible compared to tool execution time.
 

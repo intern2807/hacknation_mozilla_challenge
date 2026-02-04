@@ -37,7 +37,7 @@ The Web Agent API exposes two global JavaScript APIs to web pages for AI capabil
 
 These APIs provide the web platform primitives needed to build AI agents — applications that can reason, use tools, and accomplish tasks on behalf of users. The specification is implementation-agnostic; any browser or extension can implement these APIs.
 
-**Implementation:** [Harbor](../) is an implementation of this proposal, available as a Firefox extension with a Node.js bridge.
+**Implementation:** [Harbor](../) is an implementation of this proposal, available as a browser extension (Firefox, Chrome, Safari) with a native Rust bridge.
 
 ### Design Principles
 
@@ -1943,7 +1943,7 @@ Harbor uses a multi-process architecture:
                                │ Native Messaging
                                ▼
 ┌─────────────────────────────────────────────────────────────────┐
-│                    Node.js Bridge                                │
+│                    Rust Bridge (Native)                          │
 │  • MCP server management                                         │
 │  • LLM provider abstraction                                      │
 │  • Chat orchestration                                            │

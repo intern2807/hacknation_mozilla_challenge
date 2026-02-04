@@ -226,7 +226,7 @@
       {
         title: 'Detect Web Agent API',
         description: 'Confirm the Web Agent API is available in this page.',
-        code: `const agent = window.harbor?.agent ?? window.agent;\nif (!agent) {\n  throw new Error('Web Agent API not detected');\n}`,
+        code: `const agent = window.agent;\nif (!agent) {\n  throw new Error('Web Agent API not detected');\n}`,
         run: async () => {
           const agent = getWebAgent();
           if (!agent) {
@@ -238,7 +238,7 @@
       {
         title: 'Request permission',
         description: 'Ask for access to active-tab interactions.',
-        code: `const agent = window.harbor?.agent ?? window.agent;\nconst result = await agent.requestPermissions({\n  scopes: ['browser:activeTab.interact'],\n  reason: 'Basic actions demo'\n});\nif (!result.granted) throw new Error('Permission denied');`,
+        code: `const agent = window.agent;\nconst result = await agent.requestPermissions({\n  scopes: ['browser:activeTab.interact'],\n  reason: 'Basic actions demo'\n});\nif (!result.granted) throw new Error('Permission denied');`,
         run: async () => {
           const agent = getWebAgent();
           if (!agent?.requestPermissions) {

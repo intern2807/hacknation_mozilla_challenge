@@ -387,6 +387,7 @@ export function harborStreamRequest(
     if (message.type === 'stream' && message.event) {
       const event = message.event;
       
+      // Queue the event first (including done/error events - they need to be yielded!)
       if (resolveWaiting) {
         resolveWaiting(event);
         resolveWaiting = null;
@@ -394,6 +395,7 @@ export function harborStreamRequest(
         eventQueue.push(event);
       }
 
+      // Mark stream as done AFTER queueing the event
       if (event.type === 'done' || event.type === 'error') {
         console.log('[Web Agents API:HarborClient] Stream ended', {
           eventType: event.type,
@@ -426,21 +428,32 @@ export function harborStreamRequest(
   port.postMessage({ type, payload, requestId });
 
   // Create async iterable
+  // IMPORTANT: 'done' and 'error' events MUST be yielded as normal values (done: false)
+  // because for-await loops ignore the value when done: true. The iterator only
+  // returns done: true on the NEXT call after yielding the terminal event.
+  let yieldedTerminalEvent = false;
+  
   const stream: AsyncIterable<StreamEvent> = {
     [Symbol.asyncIterator]() {
       return {
         async next(): Promise<IteratorResult<StreamEvent>> {
+          // If we already yielded the terminal event, we're done
+          if (yieldedTerminalEvent) {
+            return { done: true, value: undefined as unknown as StreamEvent };
+          }
+          
           // Check for queued events
           if (eventQueue.length > 0) {
             const event = eventQueue.shift()!;
+            // Yield done/error as normal values so they're visible to for-await
             if (event.type === 'done' || event.type === 'error') {
-              return { done: true, value: event };
+              yieldedTerminalEvent = true;
             }
             return { done: false, value: event };
           }
 
-          // Check if done
-          if (done) {
+          // Check if stream is done (port disconnected without terminal event)
+          if (done && eventQueue.length === 0) {
             if (error) {
               throw error;
             }
@@ -459,10 +472,10 @@ export function harborStreamRequest(
             return { done: true, value: undefined as unknown as StreamEvent };
           }
 
+          // Yield done/error as normal values so they're visible to for-await
           if (event.type === 'done' || event.type === 'error') {
-            return { done: true, value: event };
+            yieldedTerminalEvent = true;
           }
-
           return { done: false, value: event };
         },
       };

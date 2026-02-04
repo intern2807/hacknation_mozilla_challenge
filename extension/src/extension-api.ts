@@ -731,10 +731,10 @@ async function handleStreamingChat(
   }
 
   try {
-    log('handleStreamingChat: Starting bridgeStreamRequest');
+    log('handleStreamingChat: Starting bridgeStreamRequest with llm.chat_stream');
     let tokenCount = 0;
     
-    for await (const event of bridgeStreamRequest('llm.chat', { messages, model, max_tokens, temperature, system, stream: true })) {
+    for await (const event of bridgeStreamRequest('llm.chat_stream', { messages, model, max_tokens, temperature, system })) {
       if (event.type === 'token') {
         tokenCount++;
       }

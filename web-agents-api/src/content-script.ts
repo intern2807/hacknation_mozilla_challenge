@@ -41,6 +41,7 @@ function getBackgroundPort(): RuntimePort {
     backgroundPort.onMessage.addListener((message: TransportResponse | TransportStreamEvent) => {
       if ('ok' in message) {
         // Regular response
+        console.log('[Web Agents API:ContentScript] Regular response:', message.id, 'ok:', message.ok);
         const pending = pendingRequests.get(message.id);
         if (pending) {
           pendingRequests.delete(message.id);
@@ -48,12 +49,19 @@ function getBackgroundPort(): RuntimePort {
         }
       } else if ('event' in message) {
         // Stream event
+        const eventType = (message.event as { type?: string })?.type;
+        if (eventType !== 'token') {
+          console.log('[Web Agents API:ContentScript] Stream event:', message.id, 'type:', eventType, 'done:', message.done);
+        }
         const stream = activeStreams.get(message.id);
         if (stream) {
           stream.sendEvent(message);
           if (message.done) {
+            console.log('[Web Agents API:ContentScript] Stream complete, removing:', message.id);
             activeStreams.delete(message.id);
           }
+        } else {
+          console.log('[Web Agents API:ContentScript] No active stream found for:', message.id, 'activeStreams:', Array.from(activeStreams.keys()));
         }
       }
     });
@@ -219,6 +227,7 @@ window.addEventListener('message', async (event: MessageEvent) => {
 
   if (isStreamingRequest) {
     // Set up stream forwarding
+    console.log('[Web Agents API:ContentScript] Setting up stream forwarding for:', request.id, 'type:', request.type);
     activeStreams.set(request.id, {
       sendEvent: (streamEvent) => {
         window.postMessage({ channel: CHANNEL, streamEvent }, '*');

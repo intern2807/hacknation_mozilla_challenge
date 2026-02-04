@@ -221,6 +221,15 @@ export function onConsoleLog(listener: ConsoleLogListener): () => void {
  * Handle an incoming message from the native bridge
  */
 function handleMessage(message: IncomingMessage): void {
+  // Log all incoming messages for debugging (except high-frequency ones)
+  if (message.type !== 'console' && !(message.type === 'stream' && (message as { event?: { type: string } }).event?.type === 'token')) {
+    console.log('[Harbor:NativeBridge] Received message:', {
+      type: message.type,
+      id: (message as { id?: string }).id,
+      eventType: (message as { event?: { type: string } }).event?.type,
+    });
+  }
+  
   switch (message.type) {
     case 'status':
       if (message.status === 'ready' || message.status === 'pong') {
@@ -232,23 +241,45 @@ function handleMessage(message: IncomingMessage): void {
       break;
 
     case 'rpc_response': {
+      console.log('[Harbor:NativeBridge] RPC response:', {
+        id: message.id,
+        hasError: !!message.error,
+        hasPendingRequest: pendingRequests.has(message.id),
+        hasPendingStream: pendingStreams.has(message.id),
+      });
       const pending = pendingRequests.get(message.id);
       if (pending) {
         pendingRequests.delete(message.id);
         if (message.error) {
+          console.log('[Harbor:NativeBridge] RPC error:', message.error);
           pending.reject(new Error(message.error.message));
         } else {
           pending.resolve(message.result);
+        }
+      } else if (pendingStreams.has(message.id)) {
+        // The bridge returned an rpc_response for a streaming request - this might indicate an error
+        console.log('[Harbor:NativeBridge] Got rpc_response for stream request:', message.id, 'error:', message.error);
+        const stream = pendingStreams.get(message.id);
+        if (stream && message.error) {
+          pendingStreams.delete(message.id);
+          stream.onError(new Error(message.error.message));
         }
       }
       break;
     }
 
     case 'stream': {
+      console.log('[Harbor:NativeBridge] Stream event received:', {
+        id: message.id,
+        eventType: message.event?.type,
+        hasToken: !!message.event?.token,
+        hasPendingStream: pendingStreams.has(message.id),
+      });
       const stream = pendingStreams.get(message.id);
       if (stream) {
         stream.onEvent(message.event);
         if (message.event.type === 'done' || message.event.type === 'error') {
+          console.log('[Harbor:NativeBridge] Stream completed:', message.id, message.event.type);
           pendingStreams.delete(message.id);
           if (message.event.type === 'error' && message.event.error) {
             stream.onError(new Error(message.event.error.message));
@@ -256,6 +287,8 @@ function handleMessage(message: IncomingMessage): void {
             stream.onComplete();
           }
         }
+      } else {
+        console.log('[Harbor:NativeBridge] No pending stream found for id:', message.id);
       }
       break;
     }
@@ -512,12 +545,20 @@ export function rpcStreamRequest(
 
   const id = crypto.randomUUID();
   
+  console.log('[Harbor:NativeBridge] rpcStreamRequest starting:', {
+    id,
+    method,
+    paramsKeys: params ? Object.keys(params as Record<string, unknown>) : [],
+    bridgeReady: connectionState.bridgeReady,
+  });
+  
   const done = new Promise<void>((resolve, reject) => {
     pendingStreams.set(id, {
       onEvent,
       onComplete: resolve,
       onError: reject,
     });
+    console.log('[Harbor:NativeBridge] Registered pending stream:', id, 'total pending:', pendingStreams.size);
   });
 
   sendMessage({
@@ -526,6 +567,8 @@ export function rpcStreamRequest(
     method,
     params: params ?? {},
   });
+  
+  console.log('[Harbor:NativeBridge] Sent RPC message for stream:', id);
 
   return {
     cancel: () => {

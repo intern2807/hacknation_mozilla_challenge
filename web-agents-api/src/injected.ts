@@ -244,12 +244,29 @@ window.addEventListener('message', (event: MessageEvent) => {
 
   // Handle stream event
   if (data.streamEvent) {
+    const eventType = (data.streamEvent.event as { type?: string })?.type;
+    const hasListener = streamListeners.has(data.streamEvent.id);
+    
+    // Log ALL events to debug ID mismatch
+    if (!hasListener || eventType !== 'token') {
+      console.log('[Web Agents API:Injected] Stream event arrived:', {
+        eventId: data.streamEvent.id,
+        eventType,
+        done: data.streamEvent.done,
+        hasListener,
+        registeredIds: Array.from(streamListeners.keys()),
+      });
+    }
+    
     const listener = streamListeners.get(data.streamEvent.id);
     if (listener) {
       listener(data.streamEvent.event, data.streamEvent.done || false);
       if (data.streamEvent.done) {
+        console.log('[Web Agents API:Injected] Stream complete, removing listener:', data.streamEvent.id);
         streamListeners.delete(data.streamEvent.id);
       }
+    } else {
+      console.warn('[Web Agents API:Injected] ⚠️ NO LISTENER for event ID:', data.streamEvent.id, 'registered IDs:', Array.from(streamListeners.keys()));
     }
   }
 });
@@ -291,8 +308,20 @@ function createStreamIterable<T extends StreamToken>(
       let error: Error | null = null;
 
       // Register stream listener before sending request
+      console.log('[Web Agents API:Injected] Registering stream listener:', id, 'for type:', type);
+      let tokenCount = 0;
       streamListeners.set(id, (event, isDone) => {
+        tokenCount++;
+        if (tokenCount <= 3 || isDone) {
+          console.log('[Web Agents API:Injected] Listener received event #' + tokenCount + ':', {
+            id,
+            eventType: (event as { type?: string }).type,
+            hasToken: !!(event as { token?: string }).token,
+            isDone,
+          });
+        }
         if (isDone) {
+          console.log('[Web Agents API:Injected] Stream DONE, total tokens:', tokenCount);
           done = true;
           streamListeners.delete(id);
         }
@@ -366,23 +395,35 @@ function createTextSessionObject(sessionId: string): TextSession {
     },
 
     promptStreaming(input: string): AsyncIterable<string> {
+      console.log('[Web Agents API:Injected] promptStreaming called for session:', sessionId);
       const tokenIterable = createStreamIterable<StreamToken>('session.promptStreaming', { sessionId, input });
       
       // Transform to yield just the token strings
       return {
         [Symbol.asyncIterator]() {
+          console.log('[Web Agents API:Injected] promptStreaming [Symbol.asyncIterator] called');
           const tokenIterator = tokenIterable[Symbol.asyncIterator]();
+          let yieldCount = 0;
           
           return {
             async next(): Promise<IteratorResult<string>> {
+              console.log('[Web Agents API:Injected] promptStreaming next() called, waiting for tokenIterator...');
               const result = await tokenIterator.next();
+              console.log('[Web Agents API:Injected] promptStreaming got result:', {
+                done: result.done,
+                valueType: result.value?.type,
+                hasToken: !!result.value?.token,
+              });
               if (result.done) {
+                console.log('[Web Agents API:Injected] promptStreaming iterator done, yielded:', yieldCount);
                 return { done: true, value: undefined };
               }
               if (result.value.type === 'token' && result.value.token) {
+                yieldCount++;
                 return { done: false, value: result.value.token };
               }
               if (result.value.type === 'done') {
+                console.log('[Web Agents API:Injected] promptStreaming received done event, yielded:', yieldCount);
                 return { done: true, value: undefined };
               }
               if (result.value.type === 'error') {

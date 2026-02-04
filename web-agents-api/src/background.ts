@@ -490,6 +490,8 @@ interface RequestContext {
   payload: unknown;
   origin: string;
   tabId?: number;
+  /** Firefox container ID - used to open new tabs in the same container as the parent */
+  cookieStoreId?: string;
 }
 
 type HandlerResponse = Promise<TransportResponse>;
@@ -2502,12 +2504,23 @@ async function handleTabsCreate(ctx: RequestContext): HandlerResponse {
   }
 
   try {
-    const tab = await chrome.tabs.create({
+    // Build create options, including cookieStoreId for Firefox container support
+    // This ensures new tabs open in the same container as the parent tab
+    const createOptions: chrome.tabs.CreateProperties & { cookieStoreId?: string } = {
       url: payload.url,
       active: payload.active ?? false,
       index: payload.index,
       windowId: payload.windowId,
-    });
+    };
+    
+    // Pass cookieStoreId if available (Firefox containers)
+    // This prevents issues where tabs in different containers can't be read
+    if (ctx.cookieStoreId) {
+      createOptions.cookieStoreId = ctx.cookieStoreId;
+      console.log('[Web Agents API] Creating tab in container:', ctx.cookieStoreId);
+    }
+    
+    const tab = await chrome.tabs.create(createOptions);
 
     if (!tab.id) {
       return { id: ctx.id, ok: false, error: { code: 'ERR_INTERNAL', message: 'Failed to create tab' } };
@@ -2963,7 +2976,10 @@ chrome.runtime.onConnect.addListener((port) => {
 
   port.onMessage.addListener(async (message: RequestContext & { type: string }) => {
     const tabId = port.sender?.tab?.id;
-    console.log('[Web Agents API] Port message received:', message.type, 'tabId:', tabId);
+    // Get cookieStoreId from parent tab for Firefox container support
+    // This ensures new tabs open in the same container as the requesting page
+    const cookieStoreId = (port.sender?.tab as chrome.tabs.Tab & { cookieStoreId?: string })?.cookieStoreId;
+    console.log('[Web Agents API] Port message received:', message.type, 'tabId:', tabId, 'cookieStoreId:', cookieStoreId);
     
     const ctx: RequestContext = {
       id: message.id,
@@ -2971,6 +2987,7 @@ chrome.runtime.onConnect.addListener((port) => {
       payload: message.payload,
       origin: message.origin || '',
       tabId,
+      cookieStoreId,
     };
 
     // Handle streaming requests

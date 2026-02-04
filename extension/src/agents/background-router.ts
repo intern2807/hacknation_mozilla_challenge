@@ -152,6 +152,8 @@ interface RequestContext {
   origin: string;
   tabId?: number;
   senderExtensionId?: string;  // The extension ID of the sender (for cross-extension messaging)
+  /** Firefox container ID - used to open new tabs in the same container as the parent */
+  cookieStoreId?: string;
 }
 
 type ResponseSender = {
@@ -1373,7 +1375,8 @@ async function handleTabsCreate(ctx: RequestContext, sender: ResponseSender): Pr
   const payload = ctx.payload as { url: string; active?: boolean; index?: number; windowId?: number };
 
   try {
-    const tab = await createTab(ctx.origin, payload, ctx.tabId);
+    // Pass cookieStoreId to ensure new tab opens in the same Firefox container as the parent
+    const tab = await createTab(ctx.origin, { ...payload, cookieStoreId: ctx.cookieStoreId }, ctx.tabId);
     sender.sendResponse({ id: ctx.id, ok: true, result: tab });
   } catch (error) {
     sender.sendResponse({
@@ -2963,6 +2966,9 @@ function handlePortConnection(port: ReturnType<typeof browserAPI.runtime.connect
   log('New web-agent-transport connection from tab:', port.sender?.tab?.id);
 
   const tabId = port.sender?.tab?.id;
+  // Get cookieStoreId from parent tab for Firefox container support
+  // This ensures new tabs open in the same container as the requesting page
+  const cookieStoreId = (port.sender?.tab as chrome.tabs.Tab & { cookieStoreId?: string })?.cookieStoreId;
 
   port.onMessage.addListener(async (message: {
     id: string;
@@ -2983,6 +2989,7 @@ function handlePortConnection(port: ReturnType<typeof browserAPI.runtime.connect
       payload: message.payload,
       origin: message.origin || 'unknown',
       tabId,
+      cookieStoreId,
     };
 
     const sender: ResponseSender = {

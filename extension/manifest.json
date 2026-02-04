@@ -19,7 +19,8 @@
     "scripting",
     "activeTab",
     "tabs",
-    "nativeMessaging"
+    "nativeMessaging",
+    "cookies"
   ],
   "optional_permissions": [
     "trialML"

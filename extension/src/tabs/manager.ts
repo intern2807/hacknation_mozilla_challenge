@@ -51,6 +51,8 @@ export interface CreateTabOptions {
   active?: boolean;
   index?: number;
   windowId?: number;
+  /** Firefox container ID - ensures new tab opens in the same container as the parent */
+  cookieStoreId?: string;
 }
 
 /**
@@ -178,12 +180,22 @@ export async function createTab(
   options: CreateTabOptions,
   parentTabId?: number,
 ): Promise<TabMetadata> {
-  const tab = await browserAPI.tabs.create({
+  // Build create options, including cookieStoreId for Firefox container support
+  const createOptions: chrome.tabs.CreateProperties & { cookieStoreId?: string } = {
     url: options.url,
     active: options.active ?? false,  // Default to background
     index: options.index,
     windowId: options.windowId,
-  });
+  };
+  
+  // Pass cookieStoreId if available (Firefox containers)
+  // This prevents issues where tabs in different containers can't be read
+  if (options.cookieStoreId) {
+    createOptions.cookieStoreId = options.cookieStoreId;
+    console.log('[TabManager] Creating tab in container:', options.cookieStoreId);
+  }
+  
+  const tab = await browserAPI.tabs.create(createOptions);
   
   // Register as spawned by this origin
   registerSpawnedTab(tab.id!, origin, options.url, parentTabId);

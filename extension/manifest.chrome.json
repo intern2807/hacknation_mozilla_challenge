@@ -16,7 +16,8 @@
     "scripting",
     "activeTab",
     "tabs",
-    "nativeMessaging"
+    "nativeMessaging",
+    "cookies"
   ],
   "omnibox": {
     "keyword": "h"

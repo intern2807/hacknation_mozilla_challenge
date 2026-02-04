@@ -2513,9 +2513,10 @@ async function handleTabsCreate(ctx: RequestContext): HandlerResponse {
       windowId: payload.windowId,
     };
     
-    // Pass cookieStoreId if available (Firefox containers)
-    // This prevents issues where tabs in different containers can't be read
-    if (ctx.cookieStoreId) {
+    // Pass cookieStoreId for Firefox container support, but skip "firefox-default"
+    // Firefox rejects "firefox-default" even with cookies permission, and it's the default anyway
+    // Only pass cookieStoreId for actual container tabs (e.g., "firefox-container-1")
+    if (ctx.cookieStoreId && ctx.cookieStoreId !== 'firefox-default') {
       createOptions.cookieStoreId = ctx.cookieStoreId;
       console.log('[Web Agents API] Creating tab in container:', ctx.cookieStoreId);
     }

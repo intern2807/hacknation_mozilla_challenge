@@ -61,7 +61,7 @@ const response = await session.prompt("Summarize this page");
 ### 1. Clone and Build
 
 ```bash
-git clone --recurse-submodules https://github.com/r/Harbor.git
+git clone --recurse-submodules https://github.com/r/harbor.git
 cd harbor
 
 # If you already cloned without --recurse-submodules:
@@ -314,6 +314,14 @@ This is version 0.1.0, released as a conversation starter. Some features are sti
 - **Function calling**: Native tool/function calling in the bridge uses response parsing (proper function calling planned)
 
 See individual TODO comments in the source for specific implementation notes.
+
+---
+
+## Getting Help
+
+- **[GitHub Issues](https://github.com/r/harbor/issues)** — Bug reports and feature requests
+- **[Documentation](docs/)** — Guides and API references
+- **[LLMS.txt](docs/LLMS.txt)** — AI-optimized reference for coding assistants
 
 ---
 

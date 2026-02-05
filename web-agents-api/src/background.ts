@@ -3,6 +3,8 @@
  *
  * Routes messages from content scripts to Harbor extension.
  * Handles permissions and session management.
+ * 
+ * This is the simplified entry point that uses the modular handler system.
  */
 
 import {
@@ -11,665 +13,94 @@ import {
   discoverHarbor,
   setHarborExtensionId,
   getHarborState,
-  type StreamEvent,
 } from './harbor-client';
-import { getFeatureFlags, type FeatureFlags } from './policy/feature-flags';
-import type {
-  TransportResponse,
-  TransportStreamEvent,
-  PermissionScope,
-  PermissionGrantType,
-  StreamToken,
-  CreateSessionOptions,
-  SessionSummary,
-} from './types';
+import { getFeatureFlags } from './policy/feature-flags';
+import type { TransportResponse, TransportStreamEvent } from './types';
+
+// Import handler registry and utilities
+import {
+  routeMessage,
+  isStreamingMessage,
+  type RequestContext,
+  // Permission utilities
+  hasPermission,
+  getPermissions,
+  listAllPermissions,
+  revokeOriginPermissions,
+  resolvePromptClosed,
+  handlePermissionPromptResponse,
+  // AI utilities
+  getTextSession,
+  // Tab utilities
+  restoreSpawnedTabs,
+  handleTabRemoved,
+  getAllSpawnedTabs,
+  isSpawnedTab,
+  // Agent utilities
+  handleIncomingInvocation,
+  resolveInvocationResponse,
+  cleanupAgentsForTab,
+  agentInvocationTabs,
+} from './handlers';
+
+// =============================================================================
+// Initialization
+// =============================================================================
 
 const STARTUP_TIME = Date.now();
 const STARTUP_ID = Math.random().toString(36).slice(2, 8);
 console.log('[Web Agents API] Extension starting...', { startupId: STARTUP_ID, time: new Date().toISOString() });
 
-// =============================================================================
-// Browser Compatibility Layer
-// =============================================================================
-
-// Firefox uses `browser.*` APIs, Chrome uses `chrome.*`
-// This provides a unified interface for script execution
-const browserAPI = (typeof browser !== 'undefined' ? browser : chrome) as typeof chrome;
-
-/**
- * Execute a script in a tab, compatible with both Chrome and Firefox.
- */
-async function executeScriptInTab<T>(
-  tabId: number,
-  func: (...args: unknown[]) => T,
-  args: unknown[] = []
-): Promise<T | undefined> {
-  // Try chrome.scripting first (Chrome MV3, Firefox MV3 with scripting)
-  if (chrome?.scripting?.executeScript) {
-    const results = await chrome.scripting.executeScript({
-      target: { tabId },
-      func: func as () => T,
-      args,
-    });
-    return results?.[0]?.result as T | undefined;
-  }
-  
-  // Try browser.scripting (Firefox MV3)
-  if (typeof browser !== 'undefined' && browser?.scripting?.executeScript) {
-    const results = await browser.scripting.executeScript({
-      target: { tabId },
-      func: func as () => T,
-      args,
-    });
-    return results?.[0]?.result as T | undefined;
-  }
-
-  // Fallback: browser.tabs.executeScript (Firefox MV2 style, but still works)
-  if (typeof browser !== 'undefined' && browser?.tabs?.executeScript) {
-    // For this fallback, we need to serialize the function
-    const code = `(${func.toString()}).apply(null, ${JSON.stringify(args)})`;
-    const results = await browser.tabs.executeScript(tabId, { code });
-    return results?.[0] as T | undefined;
-  }
-
-  throw new Error('No script execution API available');
-}
-
-// =============================================================================
-// State Management
-// =============================================================================
-
-// Permission storage key prefix
-const PERMISSION_KEY_PREFIX = 'permissions:';
-
-// Active text sessions (sessionId -> session info)
-const textSessions = new Map<string, {
-  sessionId: string;
-  origin: string;
-  options: Record<string, unknown>;
-  history: Array<{ role: string; content: string }>;
-  createdAt: number;
-}>();
-
-let sessionIdCounter = 0;
-
-function generateSessionId(): string {
-  return `session-${Date.now()}-${++sessionIdCounter}`;
-}
-
-// Track tabs spawned by each origin (origin -> Set<tabId>)
-const spawnedTabs = new Map<string, Set<number>>();
-
-// Persist spawnedTabs to storage for survival across background restarts
-async function persistSpawnedTabs(): Promise<void> {
-  const data: Record<string, number[]> = {};
-  for (const [origin, tabs] of spawnedTabs.entries()) {
-    data[origin] = Array.from(tabs);
-  }
-  await chrome.storage.local.set({ spawnedTabs: data });
-}
-
-// Restore spawnedTabs from storage on startup
-async function restoreSpawnedTabs(): Promise<void> {
-  try {
-    const result = await chrome.storage.local.get('spawnedTabs');
-    if (result.spawnedTabs) {
-      const data = result.spawnedTabs as Record<string, number[]>;
-      for (const [origin, tabs] of Object.entries(data)) {
-        spawnedTabs.set(origin, new Set(tabs));
-      }
-      console.log('[Web Agents API] Restored spawnedTabs from storage:', {
-        startupId: STARTUP_ID,
-        tabs: getAllSpawnedTabs()
-      });
-      
-      // Verify tabs still exist
-      await verifyTrackedTabs();
-    }
-  } catch (error) {
-    console.log('[Web Agents API] Error restoring spawnedTabs:', error);
-  }
-}
-
-// Verify tracked tabs still exist (they might have been closed while background was inactive)
-async function verifyTrackedTabs(): Promise<void> {
-  for (const [origin, tabs] of spawnedTabs.entries()) {
-    for (const tabId of tabs) {
-      try {
-        await chrome.tabs.get(tabId);
-      } catch {
-        // Tab no longer exists, remove from tracking
-        tabs.delete(tabId);
-        console.log('[Web Agents API] Removed stale tab from tracking:', { tabId, origin, startupId: STARTUP_ID });
-      }
-    }
-    if (tabs.size === 0) {
-      spawnedTabs.delete(origin);
-    }
-  }
-  await persistSpawnedTabs();
-}
-
 // Initialize: restore tabs from storage
 restoreSpawnedTabs();
 
-function trackSpawnedTab(origin: string, tabId: number): void {
-  if (!spawnedTabs.has(origin)) {
-    spawnedTabs.set(origin, new Set());
-  }
-  spawnedTabs.get(origin)!.add(tabId);
-  console.log('[Web Agents API] Tracked spawned tab:', { origin, tabId, allTabs: getAllSpawnedTabs(), startupId: STARTUP_ID });
-  // Persist to storage for survival across background restarts
-  persistSpawnedTabs();
-}
-
-function untrackSpawnedTab(origin: string, tabId: number): boolean {
-  const tabs = spawnedTabs.get(origin);
-  if (tabs) {
-    const result = tabs.delete(tabId);
-    console.log('[Web Agents API] Untracked spawned tab:', { origin, tabId, result, startupId: STARTUP_ID });
-    persistSpawnedTabs();
-    return result;
-  }
-  return false;
-}
-
-function isSpawnedTab(origin: string, tabId: number): boolean {
-  const result = spawnedTabs.get(origin)?.has(tabId) ?? false;
-  console.log('[Web Agents API] isSpawnedTab check:', { 
-    origin, 
-    tabId, 
-    result, 
-    allTabs: getAllSpawnedTabs(),
-    startupId: STARTUP_ID
-  });
-  return result;
-}
-
-function getAllSpawnedTabs(): Record<string, number[]> {
-  const result: Record<string, number[]> = {};
-  for (const [origin, tabs] of spawnedTabs.entries()) {
-    result[origin] = Array.from(tabs);
-  }
-  return result;
-}
+// =============================================================================
+// Tab Event Handlers
+// =============================================================================
 
 // Clean up spawned tabs when they are closed
 chrome.tabs.onRemoved.addListener(async (tabId, removeInfo) => {
-  const wasTracked = Array.from(spawnedTabs.entries()).some(([, tabs]) => tabs.has(tabId));
-  console.log('[Web Agents API] Tab removed event:', { 
-    tabId, 
-    removeInfo,
-    wasTracked,
-    allTabsBefore: getAllSpawnedTabs(),
-    startupId: STARTUP_ID
-  });
+  const wasTracked = Object.values(getAllSpawnedTabs()).some(tabs => tabs.includes(tabId));
   
-  // IMPORTANT: Verify the tab is actually gone before removing from tracking
-  // Firefox sometimes fires onRemoved spuriously (e.g., during navigation or container switches)
   if (wasTracked) {
     try {
-      const tab = await chrome.tabs.get(tabId);
-      // Tab still exists! Don't remove from tracking - this was a spurious event
-      console.log('[Web Agents API] Tab removed event fired but tab still exists, keeping in tracking:', { 
-        tabId, 
-        url: tab.url,
-        status: tab.status,
-        startupId: STARTUP_ID 
-      });
+      await chrome.tabs.get(tabId);
+      // Tab still exists - spurious event
       return;
     } catch {
-      // Tab is truly gone, proceed with removal
-      console.log('[Web Agents API] Tab confirmed removed, proceeding with untrack:', { tabId, startupId: STARTUP_ID });
+      // Tab is truly gone
     }
   }
   
-  let removed = false;
-  for (const [origin, tabs] of spawnedTabs.entries()) {
-    if (tabs.has(tabId)) {
-      tabs.delete(tabId);
-      removed = true;
-      console.log('[Web Agents API] Removed tab from tracking:', { tabId, origin, startupId: STARTUP_ID });
-    }
-  }
-  if (removed) {
-    persistSpawnedTabs();
-  }
+  handleTabRemoved(tabId);
+  cleanupAgentsForTab(tabId);
 });
 
 // =============================================================================
-// Permission Management
+// Streaming Handlers (kept in background.ts for port access)
 // =============================================================================
 
-interface StoredPermissions {
-  scopes: Record<PermissionScope, { type: PermissionGrantType; expiresAt?: number; grantedAt: number }>;
-  allowedTools?: string[];
-}
-
-interface PermissionStatusEntry {
-  origin: string;
-  scopes: Record<string, PermissionGrantType>;
-  allowedTools?: string[];
-}
-
-async function getPermissions(origin: string): Promise<StoredPermissions> {
-  const key = PERMISSION_KEY_PREFIX + origin;
-  const result = await chrome.storage.local.get(key);
-  return result[key] || { scopes: {} };
-}
-
-async function savePermissions(origin: string, permissions: StoredPermissions): Promise<void> {
-  const key = PERMISSION_KEY_PREFIX + origin;
-  await chrome.storage.local.set({ [key]: permissions });
-}
-
-async function listAllPermissions(): Promise<PermissionStatusEntry[]> {
-  const result = await chrome.storage.local.get(null);
-  const entries: PermissionStatusEntry[] = [];
-
-  for (const [key, value] of Object.entries(result)) {
-    if (!key.startsWith(PERMISSION_KEY_PREFIX)) continue;
-    const origin = key.slice(PERMISSION_KEY_PREFIX.length);
-    const permissions = (value || { scopes: {} }) as StoredPermissions;
-    const scopes: Record<string, PermissionGrantType> = {};
-
-    for (const [scope, grant] of Object.entries(permissions.scopes || {})) {
-      if (grant.type === 'granted-once' && grant.expiresAt && Date.now() > grant.expiresAt) {
-        scopes[scope] = 'not-granted';
-      } else {
-        scopes[scope] = grant.type;
-      }
-    }
-
-    entries.push({
-      origin,
-      scopes,
-      allowedTools: permissions.allowedTools,
-    });
-  }
-
-  return entries;
-}
-
-async function revokeOriginPermissions(origin: string): Promise<void> {
-  const key = PERMISSION_KEY_PREFIX + origin;
-  await chrome.storage.local.remove(key);
-}
-
-async function checkPermission(origin: string, scope: PermissionScope): Promise<PermissionGrantType> {
-  const permissions = await getPermissions(origin);
-  const grant = permissions.scopes[scope];
-  
-  if (!grant) {
-    return 'not-granted';
-  }
-  
-  // Check expiration for granted-once
-  if (grant.type === 'granted-once' && grant.expiresAt) {
-    if (Date.now() > grant.expiresAt) {
-      return 'not-granted';
-    }
-  }
-  
-  return grant.type;
-}
-
-async function hasPermission(origin: string, scope: PermissionScope): Promise<boolean> {
-  const status = await checkPermission(origin, scope);
-  return status === 'granted-once' || status === 'granted-always';
-}
-
-// =============================================================================
-// Permission Prompt
-// =============================================================================
-
-interface PermissionPromptResponse {
-  promptId: string;
-  granted: boolean;
-  grantType?: 'granted-once' | 'granted-always';
-  allowedTools?: string[];
-  explicitDeny?: boolean;
-}
-
-interface PendingPrompt {
-  resolve: (response: PermissionPromptResponse) => void;
-  windowId?: number;
-}
-
-const pendingPermissionPrompts = new Map<string, PendingPrompt>();
-let promptIdCounter = 0;
-
-function generatePromptId(): string {
-  return `prompt-${Date.now()}-${++promptIdCounter}`;
-}
-
-function resolvePromptClosed(windowId: number): void {
-  for (const [promptId, pending] of pendingPermissionPrompts.entries()) {
-    if (pending.windowId === windowId) {
-      pendingPermissionPrompts.delete(promptId);
-      pending.resolve({ promptId, granted: false });
-      return;
-    }
-  }
-}
-
-async function openPermissionPrompt(options: {
-  origin: string;
-  scopes: PermissionScope[];
-  reason?: string;
-  tools?: string[];
-}): Promise<PermissionPromptResponse> {
-  const promptId = generatePromptId();
-
-  const url = new URL(chrome.runtime.getURL('permission-prompt.html'));
-  url.searchParams.set('promptId', promptId);
-  url.searchParams.set('origin', options.origin);
-  if (options.scopes.length > 0) {
-    url.searchParams.set('scopes', options.scopes.join(','));
-  }
-  if (options.reason) {
-    url.searchParams.set('reason', options.reason);
-  }
-  if (options.tools && options.tools.length > 0) {
-    url.searchParams.set('tools', options.tools.join(','));
-  }
-
-  return new Promise((resolve) => {
-    pendingPermissionPrompts.set(promptId, { resolve });
-
-    chrome.windows.create(
-      {
-        url: url.toString(),
-        type: 'popup',
-        width: 480,
-        height: 640,
-      },
-      (createdWindow) => {
-        if (chrome.runtime.lastError || !createdWindow?.id) {
-          pendingPermissionPrompts.delete(promptId);
-          resolve({ promptId, granted: false });
-          return;
-        }
-
-        const pending = pendingPermissionPrompts.get(promptId);
-        if (pending) {
-          pending.windowId = createdWindow.id;
-        }
-      },
-    );
-  });
-}
-
-chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
-  if (message?.type !== 'permission_prompt_response') {
-    return false;
-  }
-
-  const response = message.response as PermissionPromptResponse | undefined;
-  if (!response) {
-    sendResponse({ ok: false });
-    return true;
-  }
-
-  let promptId = response.promptId;
-  if (!promptId && pendingPermissionPrompts.size === 1) {
-    promptId = Array.from(pendingPermissionPrompts.keys())[0];
-  }
-
-  const pending = promptId ? pendingPermissionPrompts.get(promptId) : undefined;
-  if (!pending) {
-    sendResponse({ ok: false });
-    return true;
-  }
-
-  pendingPermissionPrompts.delete(promptId);
-  if (pending.windowId) {
-    chrome.windows.remove(pending.windowId);
-  }
-
-  pending.resolve({ ...response, promptId });
-  sendResponse({ ok: true });
-  return true;
-});
-
-chrome.windows.onRemoved.addListener((windowId) => {
-  resolvePromptClosed(windowId);
-});
-
-function handleWebAgentsPermissionsMessage(
-  message: { type?: string; origin?: string },
-  sendResponse: (response?: unknown) => void,
-): boolean {
-  if (message?.type === 'web_agents_permissions.list_all') {
-    (async () => {
-      const permissions = await listAllPermissions();
-      sendResponse({ ok: true, permissions });
-    })().catch((error) => {
-      sendResponse({ ok: false, error: error instanceof Error ? error.message : String(error) });
-    });
-    return true;
-  }
-
-  if (message?.type === 'web_agents_permissions.revoke_origin') {
-    const { origin } = message as { origin?: string };
-    if (!origin) {
-      sendResponse({ ok: false, error: 'Missing origin' });
-      return true;
-    }
-
-    (async () => {
-      await revokeOriginPermissions(origin);
-      sendResponse({ ok: true });
-    })().catch((error) => {
-      sendResponse({ ok: false, error: error instanceof Error ? error.message : String(error) });
-    });
-    return true;
-  }
-
-  return false;
-}
-
-chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
-  return handleWebAgentsPermissionsMessage(message, sendResponse);
-});
-
-chrome.runtime.onMessageExternal?.addListener((message, _sender, sendResponse) => {
-  return handleWebAgentsPermissionsMessage(message, sendResponse);
-});
-
-async function showPermissionPrompt(
-  origin: string,
-  scopes: PermissionScope[],
-  reason?: string,
-  tools?: string[],
-): Promise<{ granted: boolean; scopes: Record<PermissionScope, PermissionGrantType>; allowedTools?: string[] }> {
-  const permissions = await getPermissions(origin);
-  const result: Record<PermissionScope, PermissionGrantType> = {};
-  const scopesToRequest: PermissionScope[] = [];
-  const requestedTools = tools && tools.length > 0 ? tools : [];
-  const existingAllowedTools = permissions.allowedTools || [];
-  const missingTools = requestedTools.filter((tool) => !existingAllowedTools.includes(tool));
-  
-  for (const scope of scopes) {
-    // Check if already granted
-    const existing = await checkPermission(origin, scope);
-    if (existing === 'granted-once' || existing === 'granted-always') {
-      result[scope] = existing;
-      continue;
-    }
-    
-    if (existing === 'denied') {
-      result[scope] = 'denied';
-      continue;
-    }
-
-    scopesToRequest.push(scope);
-  }
-
-  let didUpdatePermissions = false;
-
-  if (scopesToRequest.length > 0) {
-    const promptResponse = await openPermissionPrompt({ origin, scopes: scopesToRequest, reason, tools });
-
-    if (promptResponse.granted) {
-      const grantType = promptResponse.grantType || 'granted-once';
-      for (const scope of scopesToRequest) {
-        const grant = {
-          type: grantType as PermissionGrantType,
-          grantedAt: Date.now(),
-          expiresAt: grantType === 'granted-once' ? Date.now() + 10 * 60 * 1000 : undefined,
-        };
-        permissions.scopes[scope] = grant;
-        result[scope] = grant.type;
-      }
-
-      if (promptResponse.allowedTools && promptResponse.allowedTools.length > 0) {
-        permissions.allowedTools = [
-          ...new Set([...(permissions.allowedTools || []), ...promptResponse.allowedTools]),
-        ];
-      }
-
-      didUpdatePermissions = true;
-    } else {
-      for (const scope of scopesToRequest) {
-        if (promptResponse.explicitDeny) {
-          permissions.scopes[scope] = { type: 'denied', grantedAt: Date.now() };
-          result[scope] = 'denied';
-          didUpdatePermissions = true;
-        } else {
-          result[scope] = 'not-granted';
-        }
-      }
-    }
-  }
-
-  if (scopesToRequest.length === 0 && missingTools.length > 0) {
-    const promptResponse = await openPermissionPrompt({
-      origin,
-      scopes: ['mcp:tools.call'],
-      reason,
-      tools: missingTools,
-    });
-
-    if (promptResponse.granted && promptResponse.allowedTools && promptResponse.allowedTools.length > 0) {
-      permissions.allowedTools = [
-        ...new Set([...(permissions.allowedTools || []), ...promptResponse.allowedTools]),
-      ];
-      didUpdatePermissions = true;
-    }
-  }
-
-  if (didUpdatePermissions) {
-    await savePermissions(origin, permissions);
-    
-    // Sync granted permissions to Harbor so it can enforce them
-    const grantedScopes = Object.entries(result)
-      .filter(([, grant]) => grant === 'granted-once' || grant === 'granted-always')
-      .map(([scope]) => scope as PermissionScope);
-    
-    if (grantedScopes.length > 0) {
-      const grantType = result[grantedScopes[0]]; // Use the same grant type
-      try {
-        await harborRequest('system.syncPermissions', {
-          origin,
-          scopes: grantedScopes,
-          grantType,
-          allowedTools: permissions.allowedTools,
-        });
-        console.log('[Web Agents API] Synced permissions to Harbor:', grantedScopes);
-      } catch (e) {
-        console.warn('[Web Agents API] Failed to sync permissions to Harbor:', e);
-        // Continue even if sync fails - local permissions still work
-      }
-    }
-  }
-  
-  const allGranted = scopes.every(s => result[s] === 'granted-once' || result[s] === 'granted-always');
-  
-  return {
-    granted: allGranted,
-    scopes: result,
-    allowedTools: permissions.allowedTools,
-  };
-}
-
-// =============================================================================
-// Message Handlers
-// =============================================================================
-
-interface RequestContext {
-  id: string;
-  type: string;
-  payload: unknown;
-  origin: string;
-  tabId?: number;
-  /** Firefox container ID - used to open new tabs in the same container as the parent */
-  cookieStoreId?: string;
-}
-
-type HandlerResponse = Promise<TransportResponse>;
-
-async function handleAiCanCreateTextSession(ctx: RequestContext): HandlerResponse {
-  try {
-    const harborState = getHarborState();
-    if (!harborState.connected) {
-      await discoverHarbor();
-    }
-    
-    const capabilities = await harborRequest<{ bridgeReady: boolean }>('system.getCapabilities');
-    return { id: ctx.id, ok: true, result: capabilities.bridgeReady ? 'readily' : 'no' };
-  } catch {
-    return { id: ctx.id, ok: true, result: 'no' };
-  }
-}
-
-async function handleAiCreateTextSession(ctx: RequestContext): HandlerResponse {
-  console.log('[Web Agents API] handleAiCreateTextSession called', {
-    origin: ctx.origin,
-    payload: ctx.payload,
-  });
-  
-  // Check permission
-  if (!await hasPermission(ctx.origin, 'model:prompt')) {
-    console.log('[Web Agents API] handleAiCreateTextSession: Permission denied for', ctx.origin);
-    return {
-      id: ctx.id,
-      ok: false,
-      error: { code: 'ERR_PERMISSION_DENIED', message: 'Permission model:prompt required' },
-    };
-  }
-
-  const options = (ctx.payload || {}) as Record<string, unknown>;
-  const sessionId = generateSessionId();
-  
-  console.log('[Web Agents API] handleAiCreateTextSession: Creating session', {
-    sessionId,
-    systemPromptLength: options.systemPrompt ? String(options.systemPrompt).length : 0,
-    hasTemperature: !!options.temperature,
-  });
-  
-  textSessions.set(sessionId, {
-    sessionId,
-    origin: ctx.origin,
-    options,
-    history: [],
-    createdAt: Date.now(),
-  });
-
-  console.log('[Web Agents API] handleAiCreateTextSession: Session created successfully', sessionId);
-  return { id: ctx.id, ok: true, result: sessionId };
-}
-
-async function handleSessionPrompt(ctx: RequestContext): HandlerResponse {
+async function handleSessionPromptStreaming(
+  ctx: RequestContext,
+  sendEvent: (event: TransportStreamEvent) => void,
+): Promise<void> {
   const { sessionId, input } = ctx.payload as { sessionId: string; input: string };
   
-  const session = textSessions.get(sessionId);
+  console.log('[Web Agents API] handleSessionPromptStreaming called', {
+    sessionId,
+    inputLength: input?.length || 0,
+    origin: ctx.origin,
+  });
+  
+  const session = getTextSession(sessionId);
   if (!session) {
-    return { id: ctx.id, ok: false, error: { code: 'ERR_SESSION_NOT_FOUND', message: 'Session not found' } };
+    sendEvent({ id: ctx.id, event: { type: 'error', error: { code: 'ERR_SESSION_NOT_FOUND', message: 'Session not found' } }, done: true });
+    return;
   }
   
   if (session.origin !== ctx.origin) {
-    return { id: ctx.id, ok: false, error: { code: 'ERR_PERMISSION_DENIED', message: 'Session belongs to different origin' } };
+    sendEvent({ id: ctx.id, event: { type: 'error', error: { code: 'ERR_PERMISSION_DENIED', message: 'Session belongs to different origin' } }, done: true });
+    return;
   }
 
   try {
@@ -683,1144 +114,39 @@ async function handleSessionPrompt(ctx: RequestContext): HandlerResponse {
     }
     messages.push(...session.history);
     
-    // Call Harbor
-    const result = await harborRequest<{ content: string; model?: string }>('llm.chat', {
+    // Stream from Harbor
+    const { stream } = harborStreamRequest('llm.chatStream', {
       messages,
       model: session.options.model,
       temperature: session.options.temperature,
     });
+
+    let fullContent = '';
     
-    // Add assistant response to history
-    session.history.push({ role: 'assistant', content: result.content });
-    
-    return { id: ctx.id, ok: true, result: result.content };
-  } catch (e) {
-    return {
-      id: ctx.id,
-      ok: false,
-      error: { code: 'ERR_MODEL_FAILED', message: e instanceof Error ? e.message : 'LLM request failed' },
-    };
-  }
-}
-
-async function handleSessionDestroy(ctx: RequestContext): HandlerResponse {
-  const { sessionId } = ctx.payload as { sessionId: string };
-  textSessions.delete(sessionId);
-  return { id: ctx.id, ok: true, result: null };
-}
-
-async function handleLanguageModelCapabilities(ctx: RequestContext): HandlerResponse {
-  try {
-    const harborState = getHarborState();
-    if (!harborState.connected) {
-      await discoverHarbor();
+    for await (const event of stream) {
+      if (event.type === 'token' && event.token) {
+        fullContent += event.token;
+        sendEvent({ id: ctx.id, event: { type: 'token', token: event.token } });
+      } else if (event.type === 'done') {
+        session.history.push({ role: 'assistant', content: fullContent });
+        sendEvent({ id: ctx.id, event: { type: 'done' }, done: true });
+        break;
+      } else if (event.type === 'error') {
+        sendEvent({ 
+          id: ctx.id, 
+          event: { type: 'error', error: { code: 'ERR_MODEL_FAILED', message: event.error?.message || 'Stream error' } }, 
+          done: true 
+        });
+        break;
+      }
     }
-    
-    const capabilities = await harborRequest<{ bridgeReady: boolean }>('system.getCapabilities');
-    return {
-      id: ctx.id,
-      ok: true,
-      result: {
-        available: capabilities.bridgeReady ? 'readily' : 'no',
-        defaultTemperature: 0.7,
-        defaultTopK: 40,
-        maxTopK: 100,
-      },
-    };
-  } catch {
-    return { id: ctx.id, ok: true, result: { available: 'no' } };
-  }
-}
-
-async function handleProviderslist(ctx: RequestContext): HandlerResponse {
-  if (!await hasPermission(ctx.origin, 'model:list')) {
-    return {
-      id: ctx.id,
-      ok: false,
-      error: { code: 'ERR_PERMISSION_DENIED', message: 'Permission model:list required' },
-    };
-  }
-
-  try {
-    const result = await harborRequest<{ providers: unknown[] }>('llm.listProviders');
-    return { id: ctx.id, ok: true, result: result.providers };
   } catch (e) {
-    return {
+    sendEvent({
       id: ctx.id,
-      ok: false,
-      error: { code: 'ERR_INTERNAL', message: e instanceof Error ? e.message : 'Failed to list providers' },
-    };
-  }
-}
-
-async function handleProvidersGetActive(ctx: RequestContext): HandlerResponse {
-  try {
-    const result = await harborRequest<{ default_model?: string }>('llm.getActiveProvider');
-    return { id: ctx.id, ok: true, result: { provider: null, model: result.default_model || null } };
-  } catch {
-    return { id: ctx.id, ok: true, result: { provider: null, model: null } };
-  }
-}
-
-async function handleRequestPermissions(ctx: RequestContext): HandlerResponse {
-  const { scopes, reason, tools } = ctx.payload as {
-    scopes: PermissionScope[];
-    reason?: string;
-    tools?: string[];
-  };
-
-  const result = await showPermissionPrompt(ctx.origin, scopes, reason, tools);
-  return { id: ctx.id, ok: true, result };
-}
-
-async function handlePermissionsList(ctx: RequestContext): HandlerResponse {
-  const permissions = await getPermissions(ctx.origin);
-  const scopes: Record<string, PermissionGrantType> = {};
-  
-  for (const [scope, grant] of Object.entries(permissions.scopes)) {
-    // Check expiration
-    if (grant.type === 'granted-once' && grant.expiresAt && Date.now() > grant.expiresAt) {
-      scopes[scope] = 'not-granted';
-    } else {
-      scopes[scope] = grant.type;
-    }
-  }
-  
-  return {
-    id: ctx.id,
-    ok: true,
-    result: {
-      origin: ctx.origin,
-      scopes,
-      allowedTools: permissions.allowedTools,
-    },
-  };
-}
-
-async function handleToolsList(ctx: RequestContext): HandlerResponse {
-  if (!await hasPermission(ctx.origin, 'mcp:tools.list')) {
-    return {
-      id: ctx.id,
-      ok: false,
-      error: { code: 'ERR_PERMISSION_DENIED', message: 'Permission mcp:tools.list required' },
-    };
-  }
-
-  try {
-    const result = await harborRequest<{ tools: unknown[] }>('mcp.listTools', {});
-    return { id: ctx.id, ok: true, result: result.tools };
-  } catch (e) {
-    return {
-      id: ctx.id,
-      ok: false,
-      error: { code: 'ERR_INTERNAL', message: e instanceof Error ? e.message : 'Failed to list tools' },
-    };
-  }
-}
-
-async function handleToolsCall(ctx: RequestContext): HandlerResponse {
-  if (!await hasPermission(ctx.origin, 'mcp:tools.call')) {
-    return {
-      id: ctx.id,
-      ok: false,
-      error: { code: 'ERR_PERMISSION_DENIED', message: 'Permission mcp:tools.call required' },
-    };
-  }
-
-  const { tool, args } = ctx.payload as { tool: string; args?: Record<string, unknown> };
-  
-  // Check tool allowlist
-  const permissions = await getPermissions(ctx.origin);
-  if (permissions.allowedTools && !permissions.allowedTools.includes(tool)) {
-    return {
-      id: ctx.id,
-      ok: false,
-      error: { code: 'ERR_TOOL_NOT_ALLOWED', message: `Tool ${tool} not in allowlist` },
-    };
-  }
-
-  // Parse tool name (may be "serverId/toolName" or just "toolName")
-  let serverId: string;
-  let toolName: string;
-  
-  if (tool.includes('/')) {
-    [serverId, toolName] = tool.split('/', 2);
-  } else {
-    // Need to find which server has this tool
-    const toolsResult = await harborRequest<{ tools: Array<{ serverId: string; name: string }> }>('mcp.listTools', {});
-    const found = toolsResult.tools.find(t => t.name === tool);
-    if (!found) {
-      return {
-        id: ctx.id,
-        ok: false,
-        error: { code: 'ERR_TOOL_NOT_FOUND', message: `Tool ${tool} not found` },
-      };
-    }
-    serverId = found.serverId;
-    toolName = tool;
-  }
-
-  try {
-    const result = await harborRequest<{ result: unknown }>('mcp.callTool', {
-      serverId,
-      toolName,
-      args: args || {},
+      event: { type: 'error', error: { code: 'ERR_MODEL_FAILED', message: e instanceof Error ? e.message : 'Streaming failed' } },
+      done: true,
     });
-    return { id: ctx.id, ok: true, result: result.result };
-  } catch (e) {
-    return {
-      id: ctx.id,
-      ok: false,
-      error: { code: 'ERR_TOOL_FAILED', message: e instanceof Error ? e.message : 'Tool call failed' },
-    };
   }
-}
-
-// =============================================================================
-// Session Handlers (Explicit Sessions via Harbor)
-// =============================================================================
-
-/**
- * Create an explicit session with specified capabilities.
- * This proxies to Harbor's session.create endpoint.
- */
-async function handleSessionsCreate(ctx: RequestContext): HandlerResponse {
-  const options = ctx.payload as CreateSessionOptions;
-  
-  if (!options || !options.capabilities) {
-    return {
-      id: ctx.id,
-      ok: false,
-      error: { code: 'ERR_INVALID_REQUEST', message: 'Missing capabilities in session options' },
-    };
-  }
-
-  // Check required permissions based on requested capabilities
-  const requiredScopes: PermissionScope[] = [];
-  if (options.capabilities.llm) {
-    requiredScopes.push('model:prompt');
-  }
-  if (options.capabilities.tools && options.capabilities.tools.length > 0) {
-    requiredScopes.push('mcp:tools.call');
-  }
-  // TODO: Add browser permission checks when those scopes are supported
-
-  // Check permissions
-  for (const scope of requiredScopes) {
-    if (!await hasPermission(ctx.origin, scope)) {
-      return {
-        id: ctx.id,
-        ok: false,
-        error: { code: 'ERR_PERMISSION_DENIED', message: `Permission ${scope} required` },
-      };
-    }
-  }
-
-  // Get allowed tools for this origin
-  const permissions = await getPermissions(ctx.origin);
-  const allowedTools = permissions.allowedTools || [];
-
-  try {
-    const result = await harborRequest<{
-      sessionId: string;
-      capabilities: unknown;
-    }>('session.create', {
-      origin: ctx.origin,
-      tabId: ctx.tabId,
-      options,
-    });
-
-    return {
-      id: ctx.id,
-      ok: true,
-      result: {
-        success: true,
-        sessionId: result.sessionId,
-        capabilities: result.capabilities,
-      },
-    };
-  } catch (e) {
-    return {
-      id: ctx.id,
-      ok: false,
-      error: { code: 'ERR_INTERNAL', message: e instanceof Error ? e.message : 'Session creation failed' },
-    };
-  }
-}
-
-/**
- * Get a session by ID.
- */
-async function handleSessionsGet(ctx: RequestContext): HandlerResponse {
-  const { sessionId } = ctx.payload as { sessionId: string };
-
-  if (!sessionId) {
-    return {
-      id: ctx.id,
-      ok: false,
-      error: { code: 'ERR_INVALID_REQUEST', message: 'Missing sessionId' },
-    };
-  }
-
-  try {
-    const result = await harborRequest<{ session: SessionSummary | null }>('session.get', {
-      sessionId,
-      origin: ctx.origin,
-    });
-
-    return { id: ctx.id, ok: true, result: result.session };
-  } catch (e) {
-    return {
-      id: ctx.id,
-      ok: false,
-      error: { code: 'ERR_SESSION_NOT_FOUND', message: e instanceof Error ? e.message : 'Session not found' },
-    };
-  }
-}
-
-/**
- * List sessions for the requesting origin.
- */
-async function handleSessionsList(ctx: RequestContext): HandlerResponse {
-  try {
-    const result = await harborRequest<{ sessions: SessionSummary[] }>('session.list', {
-      origin: ctx.origin,
-      activeOnly: true,
-    });
-
-    return { id: ctx.id, ok: true, result: result.sessions };
-  } catch (e) {
-    return {
-      id: ctx.id,
-      ok: false,
-      error: { code: 'ERR_INTERNAL', message: e instanceof Error ? e.message : 'Failed to list sessions' },
-    };
-  }
-}
-
-/**
- * Terminate a session.
- */
-async function handleSessionsTerminate(ctx: RequestContext): HandlerResponse {
-  const { sessionId } = ctx.payload as { sessionId: string };
-
-  if (!sessionId) {
-    return {
-      id: ctx.id,
-      ok: false,
-      error: { code: 'ERR_INVALID_REQUEST', message: 'Missing sessionId' },
-    };
-  }
-
-  try {
-    const result = await harborRequest<{ terminated: boolean }>('session.terminate', {
-      sessionId,
-      origin: ctx.origin,
-    });
-
-    return { id: ctx.id, ok: true, result: { terminated: result.terminated } };
-  } catch (e) {
-    return {
-      id: ctx.id,
-      ok: false,
-      error: { code: 'ERR_SESSION_NOT_FOUND', message: e instanceof Error ? e.message : 'Session not found' },
-    };
-  }
-}
-
-// =============================================================================
-// MCP Server Handlers
-// =============================================================================
-
-async function handleMcpDiscover(ctx: RequestContext): HandlerResponse {
-  try {
-    const result = await harborRequest<{
-      servers: Array<{
-        url: string;
-        name?: string;
-        description?: string;
-        tools?: string[];
-        transport?: string;
-      }>;
-    }>('agent.mcp.discover', { origin: ctx.origin });
-    return { id: ctx.id, ok: true, result: result.servers || [] };
-  } catch (e) {
-    return {
-      id: ctx.id,
-      ok: false,
-      error: { code: 'ERR_MCP_DISCOVER', message: e instanceof Error ? e.message : 'Failed to discover MCP servers' },
-    };
-  }
-}
-
-async function handleMcpRegister(ctx: RequestContext): HandlerResponse {
-  const { url, name, description, tools, transport } = ctx.payload as {
-    url: string;
-    name: string;
-    description?: string;
-    tools?: string[];
-    transport?: 'sse' | 'stdio' | 'streamable-http';
-  };
-
-  if (!url || !name) {
-    return {
-      id: ctx.id,
-      ok: false,
-      error: { code: 'ERR_INVALID_REQUEST', message: 'Missing url or name' },
-    };
-  }
-
-  try {
-    const result = await harborRequest<{
-      success: boolean;
-      serverId?: string;
-      error?: { code: string; message: string };
-    }>('agent.mcp.register', {
-      origin: ctx.origin,
-      url,
-      name,
-      description,
-      tools,
-      transport,
-    });
-    return { id: ctx.id, ok: true, result };
-  } catch (e) {
-    return {
-      id: ctx.id,
-      ok: false,
-      error: { code: 'ERR_MCP_REGISTER', message: e instanceof Error ? e.message : 'Failed to register MCP server' },
-    };
-  }
-}
-
-async function handleMcpUnregister(ctx: RequestContext): HandlerResponse {
-  const { serverId } = ctx.payload as { serverId: string };
-
-  if (!serverId) {
-    return {
-      id: ctx.id,
-      ok: false,
-      error: { code: 'ERR_INVALID_REQUEST', message: 'Missing serverId' },
-    };
-  }
-
-  try {
-    const result = await harborRequest<{ success: boolean }>('agent.mcp.unregister', {
-      origin: ctx.origin,
-      serverId,
-    });
-    return { id: ctx.id, ok: true, result };
-  } catch (e) {
-    return {
-      id: ctx.id,
-      ok: false,
-      error: { code: 'ERR_MCP_UNREGISTER', message: e instanceof Error ? e.message : 'Failed to unregister MCP server' },
-    };
-  }
-}
-
-// =============================================================================
-// Chat API Handlers
-// =============================================================================
-
-async function handleChatCanOpen(ctx: RequestContext): HandlerResponse {
-  try {
-    const result = await harborRequest<{ available: boolean; reason?: string }>('agent.chat.canOpen', {
-      origin: ctx.origin,
-    });
-    return { id: ctx.id, ok: true, result };
-  } catch (e) {
-    return {
-      id: ctx.id,
-      ok: false,
-      error: { code: 'ERR_CHAT', message: e instanceof Error ? e.message : 'Failed to check chat availability' },
-    };
-  }
-}
-
-async function handleChatOpen(ctx: RequestContext): HandlerResponse {
-  const { systemPrompt, initialMessage, tools, style } = (ctx.payload || {}) as {
-    systemPrompt?: string;
-    initialMessage?: string;
-    tools?: string[];
-    style?: {
-      theme?: 'light' | 'dark' | 'auto';
-      accentColor?: string;
-      position?: 'right' | 'left';
-    };
-  };
-
-  try {
-    const result = await harborRequest<{
-      success: boolean;
-      chatId?: string;
-      error?: { code: string; message: string };
-    }>('agent.chat.open', {
-      origin: ctx.origin,
-      tabId: ctx.tabId,
-      systemPrompt,
-      initialMessage,
-      tools,
-      style,
-    });
-    return { id: ctx.id, ok: true, result };
-  } catch (e) {
-    return {
-      id: ctx.id,
-      ok: false,
-      error: { code: 'ERR_CHAT_OPEN', message: e instanceof Error ? e.message : 'Failed to open chat' },
-    };
-  }
-}
-
-async function handleChatClose(ctx: RequestContext): HandlerResponse {
-  const { chatId } = ctx.payload as { chatId: string };
-
-  if (!chatId) {
-    return {
-      id: ctx.id,
-      ok: false,
-      error: { code: 'ERR_INVALID_REQUEST', message: 'Missing chatId' },
-    };
-  }
-
-  try {
-    const result = await harborRequest<{ success: boolean }>('agent.chat.close', {
-      origin: ctx.origin,
-      chatId,
-    });
-    return { id: ctx.id, ok: true, result };
-  } catch (e) {
-    return {
-      id: ctx.id,
-      ok: false,
-      error: { code: 'ERR_CHAT_CLOSE', message: e instanceof Error ? e.message : 'Failed to close chat' },
-    };
-  }
-}
-
-// =============================================================================
-// Multi-Agent Handlers
-// =============================================================================
-
-// Track registered agents from this extension
-const registeredAgents = new Map<string, {
-  agentId: string;
-  origin: string;
-  tabId: number;
-  name: string;
-  capabilities: string[];
-}>();
-
-// Track pending invocations waiting for responses from pages
-const pendingInvocations = new Map<string, {
-  resolve: (response: unknown) => void;
-  reject: (error: Error) => void;
-  timeout: ReturnType<typeof setTimeout>;
-}>();
-
-// Track tabs that have invocation handlers set up (agentId -> tabId)
-const agentInvocationTabs = new Map<string, number>();
-
-/**
- * Register a proxy invocation handler with Harbor for an agent.
- * This allows invocations to be routed through Web Agents API to the page.
- */
-async function registerProxyInvocationHandler(agentId: string, origin: string, tabId: number): Promise<void> {
-  console.log('[Web Agents API] registerProxyInvocationHandler called:', { agentId, origin, tabId });
-  
-  // Track which tab this agent's handler should go to
-  if (tabId > 0) {
-    agentInvocationTabs.set(agentId, tabId);
-    console.log('[Web Agents API] Stored tab mapping:', agentId, '->', tabId);
-  }
-  
-  // Check Harbor connection first
-  const harborState = getHarborState();
-  console.log('[Web Agents API] Harbor state:', harborState);
-  
-  if (!harborState.connected) {
-    console.warn('[Web Agents API] Harbor not connected, trying to discover...');
-    const id = await discoverHarbor();
-    if (!id) {
-      console.error('[Web Agents API] Cannot register invocation handler - Harbor not found');
-      return;
-    }
-  }
-  
-  // Tell Harbor this agent has an invocation handler
-  try {
-    console.log('[Web Agents API] Sending agents.registerInvocationHandler to Harbor...');
-    const result = await harborRequest('agents.registerInvocationHandler', { 
-      agentId, 
-      origin,
-      tabId,
-    });
-    console.log('[Web Agents API] Harbor response for registerInvocationHandler:', result);
-  } catch (e) {
-    console.error('[Web Agents API] Failed to register proxy handler with Harbor:', e);
-  }
-}
-
-/**
- * Handle an invocation request from Harbor for one of our registered agents.
- * Forward it to the correct tab and wait for response.
- */
-async function handleIncomingInvocation(
-  agentId: string,
-  request: { from: string; task: string; input?: unknown; timeout?: number },
-  traceId?: string
-): Promise<{ success: boolean; result?: unknown; error?: { code: string; message: string } }> {
-  const trace = traceId || 'no-trace';
-  
-  // Try to find tabId from multiple sources
-  let tabId = agentInvocationTabs.get(agentId);
-  
-  if (!tabId) {
-    // Try to get from registered agents
-    const agent = registeredAgents.get(agentId);
-    if (agent?.tabId) {
-      tabId = agent.tabId;
-    }
-  }
-  
-  console.log(`[TRACE ${trace}] handleIncomingInvocation - agentId: ${agentId}, tabId: ${tabId}, task: ${request.task}`);
-  
-  if (!tabId) {
-    console.log(`[TRACE ${trace}] handleIncomingInvocation ERROR - no tab`);
-    return { success: false, error: { code: 'ERR_NO_TAB', message: 'Agent tab not found' } };
-  }
-  
-  const invocationId = `inv-${Date.now()}-${Math.random().toString(36).slice(2)}`;
-  const timeout = request.timeout || 30000;
-  
-  console.log(`[TRACE ${trace}] Sending to tab ${tabId} with invocationId: ${invocationId}`);
-  
-  return new Promise((resolve) => {
-    // Set up timeout
-    const timeoutId = setTimeout(() => {
-      pendingInvocations.delete(invocationId);
-      resolve({ success: false, error: { code: 'ERR_TIMEOUT', message: 'Invocation timed out' } });
-    }, timeout);
-    
-    // Store pending invocation
-    pendingInvocations.set(invocationId, {
-      resolve: (response) => {
-        clearTimeout(timeoutId);
-        pendingInvocations.delete(invocationId);
-        resolve(response as { success: boolean; result?: unknown; error?: { code: string; message: string } });
-      },
-      reject: (error) => {
-        clearTimeout(timeoutId);
-        pendingInvocations.delete(invocationId);
-        resolve({ success: false, error: { code: 'ERR_FAILED', message: error.message } });
-      },
-      timeout: timeoutId,
-    });
-    
-    // Send invocation to the tab
-    chrome.tabs.sendMessage(tabId, {
-      type: 'agentInvocation',
-      invocationId,
-      agentId,
-      from: request.from,
-      task: request.task,
-      input: request.input,
-      traceId: trace,
-    }).catch((error) => {
-      console.log(`[TRACE ${trace}] tabs.sendMessage ERROR: ${error.message}`);
-      clearTimeout(timeoutId);
-      pendingInvocations.delete(invocationId);
-      resolve({ success: false, error: { code: 'ERR_SEND_FAILED', message: error.message } });
-    });
-  });
-}
-
-/**
- * Register an agent.
- */
-async function handleAgentsRegister(ctx: RequestContext): HandlerResponse {
-  const options = ctx.payload as {
-    name: string;
-    description?: string;
-    capabilities?: string[];
-    tags?: string[];
-    acceptsInvocations?: boolean;
-    acceptsMessages?: boolean;
-  };
-
-  if (!options.name) {
-    return {
-      id: ctx.id,
-      ok: false,
-      error: { code: 'ERR_INVALID_REQUEST', message: 'Missing name' },
-    };
-  }
-
-  try {
-    const result = await harborRequest<{
-      id: string;
-      name: string;
-      description?: string;
-      capabilities: string[];
-      tags: string[];
-      status: string;
-      origin: string;
-      acceptsInvocations: boolean;
-      acceptsMessages: boolean;
-      registeredAt: number;
-      lastActiveAt: number;
-    }>('agents.register', {
-      ...options,
-      origin: ctx.origin,
-      tabId: ctx.tabId,
-    });
-
-    // Track locally - use tabId from context or try to find it
-    const tabId = ctx.tabId;
-    console.log('[Web Agents API] Agent registered:', result.id, 'tabId:', tabId, 'acceptsInvocations:', result.acceptsInvocations);
-    
-    // Always track the agent
-    registeredAgents.set(result.id, {
-      agentId: result.id,
-      origin: ctx.origin,
-      tabId: tabId || 0, // Will be updated if we get tabId later
-      name: result.name,
-      capabilities: result.capabilities,
-    });
-    
-    // If agent accepts invocations, register a proxy handler with Harbor
-    // We'll pass the origin so Harbor can route back to us
-    if (result.acceptsInvocations) {
-      await registerProxyInvocationHandler(result.id, ctx.origin, tabId || 0);
-    }
-
-    return { id: ctx.id, ok: true, result };
-  } catch (e) {
-    return {
-      id: ctx.id,
-      ok: false,
-      error: { code: 'ERR_INTERNAL', message: e instanceof Error ? e.message : 'Registration failed' },
-    };
-  }
-}
-
-/**
- * Unregister an agent.
- */
-async function handleAgentsUnregister(ctx: RequestContext): HandlerResponse {
-  const { agentId } = ctx.payload as { agentId: string };
-
-  if (!agentId) {
-    return {
-      id: ctx.id,
-      ok: false,
-      error: { code: 'ERR_INVALID_REQUEST', message: 'Missing agentId' },
-    };
-  }
-
-  try {
-    await harborRequest('agents.unregister', { agentId, origin: ctx.origin });
-    registeredAgents.delete(agentId);
-    return { id: ctx.id, ok: true, result: null };
-  } catch (e) {
-    return {
-      id: ctx.id,
-      ok: false,
-      error: { code: 'ERR_INTERNAL', message: e instanceof Error ? e.message : 'Unregistration failed' },
-    };
-  }
-}
-
-/**
- * Get agent info.
- */
-async function handleAgentsGetInfo(ctx: RequestContext): HandlerResponse {
-  const { agentId } = ctx.payload as { agentId: string };
-
-  if (!agentId) {
-    return {
-      id: ctx.id,
-      ok: false,
-      error: { code: 'ERR_INVALID_REQUEST', message: 'Missing agentId' },
-    };
-  }
-
-  try {
-    const result = await harborRequest('agents.getInfo', { agentId, origin: ctx.origin });
-    return { id: ctx.id, ok: true, result };
-  } catch (e) {
-    return {
-      id: ctx.id,
-      ok: false,
-      error: { code: 'ERR_AGENT_NOT_FOUND', message: e instanceof Error ? e.message : 'Agent not found' },
-    };
-  }
-}
-
-/**
- * Discover agents.
- */
-async function handleAgentsDiscover(ctx: RequestContext): HandlerResponse {
-  const query = ctx.payload as {
-    name?: string;
-    capabilities?: string[];
-    tags?: string[];
-    includeSameOrigin?: boolean;
-    includeCrossOrigin?: boolean;
-  };
-
-  try {
-    const result = await harborRequest<{ agents: unknown[]; total: number }>('agents.discover', {
-      ...query,
-      origin: ctx.origin,
-    });
-    return { id: ctx.id, ok: true, result };
-  } catch (e) {
-    return {
-      id: ctx.id,
-      ok: false,
-      error: { code: 'ERR_INTERNAL', message: e instanceof Error ? e.message : 'Discovery failed' },
-    };
-  }
-}
-
-/**
- * List all agents.
- */
-async function handleAgentsList(ctx: RequestContext): HandlerResponse {
-  try {
-    const result = await harborRequest<{ agents: unknown[] }>('agents.list', { origin: ctx.origin });
-    return { id: ctx.id, ok: true, result };
-  } catch (e) {
-    return {
-      id: ctx.id,
-      ok: false,
-      error: { code: 'ERR_INTERNAL', message: e instanceof Error ? e.message : 'List failed' },
-    };
-  }
-}
-
-/**
- * Invoke an agent.
- */
-async function handleAgentsInvoke(ctx: RequestContext): HandlerResponse {
-  const { agentId, request } = ctx.payload as {
-    agentId: string;
-    request: { task: string; input?: unknown; timeout?: number };
-  };
-
-  // Generate trace ID for this invocation
-  const traceId = `trace-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
-  console.log(`[TRACE ${traceId}] handleAgentsInvoke START - agentId: ${agentId}, task: ${request?.task}`);
-
-  if (!agentId || !request) {
-    console.log(`[TRACE ${traceId}] handleAgentsInvoke ERROR - missing params`);
-    return {
-      id: ctx.id,
-      ok: false,
-      error: { code: 'ERR_INVALID_REQUEST', message: 'Missing agentId or request' },
-    };
-  }
-
-  try {
-    // Flatten the request for Harbor - it expects { agentId, task, input, timeout }
-    console.log(`[TRACE ${traceId}] Sending to Harbor...`);
-    const result = await harborRequest<{
-      success: boolean;
-      result?: unknown;
-      error?: { code: string; message: string };
-      executionTime?: number;
-    }>('agents.invoke', {
-      agentId,
-      task: request.task,
-      input: request.input,
-      timeout: request.timeout,
-      origin: ctx.origin,
-      tabId: ctx.tabId,
-      traceId, // Pass trace ID to Harbor
-    });
-    console.log(`[TRACE ${traceId}] Harbor response received, success: ${result?.success}`);
-
-    return { id: ctx.id, ok: true, result };
-  } catch (e) {
-    return {
-      id: ctx.id,
-      ok: false,
-      error: { code: 'ERR_INTERNAL', message: e instanceof Error ? e.message : 'Invocation failed' },
-    };
-  }
-}
-
-/**
- * Send a message to an agent.
- */
-async function handleAgentsSend(ctx: RequestContext): HandlerResponse {
-  const { agentId, payload } = ctx.payload as { agentId: string; payload: unknown };
-
-  if (!agentId) {
-    return {
-      id: ctx.id,
-      ok: false,
-      error: { code: 'ERR_INVALID_REQUEST', message: 'Missing agentId' },
-    };
-  }
-
-  try {
-    const result = await harborRequest<{ delivered: boolean }>('agents.send', {
-      agentId,
-      payload,
-      origin: ctx.origin,
-      tabId: ctx.tabId,
-    });
-
-    return { id: ctx.id, ok: true, result };
-  } catch (e) {
-    return {
-      id: ctx.id,
-      ok: false,
-      error: { code: 'ERR_INTERNAL', message: e instanceof Error ? e.message : 'Send failed' },
-    };
-  }
-}
-
-/**
- * Subscribe to events.
- */
-async function handleAgentsSubscribe(ctx: RequestContext): HandlerResponse {
-  const { eventType } = ctx.payload as { eventType: string };
-
-  if (!eventType) {
-    return {
-      id: ctx.id,
-      ok: false,
-      error: { code: 'ERR_INVALID_REQUEST', message: 'Missing eventType' },
-    };
-  }
-
-  try {
-    await harborRequest('agents.subscribe', {
-      eventType,
-      origin: ctx.origin,
-      tabId: ctx.tabId,
-    });
-
-    return { id: ctx.id, ok: true, result: null };
-  } catch (e) {
-    return {
-      id: ctx.id,
-      ok: false,
-      error: { code: 'ERR_INTERNAL', message: e instanceof Error ? e.message : 'Subscribe failed' },
-    };
-  }
-}
-
-/**
- * Unsubscribe from events.
- */
-async function handleAgentsUnsubscribe(ctx: RequestContext): HandlerResponse {
-  const { eventType } = ctx.payload as { eventType: string };
-
-  if (!eventType) {
-    return {
-      id: ctx.id,
-      ok: false,
-      error: { code: 'ERR_INVALID_REQUEST', message: 'Missing eventType' },
-    };
-  }
-
-  try {
-    await harborRequest('agents.unsubscribe', {
-      eventType,
-      origin: ctx.origin,
-      tabId: ctx.tabId,
-    });
-
-    return { id: ctx.id, ok: true, result: null };
-  } catch (e) {
-    return {
-      id: ctx.id,
-      ok: false,
-      error: { code: 'ERR_INTERNAL', message: e instanceof Error ? e.message : 'Unsubscribe failed' },
-    };
-  }
-}
-
-/**
- * Broadcast an event.
- */
-async function handleAgentsBroadcast(ctx: RequestContext): HandlerResponse {
-  const { eventType, data } = ctx.payload as { eventType: string; data: unknown };
-
-  if (!eventType) {
-    return {
-      id: ctx.id,
-      ok: false,
-      error: { code: 'ERR_INVALID_REQUEST', message: 'Missing eventType' },
-    };
-  }
-
-  try {
-    const result = await harborRequest<{ delivered: number }>('agents.broadcast', {
-      eventType,
-      data,
-      origin: ctx.origin,
-      tabId: ctx.tabId,
-    });
-
-    return { id: ctx.id, ok: true, result };
-  } catch (e) {
-    return {
-      id: ctx.id,
-      ok: false,
-      error: { code: 'ERR_INTERNAL', message: e instanceof Error ? e.message : 'Broadcast failed' },
-    };
-  }
-}
-
-/**
- * Execute a pipeline.
- */
-async function handleAgentsPipeline(ctx: RequestContext): HandlerResponse {
-  const { config, initialInput } = ctx.payload as {
-    config: { steps: Array<{ agentId: string; task: string; inputTransform?: string; outputTransform?: string }> };
-    initialInput: unknown;
-  };
-
-  if (!config?.steps?.length) {
-    return {
-      id: ctx.id,
-      ok: false,
-      error: { code: 'ERR_INVALID_REQUEST', message: 'Missing pipeline steps' },
-    };
-  }
-
-  try {
-    const result = await harborRequest<{
-      success: boolean;
-      result: unknown;
-      stepResults: unknown[];
-    }>('agents.orchestrate.pipeline', {
-      config,
-      initialInput,
-      origin: ctx.origin,
-    });
-
-    return { id: ctx.id, ok: true, result };
-  } catch (e) {
-    return {
-      id: ctx.id,
-      ok: false,
-      error: { code: 'ERR_INTERNAL', message: e instanceof Error ? e.message : 'Pipeline failed' },
-    };
-  }
-}
-
-/**
- * Execute parallel tasks.
- */
-async function handleAgentsParallel(ctx: RequestContext): HandlerResponse {
-  const { config } = ctx.payload as {
-    config: {
-      tasks: Array<{ agentId: string; task: string; input?: unknown }>;
-      combineStrategy?: 'array' | 'merge' | 'first';
-    };
-  };
-
-  if (!config?.tasks?.length) {
-    return {
-      id: ctx.id,
-      ok: false,
-      error: { code: 'ERR_INVALID_REQUEST', message: 'Missing parallel tasks' },
-    };
-  }
-
-  try {
-    const result = await harborRequest<{
-      success: boolean;
-      results: unknown[];
-      combined: unknown;
-    }>('agents.orchestrate.parallel', {
-      config,
-      origin: ctx.origin,
-    });
-
-    return { id: ctx.id, ok: true, result };
-  } catch (e) {
-    return {
-      id: ctx.id,
-      ok: false,
-      error: { code: 'ERR_INTERNAL', message: e instanceof Error ? e.message : 'Parallel execution failed' },
-    };
-  }
-}
-
-/**
- * Route to an agent.
- */
-async function handleAgentsRoute(ctx: RequestContext): HandlerResponse {
-  const { config, input, task } = ctx.payload as {
-    config: {
-      routes: Array<{ condition: string; agentId: string }>;
-      defaultAgentId?: string;
-    };
-    input: unknown;
-    task: string;
-  };
-
-  if (!config?.routes?.length) {
-    return {
-      id: ctx.id,
-      ok: false,
-      error: { code: 'ERR_INVALID_REQUEST', message: 'Missing routes' },
-    };
-  }
-
-  try {
-    const result = await harborRequest<{
-      success: boolean;
-      result?: unknown;
-      error?: { code: string; message: string };
-    }>('agents.orchestrate.route', {
-      config,
-      input,
-      task,
-      origin: ctx.origin,
-    });
-
-    return { id: ctx.id, ok: true, result };
-  } catch (e) {
-    return {
-      id: ctx.id,
-      ok: false,
-      error: { code: 'ERR_INTERNAL', message: e instanceof Error ? e.message : 'Routing failed' },
-    };
-  }
-}
-
-// Clean up agents when tabs close
-chrome.tabs.onRemoved.addListener((tabId) => {
-  for (const [agentId, agent] of registeredAgents.entries()) {
-    if (agent.tabId === tabId) {
-      registeredAgents.delete(agentId);
-      // Notify Harbor of cleanup
-      harborRequest('agents.unregister', { agentId, origin: agent.origin }).catch(() => {});
-    }
-  }
-});
-
-// =============================================================================
-// Agent Run Handler (Agentic Loop)
-// =============================================================================
-
-interface AgentRunEvent {
-  type: 'thinking' | 'tool_call' | 'tool_result' | 'final' | 'error';
-  content?: string;
-  tool?: string;
-  args?: Record<string, unknown>;
-  result?: unknown;
-  output?: string;
-  error?: string;
 }
 
 async function handleAgentRun(
@@ -1837,7 +163,6 @@ async function handleAgentRun(
 
   // Check permissions
   if (!await hasPermission(ctx.origin, 'model:prompt')) {
-    console.log('[Web Agents API] agent.run: Missing model:prompt permission');
     sendEvent({
       id: ctx.id,
       event: { type: 'error', error: { code: 'ERR_PERMISSION_DENIED', message: 'Permission model:prompt required' } },
@@ -1850,69 +175,47 @@ async function handleAgentRun(
     // Get available tools
     let tools: Array<{ serverId: string; name: string; description?: string; inputSchema?: unknown }> = [];
     
-    const hasToolsListPerm = await hasPermission(ctx.origin, 'mcp:tools.list');
-    console.log('[Web Agents API] agent.run: mcp:tools.list permission:', hasToolsListPerm);
-    
-    if (hasToolsListPerm) {
+    if (await hasPermission(ctx.origin, 'mcp:tools.list')) {
       const toolsResult = await harborRequest<{ tools: typeof tools }>('mcp.listTools', {});
       tools = toolsResult.tools || [];
-      console.log('[Web Agents API] agent.run: Found', tools.length, 'tools');
       
-      // Filter to allowed tools (only if there's an explicit allowlist)
       const permissions = await getPermissions(ctx.origin);
       if (permissions.allowedTools && permissions.allowedTools.length > 0) {
         tools = tools.filter(t => 
           permissions.allowedTools!.includes(t.name) || 
           permissions.allowedTools!.includes(`${t.serverId}/${t.name}`)
         );
-        console.log('[Web Agents API] agent.run: After filtering:', tools.length, 'tools');
       }
     }
 
-    // Build tool definitions for the LLM (bridge expects {name, description, input_schema})
+    // Build tool definitions for the LLM
     const llmTools = tools.map(t => ({
-      name: `${t.serverId}_${t.name}`.replace(/[^a-zA-Z0-9_]/g, '_'), // LLM-safe name
+      name: `${t.serverId}_${t.name}`.replace(/[^a-zA-Z0-9_]/g, '_'),
       description: t.description || `Tool: ${t.serverId}/${t.name}`,
       input_schema: t.inputSchema || { type: 'object', properties: {} },
-      // Keep original info for later
       _serverId: t.serverId,
       _toolName: t.name,
     }));
 
-    console.log('[Web Agents API] agent.run: LLM tools:', llmTools.map(t => t.name));
+    // Send thinking event
+    sendEvent({
+      id: ctx.id,
+      event: { type: 'token', token: JSON.stringify({ 
+        type: 'thinking', 
+        content: llmTools.length > 0 
+          ? `Available tools: ${tools.map(t => `${t.serverId}/${t.name}`).join(', ')}`
+          : 'No tools available (check mcp:tools.list permission)'
+      }) },
+    });
 
-    // Send thinking event with available tools
-    if (llmTools.length > 0) {
-      sendEvent({
-        id: ctx.id,
-        event: { type: 'token', token: JSON.stringify({ 
-          type: 'thinking', 
-          content: `Available tools: ${tools.map(t => `${t.serverId}/${t.name}`).join(', ')}` 
-        }) },
-      });
-    } else {
-      sendEvent({
-        id: ctx.id,
-        event: { type: 'token', token: JSON.stringify({ 
-          type: 'thinking', 
-          content: 'No tools available (check mcp:tools.list permission)' 
-        }) },
-      });
-    }
-
-    // Agentic loop - use native tool calling
+    // Agentic loop
     const messages: Array<{ role: string; content: string }> = [];
-    const fullSystemPrompt = systemPrompt || 'You are a helpful assistant that can use tools to help users.';
-
-    messages.push({ role: 'system', content: fullSystemPrompt });
+    messages.push({ role: 'system', content: systemPrompt || 'You are a helpful assistant that can use tools to help users.' });
     messages.push({ role: 'user', content: task });
 
     let toolCallCount = 0;
 
     while (toolCallCount < maxToolCalls) {
-      // Call LLM with tools (native tool calling)
-      console.log('[Web Agents API] agent.run: Calling LLM with', messages.length, 'messages and', llmTools.length, 'tools');
-      
       type LLMResponse = {
         content?: string;
         choices?: Array<{
@@ -1935,9 +238,7 @@ async function handleAgentRun(
             input_schema: t.input_schema,
           })) : undefined,
         });
-        console.log('[Web Agents API] agent.run: LLM result:', JSON.stringify(result).substring(0, 500));
       } catch (e) {
-        console.error('[Web Agents API] agent.run: LLM request failed:', e);
         sendEvent({
           id: ctx.id,
           event: { type: 'token', token: JSON.stringify({ type: 'error', error: `LLM request failed: ${e}` }) },
@@ -1946,25 +247,17 @@ async function handleAgentRun(
         return;
       }
 
-      // Extract response - handle both formats (direct content or choices array)
       const choice = result.choices?.[0];
       const responseContent = choice?.message?.content || result.content || '';
       const toolCalls = choice?.message?.tool_calls;
-      
-      console.log('[Web Agents API] agent.run: Response content:', responseContent?.substring(0, 200));
-      console.log('[Web Agents API] agent.run: Tool calls:', toolCalls);
 
-      // If there are tool calls, execute them
       if (toolCalls && toolCalls.length > 0) {
-        // Check if we can call tools
-        const hasToolsCallPerm = await hasPermission(ctx.origin, 'mcp:tools.call');
-        if (!hasToolsCallPerm) {
+        if (!await hasPermission(ctx.origin, 'mcp:tools.call')) {
           messages.push({ role: 'assistant', content: responseContent || 'I need to use tools but permission was denied.' });
           messages.push({ role: 'user', content: 'Tool calling is not permitted. Please provide an answer without using tools.' });
           continue;
         }
 
-        // Process each tool call
         for (const tc of toolCalls) {
           const llmToolName = tc.function.name;
           let args: Record<string, unknown> = {};
@@ -1974,21 +267,16 @@ async function handleAgentRun(
             args = {};
           }
 
-          // Find the original tool info
           const toolInfo = llmTools.find(t => t.name === llmToolName);
           const serverId = toolInfo?._serverId || '';
           const actualToolName = toolInfo?._toolName || llmToolName;
           const displayName = `${serverId}/${actualToolName}`;
 
-          console.log('[Web Agents API] agent.run: Calling tool:', displayName, 'with args:', args);
-
-          // Send tool_call event
           sendEvent({
             id: ctx.id,
             event: { type: 'token', token: JSON.stringify({ type: 'tool_call', tool: displayName, args }) },
           });
 
-          // Call the tool
           let toolResult: unknown;
           try {
             const callResult = await harborRequest<{ result: unknown }>('mcp.callTool', {
@@ -1997,34 +285,21 @@ async function handleAgentRun(
               args,
             });
             toolResult = callResult.result;
-            console.log('[Web Agents API] agent.run: Tool result:', toolResult);
           } catch (e) {
-            console.error('[Web Agents API] agent.run: Tool call failed:', e);
             toolResult = { error: e instanceof Error ? e.message : 'Tool call failed' };
           }
 
-          // Send tool_result event
           sendEvent({
             id: ctx.id,
             event: { type: 'token', token: JSON.stringify({ type: 'tool_result', tool: displayName, result: toolResult }) },
           });
 
-          // Add tool call and result to messages
-          // WORKAROUND: Encode tool call info in assistant message since some bridges don't support tool_calls
-          messages.push({ 
-            role: 'assistant', 
-            content: `[Called tool: ${displayName}(${JSON.stringify(args)})]` 
-          });
-          messages.push({ 
-            role: 'user', 
-            content: `Tool "${displayName}" returned: ${JSON.stringify(toolResult)}` 
-          });
+          messages.push({ role: 'assistant', content: `[Called tool: ${displayName}(${JSON.stringify(args)})]` });
+          messages.push({ role: 'user', content: `Tool "${displayName}" returned: ${JSON.stringify(toolResult)}` });
 
           toolCallCount++;
         }
       } else {
-        // No tool calls, this is the final response
-        console.log('[Web Agents API] agent.run: Final response (no tool calls)');
         sendEvent({
           id: ctx.id,
           event: { type: 'token', token: JSON.stringify({ type: 'final', output: responseContent }) },
@@ -2034,8 +309,7 @@ async function handleAgentRun(
       }
     }
 
-    // Max tool calls reached, get final answer
-    console.log('[Web Agents API] agent.run: Max tool calls reached, getting final answer');
+    // Max tool calls reached
     messages.push({ role: 'user', content: 'Please provide your final answer based on the information gathered.' });
     const finalResult = await harborRequest<{ content?: string; choices?: Array<{ message: { content: string } }> }>('llm.chat', { messages });
     const finalContent = finalResult.choices?.[0]?.message?.content || finalResult.content || '';
@@ -2047,1104 +321,11 @@ async function handleAgentRun(
     sendEvent({ id: ctx.id, event: { type: 'done' }, done: true });
 
   } catch (e) {
-    console.error('[Web Agents API] agent.run: Error:', e);
     sendEvent({
       id: ctx.id,
       event: { type: 'error', error: { code: 'ERR_AGENT_FAILED', message: e instanceof Error ? e.message : 'Agent run failed' } },
       done: true,
     });
-  }
-}
-
-// =============================================================================
-// Streaming Handler
-// =============================================================================
-
-async function handleSessionPromptStreaming(
-  ctx: RequestContext,
-  sendEvent: (event: TransportStreamEvent) => void,
-): Promise<void> {
-  const { sessionId, input } = ctx.payload as { sessionId: string; input: string };
-  
-  console.log('[Web Agents API] handleSessionPromptStreaming called', {
-    sessionId,
-    inputLength: input?.length || 0,
-    inputPreview: input?.slice(0, 100),
-    origin: ctx.origin,
-  });
-  
-  const session = textSessions.get(sessionId);
-  if (!session) {
-    console.log('[Web Agents API] handleSessionPromptStreaming: Session not found', sessionId);
-    console.log('[Web Agents API] Available sessions:', Array.from(textSessions.keys()));
-    sendEvent({ id: ctx.id, event: { type: 'error', error: { code: 'ERR_SESSION_NOT_FOUND', message: 'Session not found' } }, done: true });
-    return;
-  }
-  
-  console.log('[Web Agents API] handleSessionPromptStreaming: Found session', {
-    sessionId,
-    sessionOrigin: session.origin,
-    requestOrigin: ctx.origin,
-    historyLength: session.history.length,
-  });
-  
-  if (session.origin !== ctx.origin) {
-    console.log('[Web Agents API] handleSessionPromptStreaming: Origin mismatch', {
-      sessionOrigin: session.origin,
-      requestOrigin: ctx.origin,
-    });
-    sendEvent({ id: ctx.id, event: { type: 'error', error: { code: 'ERR_PERMISSION_DENIED', message: 'Session belongs to different origin' } }, done: true });
-    return;
-  }
-
-  try {
-    // Add user message to history
-    session.history.push({ role: 'user', content: input });
-    
-    // Build messages array
-    const messages: Array<{ role: string; content: string }> = [];
-    if (session.options.systemPrompt) {
-      messages.push({ role: 'system', content: session.options.systemPrompt as string });
-    }
-    messages.push(...session.history);
-    
-    console.log('[Web Agents API] handleSessionPromptStreaming: Calling harborStreamRequest', {
-      messageCount: messages.length,
-      model: session.options.model,
-      temperature: session.options.temperature,
-    });
-    
-    // Stream from Harbor
-    const { stream, cancel } = harborStreamRequest('llm.chatStream', {
-      messages,
-      model: session.options.model,
-      temperature: session.options.temperature,
-    });
-
-    let fullContent = '';
-    let tokenCount = 0;
-    
-    console.log('[Web Agents API] handleSessionPromptStreaming: Starting to iterate stream');
-    
-    for await (const event of stream) {
-      if (event.type === 'token' && event.token) {
-        fullContent += event.token;
-        tokenCount++;
-        sendEvent({ id: ctx.id, event: { type: 'token', token: event.token } });
-      } else if (event.type === 'done') {
-        console.log('[Web Agents API] handleSessionPromptStreaming: Stream complete', {
-          tokenCount,
-          responseLength: fullContent.length,
-        });
-        // Add assistant response to history
-        session.history.push({ role: 'assistant', content: fullContent });
-        sendEvent({ id: ctx.id, event: { type: 'done' }, done: true });
-        break;
-      } else if (event.type === 'error') {
-        console.log('[Web Agents API] handleSessionPromptStreaming: Stream error', event.error);
-        sendEvent({ 
-          id: ctx.id, 
-          event: { type: 'error', error: { code: 'ERR_MODEL_FAILED', message: event.error?.message || 'Stream error' } }, 
-          done: true 
-        });
-        break;
-      }
-    }
-  } catch (e) {
-    console.error('[Web Agents API] handleSessionPromptStreaming: Exception', e);
-    sendEvent({
-      id: ctx.id,
-      event: { type: 'error', error: { code: 'ERR_MODEL_FAILED', message: e instanceof Error ? e.message : 'Streaming failed' } },
-      done: true,
-    });
-  }
-}
-
-// =============================================================================
-// Browser Interaction Handlers
-// =============================================================================
-
-/**
- * Find an element by selector/ref and click it.
- */
-async function handleBrowserClick(ctx: RequestContext): HandlerResponse {
-  if (!await hasPermission(ctx.origin, 'browser:activeTab.interact')) {
-    return {
-      id: ctx.id,
-      ok: false,
-      error: { code: 'ERR_PERMISSION_DENIED', message: 'Permission browser:activeTab.interact required' },
-    };
-  }
-
-  const { ref } = ctx.payload as { ref: string };
-  if (!ref) {
-    return { id: ctx.id, ok: false, error: { code: 'ERR_INVALID_REQUEST', message: 'Missing ref parameter' } };
-  }
-
-  if (!ctx.tabId) {
-    return { id: ctx.id, ok: false, error: { code: 'ERR_INTERNAL', message: 'No tab context available' } };
-  }
-
-  try {
-    const result = await executeScriptInTab<{ success: boolean; error?: string }>(
-      ctx.tabId,
-      (selector: string) => {
-        const el = document.querySelector(selector);
-        if (!el) {
-          return { success: false, error: `Element not found: ${selector}` };
-        }
-        if (el instanceof HTMLElement) {
-          // Check if element is disabled
-          if ((el as HTMLButtonElement).disabled) {
-            return { success: false, error: `Element is disabled: ${selector}` };
-          }
-          el.click();
-          // For checkboxes/radios, ensure change event fires for form validation
-          if (el instanceof HTMLInputElement && (el.type === 'checkbox' || el.type === 'radio')) {
-            el.dispatchEvent(new Event('change', { bubbles: true }));
-          }
-          return { success: true };
-        }
-        return { success: false, error: 'Element is not clickable' };
-      },
-      [ref]
-    );
-
-    if (!result) {
-      return { id: ctx.id, ok: false, error: { code: 'ERR_INTERNAL', message: 'Script execution failed' } };
-    }
-    if (!result.success) {
-      return { id: ctx.id, ok: false, error: { code: 'ERR_ELEMENT_NOT_FOUND', message: result.error || 'Click failed' } };
-    }
-    return { id: ctx.id, ok: true, result: { success: true } };
-  } catch (e) {
-    return {
-      id: ctx.id,
-      ok: false,
-      error: { code: 'ERR_INTERNAL', message: e instanceof Error ? e.message : 'Click failed' },
-    };
-  }
-}
-
-/**
- * Find an element by selector/ref and fill it with a value.
- */
-async function handleBrowserFill(ctx: RequestContext): HandlerResponse {
-  if (!await hasPermission(ctx.origin, 'browser:activeTab.interact')) {
-    return {
-      id: ctx.id,
-      ok: false,
-      error: { code: 'ERR_PERMISSION_DENIED', message: 'Permission browser:activeTab.interact required' },
-    };
-  }
-
-  const { ref, value } = ctx.payload as { ref: string; value: string };
-  if (!ref) {
-    return { id: ctx.id, ok: false, error: { code: 'ERR_INVALID_REQUEST', message: 'Missing ref parameter' } };
-  }
-
-  if (!ctx.tabId) {
-    return { id: ctx.id, ok: false, error: { code: 'ERR_INTERNAL', message: 'No tab context available' } };
-  }
-
-  try {
-    const result = await executeScriptInTab<{ success: boolean; error?: string }>(
-      ctx.tabId,
-      (selector: string, fillValue: string) => {
-        const el = document.querySelector(selector);
-        if (!el) {
-          return { success: false, error: `Element not found: ${selector}` };
-        }
-        if (el instanceof HTMLInputElement || el instanceof HTMLTextAreaElement) {
-          el.value = fillValue;
-          el.dispatchEvent(new Event('input', { bubbles: true }));
-          el.dispatchEvent(new Event('change', { bubbles: true }));
-          return { success: true };
-        }
-        if (el instanceof HTMLElement && el.isContentEditable) {
-          el.textContent = fillValue;
-          el.dispatchEvent(new Event('input', { bubbles: true }));
-          return { success: true };
-        }
-        return { success: false, error: 'Element is not fillable' };
-      },
-      [ref, value ?? '']
-    );
-
-    if (!result) {
-      return { id: ctx.id, ok: false, error: { code: 'ERR_INTERNAL', message: 'Script execution failed' } };
-    }
-    if (!result.success) {
-      return { id: ctx.id, ok: false, error: { code: 'ERR_ELEMENT_NOT_FOUND', message: result.error || 'Fill failed' } };
-    }
-    return { id: ctx.id, ok: true, result: { success: true } };
-  } catch (e) {
-    return {
-      id: ctx.id,
-      ok: false,
-      error: { code: 'ERR_INTERNAL', message: e instanceof Error ? e.message : 'Fill failed' },
-    };
-  }
-}
-
-/**
- * Select an option from a dropdown by selector/ref.
- */
-async function handleBrowserSelect(ctx: RequestContext): HandlerResponse {
-  if (!await hasPermission(ctx.origin, 'browser:activeTab.interact')) {
-    return {
-      id: ctx.id,
-      ok: false,
-      error: { code: 'ERR_PERMISSION_DENIED', message: 'Permission browser:activeTab.interact required' },
-    };
-  }
-
-  const { ref, value } = ctx.payload as { ref: string; value: string };
-  if (!ref) {
-    return { id: ctx.id, ok: false, error: { code: 'ERR_INVALID_REQUEST', message: 'Missing ref parameter' } };
-  }
-
-  if (!ctx.tabId) {
-    return { id: ctx.id, ok: false, error: { code: 'ERR_INTERNAL', message: 'No tab context available' } };
-  }
-
-  try {
-    const result = await executeScriptInTab<{ success: boolean; error?: string }>(
-      ctx.tabId,
-      (selector: string, selectValue: string) => {
-        const el = document.querySelector(selector);
-        if (!el) {
-          return { success: false, error: `Element not found: ${selector}` };
-        }
-        if (el instanceof HTMLSelectElement) {
-          el.value = selectValue;
-          el.dispatchEvent(new Event('change', { bubbles: true }));
-          return { success: true };
-        }
-        return { success: false, error: 'Element is not a select' };
-      },
-      [ref, value ?? '']
-    );
-
-    if (!result) {
-      return { id: ctx.id, ok: false, error: { code: 'ERR_INTERNAL', message: 'Script execution failed' } };
-    }
-    if (!result.success) {
-      return { id: ctx.id, ok: false, error: { code: 'ERR_ELEMENT_NOT_FOUND', message: result.error || 'Select failed' } };
-    }
-    return { id: ctx.id, ok: true, result: { success: true } };
-  } catch (e) {
-    return {
-      id: ctx.id,
-      ok: false,
-      error: { code: 'ERR_INTERNAL', message: e instanceof Error ? e.message : 'Select failed' },
-    };
-  }
-}
-
-/**
- * Scroll the page in a direction.
- */
-async function handleBrowserScroll(ctx: RequestContext): HandlerResponse {
-  if (!await hasPermission(ctx.origin, 'browser:activeTab.interact')) {
-    return {
-      id: ctx.id,
-      ok: false,
-      error: { code: 'ERR_PERMISSION_DENIED', message: 'Permission browser:activeTab.interact required' },
-    };
-  }
-
-  const { direction, amount } = ctx.payload as { direction: 'up' | 'down' | 'left' | 'right'; amount?: number };
-  if (!direction) {
-    return { id: ctx.id, ok: false, error: { code: 'ERR_INVALID_REQUEST', message: 'Missing direction parameter' } };
-  }
-
-  if (!ctx.tabId) {
-    return { id: ctx.id, ok: false, error: { code: 'ERR_INTERNAL', message: 'No tab context available' } };
-  }
-
-  try {
-    const result = await executeScriptInTab<{ success: boolean }>(
-      ctx.tabId,
-      (dir: string, scrollAmount: number) => {
-        const px = scrollAmount || 300;
-        switch (dir) {
-          case 'up':
-            window.scrollBy(0, -px);
-            break;
-          case 'down':
-            window.scrollBy(0, px);
-            break;
-          case 'left':
-            window.scrollBy(-px, 0);
-            break;
-          case 'right':
-            window.scrollBy(px, 0);
-            break;
-        }
-        return { success: true };
-      },
-      [direction, amount ?? 300]
-    );
-
-    if (!result) {
-      return { id: ctx.id, ok: false, error: { code: 'ERR_INTERNAL', message: 'Script execution failed' } };
-    }
-    return { id: ctx.id, ok: true, result: { success: true } };
-  } catch (e) {
-    return {
-      id: ctx.id,
-      ok: false,
-      error: { code: 'ERR_INTERNAL', message: e instanceof Error ? e.message : 'Scroll failed' },
-    };
-  }
-}
-
-/**
- * Take a screenshot of the active tab.
- */
-async function handleBrowserScreenshot(ctx: RequestContext): HandlerResponse {
-  if (!await hasPermission(ctx.origin, 'browser:activeTab.screenshot')) {
-    return {
-      id: ctx.id,
-      ok: false,
-      error: { code: 'ERR_PERMISSION_DENIED', message: 'Permission browser:activeTab.screenshot required' },
-    };
-  }
-
-  if (!ctx.tabId) {
-    return { id: ctx.id, ok: false, error: { code: 'ERR_INTERNAL', message: 'No tab context available' } };
-  }
-
-  try {
-    // Use browser-compatible API
-    const tabsApi = (typeof browser !== 'undefined' ? browser.tabs : chrome.tabs);
-    const dataUrl = await tabsApi.captureVisibleTab({ format: 'png' });
-    return { id: ctx.id, ok: true, result: { dataUrl } };
-  } catch (e) {
-    return {
-      id: ctx.id,
-      ok: false,
-      error: { code: 'ERR_INTERNAL', message: e instanceof Error ? e.message : 'Screenshot failed' },
-    };
-  }
-}
-
-/**
- * Get interactive elements on the page.
- */
-async function handleBrowserGetElements(ctx: RequestContext): HandlerResponse {
-  if (!await hasPermission(ctx.origin, 'browser:activeTab.read')) {
-    return {
-      id: ctx.id,
-      ok: false,
-      error: { code: 'ERR_PERMISSION_DENIED', message: 'Permission browser:activeTab.read required' },
-    };
-  }
-
-  if (!ctx.tabId) {
-    return { id: ctx.id, ok: false, error: { code: 'ERR_INTERNAL', message: 'No tab context available' } };
-  }
-
-  type ElementInfo = {
-    ref: string;
-    tag: string;
-    type?: string;
-    text?: string;
-    placeholder?: string;
-    value?: string;
-    role?: string;
-  };
-
-  try {
-    const result = await executeScriptInTab<ElementInfo[]>(
-      ctx.tabId,
-      () => {
-        const elements: Array<{
-          ref: string;
-          tag: string;
-          type?: string;
-          text?: string;
-          placeholder?: string;
-          value?: string;
-          role?: string;
-        }> = [];
-
-        // Find interactive elements
-        const selectors = [
-          'a[href]',
-          'button',
-          'input',
-          'select',
-          'textarea',
-          '[role="button"]',
-          '[role="link"]',
-          '[onclick]',
-          '[contenteditable="true"]',
-        ];
-
-        const seen = new Set<Element>();
-        
-        for (const selector of selectors) {
-          for (const el of document.querySelectorAll(selector)) {
-            if (seen.has(el)) continue;
-            seen.add(el);
-
-            // Skip hidden elements
-            const style = window.getComputedStyle(el);
-            if (style.display === 'none' || style.visibility === 'hidden') continue;
-
-            const rect = el.getBoundingClientRect();
-            if (rect.width === 0 || rect.height === 0) continue;
-
-            // Generate a unique ref (prefer id, then create a path)
-            let ref = '';
-            if (el.id) {
-              ref = `#${el.id}`;
-            } else {
-              // Generate a simple CSS path
-              const parts: string[] = [];
-              let current: Element | null = el;
-              while (current && current !== document.body) {
-                let pathSelector = current.tagName.toLowerCase();
-                if (current.id) {
-                  pathSelector = `#${current.id}`;
-                  parts.unshift(pathSelector);
-                  break;
-                }
-                const parent = current.parentElement;
-                if (parent) {
-                  const siblings = Array.from(parent.children).filter(c => c.tagName === current!.tagName);
-                  if (siblings.length > 1) {
-                    const index = siblings.indexOf(current) + 1;
-                    pathSelector += `:nth-of-type(${index})`;
-                  }
-                }
-                parts.unshift(pathSelector);
-                current = parent;
-              }
-              ref = parts.join(' > ');
-            }
-
-            const info: typeof elements[0] = {
-              ref,
-              tag: el.tagName.toLowerCase(),
-            };
-
-            if (el instanceof HTMLInputElement) {
-              info.type = el.type;
-              if (el.placeholder) info.placeholder = el.placeholder;
-              if (el.value && el.type !== 'password') info.value = el.value;
-            } else if (el instanceof HTMLTextAreaElement) {
-              if (el.placeholder) info.placeholder = el.placeholder;
-            } else if (el instanceof HTMLSelectElement) {
-              info.value = el.value;
-            }
-
-            const text = el.textContent?.trim().slice(0, 100);
-            if (text) info.text = text;
-
-            const role = el.getAttribute('role');
-            if (role) info.role = role;
-
-            elements.push(info);
-          }
-        }
-
-        return elements;
-      },
-      []
-    );
-
-    if (!result) {
-      return { id: ctx.id, ok: false, error: { code: 'ERR_INTERNAL', message: 'Script execution failed' } };
-    }
-    return { id: ctx.id, ok: true, result };
-  } catch (e) {
-    return {
-      id: ctx.id,
-      ok: false,
-      error: { code: 'ERR_INTERNAL', message: e instanceof Error ? e.message : 'GetElements failed' },
-    };
-  }
-}
-
-/**
- * Get page content using readability-like extraction.
- */
-async function handleBrowserReadability(ctx: RequestContext): HandlerResponse {
-  if (!await hasPermission(ctx.origin, 'browser:activeTab.read')) {
-    return {
-      id: ctx.id,
-      ok: false,
-      error: { code: 'ERR_PERMISSION_DENIED', message: 'Permission browser:activeTab.read required' },
-    };
-  }
-
-  if (!ctx.tabId) {
-    return { id: ctx.id, ok: false, error: { code: 'ERR_INTERNAL', message: 'No tab context available' } };
-  }
-
-  type ReadabilityResult = {
-    title: string;
-    url: string;
-    content: string;
-    length: number;
-  };
-
-  try {
-    const result = await executeScriptInTab<ReadabilityResult>(
-      ctx.tabId,
-      () => {
-        // Simple text extraction (a full readability implementation would be more complex)
-        const title = document.title;
-        const url = window.location.href;
-        
-        // Try to find main content
-        const mainSelectors = ['main', 'article', '[role="main"]', '.content', '#content', '.post', '.article'];
-        let content = '';
-        
-        for (const selector of mainSelectors) {
-          const el = document.querySelector(selector);
-          if (el) {
-            content = el.textContent?.trim() || '';
-            break;
-          }
-        }
-        
-        // Fallback to body text
-        if (!content) {
-          content = document.body.textContent?.trim() || '';
-        }
-        
-        // Clean up whitespace
-        content = content.replace(/\s+/g, ' ').trim();
-        
-        return {
-          title,
-          url,
-          content: content.slice(0, 50000), // Limit size
-          length: content.length,
-        };
-      },
-      []
-    );
-
-    if (!result) {
-      return { id: ctx.id, ok: false, error: { code: 'ERR_INTERNAL', message: 'Script execution failed' } };
-    }
-    return { id: ctx.id, ok: true, result };
-  } catch (e) {
-    return {
-      id: ctx.id,
-      ok: false,
-      error: { code: 'ERR_INTERNAL', message: e instanceof Error ? e.message : 'Readability extraction failed' },
-    };
-  }
-}
-
-// =============================================================================
-// Tab Management (Extension 2)
-// =============================================================================
-
-/**
- * Create a new tab.
- */
-async function handleTabsCreate(ctx: RequestContext): HandlerResponse {
-  console.log('[Web Agents API] handleTabsCreate called:', { 
-    origin: ctx.origin, 
-    cookieStoreId: ctx.cookieStoreId,
-    payload: ctx.payload,
-    startupId: STARTUP_ID
-  });
-  
-  if (!await hasPermission(ctx.origin, 'browser:tabs.create')) {
-    return {
-      id: ctx.id,
-      ok: false,
-      error: { code: 'ERR_PERMISSION_DENIED', message: 'Permission browser:tabs.create required' },
-    };
-  }
-
-  const payload = ctx.payload as { url: string; active?: boolean; index?: number; windowId?: number };
-  
-  if (!payload.url) {
-    return { id: ctx.id, ok: false, error: { code: 'ERR_INVALID_REQUEST', message: 'Missing url parameter' } };
-  }
-
-  try {
-    // Build create options, including cookieStoreId for Firefox container support
-    // This ensures new tabs open in the same container as the parent tab
-    const createOptions: chrome.tabs.CreateProperties & { cookieStoreId?: string } = {
-      url: payload.url,
-      active: payload.active ?? false,
-      index: payload.index,
-      windowId: payload.windowId,
-    };
-    
-    // ALWAYS create tabs in the default context (no container)
-    // Firefox containers cause issues with scripting.executeScript - tabs in different
-    // containers cannot be accessed properly even with host_permissions.
-    // By not passing cookieStoreId, tabs open in the default (non-container) context.
-    console.log('[Web Agents API] Creating tab in default context (ignoring parent cookieStoreId:', ctx.cookieStoreId, ')');
-    
-    const tab = await chrome.tabs.create(createOptions);
-    console.log('[Web Agents API] Tab created:', { 
-      tabId: tab.id, 
-      url: tab.url, 
-      status: tab.status,
-      cookieStoreId: (tab as chrome.tabs.Tab & { cookieStoreId?: string }).cookieStoreId,
-      startupId: STARTUP_ID
-    });
-
-    if (!tab.id) {
-      return { id: ctx.id, ok: false, error: { code: 'ERR_INTERNAL', message: 'Failed to create tab' } };
-    }
-
-    // Track this tab as spawned by this origin
-    trackSpawnedTab(ctx.origin, tab.id);
-
-    return {
-      id: ctx.id,
-      ok: true,
-      result: {
-        id: tab.id,
-        url: tab.url || payload.url,
-        title: tab.title || '',
-        active: tab.active,
-        index: tab.index,
-        windowId: tab.windowId,
-        canControl: true,
-      },
-    };
-  } catch (e) {
-    return {
-      id: ctx.id,
-      ok: false,
-      error: { code: 'ERR_INTERNAL', message: e instanceof Error ? e.message : 'Failed to create tab' },
-    };
-  }
-}
-
-/**
- * List all tabs.
- */
-async function handleTabsList(ctx: RequestContext): HandlerResponse {
-  if (!await hasPermission(ctx.origin, 'browser:tabs.read')) {
-    return {
-      id: ctx.id,
-      ok: false,
-      error: { code: 'ERR_PERMISSION_DENIED', message: 'Permission browser:tabs.read required' },
-    };
-  }
-
-  try {
-    const tabs = await chrome.tabs.query({});
-    const result = tabs.map(tab => ({
-      id: tab.id!,
-      url: tab.url || '',
-      title: tab.title || '',
-      active: tab.active,
-      index: tab.index,
-      windowId: tab.windowId,
-      favIconUrl: tab.favIconUrl,
-      status: tab.status as 'loading' | 'complete' | undefined,
-      canControl: tab.id ? isSpawnedTab(ctx.origin, tab.id) : false,
-    }));
-
-    return { id: ctx.id, ok: true, result };
-  } catch (e) {
-    return {
-      id: ctx.id,
-      ok: false,
-      error: { code: 'ERR_INTERNAL', message: e instanceof Error ? e.message : 'Failed to list tabs' },
-    };
-  }
-}
-
-/**
- * Close a tab that this origin created.
- */
-async function handleTabsClose(ctx: RequestContext): HandlerResponse {
-  if (!await hasPermission(ctx.origin, 'browser:tabs.create')) {
-    return {
-      id: ctx.id,
-      ok: false,
-      error: { code: 'ERR_PERMISSION_DENIED', message: 'Permission browser:tabs.create required' },
-    };
-  }
-
-  const { tabId } = ctx.payload as { tabId: number };
-  
-  if (typeof tabId !== 'number') {
-    return { id: ctx.id, ok: false, error: { code: 'ERR_INVALID_REQUEST', message: 'Missing tabId parameter' } };
-  }
-
-  // Only allow closing tabs that this origin created
-  if (!isSpawnedTab(ctx.origin, tabId)) {
-    return {
-      id: ctx.id,
-      ok: false,
-      error: { code: 'ERR_PERMISSION_DENIED', message: 'Can only close tabs created by this origin' },
-    };
-  }
-
-  try {
-    await chrome.tabs.remove(tabId);
-    untrackSpawnedTab(ctx.origin, tabId);
-    return { id: ctx.id, ok: true, result: true };
-  } catch (e) {
-    return {
-      id: ctx.id,
-      ok: false,
-      error: { code: 'ERR_INTERNAL', message: e instanceof Error ? e.message : 'Failed to close tab' },
-    };
-  }
-}
-
-/**
- * Get readability content from a spawned tab.
- */
-async function handleSpawnedTabReadability(ctx: RequestContext): HandlerResponse {
-  console.log('[Web Agents API] handleSpawnedTabReadability called:', { 
-    origin: ctx.origin, 
-    payload: ctx.payload,
-    startupId: STARTUP_ID
-  });
-  
-  if (!await hasPermission(ctx.origin, 'browser:tabs.create')) {
-    console.log('[Web Agents API] handleSpawnedTabReadability - permission denied');
-    return {
-      id: ctx.id,
-      ok: false,
-      error: { code: 'ERR_PERMISSION_DENIED', message: 'Permission browser:tabs.create required' },
-    };
-  }
-
-  const { tabId } = ctx.payload as { tabId: number };
-  
-  if (typeof tabId !== 'number') {
-    return { id: ctx.id, ok: false, error: { code: 'ERR_INVALID_REQUEST', message: 'Missing tabId parameter' } };
-  }
-
-  // Only allow reading from tabs that this origin created
-  if (!isSpawnedTab(ctx.origin, tabId)) {
-    console.log('[Web Agents API] handleSpawnedTabReadability - tab not spawned by this origin');
-    return {
-      id: ctx.id,
-      ok: false,
-      error: { code: 'ERR_PERMISSION_DENIED', message: 'Can only read from tabs created by this origin' },
-    };
-  }
-
-  type ReadabilityResult = {
-    title: string;
-    url: string;
-    content: string;
-    text: string;
-    length: number;
-  };
-
-  try {
-    const result = await executeScriptInTab<ReadabilityResult>(
-      tabId,
-      () => {
-        const title = document.title;
-        const url = window.location.href;
-        
-        // Try to find main content
-        const mainSelectors = ['main', 'article', '[role="main"]', '.content', '#content', '.post', '.article'];
-        let content = '';
-        
-        for (const selector of mainSelectors) {
-          const el = document.querySelector(selector);
-          if (el) {
-            content = el.textContent?.trim() || '';
-            break;
-          }
-        }
-        
-        // Fallback to body text
-        if (!content) {
-          content = document.body.textContent?.trim() || '';
-        }
-        
-        // Clean up whitespace
-        content = content.replace(/\s+/g, ' ').trim();
-        
-        return {
-          title,
-          url,
-          content: content.slice(0, 50000),
-          text: content.slice(0, 50000), // Alias for compatibility
-          length: content.length,
-        };
-      },
-      []
-    );
-
-    if (!result) {
-      return { id: ctx.id, ok: false, error: { code: 'ERR_INTERNAL', message: 'Script execution failed' } };
-    }
-    return { id: ctx.id, ok: true, result };
-  } catch (e) {
-    return {
-      id: ctx.id,
-      ok: false,
-      error: { code: 'ERR_INTERNAL', message: e instanceof Error ? e.message : 'Readability extraction failed' },
-    };
-  }
-}
-
-/**
- * Get HTML content from a spawned tab.
- */
-async function handleSpawnedTabGetHtml(ctx: RequestContext): HandlerResponse {
-  if (!await hasPermission(ctx.origin, 'browser:tabs.create')) {
-    return {
-      id: ctx.id,
-      ok: false,
-      error: { code: 'ERR_PERMISSION_DENIED', message: 'Permission browser:tabs.create required' },
-    };
-  }
-
-  const { tabId, selector } = ctx.payload as { tabId: number; selector?: string };
-  
-  if (typeof tabId !== 'number') {
-    return { id: ctx.id, ok: false, error: { code: 'ERR_INVALID_REQUEST', message: 'Missing tabId parameter' } };
-  }
-
-  // Only allow reading from tabs that this origin created
-  if (!isSpawnedTab(ctx.origin, tabId)) {
-    return {
-      id: ctx.id,
-      ok: false,
-      error: { code: 'ERR_PERMISSION_DENIED', message: 'Can only read from tabs created by this origin' },
-    };
-  }
-
-  try {
-    const result = await executeScriptInTab<{ html: string; url: string; title: string }>(
-      tabId,
-      (containerSelector: string | null) => {
-        const container = containerSelector 
-          ? document.querySelector(containerSelector) 
-          : document.body;
-        
-        return {
-          html: container?.outerHTML || document.body.outerHTML,
-          url: window.location.href,
-          title: document.title,
-        };
-      },
-      [selector || null]
-    );
-
-    if (!result) {
-      return { id: ctx.id, ok: false, error: { code: 'ERR_INTERNAL', message: 'Script execution failed' } };
-    }
-    return { id: ctx.id, ok: true, result };
-  } catch (e) {
-    return {
-      id: ctx.id,
-      ok: false,
-      error: { code: 'ERR_INTERNAL', message: e instanceof Error ? e.message : 'Get HTML failed' },
-    };
-  }
-}
-
-/**
- * Wait for a spawned tab to finish loading.
- */
-async function handleSpawnedTabWaitForLoad(ctx: RequestContext): HandlerResponse {
-  if (!await hasPermission(ctx.origin, 'browser:tabs.create')) {
-    return {
-      id: ctx.id,
-      ok: false,
-      error: { code: 'ERR_PERMISSION_DENIED', message: 'Permission browser:tabs.create required' },
-    };
-  }
-
-  const { tabId, timeout = 30000 } = ctx.payload as { tabId: number; timeout?: number };
-  
-  if (typeof tabId !== 'number') {
-    return { id: ctx.id, ok: false, error: { code: 'ERR_INVALID_REQUEST', message: 'Missing tabId parameter' } };
-  }
-
-  // Only allow waiting for tabs that this origin created
-  if (!isSpawnedTab(ctx.origin, tabId)) {
-    return {
-      id: ctx.id,
-      ok: false,
-      error: { code: 'ERR_PERMISSION_DENIED', message: 'Can only wait for tabs created by this origin' },
-    };
-  }
-
-  try {
-    // Check if tab is already complete
-    const tab = await chrome.tabs.get(tabId);
-    if (tab.status === 'complete') {
-      return { id: ctx.id, ok: true, result: undefined };
-    }
-
-    // Wait for the tab to finish loading
-    await new Promise<void>((resolve, reject) => {
-      const timeoutId = setTimeout(() => {
-        chrome.tabs.onUpdated.removeListener(listener);
-        reject(new Error('Navigation timeout'));
-      }, timeout);
-
-      const listener = (
-        updatedTabId: number,
-        changeInfo: chrome.tabs.TabChangeInfo,
-      ) => {
-        if (updatedTabId === tabId && changeInfo.status === 'complete') {
-          clearTimeout(timeoutId);
-          chrome.tabs.onUpdated.removeListener(listener);
-          resolve();
-        }
-      };
-
-      chrome.tabs.onUpdated.addListener(listener);
-    });
-
-    return { id: ctx.id, ok: true, result: undefined };
-  } catch (e) {
-    return {
-      id: ctx.id,
-      ok: false,
-      error: { code: 'ERR_INTERNAL', message: e instanceof Error ? e.message : 'Wait for load failed' },
-    };
-  }
-}
-
-// =============================================================================
-// Message Router
-// =============================================================================
-
-async function routeMessage(ctx: RequestContext): HandlerResponse {
-  switch (ctx.type) {
-    // AI operations
-    case 'ai.canCreateTextSession':
-      return handleAiCanCreateTextSession(ctx);
-    case 'ai.createTextSession':
-    case 'ai.languageModel.create':
-      return handleAiCreateTextSession(ctx);
-    case 'session.prompt':
-      return handleSessionPrompt(ctx);
-    case 'session.destroy':
-      return handleSessionDestroy(ctx);
-    case 'ai.languageModel.capabilities':
-      return handleLanguageModelCapabilities(ctx);
-    case 'ai.providers.list':
-      return handleProviderslist(ctx);
-    case 'ai.providers.getActive':
-      return handleProvidersGetActive(ctx);
-
-    // Permission operations
-    case 'agent.requestPermissions':
-      return handleRequestPermissions(ctx);
-    case 'agent.permissions.list':
-      return handlePermissionsList(ctx);
-
-    // Tool operations
-    case 'agent.tools.list':
-      return handleToolsList(ctx);
-    case 'agent.tools.call':
-      return handleToolsCall(ctx);
-
-    // Session operations (explicit sessions)
-    case 'agent.sessions.create':
-      return handleSessionsCreate(ctx);
-    case 'agent.sessions.get':
-      return handleSessionsGet(ctx);
-    case 'agent.sessions.list':
-      return handleSessionsList(ctx);
-    case 'agent.sessions.terminate':
-      return handleSessionsTerminate(ctx);
-
-    // MCP server operations
-    case 'agent.mcp.discover':
-      return handleMcpDiscover(ctx);
-    case 'agent.mcp.register':
-      return handleMcpRegister(ctx);
-    case 'agent.mcp.unregister':
-      return handleMcpUnregister(ctx);
-
-    // Chat API operations
-    case 'agent.chat.canOpen':
-      return handleChatCanOpen(ctx);
-    case 'agent.chat.open':
-      return handleChatOpen(ctx);
-    case 'agent.chat.close':
-      return handleChatClose(ctx);
-
-    // Browser interaction operations
-    case 'agent.browser.activeTab.click':
-      return handleBrowserClick(ctx);
-    case 'agent.browser.activeTab.fill':
-      return handleBrowserFill(ctx);
-    case 'agent.browser.activeTab.scroll':
-      return handleBrowserScroll(ctx);
-    case 'agent.browser.activeTab.screenshot':
-      return handleBrowserScreenshot(ctx);
-    case 'agent.browser.activeTab.getElements':
-      return handleBrowserGetElements(ctx);
-    case 'agent.browser.activeTab.readability':
-      return handleBrowserReadability(ctx);
-    case 'agent.browser.activeTab.select':
-      return handleBrowserSelect(ctx);
-
-    // Tab management operations
-    case 'agent.browser.tabs.create':
-      return handleTabsCreate(ctx);
-    case 'agent.browser.tabs.list':
-      return handleTabsList(ctx);
-    case 'agent.browser.tabs.close':
-      return handleTabsClose(ctx);
-
-    // Spawned tab operations
-    case 'agent.browser.tab.readability':
-      return handleSpawnedTabReadability(ctx);
-    case 'agent.browser.tab.getHtml':
-      return handleSpawnedTabGetHtml(ctx);
-    case 'agent.browser.tab.waitForLoad':
-      return handleSpawnedTabWaitForLoad(ctx);
-
-    // Multi-agent operations
-    case 'agent.agents.register':
-      return handleAgentsRegister(ctx);
-    case 'agent.agents.unregister':
-      return handleAgentsUnregister(ctx);
-    case 'agent.agents.getInfo':
-      return handleAgentsGetInfo(ctx);
-    case 'agent.agents.discover':
-      return handleAgentsDiscover(ctx);
-    case 'agent.agents.list':
-      return handleAgentsList(ctx);
-    case 'agent.agents.invoke':
-      return handleAgentsInvoke(ctx);
-    case 'agent.agents.send':
-      return handleAgentsSend(ctx);
-    case 'agent.agents.subscribe':
-      return handleAgentsSubscribe(ctx);
-    case 'agent.agents.unsubscribe':
-      return handleAgentsUnsubscribe(ctx);
-    case 'agent.agents.broadcast':
-      return handleAgentsBroadcast(ctx);
-    case 'agent.agents.orchestrate.pipeline':
-      return handleAgentsPipeline(ctx);
-    case 'agent.agents.orchestrate.parallel':
-      return handleAgentsParallel(ctx);
-    case 'agent.agents.orchestrate.route':
-      return handleAgentsRoute(ctx);
-
-    default:
-      return {
-        id: ctx.id,
-        ok: false,
-        error: { code: 'ERR_INTERNAL', message: `Unknown message type: ${ctx.type}` },
-      };
   }
 }
 
@@ -3155,14 +336,11 @@ async function routeMessage(ctx: RequestContext): HandlerResponse {
 chrome.runtime.onConnect.addListener((port) => {
   if (port.name !== 'web-agent-transport') return;
   
-  console.log('[Web Agents API] Port connected, sender:', JSON.stringify(port.sender));
+  console.log('[Web Agents API] Port connected');
 
   port.onMessage.addListener(async (message: RequestContext & { type: string }) => {
     const tabId = port.sender?.tab?.id;
-    // Get cookieStoreId from parent tab for Firefox container support
-    // This ensures new tabs open in the same container as the requesting page
     const cookieStoreId = (port.sender?.tab as chrome.tabs.Tab & { cookieStoreId?: string })?.cookieStoreId;
-    console.log('[Web Agents API] Port message received:', message.type, 'tabId:', tabId, 'cookieStoreId:', cookieStoreId);
     
     const ctx: RequestContext = {
       id: message.id,
@@ -3176,37 +354,85 @@ chrome.runtime.onConnect.addListener((port) => {
     // Handle streaming requests
     if (ctx.type === 'session.promptStreaming') {
       const sendEvent = (event: TransportStreamEvent) => {
-        try {
-          port.postMessage(event);
-        } catch {
-          // Port disconnected
-        }
+        try { port.postMessage(event); } catch { /* Port disconnected */ }
       };
       await handleSessionPromptStreaming(ctx, sendEvent);
       return;
     }
 
-    // Handle agent.run (agentic loop)
     if (ctx.type === 'agent.run') {
       const sendEvent = (event: TransportStreamEvent) => {
-        try {
-          port.postMessage(event);
-        } catch {
-          // Port disconnected
-        }
+        try { port.postMessage(event); } catch { /* Port disconnected */ }
       };
       await handleAgentRun(ctx, sendEvent);
       return;
     }
 
-    // Handle regular requests
+    // Handle regular requests via router
     const response = await routeMessage(ctx);
     try {
       port.postMessage(response);
     } catch {
-      // Port disconnected
+      /* Port disconnected */
     }
   });
+});
+
+// =============================================================================
+// Permission Prompt Handler
+// =============================================================================
+
+chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
+  if (message?.type !== 'permission_prompt_response') {
+    return false;
+  }
+
+  const success = handlePermissionPromptResponse(message.response);
+  sendResponse({ ok: success });
+  return true;
+});
+
+chrome.windows.onRemoved.addListener((windowId) => {
+  resolvePromptClosed(windowId);
+});
+
+// =============================================================================
+// Permission Management Messages
+// =============================================================================
+
+function handleWebAgentsPermissionsMessage(
+  message: { type?: string; origin?: string },
+  sendResponse: (response?: unknown) => void,
+): boolean {
+  if (message?.type === 'web_agents_permissions.list_all') {
+    listAllPermissions()
+      .then(permissions => sendResponse({ ok: true, permissions }))
+      .catch(error => sendResponse({ ok: false, error: error instanceof Error ? error.message : String(error) }));
+    return true;
+  }
+
+  if (message?.type === 'web_agents_permissions.revoke_origin') {
+    const { origin } = message as { origin?: string };
+    if (!origin) {
+      sendResponse({ ok: false, error: 'Missing origin' });
+      return true;
+    }
+
+    revokeOriginPermissions(origin)
+      .then(() => sendResponse({ ok: true }))
+      .catch(error => sendResponse({ ok: false, error: error instanceof Error ? error.message : String(error) }));
+    return true;
+  }
+
+  return false;
+}
+
+chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
+  return handleWebAgentsPermissionsMessage(message, sendResponse);
+});
+
+chrome.runtime.onMessageExternal?.addListener((message, _sender, sendResponse) => {
+  return handleWebAgentsPermissionsMessage(message, sendResponse);
 });
 
 // =============================================================================
@@ -3230,21 +456,8 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
     return false;
   }
   
-  const { invocationId, success, result, error } = message.response as {
-    invocationId: string;
-    success: boolean;
-    result?: unknown;
-    error?: { code: string; message: string };
-  };
-  
-  console.log('[Web Agents API] Received invocation response:', invocationId, success);
-  
-  const pending = pendingInvocations.get(invocationId);
-  if (pending) {
-    pending.resolve({ success, result, error });
-  }
-  
-  sendResponse({ ok: true });
+  const success = resolveInvocationResponse(message.response);
+  sendResponse({ ok: success });
   return true;
 });
 
@@ -3252,10 +465,8 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
 // Harbor Forwarded Invocation Handler
 // =============================================================================
 
-// Track which forwarded invocations we've already processed (to prevent duplicates from multiple listeners)
 const processedForwardedInvocations = new Set<string>();
 
-// Common handler for forwarded invocations
 function handleForwardedInvocation(
   message: { agentId: string; request: { from: string; task: string; input?: unknown; timeout?: number }; handlerInfo: { origin: string; tabId?: number }; traceId?: string },
   sendResponse: (response: unknown) => void,
@@ -3264,46 +475,28 @@ function handleForwardedInvocation(
   const { agentId, request, handlerInfo, traceId } = message;
   const trace = traceId || 'no-trace';
   
-  console.log(`[TRACE ${trace}] handleForwardedInvocation START - source: ${source}, agentId: ${agentId}, task: ${request.task}`);
-  
-  // Create a unique key for this invocation to deduplicate
   const invocationKey = `${agentId}-${request.from}-${request.task}-${JSON.stringify(request.input || {}).slice(0, 100)}`;
   
   if (processedForwardedInvocations.has(invocationKey)) {
-    console.log(`[TRACE ${trace}] DUPLICATE forwarded invocation, skipping - source: ${source}`);
-    // Don't send response - let the other handler do it
     return false;
   }
   processedForwardedInvocations.add(invocationKey);
-  
-  // Clean up after 30 seconds
   setTimeout(() => processedForwardedInvocations.delete(invocationKey), 30000);
   
-  // Find the tab to forward to
   const tabId = handlerInfo.tabId || agentInvocationTabs.get(agentId);
-  console.log(`[TRACE ${trace}] Tab lookup - handlerInfo.tabId: ${handlerInfo.tabId}, agentInvocationTabs: ${agentInvocationTabs.get(agentId)}, final: ${tabId}`);
   
   if (!tabId) {
-    console.log(`[TRACE ${trace}] ERROR - no tab found`);
     sendResponse({ success: false, error: { code: 'ERR_NO_TAB', message: 'Agent tab not found' } });
     return true;
   }
   
-  console.log(`[TRACE ${trace}] Calling handleIncomingInvocation...`);
+  handleIncomingInvocation(agentId, request, trace)
+    .then(response => sendResponse(response))
+    .catch(error => sendResponse({ success: false, error: { code: 'ERR_FAILED', message: error.message } }));
   
-  // Forward to tab and wait for response
-  handleIncomingInvocation(agentId, request, trace).then((response) => {
-    console.log(`[TRACE ${trace}] handleIncomingInvocation complete, success: ${response.success}`);
-    sendResponse(response);
-  }).catch((error) => {
-    console.log(`[TRACE ${trace}] handleIncomingInvocation ERROR: ${error.message}`);
-    sendResponse({ success: false, error: { code: 'ERR_FAILED', message: error.message } });
-  });
-  
-  return true; // Async response
+  return true;
 }
 
-// Handle invocation requests forwarded from Harbor via onMessageExternal
 chrome.runtime.onMessageExternal?.addListener((message, _sender, sendResponse) => {
   if (message?.type !== 'harbor.forwardInvocation') {
     return false;
@@ -3311,13 +504,11 @@ chrome.runtime.onMessageExternal?.addListener((message, _sender, sendResponse) =
   return handleForwardedInvocation(message, sendResponse, 'onMessageExternal');
 });
 
-// Also handle via regular onMessage for Firefox compatibility
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message?.type !== 'harbor.forwardInvocation') {
     return false;
   }
   
-  // Check if from another extension (not from ourselves)
   if (sender.id === chrome.runtime.id) {
     return false;
   }
@@ -3330,12 +521,10 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 // =============================================================================
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-  // Check Harbor connection status
   if (message?.type === 'checkHarborConnection') {
     (async () => {
       const state = getHarborState();
       if (!state.connected) {
-        // Try to discover Harbor
         const id = await discoverHarbor();
         sendResponse({ connected: !!id, extensionId: id });
       } else {
@@ -3345,7 +534,6 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     return true;
   }
 
-  // Get permissions for a specific origin
   if (message?.type === 'getPermissionsForOrigin') {
     const { origin } = message as { origin?: string };
     if (!origin) {
@@ -3370,16 +558,11 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     return true;
   }
 
-  // List all permissions
   if (message?.type === 'listAllPermissions') {
-    (async () => {
-      const permissions = await listAllPermissions();
-      sendResponse({ permissions });
-    })();
+    listAllPermissions().then(permissions => sendResponse({ permissions }));
     return true;
   }
 
-  // Revoke permissions for an origin
   if (message?.type === 'revokePermissions') {
     const { origin } = message as { origin?: string };
     if (!origin) {
@@ -3387,24 +570,14 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       return true;
     }
 
-    (async () => {
-      await revokeOriginPermissions(origin);
-      sendResponse({ ok: true });
-    })();
+    revokeOriginPermissions(origin).then(() => sendResponse({ ok: true }));
     return true;
   }
 
-  // Revoke all permissions
   if (message?.type === 'revokeAllPermissions') {
     (async () => {
       const result = await chrome.storage.local.get(null);
-      const keysToRemove: string[] = [];
-      
-      for (const key of Object.keys(result)) {
-        if (key.startsWith('permissions:')) {
-          keysToRemove.push(key);
-        }
-      }
+      const keysToRemove = Object.keys(result).filter(key => key.startsWith('permissions:'));
       
       if (keysToRemove.length > 0) {
         await chrome.storage.local.remove(keysToRemove);
@@ -3415,12 +588,8 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     return true;
   }
 
-  // Get feature flags for content script injection
   if (message?.type === 'getFeatureFlags') {
-    (async () => {
-      const flags = await getFeatureFlags();
-      sendResponse(flags);
-    })();
+    getFeatureFlags().then(flags => sendResponse(flags));
     return true;
   }
 

@@ -604,10 +604,36 @@ function createStreamIterable(type, payload) {
 
 ## Components
 
-### Extension Layer (`extension/src/`)
+### Shared Protocol (`shared/`)
+
+The shared protocol defines type-safe communication between Harbor and Web Agents API extensions:
+
+| File | Purpose |
+|------|---------|
+| `protocol.ts` | Message types, error codes, and response helpers |
+
+**Key Types:**
+- `HarborRequest<T>` / `HarborResponse<T>` — Request/response envelope
+- `MessageType` — All supported message types (`llm.*`, `mcp.*`, `session.*`, etc.)
+- `ErrorCodes` — Standardized error codes (`ERR_PERMISSION_DENIED`, `ERR_TIMEOUT`, etc.)
+- `HarborError` — Custom error class with serialization support
+- `ApiError` — Structured error object for responses
+
+### Harbor Extension (`extension/src/`)
 
 | Directory/File | Purpose |
 |----------------|---------|
+| **`handlers/`** | **Modular message handler architecture** |
+| `handlers/index.ts` | Handler registry initialization |
+| `handlers/types.ts` | Shared handler types and utilities |
+| `handlers/server-handlers.ts` | MCP server management handlers |
+| `handlers/bridge-handlers.ts` | Native bridge status handlers |
+| `handlers/llm-handlers.ts` | LLM configuration handlers |
+| `handlers/oauth-handlers.ts` | OAuth flow handlers |
+| `handlers/permission-handlers.ts` | Permission management handlers |
+| `handlers/session-handlers.ts` | Session management handlers |
+| `handlers/remote-server-handlers.ts` | Remote MCP server handlers |
+| `handlers/page-chat-handlers.ts` | Page chat feature handlers |
 | `agents/` | Web Agent API implementation |
 | `agents/injected.ts` | `window.ai` and `window.agent` API injection |
 | `agents/transport.ts` | Message passing between page and background |
@@ -628,24 +654,133 @@ function createStreamIterable(type, payload) {
 | `policy/` | Permission system |
 | `policy/permissions.ts` | Permission checking and prompts |
 | `storage/` | Extension storage utilities |
-| `background.ts` | Service worker / background script |
+| `background.ts` | Service worker entry point (initializes handlers) |
+| `extension-api.ts` | External extension API router |
 | `sidebar.ts` | Sidebar UI for server management |
 | `directory.ts` | MCP server directory/catalog UI |
 
-### Rust Bridge Layer (`bridge-rs/src/`)
+### Web Agents API Extension (`web-agents-api/src/`)
+
+| Directory/File | Purpose |
+|----------------|---------|
+| **`handlers/`** | **Modular message handler architecture** |
+| `handlers/index.ts` | Handler registry with `routeMessage()` dispatcher |
+| `handlers/types.ts` | Shared handler types (`RequestContext`, `HandlerResponse`) |
+| `handlers/ai-handlers.ts` | AI/LLM operation handlers |
+| `handlers/permission-handlers.ts` | Permission request handlers |
+| `handlers/tool-handlers.ts` | Tool listing and calling handlers |
+| `handlers/session-handlers.ts` | Session management handlers |
+| `handlers/mcp-handlers.ts` | MCP server registration handlers |
+| `handlers/chat-handlers.ts` | Chat UI handlers |
+| `handlers/browser-handlers.ts` | Browser control handlers |
+| `handlers/tab-handlers.ts` | Tab management handlers |
+| `handlers/agent-handlers.ts` | Multi-agent handlers |
+| `background.ts` | Service worker entry point |
+| `harbor-client.ts` | Client for Harbor extension communication |
+| `injected.ts` | `window.ai` and `window.agent` injection |
+| `content-script.ts` | Content script bridge |
+| `types.ts` | Type definitions |
+
+### Rust Bridge (`bridge-rs/src/`)
 
 | Directory/File | Purpose |
 |----------------|---------|
 | `main.rs` | Entry point, native messaging loop |
 | `native_messaging.rs` | Length-prefixed JSON protocol |
-| `rpc/` | RPC method dispatch |
+| **`rpc/mod.rs`** | **Handler registry pattern** with domain registration |
 | `llm/` | LLM provider management |
 | `llm/config.rs` | LLM configuration and model aliases |
 | `js/` | QuickJS JavaScript runtime |
 | `js/runtime.rs` | JS execution environment |
 | `js/sandbox.rs` | Capability-based sandboxing |
+| `oauth/` | OAuth flow management |
+| `mcp/` | MCP tool registry (Safari compatibility) |
 | `fs/` | Filesystem utilities |
+| `http_server.rs` | HTTP server mode (Safari) |
 | `any-llm-rust/` | Multi-provider LLM library (submodule) |
+
+---
+
+## Handler Architecture
+
+Both extensions and the Rust bridge use a **handler registry pattern** for message routing. This provides:
+
+- **Modularity** — Each domain (LLM, MCP, permissions, etc.) has its own handler module
+- **Testability** — Handlers can be unit tested in isolation
+- **Extensibility** — New message types can be added without modifying core routing logic
+- **Type Safety** — Shared types ensure consistent request/response formats
+
+### TypeScript Handler Pattern (Extensions)
+
+```typescript
+// handlers/types.ts - Shared handler infrastructure
+export interface RequestContext {
+  id: string;
+  type: string;
+  payload: unknown;
+  sender: chrome.runtime.MessageSender;
+  origin: string;
+  tabId?: number;
+}
+
+export type HandlerResponse = Promise<TransportResponse | null>;
+export type MessageHandler = (ctx: RequestContext) => HandlerResponse;
+
+// handlers/index.ts - Central registry
+const handlers = new Map<string, MessageHandler>();
+
+export function routeMessage(ctx: RequestContext): HandlerResponse {
+  const handler = handlers.get(ctx.type);
+  if (handler) return handler(ctx);
+  return Promise.resolve(errorResponse(ctx.id, 'ERR_INTERNAL', `Unknown: ${ctx.type}`));
+}
+
+// handlers/ai-handlers.ts - Domain-specific handlers
+handlers.set('create_session', handleCreateSession);
+handlers.set('session_prompt', handleSessionPrompt);
+handlers.set('get_capabilities', handleGetCapabilities);
+```
+
+### Rust Handler Pattern (Bridge)
+
+```rust
+// rpc/mod.rs - Handler registry with lazy initialization
+pub type RpcHandler = fn(serde_json::Value) 
+  -> Pin<Box<dyn Future<Output = Result<serde_json::Value, RpcError>> + Send>>;
+
+static HANDLERS: OnceLock<HashMap<&'static str, RpcHandler>> = OnceLock::new();
+
+fn get_handlers() -> &'static HashMap<&'static str, RpcHandler> {
+  HANDLERS.get_or_init(|| {
+    let mut handlers = HashMap::new();
+    register_llm_handlers(&mut handlers);
+    register_fs_handlers(&mut handlers);
+    register_oauth_handlers(&mut handlers);
+    // ...
+    handlers
+  })
+}
+
+pub async fn handle(request: RpcRequest) -> RpcResponse {
+  match get_handlers().get(request.method.as_str()) {
+    Some(handler) => {
+      match handler(request.params).await {
+        Ok(value) => RpcResponse::success(request.id, value),
+        Err(error) => RpcResponse::error(request.id, error),
+      }
+    }
+    None => RpcResponse::error(request.id, RpcError::method_not_found(&request.method)),
+  }
+}
+```
+
+### Handler Organization
+
+| Layer | Pattern | Registration |
+|-------|---------|--------------|
+| **Web Agents API** | Map-based registry | `handlers.set(type, fn)` |
+| **Harbor Extension** | `registerHandler()` utility | `registerAsyncHandler(type, fn)` |
+| **Rust Bridge** | HashMap with lazy init | `handlers.insert(method, fn)` |
 
 ---
 
@@ -892,17 +1027,50 @@ All persistent data is stored in `~/.harbor/`:
 
 ## Error Codes
 
+Error codes are standardized in `shared/protocol.ts` and used across all layers:
+
+### Connection & Discovery
 | Code | Description |
 |------|-------------|
-| `ERR_PERMISSION_DENIED` | Caller lacks required permission |
-| `ERR_SCOPE_REQUIRED` | Permission scope not granted |
-| `ERR_SERVER_UNAVAILABLE` | MCP server not connected |
-| `ERR_TOOL_NOT_FOUND` | Tool does not exist |
+| `ERR_HARBOR_NOT_FOUND` | Harbor extension not found or not connected |
+| `ERR_BRIDGE_NOT_CONNECTED` | Native bridge not connected |
+| `ERR_NOT_INSTALLED` | Extension not installed |
+
+### Request Errors
+| Code | Description |
+|------|-------------|
+| `ERR_TIMEOUT` | Request timed out |
+| `ERR_INVALID_REQUEST` | Invalid request format |
+| `ERR_NOT_SUPPORTED` | Method not supported (e.g., Safari limitations) |
+
+### Permission Errors
+| Code | Description |
+|------|-------------|
+| `ERR_PERMISSION_DENIED` | Permission denied by user or policy |
+| `ERR_SCOPE_REQUIRED` | Required scope not granted |
 | `ERR_TOOL_NOT_ALLOWED` | Tool not in allowlist |
-| `ERR_TOOL_TIMEOUT` | Tool call timed out |
-| `ERR_TOOL_FAILED` | Tool execution error |
-| `ERR_RATE_LIMITED` | Concurrent limit exceeded |
-| `ERR_BUDGET_EXCEEDED` | Run budget exhausted |
+| `ERR_ORIGIN_DENIED` | Origin not allowed |
+
+### Resource Errors
+| Code | Description |
+|------|-------------|
+| `ERR_NOT_FOUND` | Resource not found |
+| `ERR_SESSION_NOT_FOUND` | Session not found |
+| `ERR_AGENT_NOT_FOUND` | Agent not found |
+| `ERR_SERVER_NOT_FOUND` | Server not found |
+
+### Operation Errors
+| Code | Description |
+|------|-------------|
+| `ERR_TOOL_FAILED` | Tool execution failed |
+| `ERR_MODEL_FAILED` | Model/LLM execution failed |
+| `ERR_AGENT_NOT_ACCEPTING` | Agent not accepting requests |
+| `ERR_BUDGET_EXCEEDED` | Budget exceeded (tool calls, tokens, etc.) |
+
+### Internal Errors
+| Code | Description |
+|------|-------------|
+| `ERR_INTERNAL` | Internal error |
 
 ---
 

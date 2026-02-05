@@ -74,7 +74,6 @@ const BUNDLED_SERVERS: BundledServer[] = [
     runtime: 'js',
     icon: '🔊',
     tags: ['demo', 'test', 'echo'],
-    builtIn: true,
     tools: [
       { name: 'echo', description: 'Echo back the input message' },
       { name: 'reverse', description: 'Reverse a string' },
@@ -118,11 +117,13 @@ const installUrlBtn = document.getElementById('install-url-btn') as HTMLButtonEl
 const dropZone = document.getElementById('drop-zone') as HTMLDivElement;
 const fileInput = document.getElementById('file-input') as HTMLInputElement;
 
-// Track installed servers
+// Track installed and running servers
 let installedServerIds = new Set<string>();
+let runningServerIds = new Set<string>();
 
 function renderServerCard(server: BundledServer): HTMLElement {
   const isInstalled = installedServerIds.has(server.id) || server.builtIn;
+  const isRunning = runningServerIds.has(server.id);
   
   const card = document.createElement('div');
   card.className = `server-card ${isInstalled ? 'installed' : ''}`;
@@ -154,15 +155,16 @@ function renderServerCard(server: BundledServer): HTMLElement {
   runtimeBadge.textContent = server.runtime.toUpperCase();
   badges.appendChild(runtimeBadge);
 
-  if (server.builtIn) {
-    const builtInBadge = document.createElement('span');
-    builtInBadge.className = 'badge badge-builtin';
-    builtInBadge.textContent = 'Built-in';
-    badges.appendChild(builtInBadge);
+  // Show running/installed status badge
+  if (isRunning) {
+    const runningBadge = document.createElement('span');
+    runningBadge.className = 'badge badge-running';
+    runningBadge.textContent = 'Running';
+    badges.appendChild(runningBadge);
   } else if (isInstalled) {
     const installedBadge = document.createElement('span');
-    installedBadge.className = 'badge badge-installed';
-    installedBadge.textContent = 'Installed';
+    installedBadge.className = 'badge badge-installed-stopped';
+    installedBadge.textContent = 'Stopped';
     badges.appendChild(installedBadge);
   }
 
@@ -244,9 +246,11 @@ async function loadInstalledServers(): Promise<void> {
     const response = await browserAPI.runtime.sendMessage({ type: 'sidebar_get_servers' });
     console.log('[Directory] Got servers response:', response);
     if (response?.ok && response.servers) {
-      const serverIds = response.servers.map((s: InstalledServer) => s.id);
-      console.log('[Directory] Installed server IDs:', serverIds);
-      installedServerIds = new Set(serverIds);
+      const servers = response.servers as InstalledServer[];
+      installedServerIds = new Set(servers.map((s) => s.id));
+      runningServerIds = new Set(servers.filter((s) => s.running).map((s) => s.id));
+      console.log('[Directory] Installed server IDs:', [...installedServerIds]);
+      console.log('[Directory] Running server IDs:', [...runningServerIds]);
     } else {
       // Also check storage directly for WASM servers
       const result = await browserAPI.storage.local.get(STORAGE_KEY);
@@ -254,8 +258,8 @@ async function loadInstalledServers(): Promise<void> {
       const serverIds = servers.map((s) => s.id);
       console.log('[Directory] Storage server IDs:', serverIds);
       installedServerIds = new Set(serverIds);
+      runningServerIds = new Set(); // Can't determine running status from storage alone
     }
-    console.log('[Directory] Final installedServerIds:', [...installedServerIds]);
   } catch (err) {
     console.error('[Directory] Failed to load installed servers:', err);
   }

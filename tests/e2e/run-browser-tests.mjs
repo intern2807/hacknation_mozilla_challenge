@@ -16,13 +16,35 @@
  *   node run-browser-tests.mjs [--timeout=60000] [--keep-open]
  */
 
-import { spawn } from 'child_process';
+import { spawn, exec } from 'child_process';
 import http from 'http';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
+// Track child processes for cleanup
+let childProcesses = [];
+
+// Kill process tree (works on macOS/Linux)
+function killProcessTree(pid) {
+  return new Promise((resolve) => {
+    exec(`pkill -P ${pid}`, () => {
+      try {
+        process.kill(pid, 'SIGTERM');
+      } catch (e) {}
+      resolve();
+    });
+  });
+}
+
+// Kill all Firefox processes started by web-ext (temporary profiles)
+function killWebExtFirefox() {
+  return new Promise((resolve) => {
+    exec(`pkill -f 'firefox.*firefox-profile'`, () => resolve());
+  });
+}
 
 // Parse args
 const args = process.argv.slice(2);
@@ -203,6 +225,7 @@ function launchFirefox(testUrl, testResultsPromise) {
       env: { ...process.env },
     });
     
+    childProcesses.push(webExt);
     console.log(`[firefox] Process started (PID: ${webExt.pid})`);
     
     let extensionLoaded = false;
@@ -236,24 +259,29 @@ function launchFirefox(testUrl, testResultsPromise) {
       reject(err);
     });
     
+    async function cleanup() {
+      if (webExt.pid) {
+        await killProcessTree(webExt.pid);
+      }
+      await killWebExtFirefox();
+    }
+    
     // Set up timeout
-    const timeout = setTimeout(() => {
+    const timeout = setTimeout(async () => {
       console.log(`\n[timeout] Test timed out after ${config.timeout/1000}s`);
       console.log('[timeout] This may mean the extension did not load properly.');
       console.log('[timeout] Try running with --keep-open to investigate.');
-      webExt.kill('SIGTERM');
+      await cleanup();
       reject(new Error('Test timed out'));
     }, config.timeout);
     
     // Wait for test results from HTTP endpoint
-    testResultsPromise.then((results) => {
+    testResultsPromise.then(async (results) => {
       clearTimeout(timeout);
       
       if (!config.keepOpen) {
-        setTimeout(() => {
-          webExt.kill('SIGTERM');
-          resolve(results);
-        }, 1000);
+        await cleanup();
+        resolve(results);
       } else {
         console.log('\n[keep-open] Tests complete. Firefox stays open for manual inspection.');
         console.log('[keep-open] Press Ctrl+C to exit.\n');
@@ -264,14 +292,6 @@ function launchFirefox(testUrl, testResultsPromise) {
     webExt.on('exit', (code, signal) => {
       console.log(`[firefox] Process exited (code: ${code}, signal: ${signal})`);
       clearTimeout(timeout);
-    });
-    
-    // Handle Ctrl+C
-    process.on('SIGINT', () => {
-      console.log('\n[interrupted] Cleaning up...');
-      clearTimeout(timeout);
-      webExt.kill('SIGTERM');
-      process.exit(130);
     });
   });
 }
@@ -313,8 +333,14 @@ async function main() {
 }
 
 // Handle Ctrl+C
-process.on('SIGINT', () => {
+process.on('SIGINT', async () => {
   console.log('\n[interrupted] Cleaning up...');
+  await killWebExtFirefox();
+  for (const proc of childProcesses) {
+    if (proc.pid) {
+      await killProcessTree(proc.pid);
+    }
+  }
   process.exit(130);
 });
 

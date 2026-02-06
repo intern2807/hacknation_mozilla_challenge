@@ -13,7 +13,15 @@
     "test:browser": "node run-browser-tests.mjs",
     "test:browser:build": "npm run build:extensions && node run-browser-tests.mjs",
     "test:browser:keep-open": "node run-browser-tests.mjs --keep-open",
-    "test:all": "npm run test && npm run test:browser"
+    "test:bridge": "node test-native-bridge.mjs",
+    "test:harbor": "node test-harbor-connection.mjs",
+    "test:harbor:keep-open": "node test-harbor-connection.mjs --keep-open",
+    "test:llm": "node test-llm-integration.mjs",
+    "test:llm:keep-open": "node test-llm-integration.mjs --keep-open",
+    "test:mcp": "node test-mcp-servers.mjs",
+    "test:mcp:keep-open": "node test-mcp-servers.mjs --keep-open",
+    "test:wasm": "node test-wasm-server.mjs",
+    "test:all": "npm run test:bridge && npm run test:harbor && npm run test:wasm && npm run test:mcp && npm run test:browser"
   },
   "devDependencies": {
     "@playwright/test": "^1.42.0",

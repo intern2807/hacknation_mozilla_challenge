@@ -33,6 +33,7 @@
   "web_accessible_resources": [
     {
       "resources": [
+        "dist/discovery-injected.js",
         "dist/page-chat.js",
         "dist/design-tokens.css",
         "dist/demo-bootstrap.js",

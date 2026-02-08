@@ -1,0 +1,2096 @@
+{
+  "meta": {
+    "timestamp": 1770505580.28305,
+    "provider": null,
+    "cache_hit": false
+  },
+  "request": {
+    "engine": "amazon",
+    "mode": "text",
+    "query": "iphone 17",
+    "country_code": "ch",
+    "language": "en",
+    "n": 10
+  },
+  "normalized_hits": [
+    {
+      "title": "iPhone 17 256 GB: 6.3 Inch Display with ProMotion, A19 Chip, Centre Stage Front Camera for Smart Group Selfies, Improved Scratch Resistance, Battery for the All Day; White",
+      "url": "https://www.amazon.de/-/en/sspa/click?ie=UTF8&spc=MToyMzA4MTExMjg4MDY3MTc6MTc3MDUwNTU3OTpzcF9hdGY6MzAwNzE0Mjk3NjYyNzMyOjowOjo&url=%2FApple-iPhone-256-ProMotion-Resistance%2Fdp%2FB0FQG92W6D%2Fref%3Dsr_1_1_sspa%3Fdib%3DeyJ2IjoiMSJ9.uxdFAk24jkJqSEool3EmGxBt-N882rcOVCJITj4oq2AHYRFl1TKvu_zcfW7igMpKxMJnLIaJeeA37Yj1aWB9oRGkP1xxgQ5HOfIUZadYaq-d-IR6dJWemuesVxdbEWYKO_rZT7GvNGGw_9zta_7c-52_RKXrYvjPE2Dz52vt8n62JKqavYp-5WNd7Tya8s85f7i20gs03vokk-oiXkMsql_EoJJCm4dPDFh6_3uK_6I.Edbp7XiywWrpZwlOc04zv3O7ISztq6XnNxZIX0gKmLM%26dib_tag%3Dse%26keywords%3Diphone%2B17%26qid%3D1770505579%26sr%3D8-1-spons%26aref%3D5NvUYAFNEQ%26sp_csd%3Dd2lkZ2V0TmFtZT1zcF9hdGY%26psc%3D1&aref=5NvUYAFNEQ&sp_cr=DUB",
+      "source": "Amazon",
+      "thumbnail": "https://m.media-amazon.com/images/I/61+-vYgxshL._AC_UY218_.jpg",
+      "price_text": "€898.90",
+      "price_value": 898.9,
+      "rating": 4.7,
+      "reviews": 515,
+      "delivery_text": "FREE delivery Wed 11 Feb; Or fastest delivery Tue 10 Feb",
+      "delivery_days": 4,
+      "in_stock": null
+    },
+    {
+      "title": "iPhone 17 Pro 256 GB: 6.3 Inch Display with ProMotion up to 120 Hz, A19 Pro Chip, Breakthrough Battery Life, Pro Fusion Camera System with Centre Stage Front Camera; Cosmic Orange",
+      "url": "https://www.amazon.de/-/en/sspa/click?ie=UTF8&spc=MToyMzA4MTExMjg4MDY3MTc6MTc3MDUwNTU3OTpzcF9hdGY6MzAwNzE0Mjk3NjYyODMyOjowOjo&url=%2FApple-iPhone-Pro-256-Breakthrough%2Fdp%2FB0FQGG53WL%2Fref%3Dsr_1_2_sspa%3Fdib%3DeyJ2IjoiMSJ9.uxdFAk24jkJqSEool3EmGxBt-N882rcOVCJITj4oq2AHYRFl1TKvu_zcfW7igMpKxMJnLIaJeeA37Yj1aWB9oRGkP1xxgQ5HOfIUZadYaq-d-IR6dJWemuesVxdbEWYKO_rZT7GvNGGw_9zta_7c-52_RKXrYvjPE2Dz52vt8n62JKqavYp-5WNd7Tya8s85f7i20gs03vokk-oiXkMsql_EoJJCm4dPDFh6_3uK_6I.Edbp7XiywWrpZwlOc04zv3O7ISztq6XnNxZIX0gKmLM%26dib_tag%3Dse%26keywords%3Diphone%2B17%26qid%3D1770505579%26sr%3D8-2-spons%26aref%3D4binyTNJNM%26sp_csd%3Dd2lkZ2V0TmFtZT1zcF9hdGY%26psc%3D1&aref=4binyTNJNM&sp_cr=DUB",
+      "source": "Amazon",
+      "thumbnail": "https://m.media-amazon.com/images/I/71cdtM6hgmL._AC_UY218_.jpg",
+      "price_text": "€1,252.90",
+      "price_value": 1252.9,
+      "rating": 4.5,
+      "reviews": 762,
+      "delivery_text": "FREE delivery Wed 11 Feb; Or fastest delivery Tue 10 Feb",
+      "delivery_days": 4,
+      "in_stock": null
+    },
+    {
+      "title": "iPhone Air 256 GB: Thinnest iPhone Ever, 6.5 Inch Display with ProMotion up to 120 Hz, Strong A19 Pro Chip, Centre Stage Front Camera, Battery for All Day, eSim; Space Black",
+      "url": "https://www.amazon.de/-/en/sspa/click?ie=UTF8&spc=MToyMzA4MTExMjg4MDY3MTc6MTc3MDUwNTU3OTpzcF9hdGY6MzAwNzE0Mjk3NjYzNjMyOjowOjo&url=%2FApple-iPhone-Air-256-ProMotion%2Fdp%2FB0FQG944KG%2Fref%3Dsr_1_3_sspa%3Fdib%3DeyJ2IjoiMSJ9.uxdFAk24jkJqSEool3EmGxBt-N882rcOVCJITj4oq2AHYRFl1TKvu_zcfW7igMpKxMJnLIaJeeA37Yj1aWB9oRGkP1xxgQ5HOfIUZadYaq-d-IR6dJWemuesVxdbEWYKO_rZT7GvNGGw_9zta_7c-52_RKXrYvjPE2Dz52vt8n62JKqavYp-5WNd7Tya8s85f7i20gs03vokk-oiXkMsql_EoJJCm4dPDFh6_3uK_6I.Edbp7XiywWrpZwlOc04zv3O7ISztq6XnNxZIX0gKmLM%26dib_tag%3Dse%26keywords%3Diphone%2B17%26qid%3D1770505579%26sr%3D8-3-spons%26aref%3DLpdHPgMYl4%26sp_csd%3Dd2lkZ2V0TmFtZT1zcF9hdGY%26psc%3D1&aref=LpdHPgMYl4&sp_cr=DUB",
+      "source": "Amazon",
+      "thumbnail": "https://m.media-amazon.com/images/I/61l9SovyFUL._AC_UY218_.jpg",
+      "price_text": "€899.00",
+      "price_value": 899.0,
+      "rating": 4.6,
+      "reviews": 275,
+      "delivery_text": "FREE delivery Wed 11 Feb; Or fastest delivery Tue 10 Feb",
+      "delivery_days": 4,
+      "in_stock": null
+    },
+    {
+      "title": "iPhone 17 256 GB: 6.3 Inch Display with ProMotion, A19 Chip, Centre Stage Front Camera for Smart Group Selfies, Improved Scratch Resistance, Battery for the All Day, Black",
+      "url": "https://www.amazon.de/-/en/Apple-iPhone-256-ProMotion-Resistance/dp/B0FQFJVJBQ/ref=sr_1_4?dib=eyJ2IjoiMSJ9.uxdFAk24jkJqSEool3EmGxBt-N882rcOVCJITj4oq2AHYRFl1TKvu_zcfW7igMpKxMJnLIaJeeA37Yj1aWB9oRGkP1xxgQ5HOfIUZadYaq-d-IR6dJWemuesVxdbEWYKO_rZT7GvNGGw_9zta_7c-52_RKXrYvjPE2Dz52vt8n62JKqavYp-5WNd7Tya8s85f7i20gs03vokk-oiXkMsql_EoJJCm4dPDFh6_3uK_6I.Edbp7XiywWrpZwlOc04zv3O7ISztq6XnNxZIX0gKmLM&dib_tag=se&keywords=iphone+17&qid=1770505579&sr=8-4",
+      "source": "Amazon",
+      "thumbnail": "https://m.media-amazon.com/images/I/61X5FknDWuL._AC_UY218_.jpg",
+      "price_text": null,
+      "price_value": null,
+      "rating": 4.7,
+      "reviews": 515,
+      "delivery_text": null,
+      "delivery_days": 2,
+      "in_stock": null
+    },
+    {
+      "title": "iPhone 17 256 GB: 6.3 inch Display with ProMotion, A19 Chip, Centre Stage Front Camera for Smart Group Selfies, Improved Scratch Resistance, Battery for the All Day, Fog Blue",
+      "url": "https://www.amazon.de/-/en/Apple-iPhone-256-ProMotion-Resistance/dp/B0FQFGMW6V/ref=sr_1_5?dib=eyJ2IjoiMSJ9.uxdFAk24jkJqSEool3EmGxBt-N882rcOVCJITj4oq2AHYRFl1TKvu_zcfW7igMpKxMJnLIaJeeA37Yj1aWB9oRGkP1xxgQ5HOfIUZadYaq-d-IR6dJWemuesVxdbEWYKO_rZT7GvNGGw_9zta_7c-52_RKXrYvjPE2Dz52vt8n62JKqavYp-5WNd7Tya8s85f7i20gs03vokk-oiXkMsql_EoJJCm4dPDFh6_3uK_6I.Edbp7XiywWrpZwlOc04zv3O7ISztq6XnNxZIX0gKmLM&dib_tag=se&keywords=iphone+17&qid=1770505579&sr=8-5",
+      "source": "Amazon",
+      "thumbnail": "https://m.media-amazon.com/images/I/61Da45h7jCL._AC_UY218_.jpg",
+      "price_text": "€919.00",
+      "price_value": 919.0,
+      "rating": 4.7,
+      "reviews": 515,
+      "delivery_text": "FREE delivery Wed 11 Feb; Or fastest delivery Tue 10 Feb",
+      "delivery_days": 3,
+      "in_stock": null
+    },
+    {
+      "title": "iPhone 17 256 GB: 6.3 Inch Display with ProMotion, A19 Chip, Centre Stage Front Camera for Smart Group Selfies, Improved Scratch Resistance, Battery for the All Day; Lavender",
+      "url": "https://www.amazon.de/-/en/Apple-iPhone-256-ProMotion-Resistance/dp/B0FQFBGYR7/ref=sr_1_6?dib=eyJ2IjoiMSJ9.uxdFAk24jkJqSEool3EmGxBt-N882rcOVCJITj4oq2AHYRFl1TKvu_zcfW7igMpKxMJnLIaJeeA37Yj1aWB9oRGkP1xxgQ5HOfIUZadYaq-d-IR6dJWemuesVxdbEWYKO_rZT7GvNGGw_9zta_7c-52_RKXrYvjPE2Dz52vt8n62JKqavYp-5WNd7Tya8s85f7i20gs03vokk-oiXkMsql_EoJJCm4dPDFh6_3uK_6I.Edbp7XiywWrpZwlOc04zv3O7ISztq6XnNxZIX0gKmLM&dib_tag=se&keywords=iphone+17&qid=1770505579&sr=8-6",
+      "source": "Amazon",
+      "thumbnail": "https://m.media-amazon.com/images/I/61vNxSF6qeL._AC_UY218_.jpg",
+      "price_text": "€919.00",
+      "price_value": 919.0,
+      "rating": 4.7,
+      "reviews": 515,
+      "delivery_text": "FREE delivery Wed 11 Feb; Or fastest delivery Tue 10 Feb",
+      "delivery_days": 2,
+      "in_stock": null
+    },
+    {
+      "title": "iPhone 17 Pro 256 GB: 6.3 Inch Display with ProMotion up to 120 Hz, A19 Pro Chip, Breakthrough Battery Life, Pro Fusion Camera System with Centre Stage Front Camera; Deep Blue",
+      "url": "https://www.amazon.de/-/en/Apple-iPhone-Pro-256-Breakthrough/dp/B0FQG15YVP/ref=sr_1_7?dib=eyJ2IjoiMSJ9.uxdFAk24jkJqSEool3EmGxBt-N882rcOVCJITj4oq2AHYRFl1TKvu_zcfW7igMpKxMJnLIaJeeA37Yj1aWB9oRGkP1xxgQ5HOfIUZadYaq-d-IR6dJWemuesVxdbEWYKO_rZT7GvNGGw_9zta_7c-52_RKXrYvjPE2Dz52vt8n62JKqavYp-5WNd7Tya8s85f7i20gs03vokk-oiXkMsql_EoJJCm4dPDFh6_3uK_6I.Edbp7XiywWrpZwlOc04zv3O7ISztq6XnNxZIX0gKmLM&dib_tag=se&keywords=iphone+17&qid=1770505579&sr=8-7",
+      "source": "Amazon",
+      "thumbnail": "https://m.media-amazon.com/images/I/61LFeKye45L._AC_UY218_.jpg",
+      "price_text": "€1,222.00",
+      "price_value": 1222.0,
+      "rating": 4.5,
+      "reviews": 762,
+      "delivery_text": "FREE delivery Wed 11 Feb; Or fastest delivery Tue 10 Feb",
+      "delivery_days": 5,
+      "in_stock": null
+    },
+    {
+      "title": "Guardian-Mag Case for iPhone 17 for MagSafe [No.1 Military Protection & Magnetic Force] (Camera Protection Buttons with Original Handle) Scratch-Resistant Extreme Durability for iPhone 17 Case",
+      "url": "https://www.amazon.de/-/en/sspa/click?ie=UTF8&spc=MToyMzA4MTExMjg4MDY3MTc6MTc3MDUwNTU3OTpzcF9tdGY6MzAwNjk4NjE2MzI5MTMyOjowOjo&url=%2FTORRAS-Guardian-Mag-iPhone-17-Scratch-Resistant-black%2Fdp%2FB0FG2DBVCS%2Fref%3Dsr_1_8_sspa%3Fdib%3DeyJ2IjoiMSJ9.uxdFAk24jkJqSEool3EmGxBt-N882rcOVCJITj4oq2AHYRFl1TKvu_zcfW7igMpKxMJnLIaJeeA37Yj1aWB9oRGkP1xxgQ5HOfIUZadYaq-d-IR6dJWemuesVxdbEWYKO_rZT7GvNGGw_9zta_7c-52_RKXrYvjPE2Dz52vt8n62JKqavYp-5WNd7Tya8s85f7i20gs03vokk-oiXkMsql_EoJJCm4dPDFh6_3uK_6I.Edbp7XiywWrpZwlOc04zv3O7ISztq6XnNxZIX0gKmLM%26dib_tag%3Dse%26keywords%3Diphone%2B17%26qid%3D1770505579%26sr%3D8-8-spons%26aref%3D9HJStzMLSL%26sp_csd%3Dd2lkZ2V0TmFtZT1zcF9tdGY%26psc%3D1&aref=9HJStzMLSL&sp_cr=DUB",
+      "source": "Amazon",
+      "thumbnail": "https://m.media-amazon.com/images/I/81U4RZx3-bL._AC_UY218_.jpg",
+      "price_text": "€25.99",
+      "price_value": 25.99,
+      "rating": 4.6,
+      "reviews": 39100,
+      "delivery_text": "FREE delivery Wed 11 Feb on eligible first order; Or fastest delivery Tue 10 Feb",
+      "delivery_days": 1,
+      "in_stock": null
+    },
+    {
+      "title": "Case for iPhone 17 6.3 Inch 5G 2025, Leather Mobile Phone Case [Cowhide Leather] [Card Slot] [Stand] [RFID Blocker] [Magnetic Closure] [Mobile Phone Eyelets] TPU Shockproof Protective Case",
+      "url": "https://www.amazon.de/-/en/sspa/click?ie=UTF8&spc=MToyMzA4MTExMjg4MDY3MTc6MTc3MDUwNTU3OTpzcF9tdGY6MzAwODE5ODIxNzk0NzMyOjowOjo&url=%2FSHIELDON-Leather-Magnetic-Shockproof-Protective-Retro-light-brown%2Fdp%2FB0FG7QQY8C%2Fref%3Dsr_1_9_sspa%3Fdib%3DeyJ2IjoiMSJ9.uxdFAk24jkJqSEool3EmGxBt-N882rcOVCJITj4oq2AHYRFl1TKvu_zcfW7igMpKxMJnLIaJeeA37Yj1aWB9oRGkP1xxgQ5HOfIUZadYaq-d-IR6dJWemuesVxdbEWYKO_rZT7GvNGGw_9zta_7c-52_RKXrYvjPE2Dz52vt8n62JKqavYp-5WNd7Tya8s85f7i20gs03vokk-oiXkMsql_EoJJCm4dPDFh6_3uK_6I.Edbp7XiywWrpZwlOc04zv3O7ISztq6XnNxZIX0gKmLM%26dib_tag%3Dse%26keywords%3Diphone%2B17%26qid%3D1770505579%26sr%3D8-9-spons%26aref%3DMEV1Ocf6BT%26sp_csd%3Dd2lkZ2V0TmFtZT1zcF9tdGY%26psc%3D1&aref=MEV1Ocf6BT&sp_cr=DUB",
+      "source": "Amazon",
+      "thumbnail": "https://m.media-amazon.com/images/I/81f2SfzPcTL._AC_UY218_.jpg",
+      "price_text": "€30.99",
+      "price_value": 30.99,
+      "rating": 4.7,
+      "reviews": 352,
+      "delivery_text": "FREE delivery Wed 11 Feb on eligible first order; Or fastest delivery Tue 10 Feb",
+      "delivery_days": 5,
+      "in_stock": null
+    },
+    {
+      "title": "iPhone 17 Pro 512 GB: 6.3 Inch Display with ProMotion up to 120 Hz, A19 Pro Chip, Breakthrough Battery Life, Pro Fusion Camera System with Centre Stage Front Camera; Silver",
+      "url": "https://www.amazon.de/-/en/Apple-iPhone-Pro-512-Breakthrough/dp/B0FQFMRYFD/ref=sr_1_10?dib=eyJ2IjoiMSJ9.uxdFAk24jkJqSEool3EmGxBt-N882rcOVCJITj4oq2AHYRFl1TKvu_zcfW7igMpKxMJnLIaJeeA37Yj1aWB9oRGkP1xxgQ5HOfIUZadYaq-d-IR6dJWemuesVxdbEWYKO_rZT7GvNGGw_9zta_7c-52_RKXrYvjPE2Dz52vt8n62JKqavYp-5WNd7Tya8s85f7i20gs03vokk-oiXkMsql_EoJJCm4dPDFh6_3uK_6I.Edbp7XiywWrpZwlOc04zv3O7ISztq6XnNxZIX0gKmLM&dib_tag=se&keywords=iphone+17&qid=1770505579&sr=8-10",
+      "source": "Amazon",
+      "thumbnail": "https://m.media-amazon.com/images/I/617b0iQyo9L._AC_UY218_.jpg",
+      "price_text": "€1,459.00",
+      "price_value": 1459.0,
+      "rating": 4.5,
+      "reviews": 762,
+      "delivery_text": "FREE delivery Wed 11 Feb; Or fastest delivery Tue 10 Feb",
+      "delivery_days": 3,
+      "in_stock": null
+    }
+  ],
+  "raw": {
+    "search_metadata": {
+      "id": "6987c56aa0cb108ca0bc0894",
+      "status": "Success",
+      "json_endpoint": "https://serpapi.com/searches/QfAJGTJMcdcSbLv9u1BHpw/6987c56aa0cb108ca0bc0894.json",
+      "created_at": "2026-02-07 23:06:18 UTC",
+      "processed_at": "2026-02-07 23:06:18 UTC",
+      "amazon_url": "https://www.amazon.de/s?k=iphone+17&language=en_GB",
+      "raw_html_file": "https://serpapi.com/searches/QfAJGTJMcdcSbLv9u1BHpw/6987c56aa0cb108ca0bc0894.html",
+      "total_time_taken": 1.25
+    },
+    "search_parameters": {
+      "engine": "amazon",
+      "k": "iphone 17",
+      "amazon_domain": "amazon.de",
+      "language": "en_GB",
+      "device": "desktop"
+    },
+    "search_information": {
+      "total_results": 562,
+      "query_displayed": "iphone 17",
+      "store": "gateway",
+      "page": 1
+    },
+    "organic_results": [
+      {
+        "position": 1,
+        "asin": "B0FQG92W6D",
+        "sponsored": true,
+        "options": "2 sizes",
+        "options_link": "https://www.amazon.de/-/en/sspa/click?ie=UTF8&spc=MToyMzA4MTExMjg4MDY3MTc6MTc3MDUwNTU3OTpzcF9hdGY6MzAwNzE0Mjk3NjYyNzMyOjowOjo&url=%2FApple-iPhone-256-ProMotion-Resistance%2Fdp%2FB0FQG92W6D%2Fref%3Dsr_1_1_sspa_vo_sr_l_dp%3Fdib%3DeyJ2IjoiMSJ9.uxdFAk24jkJqSEool3EmGxBt-N882rcOVCJITj4oq2AHYRFl1TKvu_zcfW7igMpKxMJnLIaJeeA37Yj1aWB9oRGkP1xxgQ5HOfIUZadYaq-d-IR6dJWemuesVxdbEWYKO_rZT7GvNGGw_9zta_7c-52_RKXrYvjPE2Dz52vt8n62JKqavYp-5WNd7Tya8s85f7i20gs03vokk-oiXkMsql_EoJJCm4dPDFh6_3uK_6I.Edbp7XiywWrpZwlOc04zv3O7ISztq6XnNxZIX0gKmLM%26dib_tag%3Dse%26keywords%3Diphone%2B17%26qid%3D1770505579%26sr%3D8-1-spons%26aref%3D5NvUYAFNEQ%26sp_csd%3Dd2lkZ2V0TmFtZT1zcF9hdGY%26psc%3D1&aref=5NvUYAFNEQ&sp_cr=DUB",
+        "variants": {
+          "more_variants": "+4 other colours/patterns",
+          "more_variants_link": "https://www.amazon.de/-/en/sspa/click?ie=UTF8&spc=MToyMzA4MTExMjg4MDY3MTc6MTc3MDUwNTU3OTpzcF9hdGY6MzAwNzE0Mjk3NjYyNzMyOjowOjo&url=%2FApple-iPhone-256-ProMotion-Resistance%2Fdp%2FB0FQG92W6D%2Fref%3Dsr_1_1_sspa%3Fdib%3DeyJ2IjoiMSJ9.uxdFAk24jkJqSEool3EmGxBt-N882rcOVCJITj4oq2AHYRFl1TKvu_zcfW7igMpKxMJnLIaJeeA37Yj1aWB9oRGkP1xxgQ5HOfIUZadYaq-d-IR6dJWemuesVxdbEWYKO_rZT7GvNGGw_9zta_7c-52_RKXrYvjPE2Dz52vt8n62JKqavYp-5WNd7Tya8s85f7i20gs03vokk-oiXkMsql_EoJJCm4dPDFh6_3uK_6I.Edbp7XiywWrpZwlOc04zv3O7ISztq6XnNxZIX0gKmLM%26dib_tag%3Dse%26keywords%3Diphone%2B17%26qid%3D1770505579%26sr%3D8-1-spons%26aref%3D5NvUYAFNEQ%26sp_csd%3Dd2lkZ2V0TmFtZT1zcF9hdGY%26psc%3D1&aref=5NvUYAFNEQ&sp_cr=DUB"
+        },
+        "brand": "Apple",
+        "title": "iPhone 17 256 GB: 6.3 Inch Display with ProMotion, A19 Chip, Centre Stage Front Camera for Smart Group Selfies, Improved Scratch Resistance, Battery for the All Day; White",
+        "link": "https://www.amazon.de/-/en/sspa/click?ie=UTF8&spc=MToyMzA4MTExMjg4MDY3MTc6MTc3MDUwNTU3OTpzcF9hdGY6MzAwNzE0Mjk3NjYyNzMyOjowOjo&url=%2FApple-iPhone-256-ProMotion-Resistance%2Fdp%2FB0FQG92W6D%2Fref%3Dsr_1_1_sspa%3Fdib%3DeyJ2IjoiMSJ9.uxdFAk24jkJqSEool3EmGxBt-N882rcOVCJITj4oq2AHYRFl1TKvu_zcfW7igMpKxMJnLIaJeeA37Yj1aWB9oRGkP1xxgQ5HOfIUZadYaq-d-IR6dJWemuesVxdbEWYKO_rZT7GvNGGw_9zta_7c-52_RKXrYvjPE2Dz52vt8n62JKqavYp-5WNd7Tya8s85f7i20gs03vokk-oiXkMsql_EoJJCm4dPDFh6_3uK_6I.Edbp7XiywWrpZwlOc04zv3O7ISztq6XnNxZIX0gKmLM%26dib_tag%3Dse%26keywords%3Diphone%2B17%26qid%3D1770505579%26sr%3D8-1-spons%26aref%3D5NvUYAFNEQ%26sp_csd%3Dd2lkZ2V0TmFtZT1zcF9hdGY%26psc%3D1&aref=5NvUYAFNEQ&sp_cr=DUB",
+        "link_clean": "https://www.amazon.de/dp/B0FQG92W6D/",
+        "serpapi_link": "https://serpapi.com/search.json?amazon_domain=amazon.de&asin=B0FQG92W6D&device=desktop&engine=amazon_product&language=en_GB",
+        "thumbnail": "https://m.media-amazon.com/images/I/61+-vYgxshL._AC_UY218_.jpg",
+        "rating": 4.7,
+        "reviews": 515,
+        "bought_last_month": "500+ bought in past month",
+        "price": "€898.90",
+        "extracted_price": 898.9,
+        "old_price": "€949.00",
+        "extracted_old_price": 949.0,
+        "offers": [
+          "Get 60 days of Audible free"
+        ],
+        "specs": {
+          "operating_system": "iOS",
+          "display_size": "6.3 inches",
+          "capacity": "256 GB",
+          "optical_sensor_resolution": "-"
+        },
+        "delivery": [
+          "FREE delivery Wed 11 Feb",
+          "Or fastest delivery Tue 10 Feb"
+        ],
+        "climate_pledge_friendly": true,
+        "sustainability_features": [
+          {
+            "position": 1,
+            "name": "Energy efficiency",
+            "snippet": "Conserves energy compared to similar products.",
+            "thumbnail": "https://m.media-amazon.com/images/I/31A2GobGL-L._SS200_.png",
+            "certified_by": "Energy Label",
+            "certified_info": "EU Energy Label provides an indication of a product's energy efficiency and can also give specific data about other relevant features of usage, such as the product's noise emissions or water consumption. This makes it easier for consumers to save money on their household energy bills and contributes to reducing greenhouse gas emissions across the EU and UK. Climate Pledge Friendly is highlighting EU and UK energy label ratings of A, B, and C on the A-G scale only to identify the products which are rated more energy efficient than others."
+          }
+        ]
+      },
+      {
+        "position": 2,
+        "asin": "B0FQGG53WL",
+        "sponsored": true,
+        "options": "3 sizes",
+        "options_link": "https://www.amazon.de/-/en/sspa/click?ie=UTF8&spc=MToyMzA4MTExMjg4MDY3MTc6MTc3MDUwNTU3OTpzcF9hdGY6MzAwNzE0Mjk3NjYyODMyOjowOjo&url=%2FApple-iPhone-Pro-256-Breakthrough%2Fdp%2FB0FQGG53WL%2Fref%3Dsr_1_2_sspa_vo_sr_l_dp%3Fdib%3DeyJ2IjoiMSJ9.uxdFAk24jkJqSEool3EmGxBt-N882rcOVCJITj4oq2AHYRFl1TKvu_zcfW7igMpKxMJnLIaJeeA37Yj1aWB9oRGkP1xxgQ5HOfIUZadYaq-d-IR6dJWemuesVxdbEWYKO_rZT7GvNGGw_9zta_7c-52_RKXrYvjPE2Dz52vt8n62JKqavYp-5WNd7Tya8s85f7i20gs03vokk-oiXkMsql_EoJJCm4dPDFh6_3uK_6I.Edbp7XiywWrpZwlOc04zv3O7ISztq6XnNxZIX0gKmLM%26dib_tag%3Dse%26keywords%3Diphone%2B17%26qid%3D1770505579%26sr%3D8-2-spons%26aref%3D4binyTNJNM%26sp_csd%3Dd2lkZ2V0TmFtZT1zcF9hdGY%26psc%3D1&aref=4binyTNJNM&sp_cr=DUB",
+        "variants": {
+          "more_variants": "+2 other colours/patterns",
+          "more_variants_link": "https://www.amazon.de/-/en/sspa/click?ie=UTF8&spc=MToyMzA4MTExMjg4MDY3MTc6MTc3MDUwNTU3OTpzcF9hdGY6MzAwNzE0Mjk3NjYyODMyOjowOjo&url=%2FApple-iPhone-Pro-256-Breakthrough%2Fdp%2FB0FQGG53WL%2Fref%3Dsr_1_2_sspa%3Fdib%3DeyJ2IjoiMSJ9.uxdFAk24jkJqSEool3EmGxBt-N882rcOVCJITj4oq2AHYRFl1TKvu_zcfW7igMpKxMJnLIaJeeA37Yj1aWB9oRGkP1xxgQ5HOfIUZadYaq-d-IR6dJWemuesVxdbEWYKO_rZT7GvNGGw_9zta_7c-52_RKXrYvjPE2Dz52vt8n62JKqavYp-5WNd7Tya8s85f7i20gs03vokk-oiXkMsql_EoJJCm4dPDFh6_3uK_6I.Edbp7XiywWrpZwlOc04zv3O7ISztq6XnNxZIX0gKmLM%26dib_tag%3Dse%26keywords%3Diphone%2B17%26qid%3D1770505579%26sr%3D8-2-spons%26aref%3D4binyTNJNM%26sp_csd%3Dd2lkZ2V0TmFtZT1zcF9hdGY%26psc%3D1&aref=4binyTNJNM&sp_cr=DUB"
+        },
+        "brand": "Apple",
+        "title": "iPhone 17 Pro 256 GB: 6.3 Inch Display with ProMotion up to 120 Hz, A19 Pro Chip, Breakthrough Battery Life, Pro Fusion Camera System with Centre Stage Front Camera; Cosmic Orange",
+        "link": "https://www.amazon.de/-/en/sspa/click?ie=UTF8&spc=MToyMzA4MTExMjg4MDY3MTc6MTc3MDUwNTU3OTpzcF9hdGY6MzAwNzE0Mjk3NjYyODMyOjowOjo&url=%2FApple-iPhone-Pro-256-Breakthrough%2Fdp%2FB0FQGG53WL%2Fref%3Dsr_1_2_sspa%3Fdib%3DeyJ2IjoiMSJ9.uxdFAk24jkJqSEool3EmGxBt-N882rcOVCJITj4oq2AHYRFl1TKvu_zcfW7igMpKxMJnLIaJeeA37Yj1aWB9oRGkP1xxgQ5HOfIUZadYaq-d-IR6dJWemuesVxdbEWYKO_rZT7GvNGGw_9zta_7c-52_RKXrYvjPE2Dz52vt8n62JKqavYp-5WNd7Tya8s85f7i20gs03vokk-oiXkMsql_EoJJCm4dPDFh6_3uK_6I.Edbp7XiywWrpZwlOc04zv3O7ISztq6XnNxZIX0gKmLM%26dib_tag%3Dse%26keywords%3Diphone%2B17%26qid%3D1770505579%26sr%3D8-2-spons%26aref%3D4binyTNJNM%26sp_csd%3Dd2lkZ2V0TmFtZT1zcF9hdGY%26psc%3D1&aref=4binyTNJNM&sp_cr=DUB",
+        "link_clean": "https://www.amazon.de/dp/B0FQGG53WL/",
+        "serpapi_link": "https://serpapi.com/search.json?amazon_domain=amazon.de&asin=B0FQGG53WL&device=desktop&engine=amazon_product&language=en_GB",
+        "thumbnail": "https://m.media-amazon.com/images/I/71cdtM6hgmL._AC_UY218_.jpg",
+        "rating": 4.5,
+        "reviews": 762,
+        "bought_last_month": "500+ bought in past month",
+        "price": "€1,252.90",
+        "extracted_price": 1252.9,
+        "old_price": "€1,299.00",
+        "extracted_old_price": 1299.0,
+        "offers": [
+          "Get 60 days of Audible free"
+        ],
+        "specs": {
+          "operating_system": "iOS",
+          "display_size": "6.3 inches",
+          "capacity": "256 GB",
+          "optical_sensor_resolution": "-"
+        },
+        "delivery": [
+          "FREE delivery Wed 11 Feb",
+          "Or fastest delivery Tue 10 Feb"
+        ],
+        "climate_pledge_friendly": true,
+        "sustainability_features": [
+          {
+            "position": 1,
+            "name": "Energy efficiency",
+            "snippet": "Conserves energy compared to similar products.",
+            "thumbnail": "https://m.media-amazon.com/images/I/31A2GobGL-L._SS200_.png",
+            "certified_by": "Energy Label",
+            "certified_info": "EU Energy Label provides an indication of a product's energy efficiency and can also give specific data about other relevant features of usage, such as the product's noise emissions or water consumption. This makes it easier for consumers to save money on their household energy bills and contributes to reducing greenhouse gas emissions across the EU and UK. Climate Pledge Friendly is highlighting EU and UK energy label ratings of A, B, and C on the A-G scale only to identify the products which are rated more energy efficient than others."
+          }
+        ]
+      },
+      {
+        "position": 3,
+        "asin": "B0FQG944KG",
+        "sponsored": true,
+        "options": "3 sizes",
+        "options_link": "https://www.amazon.de/-/en/sspa/click?ie=UTF8&spc=MToyMzA4MTExMjg4MDY3MTc6MTc3MDUwNTU3OTpzcF9hdGY6MzAwNzE0Mjk3NjYzNjMyOjowOjo&url=%2FApple-iPhone-Air-256-ProMotion%2Fdp%2FB0FQG944KG%2Fref%3Dsr_1_3_sspa_vo_sr_l_dp%3Fdib%3DeyJ2IjoiMSJ9.uxdFAk24jkJqSEool3EmGxBt-N882rcOVCJITj4oq2AHYRFl1TKvu_zcfW7igMpKxMJnLIaJeeA37Yj1aWB9oRGkP1xxgQ5HOfIUZadYaq-d-IR6dJWemuesVxdbEWYKO_rZT7GvNGGw_9zta_7c-52_RKXrYvjPE2Dz52vt8n62JKqavYp-5WNd7Tya8s85f7i20gs03vokk-oiXkMsql_EoJJCm4dPDFh6_3uK_6I.Edbp7XiywWrpZwlOc04zv3O7ISztq6XnNxZIX0gKmLM%26dib_tag%3Dse%26keywords%3Diphone%2B17%26qid%3D1770505579%26sr%3D8-3-spons%26aref%3DLpdHPgMYl4%26sp_csd%3Dd2lkZ2V0TmFtZT1zcF9hdGY%26psc%3D1&aref=LpdHPgMYl4&sp_cr=DUB",
+        "variants": {
+          "more_variants": "+3 other colours/patterns",
+          "more_variants_link": "https://www.amazon.de/-/en/sspa/click?ie=UTF8&spc=MToyMzA4MTExMjg4MDY3MTc6MTc3MDUwNTU3OTpzcF9hdGY6MzAwNzE0Mjk3NjYzNjMyOjowOjo&url=%2FApple-iPhone-Air-256-ProMotion%2Fdp%2FB0FQG944KG%2Fref%3Dsr_1_3_sspa%3Fdib%3DeyJ2IjoiMSJ9.uxdFAk24jkJqSEool3EmGxBt-N882rcOVCJITj4oq2AHYRFl1TKvu_zcfW7igMpKxMJnLIaJeeA37Yj1aWB9oRGkP1xxgQ5HOfIUZadYaq-d-IR6dJWemuesVxdbEWYKO_rZT7GvNGGw_9zta_7c-52_RKXrYvjPE2Dz52vt8n62JKqavYp-5WNd7Tya8s85f7i20gs03vokk-oiXkMsql_EoJJCm4dPDFh6_3uK_6I.Edbp7XiywWrpZwlOc04zv3O7ISztq6XnNxZIX0gKmLM%26dib_tag%3Dse%26keywords%3Diphone%2B17%26qid%3D1770505579%26sr%3D8-3-spons%26aref%3DLpdHPgMYl4%26sp_csd%3Dd2lkZ2V0TmFtZT1zcF9hdGY%26psc%3D1&aref=LpdHPgMYl4&sp_cr=DUB"
+        },
+        "brand": "Apple",
+        "title": "iPhone Air 256 GB: Thinnest iPhone Ever, 6.5 Inch Display with ProMotion up to 120 Hz, Strong A19 Pro Chip, Centre Stage Front Camera, Battery for All Day, eSim; Space Black",
+        "link": "https://www.amazon.de/-/en/sspa/click?ie=UTF8&spc=MToyMzA4MTExMjg4MDY3MTc6MTc3MDUwNTU3OTpzcF9hdGY6MzAwNzE0Mjk3NjYzNjMyOjowOjo&url=%2FApple-iPhone-Air-256-ProMotion%2Fdp%2FB0FQG944KG%2Fref%3Dsr_1_3_sspa%3Fdib%3DeyJ2IjoiMSJ9.uxdFAk24jkJqSEool3EmGxBt-N882rcOVCJITj4oq2AHYRFl1TKvu_zcfW7igMpKxMJnLIaJeeA37Yj1aWB9oRGkP1xxgQ5HOfIUZadYaq-d-IR6dJWemuesVxdbEWYKO_rZT7GvNGGw_9zta_7c-52_RKXrYvjPE2Dz52vt8n62JKqavYp-5WNd7Tya8s85f7i20gs03vokk-oiXkMsql_EoJJCm4dPDFh6_3uK_6I.Edbp7XiywWrpZwlOc04zv3O7ISztq6XnNxZIX0gKmLM%26dib_tag%3Dse%26keywords%3Diphone%2B17%26qid%3D1770505579%26sr%3D8-3-spons%26aref%3DLpdHPgMYl4%26sp_csd%3Dd2lkZ2V0TmFtZT1zcF9hdGY%26psc%3D1&aref=LpdHPgMYl4&sp_cr=DUB",
+        "link_clean": "https://www.amazon.de/dp/B0FQG944KG/",
+        "serpapi_link": "https://serpapi.com/search.json?amazon_domain=amazon.de&asin=B0FQG944KG&device=desktop&engine=amazon_product&language=en_GB",
+        "thumbnail": "https://m.media-amazon.com/images/I/61l9SovyFUL._AC_UY218_.jpg",
+        "rating": 4.6,
+        "reviews": 275,
+        "price": "€899.00",
+        "extracted_price": 899.0,
+        "old_price": "€1,199.00",
+        "extracted_old_price": 1199.0,
+        "offers": [
+          "Get 60 days of Audible free"
+        ],
+        "specs": {
+          "operating_system": "iOS",
+          "display_size": "6.5 inches",
+          "capacity": "256 GB",
+          "optical_sensor_resolution": "-"
+        },
+        "delivery": [
+          "FREE delivery Wed 11 Feb",
+          "Or fastest delivery Tue 10 Feb"
+        ],
+        "climate_pledge_friendly": true,
+        "sustainability_features": [
+          {
+            "position": 1,
+            "name": "Energy efficiency",
+            "snippet": "Conserves energy compared to similar products.",
+            "thumbnail": "https://m.media-amazon.com/images/I/31A2GobGL-L._SS200_.png",
+            "certified_by": "Energy Label",
+            "certified_info": "EU Energy Label provides an indication of a product's energy efficiency and can also give specific data about other relevant features of usage, such as the product's noise emissions or water consumption. This makes it easier for consumers to save money on their household energy bills and contributes to reducing greenhouse gas emissions across the EU and UK. Climate Pledge Friendly is highlighting EU and UK energy label ratings of A, B, and C on the A-G scale only to identify the products which are rated more energy efficient than others."
+          }
+        ]
+      },
+      {
+        "position": 4,
+        "asin": "B0FQFJVJBQ",
+        "options": "2 sizes",
+        "options_link": "https://www.amazon.de/-/en/Apple-iPhone-256-ProMotion-Resistance/dp/B0FQFJVJBQ/ref=vo_sr_l_dp?dib=eyJ2IjoiMSJ9.uxdFAk24jkJqSEool3EmGxBt-N882rcOVCJITj4oq2AHYRFl1TKvu_zcfW7igMpKxMJnLIaJeeA37Yj1aWB9oRGkP1xxgQ5HOfIUZadYaq-d-IR6dJWemuesVxdbEWYKO_rZT7GvNGGw_9zta_7c-52_RKXrYvjPE2Dz52vt8n62JKqavYp-5WNd7Tya8s85f7i20gs03vokk-oiXkMsql_EoJJCm4dPDFh6_3uK_6I.Edbp7XiywWrpZwlOc04zv3O7ISztq6XnNxZIX0gKmLM&dib_tag=se&keywords=iphone+17&qid=1770505579&sr=8-4",
+        "variants": {
+          "options": [
+            {
+              "position": 1,
+              "asin": "B0FQFJVJBQ",
+              "title": "black",
+              "link": "https://www.amazon.de/-/en/Apple-iPhone-256-ProMotion-Resistance/dp/B0FQFJVJBQ/ref=cs_sr_dp_1?dib=eyJ2IjoiMSJ9.uxdFAk24jkJqSEool3EmGxBt-N882rcOVCJITj4oq2AHYRFl1TKvu_zcfW7igMpKxMJnLIaJeeA37Yj1aWB9oRGkP1xxgQ5HOfIUZadYaq-d-IR6dJWemuesVxdbEWYKO_rZT7GvNGGw_9zta_7c-52_RKXrYvjPE2Dz52vt8n62JKqavYp-5WNd7Tya8s85f7i20gs03vokk-oiXkMsql_EoJJCm4dPDFh6_3uK_6I.Edbp7XiywWrpZwlOc04zv3O7ISztq6XnNxZIX0gKmLM&dib_tag=se&keywords=iphone+17&qid=1770505579&sr=8-4"
+            },
+            {
+              "position": 2,
+              "asin": "B0FQFBGYR7",
+              "title": "lavender",
+              "link": "https://www.amazon.de/-/en/Apple-iPhone-256-ProMotion-Resistance/dp/B0FQFBGYR7/ref=cs_sr_dp_2?dib=eyJ2IjoiMSJ9.uxdFAk24jkJqSEool3EmGxBt-N882rcOVCJITj4oq2AHYRFl1TKvu_zcfW7igMpKxMJnLIaJeeA37Yj1aWB9oRGkP1xxgQ5HOfIUZadYaq-d-IR6dJWemuesVxdbEWYKO_rZT7GvNGGw_9zta_7c-52_RKXrYvjPE2Dz52vt8n62JKqavYp-5WNd7Tya8s85f7i20gs03vokk-oiXkMsql_EoJJCm4dPDFh6_3uK_6I.Edbp7XiywWrpZwlOc04zv3O7ISztq6XnNxZIX0gKmLM&dib_tag=se&keywords=iphone+17&qid=1770505579&sr=8-4"
+            },
+            {
+              "position": 3,
+              "asin": "B0FQFGMW6V",
+              "title": "Mist Blue",
+              "link": "https://www.amazon.de/Apple-iPhone-256-ProMotion-Resistance/dp/B0FQFGMW6V/ref=cs_sr_dp_3?dib=eyJ2IjoiMSJ9.uxdFAk24jkJqSEool3EmGxBt-N882rcOVCJITj4oq2AHYRFl1TKvu_zcfW7igMpKxMJnLIaJeeA37Yj1aWB9oRGkP1xxgQ5HOfIUZadYaq-d-IR6dJWemuesVxdbEWYKO_rZT7GvNGGw_9zta_7c-52_RKXrYvjPE2Dz52vt8n62JKqavYp-5WNd7Tya8s85f7i20gs03vokk-oiXkMsql_EoJJCm4dPDFh6_3uK_6I.Edbp7XiywWrpZwlOc04zv3O7ISztq6XnNxZIX0gKmLM&dib_tag=se&keywords=iphone+17&qid=1770505579&sr=8-4"
+            },
+            {
+              "position": 4,
+              "asin": "B0FQFV53HP",
+              "title": "Green (sage)",
+              "link": "https://www.amazon.de/-/en/Apple-iPhone-256-ProMotion-Resistance/dp/B0FQFV53HP/ref=cs_sr_dp_4?dib=eyJ2IjoiMSJ9.uxdFAk24jkJqSEool3EmGxBt-N882rcOVCJITj4oq2AHYRFl1TKvu_zcfW7igMpKxMJnLIaJeeA37Yj1aWB9oRGkP1xxgQ5HOfIUZadYaq-d-IR6dJWemuesVxdbEWYKO_rZT7GvNGGw_9zta_7c-52_RKXrYvjPE2Dz52vt8n62JKqavYp-5WNd7Tya8s85f7i20gs03vokk-oiXkMsql_EoJJCm4dPDFh6_3uK_6I.Edbp7XiywWrpZwlOc04zv3O7ISztq6XnNxZIX0gKmLM&dib_tag=se&keywords=iphone+17&qid=1770505579&sr=8-4"
+            },
+            {
+              "position": 5,
+              "asin": "B0FQG92W6D",
+              "title": "White",
+              "link": "https://www.amazon.de/-/en/Apple-iPhone-256-ProMotion-Resistance/dp/B0FQG92W6D/ref=cs_sr_dp_5?dib=eyJ2IjoiMSJ9.uxdFAk24jkJqSEool3EmGxBt-N882rcOVCJITj4oq2AHYRFl1TKvu_zcfW7igMpKxMJnLIaJeeA37Yj1aWB9oRGkP1xxgQ5HOfIUZadYaq-d-IR6dJWemuesVxdbEWYKO_rZT7GvNGGw_9zta_7c-52_RKXrYvjPE2Dz52vt8n62JKqavYp-5WNd7Tya8s85f7i20gs03vokk-oiXkMsql_EoJJCm4dPDFh6_3uK_6I.Edbp7XiywWrpZwlOc04zv3O7ISztq6XnNxZIX0gKmLM&dib_tag=se&keywords=iphone+17&qid=1770505579&sr=8-4"
+            }
+          ]
+        },
+        "brand": "Apple",
+        "title": "iPhone 17 256 GB: 6.3 Inch Display with ProMotion, A19 Chip, Centre Stage Front Camera for Smart Group Selfies, Improved Scratch Resistance, Battery for the All Day, Black",
+        "link": "https://www.amazon.de/-/en/Apple-iPhone-256-ProMotion-Resistance/dp/B0FQFJVJBQ/ref=sr_1_4?dib=eyJ2IjoiMSJ9.uxdFAk24jkJqSEool3EmGxBt-N882rcOVCJITj4oq2AHYRFl1TKvu_zcfW7igMpKxMJnLIaJeeA37Yj1aWB9oRGkP1xxgQ5HOfIUZadYaq-d-IR6dJWemuesVxdbEWYKO_rZT7GvNGGw_9zta_7c-52_RKXrYvjPE2Dz52vt8n62JKqavYp-5WNd7Tya8s85f7i20gs03vokk-oiXkMsql_EoJJCm4dPDFh6_3uK_6I.Edbp7XiywWrpZwlOc04zv3O7ISztq6XnNxZIX0gKmLM&dib_tag=se&keywords=iphone+17&qid=1770505579&sr=8-4",
+        "link_clean": "https://www.amazon.de/-/en/Apple-iPhone-256-ProMotion-Resistance/dp/B0FQFJVJBQ/",
+        "serpapi_link": "https://serpapi.com/search.json?amazon_domain=amazon.de&asin=B0FQFJVJBQ&device=desktop&engine=amazon_product&language=en_GB",
+        "thumbnail": "https://m.media-amazon.com/images/I/61X5FknDWuL._AC_UY218_.jpg",
+        "rating": 4.7,
+        "reviews": 515,
+        "bought_last_month": "3K+ bought in past month",
+        "no_featured_offers_available": true,
+        "specs": {
+          "operating_system": "iOS",
+          "display_size": "6.3 inches",
+          "capacity": "256 GB",
+          "optical_sensor_resolution": "-"
+        },
+        "more_buying_choices": "€919.56 (2 used & new offers)",
+        "more_buying_choices_link": "https://www.amazon.de/-/en/gp/offer-listing/B0FQFJVJBQ/ref=sr_1_4_olp?keywords=iphone+17&dib_tag=se&dib=eyJ2IjoiMSJ9.uxdFAk24jkJqSEool3EmGxBt-N882rcOVCJITj4oq2AHYRFl1TKvu_zcfW7igMpKxMJnLIaJeeA37Yj1aWB9oRGkP1xxgQ5HOfIUZadYaq-d-IR6dJWemuesVxdbEWYKO_rZT7GvNGGw_9zta_7c-52_RKXrYvjPE2Dz52vt8n62JKqavYp-5WNd7Tya8s85f7i20gs03vokk-oiXkMsql_EoJJCm4dPDFh6_3uK_6I.Edbp7XiywWrpZwlOc04zv3O7ISztq6XnNxZIX0gKmLM&qid=1770505579&sr=8-4",
+        "climate_pledge_friendly": true,
+        "sustainability_features": [
+          {
+            "position": 1,
+            "name": "Energy efficiency",
+            "snippet": "Conserves energy compared to similar products.",
+            "thumbnail": "https://m.media-amazon.com/images/I/31A2GobGL-L._SS200_.png",
+            "certified_by": "Energy Label",
+            "certified_info": "EU Energy Label provides an indication of a product's energy efficiency and can also give specific data about other relevant features of usage, such as the product's noise emissions or water consumption. This makes it easier for consumers to save money on their household energy bills and contributes to reducing greenhouse gas emissions across the EU and UK. Climate Pledge Friendly is highlighting EU and UK energy label ratings of A, B, and C on the A-G scale only to identify the products which are rated more energy efficient than others."
+          }
+        ]
+      },
+      {
+        "position": 5,
+        "asin": "B0FQFGMW6V",
+        "options": "2 sizes",
+        "options_link": "https://www.amazon.de/-/en/Apple-iPhone-256-ProMotion-Resistance/dp/B0FQFGMW6V/ref=vo_sr_l_dp?dib=eyJ2IjoiMSJ9.uxdFAk24jkJqSEool3EmGxBt-N882rcOVCJITj4oq2AHYRFl1TKvu_zcfW7igMpKxMJnLIaJeeA37Yj1aWB9oRGkP1xxgQ5HOfIUZadYaq-d-IR6dJWemuesVxdbEWYKO_rZT7GvNGGw_9zta_7c-52_RKXrYvjPE2Dz52vt8n62JKqavYp-5WNd7Tya8s85f7i20gs03vokk-oiXkMsql_EoJJCm4dPDFh6_3uK_6I.Edbp7XiywWrpZwlOc04zv3O7ISztq6XnNxZIX0gKmLM&dib_tag=se&keywords=iphone+17&qid=1770505579&sr=8-5",
+        "badges": [
+          "Amazon's Choice for \"iphone 17\""
+        ],
+        "variants": {
+          "options": [
+            {
+              "position": 1,
+              "asin": "B0FQFGMW6V",
+              "title": "Mist Blue",
+              "link": "https://www.amazon.de/-/en/Apple-iPhone-256-ProMotion-Resistance/dp/B0FQFGMW6V/ref=cs_sr_dp_1?dib=eyJ2IjoiMSJ9.uxdFAk24jkJqSEool3EmGxBt-N882rcOVCJITj4oq2AHYRFl1TKvu_zcfW7igMpKxMJnLIaJeeA37Yj1aWB9oRGkP1xxgQ5HOfIUZadYaq-d-IR6dJWemuesVxdbEWYKO_rZT7GvNGGw_9zta_7c-52_RKXrYvjPE2Dz52vt8n62JKqavYp-5WNd7Tya8s85f7i20gs03vokk-oiXkMsql_EoJJCm4dPDFh6_3uK_6I.Edbp7XiywWrpZwlOc04zv3O7ISztq6XnNxZIX0gKmLM&dib_tag=se&keywords=iphone+17&qid=1770505579&sr=8-5"
+            },
+            {
+              "position": 2,
+              "asin": "B0FQFBGYR7",
+              "title": "lavender",
+              "link": "https://www.amazon.de/-/en/Apple-iPhone-256-ProMotion-Resistance/dp/B0FQFBGYR7/ref=cs_sr_dp_2?dib=eyJ2IjoiMSJ9.uxdFAk24jkJqSEool3EmGxBt-N882rcOVCJITj4oq2AHYRFl1TKvu_zcfW7igMpKxMJnLIaJeeA37Yj1aWB9oRGkP1xxgQ5HOfIUZadYaq-d-IR6dJWemuesVxdbEWYKO_rZT7GvNGGw_9zta_7c-52_RKXrYvjPE2Dz52vt8n62JKqavYp-5WNd7Tya8s85f7i20gs03vokk-oiXkMsql_EoJJCm4dPDFh6_3uK_6I.Edbp7XiywWrpZwlOc04zv3O7ISztq6XnNxZIX0gKmLM&dib_tag=se&keywords=iphone+17&qid=1770505579&sr=8-5"
+            },
+            {
+              "position": 3,
+              "asin": "B0FQFV53HP",
+              "title": "Green (sage)",
+              "link": "https://www.amazon.de/-/en/Apple-iPhone-256-ProMotion-Resistance/dp/B0FQFV53HP/ref=cs_sr_dp_3?dib=eyJ2IjoiMSJ9.uxdFAk24jkJqSEool3EmGxBt-N882rcOVCJITj4oq2AHYRFl1TKvu_zcfW7igMpKxMJnLIaJeeA37Yj1aWB9oRGkP1xxgQ5HOfIUZadYaq-d-IR6dJWemuesVxdbEWYKO_rZT7GvNGGw_9zta_7c-52_RKXrYvjPE2Dz52vt8n62JKqavYp-5WNd7Tya8s85f7i20gs03vokk-oiXkMsql_EoJJCm4dPDFh6_3uK_6I.Edbp7XiywWrpZwlOc04zv3O7ISztq6XnNxZIX0gKmLM&dib_tag=se&keywords=iphone+17&qid=1770505579&sr=8-5"
+            },
+            {
+              "position": 4,
+              "asin": "B0FQFJVJBQ",
+              "title": "black",
+              "link": "https://www.amazon.de/Apple-iPhone-256-ProMotion-Resistance/dp/B0FQFJVJBQ/ref=cs_sr_dp_4?dib=eyJ2IjoiMSJ9.uxdFAk24jkJqSEool3EmGxBt-N882rcOVCJITj4oq2AHYRFl1TKvu_zcfW7igMpKxMJnLIaJeeA37Yj1aWB9oRGkP1xxgQ5HOfIUZadYaq-d-IR6dJWemuesVxdbEWYKO_rZT7GvNGGw_9zta_7c-52_RKXrYvjPE2Dz52vt8n62JKqavYp-5WNd7Tya8s85f7i20gs03vokk-oiXkMsql_EoJJCm4dPDFh6_3uK_6I.Edbp7XiywWrpZwlOc04zv3O7ISztq6XnNxZIX0gKmLM&dib_tag=se&keywords=iphone+17&qid=1770505579&sr=8-5"
+            },
+            {
+              "position": 5,
+              "asin": "B0FQG92W6D",
+              "title": "White",
+              "link": "https://www.amazon.de/-/en/Apple-iPhone-256-ProMotion-Resistance/dp/B0FQG92W6D/ref=cs_sr_dp_5?dib=eyJ2IjoiMSJ9.uxdFAk24jkJqSEool3EmGxBt-N882rcOVCJITj4oq2AHYRFl1TKvu_zcfW7igMpKxMJnLIaJeeA37Yj1aWB9oRGkP1xxgQ5HOfIUZadYaq-d-IR6dJWemuesVxdbEWYKO_rZT7GvNGGw_9zta_7c-52_RKXrYvjPE2Dz52vt8n62JKqavYp-5WNd7Tya8s85f7i20gs03vokk-oiXkMsql_EoJJCm4dPDFh6_3uK_6I.Edbp7XiywWrpZwlOc04zv3O7ISztq6XnNxZIX0gKmLM&dib_tag=se&keywords=iphone+17&qid=1770505579&sr=8-5"
+            }
+          ]
+        },
+        "brand": "Apple",
+        "title": "iPhone 17 256 GB: 6.3 inch Display with ProMotion, A19 Chip, Centre Stage Front Camera for Smart Group Selfies, Improved Scratch Resistance, Battery for the All Day, Fog Blue",
+        "link": "https://www.amazon.de/-/en/Apple-iPhone-256-ProMotion-Resistance/dp/B0FQFGMW6V/ref=sr_1_5?dib=eyJ2IjoiMSJ9.uxdFAk24jkJqSEool3EmGxBt-N882rcOVCJITj4oq2AHYRFl1TKvu_zcfW7igMpKxMJnLIaJeeA37Yj1aWB9oRGkP1xxgQ5HOfIUZadYaq-d-IR6dJWemuesVxdbEWYKO_rZT7GvNGGw_9zta_7c-52_RKXrYvjPE2Dz52vt8n62JKqavYp-5WNd7Tya8s85f7i20gs03vokk-oiXkMsql_EoJJCm4dPDFh6_3uK_6I.Edbp7XiywWrpZwlOc04zv3O7ISztq6XnNxZIX0gKmLM&dib_tag=se&keywords=iphone+17&qid=1770505579&sr=8-5",
+        "link_clean": "https://www.amazon.de/-/en/Apple-iPhone-256-ProMotion-Resistance/dp/B0FQFGMW6V/",
+        "serpapi_link": "https://serpapi.com/search.json?amazon_domain=amazon.de&asin=B0FQFGMW6V&device=desktop&engine=amazon_product&language=en_GB",
+        "thumbnail": "https://m.media-amazon.com/images/I/61Da45h7jCL._AC_UY218_.jpg",
+        "rating": 4.7,
+        "reviews": 515,
+        "bought_last_month": "500+ bought in past month",
+        "price": "€919.00",
+        "extracted_price": 919.0,
+        "old_price": "€949.00",
+        "extracted_old_price": 949.0,
+        "offers": [
+          "Get 60 days of Audible free"
+        ],
+        "specs": {
+          "operating_system": "iOS",
+          "display_size": "6.3 inches",
+          "capacity": "256 GB",
+          "optical_sensor_resolution": "-"
+        },
+        "delivery": [
+          "FREE delivery Wed 11 Feb",
+          "Or fastest delivery Tue 10 Feb"
+        ],
+        "more_buying_choices": "€863.86 (5 used & new offers)",
+        "more_buying_choices_link": "https://www.amazon.de/-/en/gp/offer-listing/B0FQFGMW6V/ref=sr_1_5_olp?keywords=iphone+17&dib_tag=se&dib=eyJ2IjoiMSJ9.uxdFAk24jkJqSEool3EmGxBt-N882rcOVCJITj4oq2AHYRFl1TKvu_zcfW7igMpKxMJnLIaJeeA37Yj1aWB9oRGkP1xxgQ5HOfIUZadYaq-d-IR6dJWemuesVxdbEWYKO_rZT7GvNGGw_9zta_7c-52_RKXrYvjPE2Dz52vt8n62JKqavYp-5WNd7Tya8s85f7i20gs03vokk-oiXkMsql_EoJJCm4dPDFh6_3uK_6I.Edbp7XiywWrpZwlOc04zv3O7ISztq6XnNxZIX0gKmLM&qid=1770505579&sr=8-5",
+        "climate_pledge_friendly": true,
+        "sustainability_features": [
+          {
+            "position": 1,
+            "name": "Energy efficiency",
+            "snippet": "Conserves energy compared to similar products.",
+            "thumbnail": "https://m.media-amazon.com/images/I/31A2GobGL-L._SS200_.png",
+            "certified_by": "Energy Label",
+            "certified_info": "EU Energy Label provides an indication of a product's energy efficiency and can also give specific data about other relevant features of usage, such as the product's noise emissions or water consumption. This makes it easier for consumers to save money on their household energy bills and contributes to reducing greenhouse gas emissions across the EU and UK. Climate Pledge Friendly is highlighting EU and UK energy label ratings of A, B, and C on the A-G scale only to identify the products which are rated more energy efficient than others."
+          }
+        ]
+      },
+      {
+        "position": 6,
+        "asin": "B0FQFBGYR7",
+        "options": "2 sizes",
+        "options_link": "https://www.amazon.de/-/en/Apple-iPhone-256-ProMotion-Resistance/dp/B0FQFBGYR7/ref=vo_sr_l_dp?dib=eyJ2IjoiMSJ9.uxdFAk24jkJqSEool3EmGxBt-N882rcOVCJITj4oq2AHYRFl1TKvu_zcfW7igMpKxMJnLIaJeeA37Yj1aWB9oRGkP1xxgQ5HOfIUZadYaq-d-IR6dJWemuesVxdbEWYKO_rZT7GvNGGw_9zta_7c-52_RKXrYvjPE2Dz52vt8n62JKqavYp-5WNd7Tya8s85f7i20gs03vokk-oiXkMsql_EoJJCm4dPDFh6_3uK_6I.Edbp7XiywWrpZwlOc04zv3O7ISztq6XnNxZIX0gKmLM&dib_tag=se&keywords=iphone+17&qid=1770505579&sr=8-6",
+        "variants": {
+          "options": [
+            {
+              "position": 1,
+              "asin": "B0FQFBGYR7",
+              "title": "lavender",
+              "link": "https://www.amazon.de/-/en/Apple-iPhone-256-ProMotion-Resistance/dp/B0FQFBGYR7/ref=cs_sr_dp_1?dib=eyJ2IjoiMSJ9.uxdFAk24jkJqSEool3EmGxBt-N882rcOVCJITj4oq2AHYRFl1TKvu_zcfW7igMpKxMJnLIaJeeA37Yj1aWB9oRGkP1xxgQ5HOfIUZadYaq-d-IR6dJWemuesVxdbEWYKO_rZT7GvNGGw_9zta_7c-52_RKXrYvjPE2Dz52vt8n62JKqavYp-5WNd7Tya8s85f7i20gs03vokk-oiXkMsql_EoJJCm4dPDFh6_3uK_6I.Edbp7XiywWrpZwlOc04zv3O7ISztq6XnNxZIX0gKmLM&dib_tag=se&keywords=iphone+17&qid=1770505579&sr=8-6"
+            },
+            {
+              "position": 2,
+              "asin": "B0FQFGMW6V",
+              "title": "Mist Blue",
+              "link": "https://www.amazon.de/-/en/Apple-iPhone-256-ProMotion-Resistance/dp/B0FQFGMW6V/ref=cs_sr_dp_2?dib=eyJ2IjoiMSJ9.uxdFAk24jkJqSEool3EmGxBt-N882rcOVCJITj4oq2AHYRFl1TKvu_zcfW7igMpKxMJnLIaJeeA37Yj1aWB9oRGkP1xxgQ5HOfIUZadYaq-d-IR6dJWemuesVxdbEWYKO_rZT7GvNGGw_9zta_7c-52_RKXrYvjPE2Dz52vt8n62JKqavYp-5WNd7Tya8s85f7i20gs03vokk-oiXkMsql_EoJJCm4dPDFh6_3uK_6I.Edbp7XiywWrpZwlOc04zv3O7ISztq6XnNxZIX0gKmLM&dib_tag=se&keywords=iphone+17&qid=1770505579&sr=8-6"
+            },
+            {
+              "position": 3,
+              "asin": "B0FQFV53HP",
+              "title": "Green (sage)",
+              "link": "https://www.amazon.de/-/en/Apple-iPhone-256-ProMotion-Resistance/dp/B0FQFV53HP/ref=cs_sr_dp_3?dib=eyJ2IjoiMSJ9.uxdFAk24jkJqSEool3EmGxBt-N882rcOVCJITj4oq2AHYRFl1TKvu_zcfW7igMpKxMJnLIaJeeA37Yj1aWB9oRGkP1xxgQ5HOfIUZadYaq-d-IR6dJWemuesVxdbEWYKO_rZT7GvNGGw_9zta_7c-52_RKXrYvjPE2Dz52vt8n62JKqavYp-5WNd7Tya8s85f7i20gs03vokk-oiXkMsql_EoJJCm4dPDFh6_3uK_6I.Edbp7XiywWrpZwlOc04zv3O7ISztq6XnNxZIX0gKmLM&dib_tag=se&keywords=iphone+17&qid=1770505579&sr=8-6"
+            },
+            {
+              "position": 4,
+              "asin": "B0FQFJVJBQ",
+              "title": "black",
+              "link": "https://www.amazon.de/-/en/Apple-iPhone-256-ProMotion-Resistance/dp/B0FQFJVJBQ/ref=cs_sr_dp_4?dib=eyJ2IjoiMSJ9.uxdFAk24jkJqSEool3EmGxBt-N882rcOVCJITj4oq2AHYRFl1TKvu_zcfW7igMpKxMJnLIaJeeA37Yj1aWB9oRGkP1xxgQ5HOfIUZadYaq-d-IR6dJWemuesVxdbEWYKO_rZT7GvNGGw_9zta_7c-52_RKXrYvjPE2Dz52vt8n62JKqavYp-5WNd7Tya8s85f7i20gs03vokk-oiXkMsql_EoJJCm4dPDFh6_3uK_6I.Edbp7XiywWrpZwlOc04zv3O7ISztq6XnNxZIX0gKmLM&dib_tag=se&keywords=iphone+17&qid=1770505579&sr=8-6"
+            },
+            {
+              "position": 5,
+              "asin": "B0FQG92W6D",
+              "title": "White",
+              "link": "https://www.amazon.de/-/en/Apple-iPhone-256-ProMotion-Resistance/dp/B0FQG92W6D/ref=cs_sr_dp_5?dib=eyJ2IjoiMSJ9.uxdFAk24jkJqSEool3EmGxBt-N882rcOVCJITj4oq2AHYRFl1TKvu_zcfW7igMpKxMJnLIaJeeA37Yj1aWB9oRGkP1xxgQ5HOfIUZadYaq-d-IR6dJWemuesVxdbEWYKO_rZT7GvNGGw_9zta_7c-52_RKXrYvjPE2Dz52vt8n62JKqavYp-5WNd7Tya8s85f7i20gs03vokk-oiXkMsql_EoJJCm4dPDFh6_3uK_6I.Edbp7XiywWrpZwlOc04zv3O7ISztq6XnNxZIX0gKmLM&dib_tag=se&keywords=iphone+17&qid=1770505579&sr=8-6"
+            }
+          ]
+        },
+        "brand": "Apple",
+        "title": "iPhone 17 256 GB: 6.3 Inch Display with ProMotion, A19 Chip, Centre Stage Front Camera for Smart Group Selfies, Improved Scratch Resistance, Battery for the All Day; Lavender",
+        "link": "https://www.amazon.de/-/en/Apple-iPhone-256-ProMotion-Resistance/dp/B0FQFBGYR7/ref=sr_1_6?dib=eyJ2IjoiMSJ9.uxdFAk24jkJqSEool3EmGxBt-N882rcOVCJITj4oq2AHYRFl1TKvu_zcfW7igMpKxMJnLIaJeeA37Yj1aWB9oRGkP1xxgQ5HOfIUZadYaq-d-IR6dJWemuesVxdbEWYKO_rZT7GvNGGw_9zta_7c-52_RKXrYvjPE2Dz52vt8n62JKqavYp-5WNd7Tya8s85f7i20gs03vokk-oiXkMsql_EoJJCm4dPDFh6_3uK_6I.Edbp7XiywWrpZwlOc04zv3O7ISztq6XnNxZIX0gKmLM&dib_tag=se&keywords=iphone+17&qid=1770505579&sr=8-6",
+        "link_clean": "https://www.amazon.de/-/en/Apple-iPhone-256-ProMotion-Resistance/dp/B0FQFBGYR7/",
+        "serpapi_link": "https://serpapi.com/search.json?amazon_domain=amazon.de&asin=B0FQFBGYR7&device=desktop&engine=amazon_product&language=en_GB",
+        "thumbnail": "https://m.media-amazon.com/images/I/61vNxSF6qeL._AC_UY218_.jpg",
+        "rating": 4.7,
+        "reviews": 515,
+        "bought_last_month": "1K+ bought in past month",
+        "price": "€919.00",
+        "extracted_price": 919.0,
+        "old_price": "€949.00",
+        "extracted_old_price": 949.0,
+        "offers": [
+          "Get 60 days of Audible free"
+        ],
+        "specs": {
+          "operating_system": "iOS",
+          "display_size": "6.3 inches",
+          "capacity": "256 GB",
+          "optical_sensor_resolution": "-"
+        },
+        "delivery": [
+          "FREE delivery Wed 11 Feb",
+          "Or fastest delivery Tue 10 Feb"
+        ],
+        "more_buying_choices": "€900.62 (3 used & new offers)",
+        "more_buying_choices_link": "https://www.amazon.de/gp/offer-listing/B0FQFBGYR7/ref=sr_1_6_olp?keywords=iphone+17&dib_tag=se&dib=eyJ2IjoiMSJ9.uxdFAk24jkJqSEool3EmGxBt-N882rcOVCJITj4oq2AHYRFl1TKvu_zcfW7igMpKxMJnLIaJeeA37Yj1aWB9oRGkP1xxgQ5HOfIUZadYaq-d-IR6dJWemuesVxdbEWYKO_rZT7GvNGGw_9zta_7c-52_RKXrYvjPE2Dz52vt8n62JKqavYp-5WNd7Tya8s85f7i20gs03vokk-oiXkMsql_EoJJCm4dPDFh6_3uK_6I.Edbp7XiywWrpZwlOc04zv3O7ISztq6XnNxZIX0gKmLM&qid=1770505579&sr=8-6",
+        "climate_pledge_friendly": true,
+        "sustainability_features": [
+          {
+            "position": 1,
+            "name": "Energy efficiency",
+            "snippet": "Conserves energy compared to similar products.",
+            "thumbnail": "https://m.media-amazon.com/images/I/31A2GobGL-L._SS200_.png",
+            "certified_by": "Energy Label",
+            "certified_info": "EU Energy Label provides an indication of a product's energy efficiency and can also give specific data about other relevant features of usage, such as the product's noise emissions or water consumption. This makes it easier for consumers to save money on their household energy bills and contributes to reducing greenhouse gas emissions across the EU and UK. Climate Pledge Friendly is highlighting EU and UK energy label ratings of A, B, and C on the A-G scale only to identify the products which are rated more energy efficient than others."
+          }
+        ]
+      },
+      {
+        "position": 7,
+        "asin": "B0FQG15YVP",
+        "options": "3 sizes",
+        "options_link": "https://www.amazon.de/-/en/Apple-iPhone-Pro-256-Breakthrough/dp/B0FQG15YVP/ref=vo_sr_l_dp?dib=eyJ2IjoiMSJ9.uxdFAk24jkJqSEool3EmGxBt-N882rcOVCJITj4oq2AHYRFl1TKvu_zcfW7igMpKxMJnLIaJeeA37Yj1aWB9oRGkP1xxgQ5HOfIUZadYaq-d-IR6dJWemuesVxdbEWYKO_rZT7GvNGGw_9zta_7c-52_RKXrYvjPE2Dz52vt8n62JKqavYp-5WNd7Tya8s85f7i20gs03vokk-oiXkMsql_EoJJCm4dPDFh6_3uK_6I.Edbp7XiywWrpZwlOc04zv3O7ISztq6XnNxZIX0gKmLM&dib_tag=se&keywords=iphone+17&qid=1770505579&sr=8-7",
+        "variants": {
+          "options": [
+            {
+              "position": 1,
+              "asin": "B0FQG15YVP",
+              "title": "Deep blue",
+              "link": "https://www.amazon.de/-/en/Apple-iPhone-Pro-256-Breakthrough/dp/B0FQG15YVP/ref=cs_sr_dp_1?dib=eyJ2IjoiMSJ9.uxdFAk24jkJqSEool3EmGxBt-N882rcOVCJITj4oq2AHYRFl1TKvu_zcfW7igMpKxMJnLIaJeeA37Yj1aWB9oRGkP1xxgQ5HOfIUZadYaq-d-IR6dJWemuesVxdbEWYKO_rZT7GvNGGw_9zta_7c-52_RKXrYvjPE2Dz52vt8n62JKqavYp-5WNd7Tya8s85f7i20gs03vokk-oiXkMsql_EoJJCm4dPDFh6_3uK_6I.Edbp7XiywWrpZwlOc04zv3O7ISztq6XnNxZIX0gKmLM&dib_tag=se&keywords=iphone+17&qid=1770505579&sr=8-7"
+            },
+            {
+              "position": 2,
+              "asin": "B0FQGG53WL",
+              "title": "Cosmic Orange",
+              "link": "https://www.amazon.de/-/en/Apple-iPhone-Pro-256-Breakthrough/dp/B0FQGG53WL/ref=cs_sr_dp_2?dib=eyJ2IjoiMSJ9.uxdFAk24jkJqSEool3EmGxBt-N882rcOVCJITj4oq2AHYRFl1TKvu_zcfW7igMpKxMJnLIaJeeA37Yj1aWB9oRGkP1xxgQ5HOfIUZadYaq-d-IR6dJWemuesVxdbEWYKO_rZT7GvNGGw_9zta_7c-52_RKXrYvjPE2Dz52vt8n62JKqavYp-5WNd7Tya8s85f7i20gs03vokk-oiXkMsql_EoJJCm4dPDFh6_3uK_6I.Edbp7XiywWrpZwlOc04zv3O7ISztq6XnNxZIX0gKmLM&dib_tag=se&keywords=iphone+17&qid=1770505579&sr=8-7"
+            },
+            {
+              "position": 3,
+              "asin": "B0FQG8MFKP",
+              "title": "silver",
+              "link": "https://www.amazon.de/-/en/Apple-iPhone-Pro-256-Breakthrough/dp/B0FQG8MFKP/ref=cs_sr_dp_3?dib=eyJ2IjoiMSJ9.uxdFAk24jkJqSEool3EmGxBt-N882rcOVCJITj4oq2AHYRFl1TKvu_zcfW7igMpKxMJnLIaJeeA37Yj1aWB9oRGkP1xxgQ5HOfIUZadYaq-d-IR6dJWemuesVxdbEWYKO_rZT7GvNGGw_9zta_7c-52_RKXrYvjPE2Dz52vt8n62JKqavYp-5WNd7Tya8s85f7i20gs03vokk-oiXkMsql_EoJJCm4dPDFh6_3uK_6I.Edbp7XiywWrpZwlOc04zv3O7ISztq6XnNxZIX0gKmLM&dib_tag=se&keywords=iphone+17&qid=1770505579&sr=8-7"
+            }
+          ]
+        },
+        "brand": "Apple",
+        "title": "iPhone 17 Pro 256 GB: 6.3 Inch Display with ProMotion up to 120 Hz, A19 Pro Chip, Breakthrough Battery Life, Pro Fusion Camera System with Centre Stage Front Camera; Deep Blue",
+        "link": "https://www.amazon.de/-/en/Apple-iPhone-Pro-256-Breakthrough/dp/B0FQG15YVP/ref=sr_1_7?dib=eyJ2IjoiMSJ9.uxdFAk24jkJqSEool3EmGxBt-N882rcOVCJITj4oq2AHYRFl1TKvu_zcfW7igMpKxMJnLIaJeeA37Yj1aWB9oRGkP1xxgQ5HOfIUZadYaq-d-IR6dJWemuesVxdbEWYKO_rZT7GvNGGw_9zta_7c-52_RKXrYvjPE2Dz52vt8n62JKqavYp-5WNd7Tya8s85f7i20gs03vokk-oiXkMsql_EoJJCm4dPDFh6_3uK_6I.Edbp7XiywWrpZwlOc04zv3O7ISztq6XnNxZIX0gKmLM&dib_tag=se&keywords=iphone+17&qid=1770505579&sr=8-7",
+        "link_clean": "https://www.amazon.de/-/en/Apple-iPhone-Pro-256-Breakthrough/dp/B0FQG15YVP/",
+        "serpapi_link": "https://serpapi.com/search.json?amazon_domain=amazon.de&asin=B0FQG15YVP&device=desktop&engine=amazon_product&language=en_GB",
+        "thumbnail": "https://m.media-amazon.com/images/I/61LFeKye45L._AC_UY218_.jpg",
+        "rating": 4.5,
+        "reviews": 762,
+        "bought_last_month": "2K+ bought in past month",
+        "price": "€1,222.00",
+        "extracted_price": 1222.0,
+        "old_price": "€1,299.00",
+        "extracted_old_price": 1299.0,
+        "offers": [
+          "Get 60 days of Audible free"
+        ],
+        "specs": {
+          "operating_system": "iOS",
+          "display_size": "6.3 inches",
+          "capacity": "256 GB",
+          "optical_sensor_resolution": "-"
+        },
+        "delivery": [
+          "FREE delivery Wed 11 Feb",
+          "Or fastest delivery Tue 10 Feb"
+        ],
+        "more_buying_choices": "€1,217.35 (3+ used & new offers)",
+        "more_buying_choices_link": "https://www.amazon.de/-/en/gp/offer-listing/B0FQG15YVP/ref=sr_1_7_olp?keywords=iphone+17&dib_tag=se&dib=eyJ2IjoiMSJ9.uxdFAk24jkJqSEool3EmGxBt-N882rcOVCJITj4oq2AHYRFl1TKvu_zcfW7igMpKxMJnLIaJeeA37Yj1aWB9oRGkP1xxgQ5HOfIUZadYaq-d-IR6dJWemuesVxdbEWYKO_rZT7GvNGGw_9zta_7c-52_RKXrYvjPE2Dz52vt8n62JKqavYp-5WNd7Tya8s85f7i20gs03vokk-oiXkMsql_EoJJCm4dPDFh6_3uK_6I.Edbp7XiywWrpZwlOc04zv3O7ISztq6XnNxZIX0gKmLM&qid=1770505579&sr=8-7",
+        "climate_pledge_friendly": true,
+        "sustainability_features": [
+          {
+            "position": 1,
+            "name": "Energy efficiency",
+            "snippet": "Conserves energy compared to similar products.",
+            "thumbnail": "https://m.media-amazon.com/images/I/31A2GobGL-L._SS200_.png",
+            "certified_by": "Energy Label",
+            "certified_info": "EU Energy Label provides an indication of a product's energy efficiency and can also give specific data about other relevant features of usage, such as the product's noise emissions or water consumption. This makes it easier for consumers to save money on their household energy bills and contributes to reducing greenhouse gas emissions across the EU and UK. Climate Pledge Friendly is highlighting EU and UK energy label ratings of A, B, and C on the A-G scale only to identify the products which are rated more energy efficient than others."
+          }
+        ]
+      },
+      {
+        "position": 8,
+        "asin": "B0FG2DBVCS",
+        "sponsored": true,
+        "options": "20 sizes",
+        "options_link": "https://www.amazon.de/-/en/sspa/click?ie=UTF8&spc=MToyMzA4MTExMjg4MDY3MTc6MTc3MDUwNTU3OTpzcF9tdGY6MzAwNjk4NjE2MzI5MTMyOjowOjo&url=%2FTORRAS-Guardian-Mag-iPhone-17-Scratch-Resistant-black%2Fdp%2FB0FG2DBVCS%2Fref%3Dsr_1_8_sspa_vo_sr_l_dp%3Fdib%3DeyJ2IjoiMSJ9.uxdFAk24jkJqSEool3EmGxBt-N882rcOVCJITj4oq2AHYRFl1TKvu_zcfW7igMpKxMJnLIaJeeA37Yj1aWB9oRGkP1xxgQ5HOfIUZadYaq-d-IR6dJWemuesVxdbEWYKO_rZT7GvNGGw_9zta_7c-52_RKXrYvjPE2Dz52vt8n62JKqavYp-5WNd7Tya8s85f7i20gs03vokk-oiXkMsql_EoJJCm4dPDFh6_3uK_6I.Edbp7XiywWrpZwlOc04zv3O7ISztq6XnNxZIX0gKmLM%26dib_tag%3Dse%26keywords%3Diphone%2B17%26qid%3D1770505579%26sr%3D8-8-spons%26aref%3D9HJStzMLSL%26sp_csd%3Dd2lkZ2V0TmFtZT1zcF9tdGY%26psc%3D1&aref=9HJStzMLSL&sp_cr=DUB",
+        "variants": {
+          "more_variants": "+7 other colours/patterns",
+          "more_variants_link": "https://www.amazon.de/-/en/sspa/click?ie=UTF8&spc=MToyMzA4MTExMjg4MDY3MTc6MTc3MDUwNTU3OTpzcF9tdGY6MzAwNjk4NjE2MzI5MTMyOjowOjo&url=%2FTORRAS-Guardian-Mag-iPhone-17-Scratch-Resistant-black%2Fdp%2FB0FG2DBVCS%2Fref%3Dsr_1_8_sspa%3Fdib%3DeyJ2IjoiMSJ9.uxdFAk24jkJqSEool3EmGxBt-N882rcOVCJITj4oq2AHYRFl1TKvu_zcfW7igMpKxMJnLIaJeeA37Yj1aWB9oRGkP1xxgQ5HOfIUZadYaq-d-IR6dJWemuesVxdbEWYKO_rZT7GvNGGw_9zta_7c-52_RKXrYvjPE2Dz52vt8n62JKqavYp-5WNd7Tya8s85f7i20gs03vokk-oiXkMsql_EoJJCm4dPDFh6_3uK_6I.Edbp7XiywWrpZwlOc04zv3O7ISztq6XnNxZIX0gKmLM%26dib_tag%3Dse%26keywords%3Diphone%2B17%26qid%3D1770505579%26sr%3D8-8-spons%26aref%3D9HJStzMLSL%26sp_csd%3Dd2lkZ2V0TmFtZT1zcF9tdGY%26psc%3D1&aref=9HJStzMLSL&sp_cr=DUB"
+        },
+        "brand": "TORRAS",
+        "title": "Guardian-Mag Case for iPhone 17 for MagSafe [No.1 Military Protection & Magnetic Force] (Camera Protection Buttons with Original Handle) Scratch-Resistant Extreme Durability for iPhone 17 Case",
+        "link": "https://www.amazon.de/-/en/sspa/click?ie=UTF8&spc=MToyMzA4MTExMjg4MDY3MTc6MTc3MDUwNTU3OTpzcF9tdGY6MzAwNjk4NjE2MzI5MTMyOjowOjo&url=%2FTORRAS-Guardian-Mag-iPhone-17-Scratch-Resistant-black%2Fdp%2FB0FG2DBVCS%2Fref%3Dsr_1_8_sspa%3Fdib%3DeyJ2IjoiMSJ9.uxdFAk24jkJqSEool3EmGxBt-N882rcOVCJITj4oq2AHYRFl1TKvu_zcfW7igMpKxMJnLIaJeeA37Yj1aWB9oRGkP1xxgQ5HOfIUZadYaq-d-IR6dJWemuesVxdbEWYKO_rZT7GvNGGw_9zta_7c-52_RKXrYvjPE2Dz52vt8n62JKqavYp-5WNd7Tya8s85f7i20gs03vokk-oiXkMsql_EoJJCm4dPDFh6_3uK_6I.Edbp7XiywWrpZwlOc04zv3O7ISztq6XnNxZIX0gKmLM%26dib_tag%3Dse%26keywords%3Diphone%2B17%26qid%3D1770505579%26sr%3D8-8-spons%26aref%3D9HJStzMLSL%26sp_csd%3Dd2lkZ2V0TmFtZT1zcF9tdGY%26psc%3D1&aref=9HJStzMLSL&sp_cr=DUB",
+        "link_clean": "https://www.amazon.de/dp/B0FG2DBVCS/",
+        "serpapi_link": "https://serpapi.com/search.json?amazon_domain=amazon.de&asin=B0FG2DBVCS&device=desktop&engine=amazon_product&language=en_GB",
+        "thumbnail": "https://m.media-amazon.com/images/I/81U4RZx3-bL._AC_UY218_.jpg",
+        "rating": 4.6,
+        "reviews": 39100,
+        "bought_last_month": "500+ bought in past month",
+        "price": "€25.99",
+        "extracted_price": 25.99,
+        "old_price": "€27.99",
+        "extracted_old_price": 27.99,
+        "delivery": [
+          "FREE delivery Wed 11 Feb on eligible first order",
+          "Or fastest delivery Tue 10 Feb"
+        ],
+        "climate_pledge_friendly": true,
+        "sustainability_features": [
+          {
+            "position": 1,
+            "name": "Carbon impact",
+            "snippet": "Carbon emissions from the lifecycle of this product were measured, reduced and offset.",
+            "thumbnail": "https://m.media-amazon.com/images/I/117Gv10-Q1L._SS200_.png",
+            "certified_by": "ClimatePartner certified",
+            "certified_info": "The ClimatePartner certified product label confirms that a product meets the requirements for the five steps in climate action including calculating carbon footprints, setting reduction targets, implementing reductions, financing climate projects and communicating transparently to continuously reducing emissions."
+          }
+        ]
+      },
+      {
+        "position": 9,
+        "asin": "B0FG7QQY8C",
+        "sponsored": true,
+        "variants": {
+          "more_variants": "+14 other colours/patterns",
+          "more_variants_link": "https://www.amazon.de/-/en/sspa/click?ie=UTF8&spc=MToyMzA4MTExMjg4MDY3MTc6MTc3MDUwNTU3OTpzcF9tdGY6MzAwODE5ODIxNzk0NzMyOjowOjo&url=%2FSHIELDON-Leather-Magnetic-Shockproof-Protective-Retro-light-brown%2Fdp%2FB0FG7QQY8C%2Fref%3Dsr_1_9_sspa%3Fdib%3DeyJ2IjoiMSJ9.uxdFAk24jkJqSEool3EmGxBt-N882rcOVCJITj4oq2AHYRFl1TKvu_zcfW7igMpKxMJnLIaJeeA37Yj1aWB9oRGkP1xxgQ5HOfIUZadYaq-d-IR6dJWemuesVxdbEWYKO_rZT7GvNGGw_9zta_7c-52_RKXrYvjPE2Dz52vt8n62JKqavYp-5WNd7Tya8s85f7i20gs03vokk-oiXkMsql_EoJJCm4dPDFh6_3uK_6I.Edbp7XiywWrpZwlOc04zv3O7ISztq6XnNxZIX0gKmLM%26dib_tag%3Dse%26keywords%3Diphone%2B17%26qid%3D1770505579%26sr%3D8-9-spons%26aref%3DMEV1Ocf6BT%26sp_csd%3Dd2lkZ2V0TmFtZT1zcF9tdGY%26psc%3D1&aref=MEV1Ocf6BT&sp_cr=DUB"
+        },
+        "brand": "SHIELDON",
+        "title": "Case for iPhone 17 6.3 Inch 5G 2025, Leather Mobile Phone Case [Cowhide Leather] [Card Slot] [Stand] [RFID Blocker] [Magnetic Closure] [Mobile Phone Eyelets] TPU Shockproof Protective Case",
+        "link": "https://www.amazon.de/-/en/sspa/click?ie=UTF8&spc=MToyMzA4MTExMjg4MDY3MTc6MTc3MDUwNTU3OTpzcF9tdGY6MzAwODE5ODIxNzk0NzMyOjowOjo&url=%2FSHIELDON-Leather-Magnetic-Shockproof-Protective-Retro-light-brown%2Fdp%2FB0FG7QQY8C%2Fref%3Dsr_1_9_sspa%3Fdib%3DeyJ2IjoiMSJ9.uxdFAk24jkJqSEool3EmGxBt-N882rcOVCJITj4oq2AHYRFl1TKvu_zcfW7igMpKxMJnLIaJeeA37Yj1aWB9oRGkP1xxgQ5HOfIUZadYaq-d-IR6dJWemuesVxdbEWYKO_rZT7GvNGGw_9zta_7c-52_RKXrYvjPE2Dz52vt8n62JKqavYp-5WNd7Tya8s85f7i20gs03vokk-oiXkMsql_EoJJCm4dPDFh6_3uK_6I.Edbp7XiywWrpZwlOc04zv3O7ISztq6XnNxZIX0gKmLM%26dib_tag%3Dse%26keywords%3Diphone%2B17%26qid%3D1770505579%26sr%3D8-9-spons%26aref%3DMEV1Ocf6BT%26sp_csd%3Dd2lkZ2V0TmFtZT1zcF9tdGY%26psc%3D1&aref=MEV1Ocf6BT&sp_cr=DUB",
+        "link_clean": "https://www.amazon.de/dp/B0FG7QQY8C/",
+        "serpapi_link": "https://serpapi.com/search.json?amazon_domain=amazon.de&asin=B0FG7QQY8C&device=desktop&engine=amazon_product&language=en_GB",
+        "thumbnail": "https://m.media-amazon.com/images/I/81f2SfzPcTL._AC_UY218_.jpg",
+        "rating": 4.7,
+        "reviews": 352,
+        "price": "€30.99",
+        "extracted_price": 30.99,
+        "save_with_coupon": "Save €2.00 with voucher",
+        "delivery": [
+          "FREE delivery Wed 11 Feb on eligible first order",
+          "Or fastest delivery Tue 10 Feb"
+        ],
+        "stock": "Only 14 left in stock."
+      },
+      {
+        "position": 10,
+        "asin": "B0FQFMRYFD",
+        "options": "3 sizes",
+        "options_link": "https://www.amazon.de/-/en/Apple-iPhone-Pro-512-Breakthrough/dp/B0FQFMRYFD/ref=vo_sr_l_dp?dib=eyJ2IjoiMSJ9.uxdFAk24jkJqSEool3EmGxBt-N882rcOVCJITj4oq2AHYRFl1TKvu_zcfW7igMpKxMJnLIaJeeA37Yj1aWB9oRGkP1xxgQ5HOfIUZadYaq-d-IR6dJWemuesVxdbEWYKO_rZT7GvNGGw_9zta_7c-52_RKXrYvjPE2Dz52vt8n62JKqavYp-5WNd7Tya8s85f7i20gs03vokk-oiXkMsql_EoJJCm4dPDFh6_3uK_6I.Edbp7XiywWrpZwlOc04zv3O7ISztq6XnNxZIX0gKmLM&dib_tag=se&keywords=iphone+17&qid=1770505579&sr=8-10",
+        "variants": {
+          "options": [
+            {
+              "position": 1,
+              "asin": "B0FQFMRYFD",
+              "title": "silver",
+              "link": "https://www.amazon.de/-/en/Apple-iPhone-Pro-512-Breakthrough/dp/B0FQFMRYFD/ref=cs_sr_dp_1?dib=eyJ2IjoiMSJ9.uxdFAk24jkJqSEool3EmGxBt-N882rcOVCJITj4oq2AHYRFl1TKvu_zcfW7igMpKxMJnLIaJeeA37Yj1aWB9oRGkP1xxgQ5HOfIUZadYaq-d-IR6dJWemuesVxdbEWYKO_rZT7GvNGGw_9zta_7c-52_RKXrYvjPE2Dz52vt8n62JKqavYp-5WNd7Tya8s85f7i20gs03vokk-oiXkMsql_EoJJCm4dPDFh6_3uK_6I.Edbp7XiywWrpZwlOc04zv3O7ISztq6XnNxZIX0gKmLM&dib_tag=se&keywords=iphone+17&qid=1770505579&sr=8-10"
+            },
+            {
+              "position": 2,
+              "asin": "B0FQFT841W",
+              "title": "Cosmic Orange",
+              "link": "https://www.amazon.de/-/en/Apple-iPhone-Pro-512-Breakthrough/dp/B0FQFT841W/ref=cs_sr_dp_2?dib=eyJ2IjoiMSJ9.uxdFAk24jkJqSEool3EmGxBt-N882rcOVCJITj4oq2AHYRFl1TKvu_zcfW7igMpKxMJnLIaJeeA37Yj1aWB9oRGkP1xxgQ5HOfIUZadYaq-d-IR6dJWemuesVxdbEWYKO_rZT7GvNGGw_9zta_7c-52_RKXrYvjPE2Dz52vt8n62JKqavYp-5WNd7Tya8s85f7i20gs03vokk-oiXkMsql_EoJJCm4dPDFh6_3uK_6I.Edbp7XiywWrpZwlOc04zv3O7ISztq6XnNxZIX0gKmLM&dib_tag=se&keywords=iphone+17&qid=1770505579&sr=8-10"
+            },
+            {
+              "position": 3,
+              "asin": "B0FQFYTTF9",
+              "title": "Deep blue",
+              "link": "https://www.amazon.de/-/en/Apple-iPhone-Pro-512-Breakthrough/dp/B0FQFYTTF9/ref=cs_sr_dp_3?dib=eyJ2IjoiMSJ9.uxdFAk24jkJqSEool3EmGxBt-N882rcOVCJITj4oq2AHYRFl1TKvu_zcfW7igMpKxMJnLIaJeeA37Yj1aWB9oRGkP1xxgQ5HOfIUZadYaq-d-IR6dJWemuesVxdbEWYKO_rZT7GvNGGw_9zta_7c-52_RKXrYvjPE2Dz52vt8n62JKqavYp-5WNd7Tya8s85f7i20gs03vokk-oiXkMsql_EoJJCm4dPDFh6_3uK_6I.Edbp7XiywWrpZwlOc04zv3O7ISztq6XnNxZIX0gKmLM&dib_tag=se&keywords=iphone+17&qid=1770505579&sr=8-10"
+            }
+          ]
+        },
+        "brand": "Apple",
+        "title": "iPhone 17 Pro 512 GB: 6.3 Inch Display with ProMotion up to 120 Hz, A19 Pro Chip, Breakthrough Battery Life, Pro Fusion Camera System with Centre Stage Front Camera; Silver",
+        "link": "https://www.amazon.de/-/en/Apple-iPhone-Pro-512-Breakthrough/dp/B0FQFMRYFD/ref=sr_1_10?dib=eyJ2IjoiMSJ9.uxdFAk24jkJqSEool3EmGxBt-N882rcOVCJITj4oq2AHYRFl1TKvu_zcfW7igMpKxMJnLIaJeeA37Yj1aWB9oRGkP1xxgQ5HOfIUZadYaq-d-IR6dJWemuesVxdbEWYKO_rZT7GvNGGw_9zta_7c-52_RKXrYvjPE2Dz52vt8n62JKqavYp-5WNd7Tya8s85f7i20gs03vokk-oiXkMsql_EoJJCm4dPDFh6_3uK_6I.Edbp7XiywWrpZwlOc04zv3O7ISztq6XnNxZIX0gKmLM&dib_tag=se&keywords=iphone+17&qid=1770505579&sr=8-10",
+        "link_clean": "https://www.amazon.de/-/en/Apple-iPhone-Pro-512-Breakthrough/dp/B0FQFMRYFD/",
+        "serpapi_link": "https://serpapi.com/search.json?amazon_domain=amazon.de&asin=B0FQFMRYFD&device=desktop&engine=amazon_product&language=en_GB",
+        "thumbnail": "https://m.media-amazon.com/images/I/617b0iQyo9L._AC_UY218_.jpg",
+        "rating": 4.5,
+        "reviews": 762,
+        "bought_last_month": "400+ bought in past month",
+        "price": "€1,459.00",
+        "extracted_price": 1459.0,
+        "old_price": "€1,549.00",
+        "extracted_old_price": 1549.0,
+        "offers": [
+          "Get 60 days of Audible free"
+        ],
+        "specs": {
+          "operating_system": "iOS",
+          "display_size": "6.3 inches",
+          "capacity": "512 GB",
+          "optical_sensor_resolution": "-"
+        },
+        "delivery": [
+          "FREE delivery Wed 11 Feb",
+          "Or fastest delivery Tue 10 Feb"
+        ],
+        "more_buying_choices": "€1,415.23 (3+ used & new offers)",
+        "more_buying_choices_link": "https://www.amazon.de/gp/offer-listing/B0FQFMRYFD/ref=sr_1_10_olp?keywords=iphone+17&dib_tag=se&dib=eyJ2IjoiMSJ9.uxdFAk24jkJqSEool3EmGxBt-N882rcOVCJITj4oq2AHYRFl1TKvu_zcfW7igMpKxMJnLIaJeeA37Yj1aWB9oRGkP1xxgQ5HOfIUZadYaq-d-IR6dJWemuesVxdbEWYKO_rZT7GvNGGw_9zta_7c-52_RKXrYvjPE2Dz52vt8n62JKqavYp-5WNd7Tya8s85f7i20gs03vokk-oiXkMsql_EoJJCm4dPDFh6_3uK_6I.Edbp7XiywWrpZwlOc04zv3O7ISztq6XnNxZIX0gKmLM&qid=1770505579&sr=8-10",
+        "climate_pledge_friendly": true,
+        "sustainability_features": [
+          {
+            "position": 1,
+            "name": "Energy efficiency",
+            "snippet": "Conserves energy compared to similar products.",
+            "thumbnail": "https://m.media-amazon.com/images/I/31A2GobGL-L._SS200_.png",
+            "certified_by": "Energy Label",
+            "certified_info": "EU Energy Label provides an indication of a product's energy efficiency and can also give specific data about other relevant features of usage, such as the product's noise emissions or water consumption. This makes it easier for consumers to save money on their household energy bills and contributes to reducing greenhouse gas emissions across the EU and UK. Climate Pledge Friendly is highlighting EU and UK energy label ratings of A, B, and C on the A-G scale only to identify the products which are rated more energy efficient than others."
+          }
+        ]
+      },
+      {
+        "position": 11,
+        "asin": "B0FQFYTTF9",
+        "options": "3 sizes",
+        "options_link": "https://www.amazon.de/-/en/Apple-iPhone-Pro-512-Breakthrough/dp/B0FQFYTTF9/ref=vo_sr_l_dp?dib=eyJ2IjoiMSJ9.uxdFAk24jkJqSEool3EmGxBt-N882rcOVCJITj4oq2AHYRFl1TKvu_zcfW7igMpKxMJnLIaJeeA37Yj1aWB9oRGkP1xxgQ5HOfIUZadYaq-d-IR6dJWemuesVxdbEWYKO_rZT7GvNGGw_9zta_7c-52_RKXrYvjPE2Dz52vt8n62JKqavYp-5WNd7Tya8s85f7i20gs03vokk-oiXkMsql_EoJJCm4dPDFh6_3uK_6I.Edbp7XiywWrpZwlOc04zv3O7ISztq6XnNxZIX0gKmLM&dib_tag=se&keywords=iphone+17&qid=1770505579&sr=8-11",
+        "variants": {
+          "options": [
+            {
+              "position": 1,
+              "asin": "B0FQFYTTF9",
+              "title": "Deep blue",
+              "link": "https://www.amazon.de/-/en/Apple-iPhone-Pro-512-Breakthrough/dp/B0FQFYTTF9/ref=cs_sr_dp_1?dib=eyJ2IjoiMSJ9.uxdFAk24jkJqSEool3EmGxBt-N882rcOVCJITj4oq2AHYRFl1TKvu_zcfW7igMpKxMJnLIaJeeA37Yj1aWB9oRGkP1xxgQ5HOfIUZadYaq-d-IR6dJWemuesVxdbEWYKO_rZT7GvNGGw_9zta_7c-52_RKXrYvjPE2Dz52vt8n62JKqavYp-5WNd7Tya8s85f7i20gs03vokk-oiXkMsql_EoJJCm4dPDFh6_3uK_6I.Edbp7XiywWrpZwlOc04zv3O7ISztq6XnNxZIX0gKmLM&dib_tag=se&keywords=iphone+17&qid=1770505579&sr=8-11"
+            },
+            {
+              "position": 2,
+              "asin": "B0FQFT841W",
+              "title": "Cosmic Orange",
+              "link": "https://www.amazon.de/-/en/Apple-iPhone-Pro-512-Breakthrough/dp/B0FQFT841W/ref=cs_sr_dp_2?dib=eyJ2IjoiMSJ9.uxdFAk24jkJqSEool3EmGxBt-N882rcOVCJITj4oq2AHYRFl1TKvu_zcfW7igMpKxMJnLIaJeeA37Yj1aWB9oRGkP1xxgQ5HOfIUZadYaq-d-IR6dJWemuesVxdbEWYKO_rZT7GvNGGw_9zta_7c-52_RKXrYvjPE2Dz52vt8n62JKqavYp-5WNd7Tya8s85f7i20gs03vokk-oiXkMsql_EoJJCm4dPDFh6_3uK_6I.Edbp7XiywWrpZwlOc04zv3O7ISztq6XnNxZIX0gKmLM&dib_tag=se&keywords=iphone+17&qid=1770505579&sr=8-11"
+            },
+            {
+              "position": 3,
+              "asin": "B0FQFMRYFD",
+              "title": "silver",
+              "link": "https://www.amazon.de/-/en/Apple-iPhone-Pro-512-Breakthrough/dp/B0FQFMRYFD/ref=cs_sr_dp_3?dib=eyJ2IjoiMSJ9.uxdFAk24jkJqSEool3EmGxBt-N882rcOVCJITj4oq2AHYRFl1TKvu_zcfW7igMpKxMJnLIaJeeA37Yj1aWB9oRGkP1xxgQ5HOfIUZadYaq-d-IR6dJWemuesVxdbEWYKO_rZT7GvNGGw_9zta_7c-52_RKXrYvjPE2Dz52vt8n62JKqavYp-5WNd7Tya8s85f7i20gs03vokk-oiXkMsql_EoJJCm4dPDFh6_3uK_6I.Edbp7XiywWrpZwlOc04zv3O7ISztq6XnNxZIX0gKmLM&dib_tag=se&keywords=iphone+17&qid=1770505579&sr=8-11"
+            }
+          ]
+        },
+        "brand": "Apple",
+        "title": "iPhone 17 Pro 512 GB: 6.3 Inch Display with ProMotion up to 120 Hz, A19 Pro Chip, Breakthrough Battery Life, Pro Fusion Camera System with Centre Stage Front Camera; Deep Blue",
+        "link": "https://www.amazon.de/-/en/Apple-iPhone-Pro-512-Breakthrough/dp/B0FQFYTTF9/ref=sr_1_11?dib=eyJ2IjoiMSJ9.uxdFAk24jkJqSEool3EmGxBt-N882rcOVCJITj4oq2AHYRFl1TKvu_zcfW7igMpKxMJnLIaJeeA37Yj1aWB9oRGkP1xxgQ5HOfIUZadYaq-d-IR6dJWemuesVxdbEWYKO_rZT7GvNGGw_9zta_7c-52_RKXrYvjPE2Dz52vt8n62JKqavYp-5WNd7Tya8s85f7i20gs03vokk-oiXkMsql_EoJJCm4dPDFh6_3uK_6I.Edbp7XiywWrpZwlOc04zv3O7ISztq6XnNxZIX0gKmLM&dib_tag=se&keywords=iphone+17&qid=1770505579&sr=8-11",
+        "link_clean": "https://www.amazon.de/-/en/Apple-iPhone-Pro-512-Breakthrough/dp/B0FQFYTTF9/",
+        "serpapi_link": "https://serpapi.com/search.json?amazon_domain=amazon.de&asin=B0FQFYTTF9&device=desktop&engine=amazon_product&language=en_GB",
+        "thumbnail": "https://m.media-amazon.com/images/I/61LFeKye45L._AC_UY218_.jpg",
+        "rating": 4.5,
+        "reviews": 762,
+        "bought_last_month": "500+ bought in past month",
+        "price": "€1,448.00",
+        "extracted_price": 1448.0,
+        "old_price": "€1,549.00",
+        "extracted_old_price": 1549.0,
+        "offers": [
+          "Get 60 days of Audible free"
+        ],
+        "specs": {
+          "operating_system": "iOS",
+          "display_size": "6.3 inches",
+          "capacity": "512 GB",
+          "optical_sensor_resolution": "-"
+        },
+        "delivery": [
+          "FREE delivery Wed 11 Feb",
+          "Or fastest delivery Tue 10 Feb"
+        ],
+        "climate_pledge_friendly": true,
+        "sustainability_features": [
+          {
+            "position": 1,
+            "name": "Energy efficiency",
+            "snippet": "Conserves energy compared to similar products.",
+            "thumbnail": "https://m.media-amazon.com/images/I/31A2GobGL-L._SS200_.png",
+            "certified_by": "Energy Label",
+            "certified_info": "EU Energy Label provides an indication of a product's energy efficiency and can also give specific data about other relevant features of usage, such as the product's noise emissions or water consumption. This makes it easier for consumers to save money on their household energy bills and contributes to reducing greenhouse gas emissions across the EU and UK. Climate Pledge Friendly is highlighting EU and UK energy label ratings of A, B, and C on the A-G scale only to identify the products which are rated more energy efficient than others."
+          }
+        ]
+      },
+      {
+        "position": 12,
+        "asin": "B0FQG944KG",
+        "options": "3 sizes",
+        "options_link": "https://www.amazon.de/-/en/Apple-iPhone-Air-256-ProMotion/dp/B0FQG944KG/ref=vo_sr_l_dp?dib=eyJ2IjoiMSJ9.uxdFAk24jkJqSEool3EmGxBt-N882rcOVCJITj4oq2AHYRFl1TKvu_zcfW7igMpKxMJnLIaJeeA37Yj1aWB9oRGkP1xxgQ5HOfIUZadYaq-d-IR6dJWemuesVxdbEWYKO_rZT7GvNGGw_9zta_7c-52_RKXrYvjPE2Dz52vt8n62JKqavYp-5WNd7Tya8s85f7i20gs03vokk-oiXkMsql_EoJJCm4dPDFh6_3uK_6I.Edbp7XiywWrpZwlOc04zv3O7ISztq6XnNxZIX0gKmLM&dib_tag=se&keywords=iphone+17&qid=1770505579&sr=8-12",
+        "variants": {
+          "options": [
+            {
+              "position": 1,
+              "asin": "B0FQG944KG",
+              "title": "Space Black",
+              "link": "https://www.amazon.de/-/en/Apple-iPhone-Air-256-ProMotion/dp/B0FQG944KG/ref=cs_sr_dp_1?dib=eyJ2IjoiMSJ9.uxdFAk24jkJqSEool3EmGxBt-N882rcOVCJITj4oq2AHYRFl1TKvu_zcfW7igMpKxMJnLIaJeeA37Yj1aWB9oRGkP1xxgQ5HOfIUZadYaq-d-IR6dJWemuesVxdbEWYKO_rZT7GvNGGw_9zta_7c-52_RKXrYvjPE2Dz52vt8n62JKqavYp-5WNd7Tya8s85f7i20gs03vokk-oiXkMsql_EoJJCm4dPDFh6_3uK_6I.Edbp7XiywWrpZwlOc04zv3O7ISztq6XnNxZIX0gKmLM&dib_tag=se&keywords=iphone+17&qid=1770505579&sr=8-12"
+            },
+            {
+              "position": 2,
+              "asin": "B0FQG8ZNH2",
+              "title": "sky blue",
+              "link": "https://www.amazon.de/-/en/Apple-iPhone-Air-256-ProMotion/dp/B0FQG8ZNH2/ref=cs_sr_dp_2?dib=eyJ2IjoiMSJ9.uxdFAk24jkJqSEool3EmGxBt-N882rcOVCJITj4oq2AHYRFl1TKvu_zcfW7igMpKxMJnLIaJeeA37Yj1aWB9oRGkP1xxgQ5HOfIUZadYaq-d-IR6dJWemuesVxdbEWYKO_rZT7GvNGGw_9zta_7c-52_RKXrYvjPE2Dz52vt8n62JKqavYp-5WNd7Tya8s85f7i20gs03vokk-oiXkMsql_EoJJCm4dPDFh6_3uK_6I.Edbp7XiywWrpZwlOc04zv3O7ISztq6XnNxZIX0gKmLM&dib_tag=se&keywords=iphone+17&qid=1770505579&sr=8-12"
+            },
+            {
+              "position": 3,
+              "asin": "B0FQF5S7MQ",
+              "title": "Light gold",
+              "link": "https://www.amazon.de/-/en/Apple-iPhone-Air-256-ProMotion/dp/B0FQF5S7MQ/ref=cs_sr_dp_3?dib=eyJ2IjoiMSJ9.uxdFAk24jkJqSEool3EmGxBt-N882rcOVCJITj4oq2AHYRFl1TKvu_zcfW7igMpKxMJnLIaJeeA37Yj1aWB9oRGkP1xxgQ5HOfIUZadYaq-d-IR6dJWemuesVxdbEWYKO_rZT7GvNGGw_9zta_7c-52_RKXrYvjPE2Dz52vt8n62JKqavYp-5WNd7Tya8s85f7i20gs03vokk-oiXkMsql_EoJJCm4dPDFh6_3uK_6I.Edbp7XiywWrpZwlOc04zv3O7ISztq6XnNxZIX0gKmLM&dib_tag=se&keywords=iphone+17&qid=1770505579&sr=8-12"
+            },
+            {
+              "position": 4,
+              "asin": "B0FQFQ71TG",
+              "title": "Cloudy white",
+              "link": "https://www.amazon.de/-/en/Apple-iPhone-Air-256-ProMotion/dp/B0FQFQ71TG/ref=cs_sr_dp_4?dib=eyJ2IjoiMSJ9.uxdFAk24jkJqSEool3EmGxBt-N882rcOVCJITj4oq2AHYRFl1TKvu_zcfW7igMpKxMJnLIaJeeA37Yj1aWB9oRGkP1xxgQ5HOfIUZadYaq-d-IR6dJWemuesVxdbEWYKO_rZT7GvNGGw_9zta_7c-52_RKXrYvjPE2Dz52vt8n62JKqavYp-5WNd7Tya8s85f7i20gs03vokk-oiXkMsql_EoJJCm4dPDFh6_3uK_6I.Edbp7XiywWrpZwlOc04zv3O7ISztq6XnNxZIX0gKmLM&dib_tag=se&keywords=iphone+17&qid=1770505579&sr=8-12"
+            }
+          ]
+        },
+        "brand": "Apple",
+        "title": "iPhone Air 256 GB: Thinnest iPhone Ever, 6.5 Inch Display with ProMotion up to 120 Hz, Strong A19 Pro Chip, Centre Stage Front Camera, Battery for All Day, eSim; Space Black",
+        "link": "https://www.amazon.de/-/en/Apple-iPhone-Air-256-ProMotion/dp/B0FQG944KG/ref=sr_1_12?dib=eyJ2IjoiMSJ9.uxdFAk24jkJqSEool3EmGxBt-N882rcOVCJITj4oq2AHYRFl1TKvu_zcfW7igMpKxMJnLIaJeeA37Yj1aWB9oRGkP1xxgQ5HOfIUZadYaq-d-IR6dJWemuesVxdbEWYKO_rZT7GvNGGw_9zta_7c-52_RKXrYvjPE2Dz52vt8n62JKqavYp-5WNd7Tya8s85f7i20gs03vokk-oiXkMsql_EoJJCm4dPDFh6_3uK_6I.Edbp7XiywWrpZwlOc04zv3O7ISztq6XnNxZIX0gKmLM&dib_tag=se&keywords=iphone+17&qid=1770505579&sr=8-12",
+        "link_clean": "https://www.amazon.de/-/en/Apple-iPhone-Air-256-ProMotion/dp/B0FQG944KG/",
+        "serpapi_link": "https://serpapi.com/search.json?amazon_domain=amazon.de&asin=B0FQG944KG&device=desktop&engine=amazon_product&language=en_GB",
+        "thumbnail": "https://m.media-amazon.com/images/I/61l9SovyFUL._AC_UY218_.jpg",
+        "rating": 4.6,
+        "reviews": 275,
+        "price": "€899.00",
+        "extracted_price": 899.0,
+        "old_price": "€1,199.00",
+        "extracted_old_price": 1199.0,
+        "offers": [
+          "Get 60 days of Audible free"
+        ],
+        "specs": {
+          "operating_system": "iOS",
+          "display_size": "6.5 inches",
+          "capacity": "256 GB",
+          "optical_sensor_resolution": "-"
+        },
+        "delivery": [
+          "FREE delivery Wed 11 Feb",
+          "Or fastest delivery Tue 10 Feb"
+        ],
+        "climate_pledge_friendly": true,
+        "sustainability_features": [
+          {
+            "position": 1,
+            "name": "Energy efficiency",
+            "snippet": "Conserves energy compared to similar products.",
+            "thumbnail": "https://m.media-amazon.com/images/I/31A2GobGL-L._SS200_.png",
+            "certified_by": "Energy Label",
+            "certified_info": "EU Energy Label provides an indication of a product's energy efficiency and can also give specific data about other relevant features of usage, such as the product's noise emissions or water consumption. This makes it easier for consumers to save money on their household energy bills and contributes to reducing greenhouse gas emissions across the EU and UK. Climate Pledge Friendly is highlighting EU and UK energy label ratings of A, B, and C on the A-G scale only to identify the products which are rated more energy efficient than others."
+          }
+        ]
+      },
+      {
+        "position": 13,
+        "asin": "B0FQFQF7SN",
+        "options": "4 sizes",
+        "options_link": "https://www.amazon.de/-/en/Apple-iPhone-Pro-Max-256/dp/B0FQFQF7SN/ref=vo_sr_l_dp?dib=eyJ2IjoiMSJ9.uxdFAk24jkJqSEool3EmGxBt-N882rcOVCJITj4oq2AHYRFl1TKvu_zcfW7igMpKxMJnLIaJeeA37Yj1aWB9oRGkP1xxgQ5HOfIUZadYaq-d-IR6dJWemuesVxdbEWYKO_rZT7GvNGGw_9zta_7c-52_RKXrYvjPE2Dz52vt8n62JKqavYp-5WNd7Tya8s85f7i20gs03vokk-oiXkMsql_EoJJCm4dPDFh6_3uK_6I.Edbp7XiywWrpZwlOc04zv3O7ISztq6XnNxZIX0gKmLM&dib_tag=se&keywords=iphone+17&qid=1770505579&sr=8-13",
+        "variants": {
+          "options": [
+            {
+              "position": 1,
+              "asin": "B0FQFQF7SN",
+              "title": "Cosmic Orange",
+              "link": "https://www.amazon.de/-/en/Apple-iPhone-Pro-Max-256/dp/B0FQFQF7SN/ref=cs_sr_dp_1?dib=eyJ2IjoiMSJ9.uxdFAk24jkJqSEool3EmGxBt-N882rcOVCJITj4oq2AHYRFl1TKvu_zcfW7igMpKxMJnLIaJeeA37Yj1aWB9oRGkP1xxgQ5HOfIUZadYaq-d-IR6dJWemuesVxdbEWYKO_rZT7GvNGGw_9zta_7c-52_RKXrYvjPE2Dz52vt8n62JKqavYp-5WNd7Tya8s85f7i20gs03vokk-oiXkMsql_EoJJCm4dPDFh6_3uK_6I.Edbp7XiywWrpZwlOc04zv3O7ISztq6XnNxZIX0gKmLM&dib_tag=se&keywords=iphone+17&qid=1770505579&sr=8-13"
+            },
+            {
+              "position": 2,
+              "asin": "B0FQFWJV34",
+              "title": "silver",
+              "link": "https://www.amazon.de/-/en/Apple-iPhone-Pro-Max-256/dp/B0FQFWJV34/ref=cs_sr_dp_2?dib=eyJ2IjoiMSJ9.uxdFAk24jkJqSEool3EmGxBt-N882rcOVCJITj4oq2AHYRFl1TKvu_zcfW7igMpKxMJnLIaJeeA37Yj1aWB9oRGkP1xxgQ5HOfIUZadYaq-d-IR6dJWemuesVxdbEWYKO_rZT7GvNGGw_9zta_7c-52_RKXrYvjPE2Dz52vt8n62JKqavYp-5WNd7Tya8s85f7i20gs03vokk-oiXkMsql_EoJJCm4dPDFh6_3uK_6I.Edbp7XiywWrpZwlOc04zv3O7ISztq6XnNxZIX0gKmLM&dib_tag=se&keywords=iphone+17&qid=1770505579&sr=8-13"
+            },
+            {
+              "position": 3,
+              "asin": "B0FQG1TSY1",
+              "title": "Deep blue",
+              "link": "https://www.amazon.de/-/en/Apple-iPhone-Pro-Max-256/dp/B0FQG1TSY1/ref=cs_sr_dp_3?dib=eyJ2IjoiMSJ9.uxdFAk24jkJqSEool3EmGxBt-N882rcOVCJITj4oq2AHYRFl1TKvu_zcfW7igMpKxMJnLIaJeeA37Yj1aWB9oRGkP1xxgQ5HOfIUZadYaq-d-IR6dJWemuesVxdbEWYKO_rZT7GvNGGw_9zta_7c-52_RKXrYvjPE2Dz52vt8n62JKqavYp-5WNd7Tya8s85f7i20gs03vokk-oiXkMsql_EoJJCm4dPDFh6_3uK_6I.Edbp7XiywWrpZwlOc04zv3O7ISztq6XnNxZIX0gKmLM&dib_tag=se&keywords=iphone+17&qid=1770505579&sr=8-13"
+            }
+          ]
+        },
+        "brand": "Apple",
+        "title": "iPhone 17 Pro Max 256 GB: 6.9 Inch Display with ProMotion, A19 Pro Chip, Best Battery Life Ever in an iPhone, Pro Fusion Camera System, Center Stage Front Camera, Cosmic Orange",
+        "link": "https://www.amazon.de/-/en/Apple-iPhone-Pro-Max-256/dp/B0FQFQF7SN/ref=sr_1_13?dib=eyJ2IjoiMSJ9.uxdFAk24jkJqSEool3EmGxBt-N882rcOVCJITj4oq2AHYRFl1TKvu_zcfW7igMpKxMJnLIaJeeA37Yj1aWB9oRGkP1xxgQ5HOfIUZadYaq-d-IR6dJWemuesVxdbEWYKO_rZT7GvNGGw_9zta_7c-52_RKXrYvjPE2Dz52vt8n62JKqavYp-5WNd7Tya8s85f7i20gs03vokk-oiXkMsql_EoJJCm4dPDFh6_3uK_6I.Edbp7XiywWrpZwlOc04zv3O7ISztq6XnNxZIX0gKmLM&dib_tag=se&keywords=iphone+17&qid=1770505579&sr=8-13",
+        "link_clean": "https://www.amazon.de/-/en/Apple-iPhone-Pro-Max-256/dp/B0FQFQF7SN/",
+        "serpapi_link": "https://serpapi.com/search.json?amazon_domain=amazon.de&asin=B0FQFQF7SN&device=desktop&engine=amazon_product&language=en_GB",
+        "thumbnail": "https://m.media-amazon.com/images/I/71YBR7rf6sL._AC_UY218_.jpg",
+        "rating": 4.6,
+        "reviews": 507,
+        "bought_last_month": "500+ bought in past month",
+        "price": "€1,405.99",
+        "extracted_price": 1405.99,
+        "old_price": "€1,449.00",
+        "extracted_old_price": 1449.0,
+        "offers": [
+          "Get 60 days of Audible free"
+        ],
+        "specs": {
+          "operating_system": "iOS",
+          "display_size": "6.9 inches",
+          "capacity": "256 GB",
+          "optical_sensor_resolution": "-"
+        },
+        "delivery": [
+          "FREE delivery Wed 11 Feb",
+          "Or fastest delivery Tue 10 Feb"
+        ],
+        "climate_pledge_friendly": true,
+        "sustainability_features": [
+          {
+            "position": 1,
+            "name": "Energy efficiency",
+            "snippet": "Conserves energy compared to similar products.",
+            "thumbnail": "https://m.media-amazon.com/images/I/31A2GobGL-L._SS200_.png",
+            "certified_by": "Energy Label",
+            "certified_info": "EU Energy Label provides an indication of a product's energy efficiency and can also give specific data about other relevant features of usage, such as the product's noise emissions or water consumption. This makes it easier for consumers to save money on their household energy bills and contributes to reducing greenhouse gas emissions across the EU and UK. Climate Pledge Friendly is highlighting EU and UK energy label ratings of A, B, and C on the A-G scale only to identify the products which are rated more energy efficient than others."
+          }
+        ]
+      },
+      {
+        "position": 14,
+        "asin": "B0FGC9J6PL",
+        "sponsored": true,
+        "options": "4 sizes",
+        "options_link": "https://www.amazon.de/-/en/sspa/click?ie=UTF8&spc=MToyMzA4MTExMjg4MDY3MTc6MTc3MDUwNTU3OTpzcF9tdGY6MzAwODE5ODIxNzk1MjMyOjowOjo&url=%2FSHIELDON-Genuine-Removable-Wireless-Charging-Retro-brown%2Fdp%2FB0FGC9J6PL%2Fref%3Dsr_1_14_sspa_vo_sr_l_dp%3Fdib%3DeyJ2IjoiMSJ9.uxdFAk24jkJqSEool3EmGxBt-N882rcOVCJITj4oq2AHYRFl1TKvu_zcfW7igMpKxMJnLIaJeeA37Yj1aWB9oRGkP1xxgQ5HOfIUZadYaq-d-IR6dJWemuesVxdbEWYKO_rZT7GvNGGw_9zta_7c-52_RKXrYvjPE2Dz52vt8n62JKqavYp-5WNd7Tya8s85f7i20gs03vokk-oiXkMsql_EoJJCm4dPDFh6_3uK_6I.Edbp7XiywWrpZwlOc04zv3O7ISztq6XnNxZIX0gKmLM%26dib_tag%3Dse%26keywords%3Diphone%2B17%26qid%3D1770505579%26sr%3D8-14-spons%26aref%3DJBmivCm3f1%26sp_csd%3Dd2lkZ2V0TmFtZT1zcF9tdGY%26psc%3D1&aref=JBmivCm3f1&sp_cr=DUB",
+        "variants": {
+          "more_variants": "+14 other colours/patterns",
+          "more_variants_link": "https://www.amazon.de/-/en/sspa/click?ie=UTF8&spc=MToyMzA4MTExMjg4MDY3MTc6MTc3MDUwNTU3OTpzcF9tdGY6MzAwODE5ODIxNzk1MjMyOjowOjo&url=%2FSHIELDON-Genuine-Removable-Wireless-Charging-Retro-brown%2Fdp%2FB0FGC9J6PL%2Fref%3Dsr_1_14_sspa%3Fdib%3DeyJ2IjoiMSJ9.uxdFAk24jkJqSEool3EmGxBt-N882rcOVCJITj4oq2AHYRFl1TKvu_zcfW7igMpKxMJnLIaJeeA37Yj1aWB9oRGkP1xxgQ5HOfIUZadYaq-d-IR6dJWemuesVxdbEWYKO_rZT7GvNGGw_9zta_7c-52_RKXrYvjPE2Dz52vt8n62JKqavYp-5WNd7Tya8s85f7i20gs03vokk-oiXkMsql_EoJJCm4dPDFh6_3uK_6I.Edbp7XiywWrpZwlOc04zv3O7ISztq6XnNxZIX0gKmLM%26dib_tag%3Dse%26keywords%3Diphone%2B17%26qid%3D1770505579%26sr%3D8-14-spons%26aref%3DJBmivCm3f1%26sp_csd%3Dd2lkZ2V0TmFtZT1zcF9tdGY%26psc%3D1&aref=JBmivCm3f1&sp_cr=DUB"
+        },
+        "brand": "SHIELDON",
+        "title": "Case for iPhone 17 6.3 Inch 2025, 2-in-1 Genuine Leather Case [Removable] [3 Card Slots] [Wireless Charging] [Stand] [RFID Blocker] [Mobile Phone Eyelets] [Magnet] Flip Case - Retro Brown",
+        "link": "https://www.amazon.de/-/en/sspa/click?ie=UTF8&spc=MToyMzA4MTExMjg4MDY3MTc6MTc3MDUwNTU3OTpzcF9tdGY6MzAwODE5ODIxNzk1MjMyOjowOjo&url=%2FSHIELDON-Genuine-Removable-Wireless-Charging-Retro-brown%2Fdp%2FB0FGC9J6PL%2Fref%3Dsr_1_14_sspa%3Fdib%3DeyJ2IjoiMSJ9.uxdFAk24jkJqSEool3EmGxBt-N882rcOVCJITj4oq2AHYRFl1TKvu_zcfW7igMpKxMJnLIaJeeA37Yj1aWB9oRGkP1xxgQ5HOfIUZadYaq-d-IR6dJWemuesVxdbEWYKO_rZT7GvNGGw_9zta_7c-52_RKXrYvjPE2Dz52vt8n62JKqavYp-5WNd7Tya8s85f7i20gs03vokk-oiXkMsql_EoJJCm4dPDFh6_3uK_6I.Edbp7XiywWrpZwlOc04zv3O7ISztq6XnNxZIX0gKmLM%26dib_tag%3Dse%26keywords%3Diphone%2B17%26qid%3D1770505579%26sr%3D8-14-spons%26aref%3DJBmivCm3f1%26sp_csd%3Dd2lkZ2V0TmFtZT1zcF9tdGY%26psc%3D1&aref=JBmivCm3f1&sp_cr=DUB",
+        "link_clean": "https://www.amazon.de/dp/B0FGC9J6PL/",
+        "serpapi_link": "https://serpapi.com/search.json?amazon_domain=amazon.de&asin=B0FGC9J6PL&device=desktop&engine=amazon_product&language=en_GB",
+        "thumbnail": "https://m.media-amazon.com/images/I/81mDD4bfonL._AC_UY218_.jpg",
+        "rating": 4.5,
+        "reviews": 660,
+        "price": "€39.99",
+        "extracted_price": 39.99,
+        "save_with_coupon": "Save €2.00 with voucher",
+        "delivery": [
+          "FREE delivery Wed 11 Feb",
+          "Or fastest delivery Tue 10 Feb"
+        ]
+      },
+      {
+        "position": 15,
+        "asin": "B0DGHY5KG8",
+        "options": "3 sizes",
+        "options_link": "https://www.amazon.de/-/en/Apple-iPhone-16-128GB-Battery/dp/B0DGHY5KG8/ref=vo_sr_l_dp?dib=eyJ2IjoiMSJ9.uxdFAk24jkJqSEool3EmGxBt-N882rcOVCJITj4oq2AHYRFl1TKvu_zcfW7igMpKxMJnLIaJeeA37Yj1aWB9oRGkP1xxgQ5HOfIUZadYaq-d-IR6dJWemuesVxdbEWYKO_rZT7GvNGGw_9zta_7c-52_RKXrYvjPE2Dz52vt8n62JKqavYp-5WNd7Tya8s85f7i20gs03vokk-oiXkMsql_EoJJCm4dPDFh6_3uK_6I.Edbp7XiywWrpZwlOc04zv3O7ISztq6XnNxZIX0gKmLM&dib_tag=se&keywords=iphone+17&qid=1770505579&sr=8-15",
+        "variants": {
+          "options": [
+            {
+              "position": 1,
+              "asin": "B0DGHY5KG8",
+              "title": "black",
+              "link": "https://www.amazon.de/-/en/Apple-iPhone-16-128GB-Battery/dp/B0DGHY5KG8/ref=cs_sr_dp_1?dib=eyJ2IjoiMSJ9.uxdFAk24jkJqSEool3EmGxBt-N882rcOVCJITj4oq2AHYRFl1TKvu_zcfW7igMpKxMJnLIaJeeA37Yj1aWB9oRGkP1xxgQ5HOfIUZadYaq-d-IR6dJWemuesVxdbEWYKO_rZT7GvNGGw_9zta_7c-52_RKXrYvjPE2Dz52vt8n62JKqavYp-5WNd7Tya8s85f7i20gs03vokk-oiXkMsql_EoJJCm4dPDFh6_3uK_6I.Edbp7XiywWrpZwlOc04zv3O7ISztq6XnNxZIX0gKmLM&dib_tag=se&keywords=iphone+17&qid=1770505579&sr=8-15"
+            },
+            {
+              "position": 2,
+              "asin": "B0DGTDWCDG",
+              "title": "blue-green",
+              "link": "https://www.amazon.de/-/en/Apple-iPhone-16-128GB-Battery/dp/B0DGTDWCDG/ref=cs_sr_dp_2?dib=eyJ2IjoiMSJ9.uxdFAk24jkJqSEool3EmGxBt-N882rcOVCJITj4oq2AHYRFl1TKvu_zcfW7igMpKxMJnLIaJeeA37Yj1aWB9oRGkP1xxgQ5HOfIUZadYaq-d-IR6dJWemuesVxdbEWYKO_rZT7GvNGGw_9zta_7c-52_RKXrYvjPE2Dz52vt8n62JKqavYp-5WNd7Tya8s85f7i20gs03vokk-oiXkMsql_EoJJCm4dPDFh6_3uK_6I.Edbp7XiywWrpZwlOc04zv3O7ISztq6XnNxZIX0gKmLM&dib_tag=se&keywords=iphone+17&qid=1770505579&sr=8-15"
+            },
+            {
+              "position": 3,
+              "asin": "B0DGTCGG7B",
+              "title": "rosé",
+              "link": "https://www.amazon.de/-/en/Apple-iPhone-16-128GB-Battery/dp/B0DGTCGG7B/ref=cs_sr_dp_3?dib=eyJ2IjoiMSJ9.uxdFAk24jkJqSEool3EmGxBt-N882rcOVCJITj4oq2AHYRFl1TKvu_zcfW7igMpKxMJnLIaJeeA37Yj1aWB9oRGkP1xxgQ5HOfIUZadYaq-d-IR6dJWemuesVxdbEWYKO_rZT7GvNGGw_9zta_7c-52_RKXrYvjPE2Dz52vt8n62JKqavYp-5WNd7Tya8s85f7i20gs03vokk-oiXkMsql_EoJJCm4dPDFh6_3uK_6I.Edbp7XiywWrpZwlOc04zv3O7ISztq6XnNxZIX0gKmLM&dib_tag=se&keywords=iphone+17&qid=1770505579&sr=8-15"
+            },
+            {
+              "position": 4,
+              "asin": "B0DGT3V68Y",
+              "title": "ultramarine",
+              "link": "https://www.amazon.de/-/en/Apple-iPhone-16-128GB-Battery/dp/B0DGT3V68Y/ref=cs_sr_dp_4?dib=eyJ2IjoiMSJ9.uxdFAk24jkJqSEool3EmGxBt-N882rcOVCJITj4oq2AHYRFl1TKvu_zcfW7igMpKxMJnLIaJeeA37Yj1aWB9oRGkP1xxgQ5HOfIUZadYaq-d-IR6dJWemuesVxdbEWYKO_rZT7GvNGGw_9zta_7c-52_RKXrYvjPE2Dz52vt8n62JKqavYp-5WNd7Tya8s85f7i20gs03vokk-oiXkMsql_EoJJCm4dPDFh6_3uK_6I.Edbp7XiywWrpZwlOc04zv3O7ISztq6XnNxZIX0gKmLM&dib_tag=se&keywords=iphone+17&qid=1770505579&sr=8-15"
+            },
+            {
+              "position": 5,
+              "asin": "B0DGTB1BXR",
+              "title": "White",
+              "link": "https://www.amazon.de/-/en/Apple-iPhone-16-128GB-Battery/dp/B0DGTB1BXR/ref=cs_sr_dp_5?dib=eyJ2IjoiMSJ9.uxdFAk24jkJqSEool3EmGxBt-N882rcOVCJITj4oq2AHYRFl1TKvu_zcfW7igMpKxMJnLIaJeeA37Yj1aWB9oRGkP1xxgQ5HOfIUZadYaq-d-IR6dJWemuesVxdbEWYKO_rZT7GvNGGw_9zta_7c-52_RKXrYvjPE2Dz52vt8n62JKqavYp-5WNd7Tya8s85f7i20gs03vokk-oiXkMsql_EoJJCm4dPDFh6_3uK_6I.Edbp7XiywWrpZwlOc04zv3O7ISztq6XnNxZIX0gKmLM&dib_tag=se&keywords=iphone+17&qid=1770505579&sr=8-15"
+            }
+          ]
+        },
+        "brand": "Apple",
+        "title": "iPhone 16 128GB: 5G Mobile Phone with Camera Control, A18 Chip and a Real Boost for Battery. Works with AirPods, Black",
+        "link": "https://www.amazon.de/-/en/Apple-iPhone-16-128GB-Battery/dp/B0DGHY5KG8/ref=sr_1_15?dib=eyJ2IjoiMSJ9.uxdFAk24jkJqSEool3EmGxBt-N882rcOVCJITj4oq2AHYRFl1TKvu_zcfW7igMpKxMJnLIaJeeA37Yj1aWB9oRGkP1xxgQ5HOfIUZadYaq-d-IR6dJWemuesVxdbEWYKO_rZT7GvNGGw_9zta_7c-52_RKXrYvjPE2Dz52vt8n62JKqavYp-5WNd7Tya8s85f7i20gs03vokk-oiXkMsql_EoJJCm4dPDFh6_3uK_6I.Edbp7XiywWrpZwlOc04zv3O7ISztq6XnNxZIX0gKmLM&dib_tag=se&keywords=iphone+17&qid=1770505579&sr=8-15",
+        "link_clean": "https://www.amazon.de/-/en/Apple-iPhone-16-128GB-Battery/dp/B0DGHY5KG8/",
+        "serpapi_link": "https://serpapi.com/search.json?amazon_domain=amazon.de&asin=B0DGHY5KG8&device=desktop&engine=amazon_product&language=en_GB",
+        "thumbnail": "https://m.media-amazon.com/images/I/619HAuZ95QL._AC_UY218_.jpg",
+        "rating": 4.6,
+        "reviews": 2200,
+        "bought_last_month": "500+ bought in past month",
+        "price": "€719.00",
+        "extracted_price": 719.0,
+        "old_price": "€849.00",
+        "extracted_old_price": 849.0,
+        "specs": {
+          "operating_system": "iOS",
+          "display_size": "6.1 inches",
+          "capacity": "128 GB",
+          "optical_sensor_resolution": "-"
+        },
+        "delivery": [
+          "FREE delivery Wed 11 Feb",
+          "Or fastest delivery Tue 10 Feb"
+        ],
+        "more_buying_choices": "€683.05 (6+ used & new offers)",
+        "more_buying_choices_link": "https://www.amazon.de/-/en/gp/offer-listing/B0DGHY5KG8/ref=sr_1_15_olp?keywords=iphone+17&dib_tag=se&dib=eyJ2IjoiMSJ9.uxdFAk24jkJqSEool3EmGxBt-N882rcOVCJITj4oq2AHYRFl1TKvu_zcfW7igMpKxMJnLIaJeeA37Yj1aWB9oRGkP1xxgQ5HOfIUZadYaq-d-IR6dJWemuesVxdbEWYKO_rZT7GvNGGw_9zta_7c-52_RKXrYvjPE2Dz52vt8n62JKqavYp-5WNd7Tya8s85f7i20gs03vokk-oiXkMsql_EoJJCm4dPDFh6_3uK_6I.Edbp7XiywWrpZwlOc04zv3O7ISztq6XnNxZIX0gKmLM&qid=1770505579&sr=8-15",
+        "climate_pledge_friendly": true,
+        "sustainability_features": [
+          {
+            "position": 1,
+            "name": "Energy efficiency",
+            "snippet": "Conserves energy compared to similar products.",
+            "thumbnail": "https://m.media-amazon.com/images/I/31A2GobGL-L._SS200_.png",
+            "certified_by": "Energy Label",
+            "certified_info": "EU Energy Label provides an indication of a product's energy efficiency and can also give specific data about other relevant features of usage, such as the product's noise emissions or water consumption. This makes it easier for consumers to save money on their household energy bills and contributes to reducing greenhouse gas emissions across the EU and UK. Climate Pledge Friendly is highlighting EU and UK energy label ratings of A, B, and C on the A-G scale only to identify the products which are rated more energy efficient than others."
+          }
+        ]
+      },
+      {
+        "position": 16,
+        "asin": "B0FRYFDHVH",
+        "options": "2 sizes",
+        "options_link": "https://www.amazon.de/-/en/Apple-iPhone-Global-Unlocked-Refurbished-Mist-Blue/dp/B0FRYFDHVH/ref=vo_sr_l_dp?dib=eyJ2IjoiMSJ9.uxdFAk24jkJqSEool3EmGxBt-N882rcOVCJITj4oq2AHYRFl1TKvu_zcfW7igMpKxMJnLIaJeeA37Yj1aWB9oRGkP1xxgQ5HOfIUZadYaq-d-IR6dJWemuesVxdbEWYKO_rZT7GvNGGw_9zta_7c-52_RKXrYvjPE2Dz52vt8n62JKqavYp-5WNd7Tya8s85f7i20gs03vokk-oiXkMsql_EoJJCm4dPDFh6_3uK_6I.Edbp7XiywWrpZwlOc04zv3O7ISztq6XnNxZIX0gKmLM&dib_tag=se&keywords=iphone+17&qid=1770505579&sr=8-16",
+        "variants": {
+          "options": [
+            {
+              "position": 1,
+              "asin": "B0FRYFDHVH",
+              "title": "Mist Blue",
+              "link": "https://www.amazon.de/-/en/Apple-iPhone-Global-Unlocked-Refurbished-Mist-Blue/dp/B0FRYFDHVH/ref=cs_sr_dp_1?dib=eyJ2IjoiMSJ9.uxdFAk24jkJqSEool3EmGxBt-N882rcOVCJITj4oq2AHYRFl1TKvu_zcfW7igMpKxMJnLIaJeeA37Yj1aWB9oRGkP1xxgQ5HOfIUZadYaq-d-IR6dJWemuesVxdbEWYKO_rZT7GvNGGw_9zta_7c-52_RKXrYvjPE2Dz52vt8n62JKqavYp-5WNd7Tya8s85f7i20gs03vokk-oiXkMsql_EoJJCm4dPDFh6_3uK_6I.Edbp7XiywWrpZwlOc04zv3O7ISztq6XnNxZIX0gKmLM&dib_tag=se&keywords=iphone+17&qid=1770505579&sr=8-16"
+            },
+            {
+              "position": 2,
+              "asin": "B0FRYC8YZC",
+              "title": "lavender",
+              "link": "https://www.amazon.de/-/en/Apple-iPhone-Global-Unlocked-Refurbished-Mist-Blue/dp/B0FRYC8YZC/ref=cs_sr_dp_2?dib=eyJ2IjoiMSJ9.uxdFAk24jkJqSEool3EmGxBt-N882rcOVCJITj4oq2AHYRFl1TKvu_zcfW7igMpKxMJnLIaJeeA37Yj1aWB9oRGkP1xxgQ5HOfIUZadYaq-d-IR6dJWemuesVxdbEWYKO_rZT7GvNGGw_9zta_7c-52_RKXrYvjPE2Dz52vt8n62JKqavYp-5WNd7Tya8s85f7i20gs03vokk-oiXkMsql_EoJJCm4dPDFh6_3uK_6I.Edbp7XiywWrpZwlOc04zv3O7ISztq6XnNxZIX0gKmLM&dib_tag=se&keywords=iphone+17&qid=1770505579&sr=8-16"
+            },
+            {
+              "position": 3,
+              "asin": "B0FRYFZ5NM",
+              "title": "Green (sage)",
+              "link": "https://www.amazon.de/-/en/Apple-iPhone-Global-Unlocked-Refurbished-Mist-Blue/dp/B0FRYFZ5NM/ref=cs_sr_dp_3?dib=eyJ2IjoiMSJ9.uxdFAk24jkJqSEool3EmGxBt-N882rcOVCJITj4oq2AHYRFl1TKvu_zcfW7igMpKxMJnLIaJeeA37Yj1aWB9oRGkP1xxgQ5HOfIUZadYaq-d-IR6dJWemuesVxdbEWYKO_rZT7GvNGGw_9zta_7c-52_RKXrYvjPE2Dz52vt8n62JKqavYp-5WNd7Tya8s85f7i20gs03vokk-oiXkMsql_EoJJCm4dPDFh6_3uK_6I.Edbp7XiywWrpZwlOc04zv3O7ISztq6XnNxZIX0gKmLM&dib_tag=se&keywords=iphone+17&qid=1770505579&sr=8-16"
+            },
+            {
+              "position": 4,
+              "asin": "B0FRYD9ZRY",
+              "title": "black",
+              "link": "https://www.amazon.de/-/en/Apple-iPhone-Global-Unlocked-Refurbished-Mist-Blue/dp/B0FRYD9ZRY/ref=cs_sr_dp_4?dib=eyJ2IjoiMSJ9.uxdFAk24jkJqSEool3EmGxBt-N882rcOVCJITj4oq2AHYRFl1TKvu_zcfW7igMpKxMJnLIaJeeA37Yj1aWB9oRGkP1xxgQ5HOfIUZadYaq-d-IR6dJWemuesVxdbEWYKO_rZT7GvNGGw_9zta_7c-52_RKXrYvjPE2Dz52vt8n62JKqavYp-5WNd7Tya8s85f7i20gs03vokk-oiXkMsql_EoJJCm4dPDFh6_3uK_6I.Edbp7XiywWrpZwlOc04zv3O7ISztq6XnNxZIX0gKmLM&dib_tag=se&keywords=iphone+17&qid=1770505579&sr=8-16"
+            },
+            {
+              "position": 5,
+              "asin": "B0FRYG5R77",
+              "title": "White",
+              "link": "https://www.amazon.de/-/en/Apple-iPhone-Global-Unlocked-Refurbished-Mist-Blue/dp/B0FRYG5R77/ref=cs_sr_dp_5?dib=eyJ2IjoiMSJ9.uxdFAk24jkJqSEool3EmGxBt-N882rcOVCJITj4oq2AHYRFl1TKvu_zcfW7igMpKxMJnLIaJeeA37Yj1aWB9oRGkP1xxgQ5HOfIUZadYaq-d-IR6dJWemuesVxdbEWYKO_rZT7GvNGGw_9zta_7c-52_RKXrYvjPE2Dz52vt8n62JKqavYp-5WNd7Tya8s85f7i20gs03vokk-oiXkMsql_EoJJCm4dPDFh6_3uK_6I.Edbp7XiywWrpZwlOc04zv3O7ISztq6XnNxZIX0gKmLM&dib_tag=se&keywords=iphone+17&qid=1770505579&sr=8-16"
+            }
+          ]
+        },
+        "title": "Apple iPhone 17, 256GB, SIM Global, Fog Blue Unlocked (Refurbished)",
+        "link": "https://www.amazon.de/-/en/Apple-iPhone-Global-Unlocked-Refurbished-Mist-Blue/dp/B0FRYFDHVH/ref=sr_1_16?dib=eyJ2IjoiMSJ9.uxdFAk24jkJqSEool3EmGxBt-N882rcOVCJITj4oq2AHYRFl1TKvu_zcfW7igMpKxMJnLIaJeeA37Yj1aWB9oRGkP1xxgQ5HOfIUZadYaq-d-IR6dJWemuesVxdbEWYKO_rZT7GvNGGw_9zta_7c-52_RKXrYvjPE2Dz52vt8n62JKqavYp-5WNd7Tya8s85f7i20gs03vokk-oiXkMsql_EoJJCm4dPDFh6_3uK_6I.Edbp7XiywWrpZwlOc04zv3O7ISztq6XnNxZIX0gKmLM&dib_tag=se&keywords=iphone+17&qid=1770505579&sr=8-16",
+        "link_clean": "https://www.amazon.de/-/en/Apple-iPhone-Global-Unlocked-Refurbished-Mist-Blue/dp/B0FRYFDHVH/",
+        "serpapi_link": "https://serpapi.com/search.json?amazon_domain=amazon.de&asin=B0FRYFDHVH&device=desktop&engine=amazon_product&language=en_GB",
+        "thumbnail": "https://m.media-amazon.com/images/I/41jF6OMkD8L._AC_UY218_.jpg",
+        "rating": 5.0,
+        "reviews": 2,
+        "price": "€840.00",
+        "extracted_price": 840.0,
+        "specs": {
+          "operating_system": "iOS 18",
+          "display_size": "6.3 inches",
+          "capacity": "256 GB",
+          "optical_sensor_resolution": "-"
+        },
+        "delivery": [
+          "FREE delivery 14 - 17 Feb"
+        ],
+        "stock": "Only 5 left in stock."
+      },
+      {
+        "position": 17,
+        "asin": "B0FJS7782G",
+        "options": "26 sizes",
+        "options_link": "https://www.amazon.de/-/en/TOCOL-iPhone-Scratch-Resistant-Anti-Fingerprint-Case-Compatible/dp/B0FJS7782G/ref=vo_sr_l_dp?dib=eyJ2IjoiMSJ9.uxdFAk24jkJqSEool3EmGxBt-N882rcOVCJITj4oq2AHYRFl1TKvu_zcfW7igMpKxMJnLIaJeeA37Yj1aWB9oRGkP1xxgQ5HOfIUZadYaq-d-IR6dJWemuesVxdbEWYKO_rZT7GvNGGw_9zta_7c-52_RKXrYvjPE2Dz52vt8n62JKqavYp-5WNd7Tya8s85f7i20gs03vokk-oiXkMsql_EoJJCm4dPDFh6_3uK_6I.Edbp7XiywWrpZwlOc04zv3O7ISztq6XnNxZIX0gKmLM&dib_tag=se&keywords=iphone+17&qid=1770505579&sr=8-17",
+        "badges": [
+          "Limited time deal"
+        ],
+        "variants": {
+          "more_variants": "+1 other colour/pattern",
+          "more_variants_link": "https://www.amazon.de/-/en/TOCOL-iPhone-Scratch-Resistant-Anti-Fingerprint-Case-Compatible/dp/B0FJS7782G/ref=cs_sr_dp?dib=eyJ2IjoiMSJ9.uxdFAk24jkJqSEool3EmGxBt-N882rcOVCJITj4oq2AHYRFl1TKvu_zcfW7igMpKxMJnLIaJeeA37Yj1aWB9oRGkP1xxgQ5HOfIUZadYaq-d-IR6dJWemuesVxdbEWYKO_rZT7GvNGGw_9zta_7c-52_RKXrYvjPE2Dz52vt8n62JKqavYp-5WNd7Tya8s85f7i20gs03vokk-oiXkMsql_EoJJCm4dPDFh6_3uK_6I.Edbp7XiywWrpZwlOc04zv3O7ISztq6XnNxZIX0gKmLM&dib_tag=se&keywords=iphone+17&qid=1770505579&sr=8-17"
+        },
+        "brand": "TOCOL",
+        "title": "Tempered Glass Screen Protector, iPhone 17/iPhone 16 Pro (7.62 cm), Car Installation, Full Screen, 9H, Shockproof, Scratch-Resistant, Anti-Fingerprint, Anti-Bubble, Case-Compatible, Pack of 2",
+        "link": "https://www.amazon.de/-/en/TOCOL-iPhone-Scratch-Resistant-Anti-Fingerprint-Case-Compatible/dp/B0FJS7782G/ref=sr_1_17?dib=eyJ2IjoiMSJ9.uxdFAk24jkJqSEool3EmGxBt-N882rcOVCJITj4oq2AHYRFl1TKvu_zcfW7igMpKxMJnLIaJeeA37Yj1aWB9oRGkP1xxgQ5HOfIUZadYaq-d-IR6dJWemuesVxdbEWYKO_rZT7GvNGGw_9zta_7c-52_RKXrYvjPE2Dz52vt8n62JKqavYp-5WNd7Tya8s85f7i20gs03vokk-oiXkMsql_EoJJCm4dPDFh6_3uK_6I.Edbp7XiywWrpZwlOc04zv3O7ISztq6XnNxZIX0gKmLM&dib_tag=se&keywords=iphone+17&qid=1770505579&sr=8-17",
+        "link_clean": "https://www.amazon.de/-/en/TOCOL-iPhone-Scratch-Resistant-Anti-Fingerprint-Case-Compatible/dp/B0FJS7782G/",
+        "serpapi_link": "https://serpapi.com/search.json?amazon_domain=amazon.de&asin=B0FJS7782G&device=desktop&engine=amazon_product&language=en_GB",
+        "thumbnail": "https://m.media-amazon.com/images/I/71fE9hQK1mL._AC_UY218_.jpg",
+        "rating": 4.3,
+        "reviews": 45500,
+        "bought_last_month": "5K+ bought in past month",
+        "price": "€8.49",
+        "extracted_price": 8.49,
+        "old_price": "€9.99",
+        "extracted_old_price": 9.99,
+        "delivery": [
+          "FREE delivery Wed 11 Feb on eligible first order",
+          "Or fastest delivery Tue 10 Feb"
+        ],
+        "climate_pledge_friendly": true,
+        "sustainability_features": [
+          {
+            "position": 1,
+            "name": "Recycled materials",
+            "snippet": "Contains at least 50% recycled material.",
+            "thumbnail": "https://m.media-amazon.com/images/I/51IhSrucIyL._SS200_.png",
+            "certified_by": "Global Recycled Standard",
+            "certified_info": "Global Recycled Standard (GRS) certified products contain recycled content that has been independently verified at each stage of the supply chain, from the source to the final product and meet social, environmental, and chemical requirements. The purchase of Global Recycled Standard (GRS) certified products supports the use of recycled content in the supply chain. A product must contain at least 50% certified GRS material to qualify for inclusion in Climate Pledge Friendly."
+          },
+          {
+            "position": 2,
+            "name": "Safer chemicals",
+            "snippet": "Made with chemicals safer for human health and the environment.",
+            "thumbnail": "https://m.media-amazon.com/images/I/51IhSrucIyL._SS200_.png",
+            "certified_by": "Global Recycled Standard",
+            "certified_info": "Global Recycled Standard (GRS) certified products contain recycled content that has been independently verified at each stage of the supply chain, from the source to the final product and meet social, environmental, and chemical requirements. The purchase of Global Recycled Standard (GRS) certified products supports the use of recycled content in the supply chain. A product must contain at least 50% certified GRS material to qualify for inclusion in Climate Pledge Friendly."
+          },
+          {
+            "position": 3,
+            "name": "Worker well-being",
+            "snippet": "Manufactured on farms or in facilities that protect the rights and/or health of workers.",
+            "thumbnail": "https://m.media-amazon.com/images/I/51IhSrucIyL._SS200_.png",
+            "certified_by": "Global Recycled Standard",
+            "certified_info": "Global Recycled Standard (GRS) certified products contain recycled content that has been independently verified at each stage of the supply chain, from the source to the final product and meet social, environmental, and chemical requirements. The purchase of Global Recycled Standard (GRS) certified products supports the use of recycled content in the supply chain. A product must contain at least 50% certified GRS material to qualify for inclusion in Climate Pledge Friendly."
+          }
+        ]
+      },
+      {
+        "position": 18,
+        "asin": "B0FFG8L7MX",
+        "options": "27 sizes",
+        "options_link": "https://www.amazon.de/-/en/TAURI-Tempered-Protection-Anti-Yellowing-Shockproof/dp/B0FFG8L7MX/ref=vo_sr_l_dp?dib=eyJ2IjoiMSJ9.uxdFAk24jkJqSEool3EmGxBt-N882rcOVCJITj4oq2AHYRFl1TKvu_zcfW7igMpKxMJnLIaJeeA37Yj1aWB9oRGkP1xxgQ5HOfIUZadYaq-d-IR6dJWemuesVxdbEWYKO_rZT7GvNGGw_9zta_7c-52_RKXrYvjPE2Dz52vt8n62JKqavYp-5WNd7Tya8s85f7i20gs03vokk-oiXkMsql_EoJJCm4dPDFh6_3uK_6I.Edbp7XiywWrpZwlOc04zv3O7ISztq6XnNxZIX0gKmLM&dib_tag=se&keywords=iphone+17&qid=1770505579&sr=8-18",
+        "badges": [
+          "Limited time deal"
+        ],
+        "variants": {
+          "options": [
+            {
+              "position": 1,
+              "asin": "B0FFG8L7MX",
+              "title": "Magnetically transparent",
+              "link": "https://www.amazon.de/-/en/TAURI-Tempered-Protection-Anti-Yellowing-Shockproof/dp/B0FFG8L7MX/ref=cs_sr_dp_1?dib=eyJ2IjoiMSJ9.uxdFAk24jkJqSEool3EmGxBt-N882rcOVCJITj4oq2AHYRFl1TKvu_zcfW7igMpKxMJnLIaJeeA37Yj1aWB9oRGkP1xxgQ5HOfIUZadYaq-d-IR6dJWemuesVxdbEWYKO_rZT7GvNGGw_9zta_7c-52_RKXrYvjPE2Dz52vt8n62JKqavYp-5WNd7Tya8s85f7i20gs03vokk-oiXkMsql_EoJJCm4dPDFh6_3uK_6I.Edbp7XiywWrpZwlOc04zv3O7ISztq6XnNxZIX0gKmLM&dib_tag=se&keywords=iphone+17&qid=1770505579&sr=8-18"
+            },
+            {
+              "position": 2,
+              "asin": "B0FFGCTNXH",
+              "title": "dark purple",
+              "link": "https://www.amazon.de/-/en/TAURI-Tempered-Protection-Anti-Yellowing-Shockproof/dp/B0FFGCTNXH/ref=cs_sr_dp_2?dib=eyJ2IjoiMSJ9.uxdFAk24jkJqSEool3EmGxBt-N882rcOVCJITj4oq2AHYRFl1TKvu_zcfW7igMpKxMJnLIaJeeA37Yj1aWB9oRGkP1xxgQ5HOfIUZadYaq-d-IR6dJWemuesVxdbEWYKO_rZT7GvNGGw_9zta_7c-52_RKXrYvjPE2Dz52vt8n62JKqavYp-5WNd7Tya8s85f7i20gs03vokk-oiXkMsql_EoJJCm4dPDFh6_3uK_6I.Edbp7XiywWrpZwlOc04zv3O7ISztq6XnNxZIX0gKmLM&dib_tag=se&keywords=iphone+17&qid=1770505579&sr=8-18"
+            },
+            {
+              "position": 3,
+              "asin": "B0FFG8ZYD3",
+              "title": "transparent",
+              "link": "https://www.amazon.de/-/en/TAURI-Tempered-Protection-Anti-Yellowing-Shockproof/dp/B0FFG8ZYD3/ref=cs_sr_dp_3?dib=eyJ2IjoiMSJ9.uxdFAk24jkJqSEool3EmGxBt-N882rcOVCJITj4oq2AHYRFl1TKvu_zcfW7igMpKxMJnLIaJeeA37Yj1aWB9oRGkP1xxgQ5HOfIUZadYaq-d-IR6dJWemuesVxdbEWYKO_rZT7GvNGGw_9zta_7c-52_RKXrYvjPE2Dz52vt8n62JKqavYp-5WNd7Tya8s85f7i20gs03vokk-oiXkMsql_EoJJCm4dPDFh6_3uK_6I.Edbp7XiywWrpZwlOc04zv3O7ISztq6XnNxZIX0gKmLM&dib_tag=se&keywords=iphone+17&qid=1770505579&sr=8-18"
+            },
+            {
+              "position": 4,
+              "asin": "B0FFG8LB29",
+              "title": "Transparent camera control",
+              "link": "https://www.amazon.de/-/en/TAURI-Tempered-Protection-Anti-Yellowing-Shockproof/dp/B0FFG8LB29/ref=cs_sr_dp_4?dib=eyJ2IjoiMSJ9.uxdFAk24jkJqSEool3EmGxBt-N882rcOVCJITj4oq2AHYRFl1TKvu_zcfW7igMpKxMJnLIaJeeA37Yj1aWB9oRGkP1xxgQ5HOfIUZadYaq-d-IR6dJWemuesVxdbEWYKO_rZT7GvNGGw_9zta_7c-52_RKXrYvjPE2Dz52vt8n62JKqavYp-5WNd7Tya8s85f7i20gs03vokk-oiXkMsql_EoJJCm4dPDFh6_3uK_6I.Edbp7XiywWrpZwlOc04zv3O7ISztq6XnNxZIX0gKmLM&dib_tag=se&keywords=iphone+17&qid=1770505579&sr=8-18"
+            },
+            {
+              "position": 5,
+              "asin": "B0FFG8D1HQ",
+              "title": "Green",
+              "link": "https://www.amazon.de/-/en/TAURI-Tempered-Protection-Anti-Yellowing-Shockproof/dp/B0FFG8D1HQ/ref=cs_sr_dp_5?dib=eyJ2IjoiMSJ9.uxdFAk24jkJqSEool3EmGxBt-N882rcOVCJITj4oq2AHYRFl1TKvu_zcfW7igMpKxMJnLIaJeeA37Yj1aWB9oRGkP1xxgQ5HOfIUZadYaq-d-IR6dJWemuesVxdbEWYKO_rZT7GvNGGw_9zta_7c-52_RKXrYvjPE2Dz52vt8n62JKqavYp-5WNd7Tya8s85f7i20gs03vokk-oiXkMsql_EoJJCm4dPDFh6_3uK_6I.Edbp7XiywWrpZwlOc04zv3O7ISztq6XnNxZIX0gKmLM&dib_tag=se&keywords=iphone+17&qid=1770505579&sr=8-18"
+            },
+            {
+              "position": 6,
+              "asin": "B0FR4825CL",
+              "title": "Magnetic transparent camera control",
+              "link": "https://www.amazon.de/-/en/TAURI-Tempered-Protection-Anti-Yellowing-Shockproof/dp/B0FR4825CL/ref=cs_sr_dp_6?dib=eyJ2IjoiMSJ9.uxdFAk24jkJqSEool3EmGxBt-N882rcOVCJITj4oq2AHYRFl1TKvu_zcfW7igMpKxMJnLIaJeeA37Yj1aWB9oRGkP1xxgQ5HOfIUZadYaq-d-IR6dJWemuesVxdbEWYKO_rZT7GvNGGw_9zta_7c-52_RKXrYvjPE2Dz52vt8n62JKqavYp-5WNd7Tya8s85f7i20gs03vokk-oiXkMsql_EoJJCm4dPDFh6_3uK_6I.Edbp7XiywWrpZwlOc04zv3O7ISztq6XnNxZIX0gKmLM&dib_tag=se&keywords=iphone+17&qid=1770505579&sr=8-18"
+            }
+          ],
+          "more_variants": "+25",
+          "more_variants_link": "https://www.amazon.de/-/en/TAURI-Tempered-Protection-Anti-Yellowing-Shockproof/dp/B0FFG8L7MX/ref=cs_sr_dp_n?dib=eyJ2IjoiMSJ9.uxdFAk24jkJqSEool3EmGxBt-N882rcOVCJITj4oq2AHYRFl1TKvu_zcfW7igMpKxMJnLIaJeeA37Yj1aWB9oRGkP1xxgQ5HOfIUZadYaq-d-IR6dJWemuesVxdbEWYKO_rZT7GvNGGw_9zta_7c-52_RKXrYvjPE2Dz52vt8n62JKqavYp-5WNd7Tya8s85f7i20gs03vokk-oiXkMsql_EoJJCm4dPDFh6_3uK_6I.Edbp7XiywWrpZwlOc04zv3O7ISztq6XnNxZIX0gKmLM&dib_tag=se&keywords=iphone+17&qid=1770505579&sr=8-18"
+        },
+        "brand": "TAURI",
+        "title": "Case for 2025 6.3 Inch with Tempered Glass Film, Military Standard Protection, [Anti-Yellowing] Shockproof Magnetic Mobile Phone Case - Transparent",
+        "link": "https://www.amazon.de/-/en/TAURI-Tempered-Protection-Anti-Yellowing-Shockproof/dp/B0FFG8L7MX/ref=sr_1_18?dib=eyJ2IjoiMSJ9.uxdFAk24jkJqSEool3EmGxBt-N882rcOVCJITj4oq2AHYRFl1TKvu_zcfW7igMpKxMJnLIaJeeA37Yj1aWB9oRGkP1xxgQ5HOfIUZadYaq-d-IR6dJWemuesVxdbEWYKO_rZT7GvNGGw_9zta_7c-52_RKXrYvjPE2Dz52vt8n62JKqavYp-5WNd7Tya8s85f7i20gs03vokk-oiXkMsql_EoJJCm4dPDFh6_3uK_6I.Edbp7XiywWrpZwlOc04zv3O7ISztq6XnNxZIX0gKmLM&dib_tag=se&keywords=iphone+17&qid=1770505579&sr=8-18",
+        "link_clean": "https://www.amazon.de/-/en/TAURI-Tempered-Protection-Anti-Yellowing-Shockproof/dp/B0FFG8L7MX/",
+        "serpapi_link": "https://serpapi.com/search.json?amazon_domain=amazon.de&asin=B0FFG8L7MX&device=desktop&engine=amazon_product&language=en_GB",
+        "thumbnail": "https://m.media-amazon.com/images/I/714jVtsF36L._AC_UY218_.jpg",
+        "rating": 4.5,
+        "reviews": 95200,
+        "bought_last_month": "4K+ bought in past month",
+        "price": "€8.49",
+        "extracted_price": 8.49,
+        "old_price": "€14.99",
+        "extracted_old_price": 14.99,
+        "delivery": [
+          "FREE delivery Wed 11 Feb on eligible first order",
+          "Or fastest delivery Tue 10 Feb"
+        ],
+        "climate_pledge_friendly": true,
+        "sustainability_features": [
+          {
+            "position": 1,
+            "name": "Recycled materials",
+            "snippet": "Contains at least 50% recycled material.",
+            "thumbnail": "https://m.media-amazon.com/images/I/51IhSrucIyL._SS200_.png",
+            "certified_by": "Global Recycled Standard",
+            "certified_info": "Global Recycled Standard (GRS) certified products contain recycled content that has been independently verified at each stage of the supply chain, from the source to the final product and meet social, environmental, and chemical requirements. The purchase of Global Recycled Standard (GRS) certified products supports the use of recycled content in the supply chain. A product must contain at least 50% certified GRS material to qualify for inclusion in Climate Pledge Friendly."
+          },
+          {
+            "position": 2,
+            "name": "Safer chemicals",
+            "snippet": "Made with chemicals safer for human health and the environment.",
+            "thumbnail": "https://m.media-amazon.com/images/I/51IhSrucIyL._SS200_.png",
+            "certified_by": "Global Recycled Standard",
+            "certified_info": "Global Recycled Standard (GRS) certified products contain recycled content that has been independently verified at each stage of the supply chain, from the source to the final product and meet social, environmental, and chemical requirements. The purchase of Global Recycled Standard (GRS) certified products supports the use of recycled content in the supply chain. A product must contain at least 50% certified GRS material to qualify for inclusion in Climate Pledge Friendly."
+          },
+          {
+            "position": 3,
+            "name": "Worker well-being",
+            "snippet": "Manufactured on farms or in facilities that protect the rights and/or health of workers.",
+            "thumbnail": "https://m.media-amazon.com/images/I/51IhSrucIyL._SS200_.png",
+            "certified_by": "Global Recycled Standard",
+            "certified_info": "Global Recycled Standard (GRS) certified products contain recycled content that has been independently verified at each stage of the supply chain, from the source to the final product and meet social, environmental, and chemical requirements. The purchase of Global Recycled Standard (GRS) certified products supports the use of recycled content in the supply chain. A product must contain at least 50% certified GRS material to qualify for inclusion in Climate Pledge Friendly."
+          }
+        ]
+      },
+      {
+        "position": 19,
+        "asin": "B0FGJ7WN81",
+        "options": "16 sizes",
+        "options_link": "https://www.amazon.de/-/en/ivoler-iPhone-17-Protection-Transparent/dp/B0FGJ7WN81/ref=vo_sr_l_dp?dib=eyJ2IjoiMSJ9.uxdFAk24jkJqSEool3EmGxBt-N882rcOVCJITj4oq2AHYRFl1TKvu_zcfW7igMpKxMJnLIaJeeA37Yj1aWB9oRGkP1xxgQ5HOfIUZadYaq-d-IR6dJWemuesVxdbEWYKO_rZT7GvNGGw_9zta_7c-52_RKXrYvjPE2Dz52vt8n62JKqavYp-5WNd7Tya8s85f7i20gs03vokk-oiXkMsql_EoJJCm4dPDFh6_3uK_6I.Edbp7XiywWrpZwlOc04zv3O7ISztq6XnNxZIX0gKmLM&dib_tag=se&keywords=iphone+17&qid=1770505579&sr=8-19",
+        "badges": [
+          "Limited time deal"
+        ],
+        "variants": {
+          "options": [
+            {
+              "position": 1,
+              "asin": "B0FGJ7WN81",
+              "title": "2-transparent",
+              "link": "https://www.amazon.de/-/en/ivoler-iPhone-17-Protection-Transparent/dp/B0FGJ7WN81/ref=cs_sr_dp_1?dib=eyJ2IjoiMSJ9.uxdFAk24jkJqSEool3EmGxBt-N882rcOVCJITj4oq2AHYRFl1TKvu_zcfW7igMpKxMJnLIaJeeA37Yj1aWB9oRGkP1xxgQ5HOfIUZadYaq-d-IR6dJWemuesVxdbEWYKO_rZT7GvNGGw_9zta_7c-52_RKXrYvjPE2Dz52vt8n62JKqavYp-5WNd7Tya8s85f7i20gs03vokk-oiXkMsql_EoJJCm4dPDFh6_3uK_6I.Edbp7XiywWrpZwlOc04zv3O7ISztq6XnNxZIX0gKmLM&dib_tag=se&keywords=iphone+17&qid=1770505579&sr=8-19"
+            },
+            {
+              "position": 2,
+              "asin": "B0FJFBLTLF",
+              "title": "lightblue",
+              "link": "https://www.amazon.de/-/en/ivoler-iPhone-17-Protection-Transparent/dp/B0FJFBLTLF/ref=cs_sr_dp_2?dib=eyJ2IjoiMSJ9.uxdFAk24jkJqSEool3EmGxBt-N882rcOVCJITj4oq2AHYRFl1TKvu_zcfW7igMpKxMJnLIaJeeA37Yj1aWB9oRGkP1xxgQ5HOfIUZadYaq-d-IR6dJWemuesVxdbEWYKO_rZT7GvNGGw_9zta_7c-52_RKXrYvjPE2Dz52vt8n62JKqavYp-5WNd7Tya8s85f7i20gs03vokk-oiXkMsql_EoJJCm4dPDFh6_3uK_6I.Edbp7XiywWrpZwlOc04zv3O7ISztq6XnNxZIX0gKmLM&dib_tag=se&keywords=iphone+17&qid=1770505579&sr=8-19"
+            },
+            {
+              "position": 3,
+              "asin": "B0FJFF43TY",
+              "title": "black",
+              "link": "https://www.amazon.de/-/en/ivoler-iPhone-17-Protection-Transparent/dp/B0FJFF43TY/ref=cs_sr_dp_3?dib=eyJ2IjoiMSJ9.uxdFAk24jkJqSEool3EmGxBt-N882rcOVCJITj4oq2AHYRFl1TKvu_zcfW7igMpKxMJnLIaJeeA37Yj1aWB9oRGkP1xxgQ5HOfIUZadYaq-d-IR6dJWemuesVxdbEWYKO_rZT7GvNGGw_9zta_7c-52_RKXrYvjPE2Dz52vt8n62JKqavYp-5WNd7Tya8s85f7i20gs03vokk-oiXkMsql_EoJJCm4dPDFh6_3uK_6I.Edbp7XiywWrpZwlOc04zv3O7ISztq6XnNxZIX0gKmLM&dib_tag=se&keywords=iphone+17&qid=1770505579&sr=8-19"
+            },
+            {
+              "position": 4,
+              "asin": "B0FJFDLMR1",
+              "title": "titanium",
+              "link": "https://www.amazon.de/-/en/ivoler-iPhone-17-Protection-Transparent/dp/B0FJFDLMR1/ref=cs_sr_dp_4?dib=eyJ2IjoiMSJ9.uxdFAk24jkJqSEool3EmGxBt-N882rcOVCJITj4oq2AHYRFl1TKvu_zcfW7igMpKxMJnLIaJeeA37Yj1aWB9oRGkP1xxgQ5HOfIUZadYaq-d-IR6dJWemuesVxdbEWYKO_rZT7GvNGGw_9zta_7c-52_RKXrYvjPE2Dz52vt8n62JKqavYp-5WNd7Tya8s85f7i20gs03vokk-oiXkMsql_EoJJCm4dPDFh6_3uK_6I.Edbp7XiywWrpZwlOc04zv3O7ISztq6XnNxZIX0gKmLM&dib_tag=se&keywords=iphone+17&qid=1770505579&sr=8-19"
+            },
+            {
+              "position": 5,
+              "asin": "B0FGJ7FMHN",
+              "title": "transparent",
+              "link": "https://www.amazon.de/-/en/ivoler-iPhone-17-Protection-Transparent/dp/B0FGJ7FMHN/ref=cs_sr_dp_5?dib=eyJ2IjoiMSJ9.uxdFAk24jkJqSEool3EmGxBt-N882rcOVCJITj4oq2AHYRFl1TKvu_zcfW7igMpKxMJnLIaJeeA37Yj1aWB9oRGkP1xxgQ5HOfIUZadYaq-d-IR6dJWemuesVxdbEWYKO_rZT7GvNGGw_9zta_7c-52_RKXrYvjPE2Dz52vt8n62JKqavYp-5WNd7Tya8s85f7i20gs03vokk-oiXkMsql_EoJJCm4dPDFh6_3uK_6I.Edbp7XiywWrpZwlOc04zv3O7ISztq6XnNxZIX0gKmLM&dib_tag=se&keywords=iphone+17&qid=1770505579&sr=8-19"
+            },
+            {
+              "position": 6,
+              "asin": "B0BKGJ8TB7",
+              "title": "blue",
+              "link": "https://www.amazon.de/-/en/ivoler-iPhone-17-Protection-Transparent/dp/B0BKGJ8TB7/ref=cs_sr_dp_6?dib=eyJ2IjoiMSJ9.uxdFAk24jkJqSEool3EmGxBt-N882rcOVCJITj4oq2AHYRFl1TKvu_zcfW7igMpKxMJnLIaJeeA37Yj1aWB9oRGkP1xxgQ5HOfIUZadYaq-d-IR6dJWemuesVxdbEWYKO_rZT7GvNGGw_9zta_7c-52_RKXrYvjPE2Dz52vt8n62JKqavYp-5WNd7Tya8s85f7i20gs03vokk-oiXkMsql_EoJJCm4dPDFh6_3uK_6I.Edbp7XiywWrpZwlOc04zv3O7ISztq6XnNxZIX0gKmLM&dib_tag=se&keywords=iphone+17&qid=1770505579&sr=8-19"
+            }
+          ],
+          "more_variants": "+8",
+          "more_variants_link": "https://www.amazon.de/-/en/ivoler-iPhone-17-Protection-Transparent/dp/B0FGJ7WN81/ref=cs_sr_dp_n?dib=eyJ2IjoiMSJ9.uxdFAk24jkJqSEool3EmGxBt-N882rcOVCJITj4oq2AHYRFl1TKvu_zcfW7igMpKxMJnLIaJeeA37Yj1aWB9oRGkP1xxgQ5HOfIUZadYaq-d-IR6dJWemuesVxdbEWYKO_rZT7GvNGGw_9zta_7c-52_RKXrYvjPE2Dz52vt8n62JKqavYp-5WNd7Tya8s85f7i20gs03vokk-oiXkMsql_EoJJCm4dPDFh6_3uK_6I.Edbp7XiywWrpZwlOc04zv3O7ISztq6XnNxZIX0gKmLM&dib_tag=se&keywords=iphone+17&qid=1770505579&sr=8-19"
+        },
+        "brand": "ivoler",
+        "title": "Never Yellowing Clear Case for iPhone 17 6.3 Inch, with 2 Pieces Tempered Glass Protection, Military Protection, Shockproof, Transparent Protective Case, Mobile Phone Case",
+        "link": "https://www.amazon.de/-/en/ivoler-iPhone-17-Protection-Transparent/dp/B0FGJ7WN81/ref=sr_1_19?dib=eyJ2IjoiMSJ9.uxdFAk24jkJqSEool3EmGxBt-N882rcOVCJITj4oq2AHYRFl1TKvu_zcfW7igMpKxMJnLIaJeeA37Yj1aWB9oRGkP1xxgQ5HOfIUZadYaq-d-IR6dJWemuesVxdbEWYKO_rZT7GvNGGw_9zta_7c-52_RKXrYvjPE2Dz52vt8n62JKqavYp-5WNd7Tya8s85f7i20gs03vokk-oiXkMsql_EoJJCm4dPDFh6_3uK_6I.Edbp7XiywWrpZwlOc04zv3O7ISztq6XnNxZIX0gKmLM&dib_tag=se&keywords=iphone+17&qid=1770505579&sr=8-19",
+        "link_clean": "https://www.amazon.de/-/en/ivoler-iPhone-17-Protection-Transparent/dp/B0FGJ7WN81/",
+        "serpapi_link": "https://serpapi.com/search.json?amazon_domain=amazon.de&asin=B0FGJ7WN81&device=desktop&engine=amazon_product&language=en_GB",
+        "thumbnail": "https://m.media-amazon.com/images/I/71cBzleSE3L._AC_UY218_.jpg",
+        "rating": 4.4,
+        "reviews": 19900,
+        "bought_last_month": "2K+ bought in past month",
+        "price": "€7.34",
+        "extracted_price": 7.34,
+        "old_price": "€8.99",
+        "extracted_old_price": 8.99,
+        "delivery": [
+          "FREE delivery Wed 11 Feb on eligible first order",
+          "Or fastest delivery Tue 10 Feb"
+        ],
+        "climate_pledge_friendly": true,
+        "sustainability_features": [
+          {
+            "position": 1,
+            "name": "Recycled materials",
+            "snippet": "Contains at least 50% recycled material.",
+            "thumbnail": "https://m.media-amazon.com/images/I/51IhSrucIyL._SS200_.png",
+            "certified_by": "Global Recycled Standard",
+            "certified_info": "Global Recycled Standard (GRS) certified products contain recycled content that has been independently verified at each stage of the supply chain, from the source to the final product and meet social, environmental, and chemical requirements. The purchase of Global Recycled Standard (GRS) certified products supports the use of recycled content in the supply chain. A product must contain at least 50% certified GRS material to qualify for inclusion in Climate Pledge Friendly."
+          },
+          {
+            "position": 2,
+            "name": "Safer chemicals",
+            "snippet": "Made with chemicals safer for human health and the environment.",
+            "thumbnail": "https://m.media-amazon.com/images/I/51IhSrucIyL._SS200_.png",
+            "certified_by": "Global Recycled Standard",
+            "certified_info": "Global Recycled Standard (GRS) certified products contain recycled content that has been independently verified at each stage of the supply chain, from the source to the final product and meet social, environmental, and chemical requirements. The purchase of Global Recycled Standard (GRS) certified products supports the use of recycled content in the supply chain. A product must contain at least 50% certified GRS material to qualify for inclusion in Climate Pledge Friendly."
+          },
+          {
+            "position": 3,
+            "name": "Worker well-being",
+            "snippet": "Manufactured on farms or in facilities that protect the rights and/or health of workers.",
+            "thumbnail": "https://m.media-amazon.com/images/I/51IhSrucIyL._SS200_.png",
+            "certified_by": "Global Recycled Standard",
+            "certified_info": "Global Recycled Standard (GRS) certified products contain recycled content that has been independently verified at each stage of the supply chain, from the source to the final product and meet social, environmental, and chemical requirements. The purchase of Global Recycled Standard (GRS) certified products supports the use of recycled content in the supply chain. A product must contain at least 50% certified GRS material to qualify for inclusion in Climate Pledge Friendly."
+          }
+        ]
+      },
+      {
+        "position": 20,
+        "asin": "B0FJYD7L88",
+        "options": "8 sizes",
+        "options_link": "https://www.amazon.de/-/en/JETech-Protector-Tempered-Anti-Scratch-Transparent/dp/B0FJYD7L88/ref=vo_sr_l_dp?dib=eyJ2IjoiMSJ9.uxdFAk24jkJqSEool3EmGxBt-N882rcOVCJITj4oq2AHYRFl1TKvu_zcfW7igMpKxMJnLIaJeeA37Yj1aWB9oRGkP1xxgQ5HOfIUZadYaq-d-IR6dJWemuesVxdbEWYKO_rZT7GvNGGw_9zta_7c-52_RKXrYvjPE2Dz52vt8n62JKqavYp-5WNd7Tya8s85f7i20gs03vokk-oiXkMsql_EoJJCm4dPDFh6_3uK_6I.Edbp7XiywWrpZwlOc04zv3O7ISztq6XnNxZIX0gKmLM&dib_tag=se&keywords=iphone+17&qid=1770505579&sr=8-20",
+        "brand": "JETech",
+        "title": "Camera Protector for iPhone 17 6.3 Inch, 9H Tempered Glass, Anti-Scratch, Does Not Affect the Case, Does Not Affect Night Shooting, HD Clear, Pack of 3 (Transparent)",
+        "link": "https://www.amazon.de/-/en/JETech-Protector-Tempered-Anti-Scratch-Transparent/dp/B0FJYD7L88/ref=sr_1_20?dib=eyJ2IjoiMSJ9.uxdFAk24jkJqSEool3EmGxBt-N882rcOVCJITj4oq2AHYRFl1TKvu_zcfW7igMpKxMJnLIaJeeA37Yj1aWB9oRGkP1xxgQ5HOfIUZadYaq-d-IR6dJWemuesVxdbEWYKO_rZT7GvNGGw_9zta_7c-52_RKXrYvjPE2Dz52vt8n62JKqavYp-5WNd7Tya8s85f7i20gs03vokk-oiXkMsql_EoJJCm4dPDFh6_3uK_6I.Edbp7XiywWrpZwlOc04zv3O7ISztq6XnNxZIX0gKmLM&dib_tag=se&keywords=iphone+17&qid=1770505579&sr=8-20",
+        "link_clean": "https://www.amazon.de/-/en/JETech-Protector-Tempered-Anti-Scratch-Transparent/dp/B0FJYD7L88/",
+        "serpapi_link": "https://serpapi.com/search.json?amazon_domain=amazon.de&asin=B0FJYD7L88&device=desktop&engine=amazon_product&language=en_GB",
+        "thumbnail": "https://m.media-amazon.com/images/I/61qGtRAaR5L._AC_UY218_.jpg",
+        "rating": 4.4,
+        "reviews": 13900,
+        "bought_last_month": "1K+ bought in past month",
+        "price": "€8.99",
+        "extracted_price": 8.99,
+        "delivery": [
+          "FREE delivery Wed 11 Feb on eligible first order",
+          "Or fastest delivery Tue 10 Feb"
+        ],
+        "more_buying_choices": "€6.74 (2+ used & new offers)",
+        "more_buying_choices_link": "https://www.amazon.de/-/en/gp/offer-listing/B0FJYD7L88/ref=sr_1_20_olp?keywords=iphone+17&dib_tag=se&dib=eyJ2IjoiMSJ9.uxdFAk24jkJqSEool3EmGxBt-N882rcOVCJITj4oq2AHYRFl1TKvu_zcfW7igMpKxMJnLIaJeeA37Yj1aWB9oRGkP1xxgQ5HOfIUZadYaq-d-IR6dJWemuesVxdbEWYKO_rZT7GvNGGw_9zta_7c-52_RKXrYvjPE2Dz52vt8n62JKqavYp-5WNd7Tya8s85f7i20gs03vokk-oiXkMsql_EoJJCm4dPDFh6_3uK_6I.Edbp7XiywWrpZwlOc04zv3O7ISztq6XnNxZIX0gKmLM&qid=1770505579&sr=8-20"
+      },
+      {
+        "position": 21,
+        "asin": "B0FG2GLQ98",
+        "badges": [
+          "Limited time deal"
+        ],
+        "variants": {
+          "more_variants": "+2 other colours/patterns",
+          "more_variants_link": "https://www.amazon.de/-/en/Protector-Installation-Protection-Privacy-Anti-Scratch/dp/B0FG2GLQ98/ref=cs_sr_dp?dib=eyJ2IjoiMSJ9.uxdFAk24jkJqSEool3EmGxBt-N882rcOVCJITj4oq2AHYRFl1TKvu_zcfW7igMpKxMJnLIaJeeA37Yj1aWB9oRGkP1xxgQ5HOfIUZadYaq-d-IR6dJWemuesVxdbEWYKO_rZT7GvNGGw_9zta_7c-52_RKXrYvjPE2Dz52vt8n62JKqavYp-5WNd7Tya8s85f7i20gs03vokk-oiXkMsql_EoJJCm4dPDFh6_3uK_6I.Edbp7XiywWrpZwlOc04zv3O7ISztq6XnNxZIX0gKmLM&dib_tag=se&keywords=iphone+17&qid=1770505579&sr=8-21"
+        },
+        "brand": "IMBZBK",
+        "title": "Tempered Glass Screen Protector for iPhone 17, Car Installation, with Camera Protection, Anti Spy 9H+ Hardness Privacy Screen Protector, Military Standard Protection Film, Anti-Scratch, Pack of",
+        "link": "https://www.amazon.de/-/en/Protector-Installation-Protection-Privacy-Anti-Scratch/dp/B0FG2GLQ98/ref=sr_1_21?dib=eyJ2IjoiMSJ9.uxdFAk24jkJqSEool3EmGxBt-N882rcOVCJITj4oq2AHYRFl1TKvu_zcfW7igMpKxMJnLIaJeeA37Yj1aWB9oRGkP1xxgQ5HOfIUZadYaq-d-IR6dJWemuesVxdbEWYKO_rZT7GvNGGw_9zta_7c-52_RKXrYvjPE2Dz52vt8n62JKqavYp-5WNd7Tya8s85f7i20gs03vokk-oiXkMsql_EoJJCm4dPDFh6_3uK_6I.Edbp7XiywWrpZwlOc04zv3O7ISztq6XnNxZIX0gKmLM&dib_tag=se&keywords=iphone+17&qid=1770505579&sr=8-21",
+        "link_clean": "https://www.amazon.de/-/en/Protector-Installation-Protection-Privacy-Anti-Scratch/dp/B0FG2GLQ98/",
+        "serpapi_link": "https://serpapi.com/search.json?amazon_domain=amazon.de&asin=B0FG2GLQ98&device=desktop&engine=amazon_product&language=en_GB",
+        "thumbnail": "https://m.media-amazon.com/images/I/71BwoQk3evL._AC_UY218_.jpg",
+        "rating": 4.3,
+        "reviews": 7000,
+        "bought_last_month": "400+ bought in past month",
+        "price": "€7.51",
+        "extracted_price": 7.51,
+        "price_unit": "€2.50/count",
+        "extracted_price_unit": 2.5,
+        "old_price": "€8.83",
+        "extracted_old_price": 8.83,
+        "delivery": [
+          "FREE delivery Wed 11 Feb on eligible first order",
+          "Or fastest delivery Tue 10 Feb"
+        ]
+      },
+      {
+        "position": 22,
+        "asin": "B0DXQHWJ1H",
+        "options": "3 sizes",
+        "options_link": "https://www.amazon.de/-/en/Apple-iPhone-16e-128GB-Intelligence/dp/B0DXQHWJ1H/ref=vo_sr_l_dp?dib=eyJ2IjoiMSJ9.uxdFAk24jkJqSEool3EmGxBt-N882rcOVCJITj4oq2AHYRFl1TKvu_zcfW7igMpKxMJnLIaJeeA37Yj1aWB9oRGkP1xxgQ5HOfIUZadYaq-d-IR6dJWemuesVxdbEWYKO_rZT7GvNGGw_9zta_7c-52_RKXrYvjPE2Dz52vt8n62JKqavYp-5WNd7Tya8s85f7i20gs03vokk-oiXkMsql_EoJJCm4dPDFh6_3uK_6I.Edbp7XiywWrpZwlOc04zv3O7ISztq6XnNxZIX0gKmLM&dib_tag=se&keywords=iphone+17&qid=1770505579&sr=8-22",
+        "variants": {
+          "options": [
+            {
+              "position": 1,
+              "asin": "B0DXQHWJ1H",
+              "title": "White",
+              "link": "https://www.amazon.de/-/en/Apple-iPhone-16e-128GB-Intelligence/dp/B0DXQHWJ1H/ref=cs_sr_dp_1?dib=eyJ2IjoiMSJ9.uxdFAk24jkJqSEool3EmGxBt-N882rcOVCJITj4oq2AHYRFl1TKvu_zcfW7igMpKxMJnLIaJeeA37Yj1aWB9oRGkP1xxgQ5HOfIUZadYaq-d-IR6dJWemuesVxdbEWYKO_rZT7GvNGGw_9zta_7c-52_RKXrYvjPE2Dz52vt8n62JKqavYp-5WNd7Tya8s85f7i20gs03vokk-oiXkMsql_EoJJCm4dPDFh6_3uK_6I.Edbp7XiywWrpZwlOc04zv3O7ISztq6XnNxZIX0gKmLM&dib_tag=se&keywords=iphone+17&qid=1770505579&sr=8-22"
+            },
+            {
+              "position": 2,
+              "asin": "B0DXQHPY34",
+              "title": "black",
+              "link": "https://www.amazon.de/-/en/Apple-iPhone-16e-128GB-Intelligence/dp/B0DXQHPY34/ref=cs_sr_dp_2?dib=eyJ2IjoiMSJ9.uxdFAk24jkJqSEool3EmGxBt-N882rcOVCJITj4oq2AHYRFl1TKvu_zcfW7igMpKxMJnLIaJeeA37Yj1aWB9oRGkP1xxgQ5HOfIUZadYaq-d-IR6dJWemuesVxdbEWYKO_rZT7GvNGGw_9zta_7c-52_RKXrYvjPE2Dz52vt8n62JKqavYp-5WNd7Tya8s85f7i20gs03vokk-oiXkMsql_EoJJCm4dPDFh6_3uK_6I.Edbp7XiywWrpZwlOc04zv3O7ISztq6XnNxZIX0gKmLM&dib_tag=se&keywords=iphone+17&qid=1770505579&sr=8-22"
+            }
+          ]
+        },
+        "brand": "Apple",
+        "title": "iPhone 16e 128GB: Designed for Apple Intelligence, A18 Chip, Gigantic Battery Life, 48 MP Fusion Camera, 6.1 Inch Super Retina XDR Display, White",
+        "link": "https://www.amazon.de/-/en/Apple-iPhone-16e-128GB-Intelligence/dp/B0DXQHWJ1H/ref=sr_1_22?dib=eyJ2IjoiMSJ9.uxdFAk24jkJqSEool3EmGxBt-N882rcOVCJITj4oq2AHYRFl1TKvu_zcfW7igMpKxMJnLIaJeeA37Yj1aWB9oRGkP1xxgQ5HOfIUZadYaq-d-IR6dJWemuesVxdbEWYKO_rZT7GvNGGw_9zta_7c-52_RKXrYvjPE2Dz52vt8n62JKqavYp-5WNd7Tya8s85f7i20gs03vokk-oiXkMsql_EoJJCm4dPDFh6_3uK_6I.Edbp7XiywWrpZwlOc04zv3O7ISztq6XnNxZIX0gKmLM&dib_tag=se&keywords=iphone+17&qid=1770505579&sr=8-22",
+        "link_clean": "https://www.amazon.de/-/en/Apple-iPhone-16e-128GB-Intelligence/dp/B0DXQHWJ1H/",
+        "serpapi_link": "https://serpapi.com/search.json?amazon_domain=amazon.de&asin=B0DXQHWJ1H&device=desktop&engine=amazon_product&language=en_GB",
+        "thumbnail": "https://m.media-amazon.com/images/I/610vqacJO2L._AC_UY218_.jpg",
+        "rating": 4.6,
+        "reviews": 1100,
+        "bought_last_month": "1K+ bought in past month",
+        "price": "€569.00",
+        "extracted_price": 569.0,
+        "old_price": "€699.00",
+        "extracted_old_price": 699.0,
+        "offers": [
+          "Get 60 days of Audible free"
+        ],
+        "specs": {
+          "operating_system": "iOS",
+          "display_size": "6.1 inches",
+          "capacity": "128 GB",
+          "optical_sensor_resolution": "-"
+        },
+        "delivery": [
+          "FREE delivery Wed 11 Feb",
+          "Or fastest delivery Tue 10 Feb"
+        ],
+        "climate_pledge_friendly": true,
+        "sustainability_features": [
+          {
+            "position": 1,
+            "name": "Energy efficiency",
+            "snippet": "Conserves energy compared to similar products.",
+            "thumbnail": "https://m.media-amazon.com/images/I/31A2GobGL-L._SS200_.png",
+            "certified_by": "Energy Label",
+            "certified_info": "EU Energy Label provides an indication of a product's energy efficiency and can also give specific data about other relevant features of usage, such as the product's noise emissions or water consumption. This makes it easier for consumers to save money on their household energy bills and contributes to reducing greenhouse gas emissions across the EU and UK. Climate Pledge Friendly is highlighting EU and UK energy label ratings of A, B, and C on the A-G scale only to identify the products which are rated more energy efficient than others."
+          }
+        ]
+      }
+    ],
+    "video_results": [
+      {
+        "block_position": "bottom",
+        "video_thumbnail": "https://m.media-amazon.com/images/S/al-eu-726f4d26-7fdb/7bd94312-a5b1-43d6-b1d8-00cf07e60686.mp4/r/THUMBNAIL_360P_FRAME_3_CAPTURE_2.JPG",
+        "video_src": "https://m.media-amazon.com/images/S/al-eu-726f4d26-7fdb/00dab037-e7bf-413c-bb33-bd25ac1cd865.mp4/productVideoOptimized.mp4",
+        "video_link": "https://aax-eu.amazon.de/x/c/JJ_aogHAkUPUCaPz9vDddikAAAGcOlsrpwMAAAH2AQBvbm9fdHhuX2JpZDMgICBvbm9fdHhuX2ltcDEgICB_PNRZ/clv1c_ek-ABff3Vcba5jMqHB0Ifw-uca36lEAgJfYhNQC3B2Ckxj0A664ApVUV9SfV7Wntj0yEyW5_LmN5iKPSXQehFqGl5Of_ofb2r-xCL8_V1EAHjQjlwLRZay5659HslhL3mpL317pNY_XsD0kg5JT02SJ7o9yk9hXox4VxzyCSmOZ-muq0CtAgsqwPiOo5xhtoxIrYpcUqXofD1kjhjbhwvzsPOM9uVCqKVegOprtdsQpMtQ77CUgN10M2CayRhu_ZACjKp-yYFcPyiKvmpDDyrJeBAWTztL5yYItACAKy9Cm2BtqhmAnRwn53ORod-gRe-phJsC6GcyUDI6lpSMIxesJfEy5wQRJE1StpZQCK-nTnlSi9BL4Lg1Odi9NwDMt5KKvAR8gzsL7RkeVtFo2JZ6_vI9lP6Etu0zVxzDLd6X8REAKLSWJLOskaokHRenMY5ihtk2mLSMIbvJRPYjGiv8gOZ_55GTDek_oU_Q_ZkRSxsw6yMK8ePFlhtMS5tcJIpW5fPxSwuZh587xJ4a7ydw9nNfhg6-Otx1h6xWm8ZG0WmxLKMxFpy0T4u2ZZLaCxbFHGt06Cwz850p_JZGDDLb37pPVel8qf7dAyOM2vlevz0p5EJ23-6ktd087HCVCLJZqLcEfHHAw5MXx_8wxeXAKCUOfw_L_srI6lWGNw9oVH4Bf5jrd71N9ZotyyH7mz63pocnpcJTqa9ic1pEZvJ2E3Eq10dDDpAm0JxSPJmxZZNej2WMtan5esXkDN5izvhiMOBepKMO4frAv_7zKiBR1tAlSO6gLeZgv9Br-lgGx0-qjEe-h6nCnhCwXzWy-S9UXsCNKSuGFqOnVtGnYBUPHYGm5euvJEa0gbxgZUZk_DpcnBYu6x5nNRaCY5wM9tMjpEdorKeZ7Z_yYE39Nufr4CIAsgyV1dxqPQNapSUCxfagDJjB1nq75qwF8pxbcK4iMGGEAIb-MqsnjLvYM2ItS24_ucDrGsru6MniKIhq91CQToopUsb4nHtz_Qeuu1ZNfciBVUt4Kh4YmUeTHRj7tA7BOOZUzPzLaj1qqIF99w_2Nb-GyMI0sQlWEUDVeONRYYSg0atBOqEJ2c-TJt-CmgmjP-ZAaksEHyx5IlZDqyhLvPInNsx9dnh2id4DjQMPqrsL-snyjuoqeDhBI9gG6zacPitI2w7SjKhkJOAodBOmfTod0UTpIsBNJ3KHyctC5WO4QXSEwGKgeONiP9yb9EyD3njWEBXkCiUC84nFKSGvjYW24UPy01QJkI91rPZq8zf5f6P8L0fe89K_xyeS16kHOOtGnDssRpY2PvbMUnifva0GlATwZnp63UUOOO3YUT8WnG1D32xWTuXqMbKoC-8KDxNH3V6TbZ6UgoEL0A1uB3-eXYZkAsMuIDwaY66NIhz3NmuH7vk72nQNV2a9xuKUMZq1snYipOkkC2tfB_EPrLbrQ8cDY7-8MkyxmBAM_NLNhde8ax7xkc5QBP7Bcfds2ppm90bA0bQJfAaAqzJq4MPdbP2joxhPudYFRwBpUsfDmYq2lX8eI/https://www.amazon.de/dp/B0FK4L58R1?aref=S7wIuVYdHr&pd_rd_i=B0FK4L58R1&pf_rd_p=ceb6f73f-6fad-4b72-aa15-5b5dfe483335&pf_rd_r=N506C4G592KEX8VFCTDW&pd_rd_wg=vXPko&pd_rd_w=P87Ul&pd_rd_r=761ea335-d90a-486d-b6d1-e7c574af93e0",
+        "products": [
+          {
+            "position": 1,
+            "asin": "B0FK4L58R1",
+            "sponsored": true,
+            "title": "Lamicall Mobile Phone Ring Holder for MagSafe Ring - [Two-Axis Foldable Stand] 2-in-1 Magnetic Mobile Phone Ring Holder Finger for MagSafe Accessories, 360° Rotating Mobile Phone Grip Holder for",
+            "link": "https://aax-eu.amazon.de/x/c/JJ_aogHAkUPUCaPz9vDddikAAAGcOlsrpwMAAAH2AQBvbm9fdHhuX2JpZDMgICBvbm9fdHhuX2ltcDEgICB_PNRZ/clv1c_ek-ABff3Vcba5jMqHB0Ifw-uca36lEAgJfYhNQC3B2Ckxj0A664ApVUV9SfV7Wntj0yEyW5_LmN5iKPSXQehFqGl5Of_ofb2r-xCL8_V1EAHjQjlwLRZay5659HslhL3mpL317pNY_XsD0kg5JT02SJ7o9yk9hXox4VxzyCSmOZ-muq0CtAgsqwPiOo5xhtoxIrYpcUqXofD1kjhjbhwvzsPOM9uVCqKVegOprtdsQpMtQ77CUgN10M2CayRhu_ZACjKp-yYFcPyiKvmpDDyrJeBAWTztL5yYItACAKy9Cm2BtqhmAnRwn53ORod-gRe-phJsC6GcyUDI6lpSMIxesJfEy5wQRJE1StpZQCK-nTnlSi9BL4Lg1Odi9NwDMt5KKvAR8gzsL7RkeVtFo2JZ6_vI9lP6Etu0zVxzDLd6X8REAKLSWJLOskaokHRenMY5ihtk2mLSMIbvJRPYjGiv8gOZ_55GTDek_oU_Q_ZkRSxsw6yMK8ePFlhtMS5tcJIpW5fPxSwuZh587xJ4a7ydw9nNfhg6-Otx1h6xWm8ZG0WmxLKMxFpy0T4u2ZZLaCxbFHGt06Cwz850p_JZGDDLb37pPVel8qf7dAyOM2vlevz0p5EJ23-6ktd087HCVCLJZqLcEfHHAw5MXx_8wxeXAKCUOfw_L_srI6lWGNw9oVH4Bf5jrd71N9ZotyyH7mz63pocnpcJTqa9ic1pEZvJ2E3Eq10dDDpAm0JxSPJmxZZNej2WMtan5esXkDN5izvhiMOBepKMO4frAv_7zKiBR1tAlSO6gLeZgv9Br-lgGx0-qjEe-h6nCnhCwXzWy-S9UXsCNKSuGFqOnVtGnYBUPHYGm5euvJEa0gbxgZUZk_DpcnBYu6x5nNRaCY5wM9tMjpEdorKeZ7Z_yYE39Nufr4CIAsgyV1dxqPQNapSUCxfagDJjB1nq75qwF8pxbcK4iMGGEAIb-MqsnjLvYM2ItS24_ucDrGsru6MniKIhq91CQToopUsb4nHtz_Qeuu1ZNfciBVUt4Kh4YmUeTHRj7tA7BOOZUzPzLaj1qqIF99w_2Nb-GyMI0sQlWEUDVeONRYYSg0atBOqEJ2c-TJt-CmgmjP-ZAaksEHyx5IlZDqyhLvPInNsx9dnh2id4DjQMPqrsL-snyjuoqeDhBI9gG6zacPitI2w7SjKhkJOAodBOmfTod0UTpIsBNJ3KHyctC5WO4QXSEwGKgeONiP9yb9EyD3njWEBXkCiUC84nFKSGvjYW24UPy01QJkI91rPZq8zf5f6P8L0fe89K_xyeS16kHOOtGnDssRpY2PvbMUnifva0GlATwZnp63UUOOO3YUT8WnG1D32xWTuXqMbKoC-8KDxNH3V6TbZ6UgoEL0A1uB3-eXYZkAsMuIDwaY66NIhz3NmuH7vk72nQNV2a9xuKUMZq1snYipOkkC2tfB_EPrLbrQ8cDY7-8MkyxmBAM_NLNhde8ax7xkc5QBP7Bcfds2ppm90bA0bQJfAaAqzJq4MPdbP2joxhPudYFRwBpUsfDmYq2lX8eI/https://www.amazon.de/Lamicall-Mobile-Phone-Holder-MagSafe/dp/B0FK4L58R1/ref=sxbs_sbv_search_btf?content-id=amzn1.sym.ceb6f73f-6fad-4b72-aa15-5b5dfe483335%3Aamzn1.sym.ceb6f73f-6fad-4b72-aa15-5b5dfe483335&cv_ct_cx=iphone+17&keywords=iphone+17&pd_rd_i=B0FK4L58R1&pd_rd_r=761ea335-d90a-486d-b6d1-e7c574af93e0&pd_rd_w=P87Ul&pd_rd_wg=vXPko&pf_rd_p=ceb6f73f-6fad-4b72-aa15-5b5dfe483335&pf_rd_r=N506C4G592KEX8VFCTDW&qid=1770505579&sbo=9ZOMT9Jm0JH%2Ft%2BWi68iDSA%3D%3D&sr=1-1-97f74077-4887-47ac-b680-989126317014",
+            "link_clean": "https://www.amazon.de/dp/B0FK4L58R1/",
+            "serpapi_link": "https://serpapi.com/search.json?amazon_domain=amazon.de&asin=B0FK4L58R1&device=desktop&engine=amazon_product&language=en_GB",
+            "thumbnail": "https://m.media-amazon.com/images/I/61a3v6u+YaL._AC_UL640_QL65_.jpg",
+            "rating": 4.4,
+            "reviews": 321,
+            "bought_last_month": "300+ bought in past month",
+            "price": "€19.99",
+            "extracted_price": 19.99,
+            "old_price": "€24.99",
+            "extracted_old_price": 24.99
+          }
+        ]
+      }
+    ],
+    "related_searches": [
+      {
+        "position": 1,
+        "query": "iphone 16",
+        "link": "https://www.amazon.de/-/en/s?k=iphone+16&ref=rsl_sug_0_0&pd_rd_w=qBaDj&content-id=amzn1.sym.801cfa10-3589-4225-ad5b-c367a55071d3:amzn1.sym.801cfa10-3589-4225-ad5b-c367a55071d3&pf_rd_p=801cfa10-3589-4225-ad5b-c367a55071d3&pf_rd_r=N506C4G592KEX8VFCTDW&pd_rd_wg=vXPko&pd_rd_r=761ea335-d90a-486d-b6d1-e7c574af93e0&qid=1770505579"
+      },
+      {
+        "position": 2,
+        "query": "iphone 12",
+        "link": "https://www.amazon.de/-/en/s?k=iphone+12&ref=rsl_sug_0_3&pd_rd_w=qBaDj&content-id=amzn1.sym.801cfa10-3589-4225-ad5b-c367a55071d3:amzn1.sym.801cfa10-3589-4225-ad5b-c367a55071d3&pf_rd_p=801cfa10-3589-4225-ad5b-c367a55071d3&pf_rd_r=N506C4G592KEX8VFCTDW&pd_rd_wg=vXPko&pd_rd_r=761ea335-d90a-486d-b6d1-e7c574af93e0&qid=1770505579"
+      },
+      {
+        "position": 3,
+        "query": "iphone 14",
+        "link": "https://www.amazon.de/-/en/s?k=iphone+14&ref=rsl_sug_0_1&pd_rd_w=qBaDj&content-id=amzn1.sym.801cfa10-3589-4225-ad5b-c367a55071d3:amzn1.sym.801cfa10-3589-4225-ad5b-c367a55071d3&pf_rd_p=801cfa10-3589-4225-ad5b-c367a55071d3&pf_rd_r=N506C4G592KEX8VFCTDW&pd_rd_wg=vXPko&pd_rd_r=761ea335-d90a-486d-b6d1-e7c574af93e0&qid=1770505579"
+      },
+      {
+        "position": 4,
+        "query": "iphone 11",
+        "link": "https://www.amazon.de/-/en/s?k=iphone+11&ref=rsl_sug_0_4&pd_rd_w=qBaDj&content-id=amzn1.sym.801cfa10-3589-4225-ad5b-c367a55071d3:amzn1.sym.801cfa10-3589-4225-ad5b-c367a55071d3&pf_rd_p=801cfa10-3589-4225-ad5b-c367a55071d3&pf_rd_r=N506C4G592KEX8VFCTDW&pd_rd_wg=vXPko&pd_rd_r=761ea335-d90a-486d-b6d1-e7c574af93e0&qid=1770505579"
+      },
+      {
+        "position": 5,
+        "query": "iphone 13",
+        "link": "https://www.amazon.de/-/en/s?k=iphone+13&ref=rsl_sug_0_2&pd_rd_w=qBaDj&content-id=amzn1.sym.801cfa10-3589-4225-ad5b-c367a55071d3:amzn1.sym.801cfa10-3589-4225-ad5b-c367a55071d3&pf_rd_p=801cfa10-3589-4225-ad5b-c367a55071d3&pf_rd_r=N506C4G592KEX8VFCTDW&pd_rd_wg=vXPko&pd_rd_r=761ea335-d90a-486d-b6d1-e7c574af93e0&qid=1770505579"
+      },
+      {
+        "position": 6,
+        "query": "iphone 7",
+        "link": "https://www.amazon.de/-/en/s?k=iphone+7&ref=rsl_sug_0_5&pd_rd_w=qBaDj&content-id=amzn1.sym.801cfa10-3589-4225-ad5b-c367a55071d3:amzn1.sym.801cfa10-3589-4225-ad5b-c367a55071d3&pf_rd_p=801cfa10-3589-4225-ad5b-c367a55071d3&pf_rd_r=N506C4G592KEX8VFCTDW&pd_rd_wg=vXPko&pd_rd_r=761ea335-d90a-486d-b6d1-e7c574af93e0&qid=1770505579"
+      }
+    ],
+    "categories": [
+      {
+        "position": 1,
+        "name": "Books",
+        "link": "https://www.amazon.de/-/en/b%C3%BCcher-buch-lesen/b/?ie=UTF8&node=186606&ref_=nav_cs_books",
+        "node": "186606",
+        "serpapi_link": "https://serpapi.com/search.json?amazon_domain=amazon.de&device=desktop&engine=amazon&language=en_GB&node=186606"
+      },
+      {
+        "position": 2,
+        "name": "Shopper Toolkit",
+        "link": "https://www.amazon.de/-/en/b/?node=15425785031&ref_=nav_cs_shoppertoolkit",
+        "node": "15425785031",
+        "serpapi_link": "https://serpapi.com/search.json?amazon_domain=amazon.de&device=desktop&engine=amazon&language=en_GB&node=15425785031"
+      },
+      {
+        "position": 3,
+        "name": "Fashion",
+        "link": "https://www.amazon.de/-/en/Amazon-Fashion-Mode/b/?ie=UTF8&node=11961464031&ref_=nav_cs_fashion",
+        "node": "11961464031",
+        "serpapi_link": "https://serpapi.com/search.json?amazon_domain=amazon.de&device=desktop&engine=amazon&language=en_GB&node=11961464031"
+      },
+      {
+        "position": 4,
+        "name": "Gift Cards",
+        "link": "https://www.amazon.de/-/en/Amazon-Geschenkgutscheine-Gutschein-Geschenkkarte-Gru%C3%9Fkarte-Geburtstag-Ostern-Weihnachten-Aufladen/b/?ie=UTF8&node=1571256031&ref_=nav_cs_gc",
+        "node": "1571256031",
+        "serpapi_link": "https://serpapi.com/search.json?amazon_domain=amazon.de&device=desktop&engine=amazon&language=en_GB&node=1571256031"
+      },
+      {
+        "position": 5,
+        "name": "Home & Kitchen",
+        "link": "https://www.amazon.de/-/en/k%C3%BCche-haushalt-wohnen/b/?ie=UTF8&node=3167641&ref_=nav_cs_home",
+        "node": "3167641",
+        "serpapi_link": "https://serpapi.com/search.json?amazon_domain=amazon.de&device=desktop&engine=amazon&language=en_GB&node=3167641"
+      },
+      {
+        "position": 6,
+        "name": "Electronics & Photo",
+        "link": "https://www.amazon.de/-/en/Elektronik-Foto/b/?ie=UTF8&node=562066&ref_=nav_cs_electronics",
+        "node": "562066",
+        "serpapi_link": "https://serpapi.com/search.json?amazon_domain=amazon.de&device=desktop&engine=amazon&language=en_GB&node=562066"
+      },
+      {
+        "position": 7,
+        "name": "Computers",
+        "link": "https://www.amazon.de/-/en/Computer-Zubehoer/b/?ie=UTF8&node=340843031&ref_=nav_cs_pc",
+        "node": "340843031",
+        "serpapi_link": "https://serpapi.com/search.json?amazon_domain=amazon.de&device=desktop&engine=amazon&language=en_GB&node=340843031"
+      },
+      {
+        "position": 8,
+        "name": "Toys & Games",
+        "link": "https://www.amazon.de/-/en/Spielzeug-Brettspiele-Baby-Kleinkind/b/?ie=UTF8&node=12950651&ref_=nav_cs_toys",
+        "node": "12950651",
+        "serpapi_link": "https://serpapi.com/search.json?amazon_domain=amazon.de&device=desktop&engine=amazon&language=en_GB&node=12950651"
+      },
+      {
+        "position": 9,
+        "name": "Home Improvement",
+        "link": "https://www.amazon.de/-/en/baumarkt-werkzeug-heimwerken/b/?ie=UTF8&node=80084031&ref_=nav_cs_hi",
+        "node": "80084031",
+        "serpapi_link": "https://serpapi.com/search.json?amazon_domain=amazon.de&device=desktop&engine=amazon&language=en_GB&node=80084031"
+      },
+      {
+        "position": 10,
+        "name": "Sports & Outdoors",
+        "link": "https://www.amazon.de/-/en/sport-freizeit-sportartikel/b/?ie=UTF8&node=16435051&ref_=nav_cs_sports",
+        "node": "16435051",
+        "serpapi_link": "https://serpapi.com/search.json?amazon_domain=amazon.de&device=desktop&engine=amazon&language=en_GB&node=16435051"
+      },
+      {
+        "position": 11,
+        "name": "Drugstore & Body Care",
+        "link": "https://www.amazon.de/-/en/Drogerie-K%C3%B6rperpflege/b/?ie=UTF8&node=64187031&ref_=nav_cs_hpc",
+        "node": "64187031",
+        "serpapi_link": "https://serpapi.com/search.json?amazon_domain=amazon.de&device=desktop&engine=amazon&language=en_GB&node=64187031"
+      },
+      {
+        "position": 12,
+        "name": "Car & Motorbike",
+        "link": "https://www.amazon.de/-/en/auto-tuning-autoteile/b/?ie=UTF8&node=78191031&ref_=nav_cs_automotive",
+        "node": "78191031",
+        "serpapi_link": "https://serpapi.com/search.json?amazon_domain=amazon.de&device=desktop&engine=amazon&language=en_GB&node=78191031"
+      },
+      {
+        "position": 13,
+        "name": "Kindle Books",
+        "link": "https://www.amazon.de/-/en/ebooks-kindle-buecher/b/?ie=UTF8&node=530886031&ref_=nav_cs_kindle_books",
+        "node": "530886031",
+        "serpapi_link": "https://serpapi.com/search.json?amazon_domain=amazon.de&device=desktop&engine=amazon&language=en_GB&node=530886031"
+      },
+      {
+        "position": 14,
+        "name": "PC & Video Games",
+        "link": "https://www.amazon.de/-/en/Video-Games/b/?ie=UTF8&node=300992&ref_=nav_cs_video_games",
+        "node": "300992",
+        "serpapi_link": "https://serpapi.com/search.json?amazon_domain=amazon.de&device=desktop&engine=amazon&language=en_GB&node=300992"
+      },
+      {
+        "position": 15,
+        "name": "Pet Supplies",
+        "link": "https://www.amazon.de/-/en/Tierbedarf-Tiernahrung/b/?ie=UTF8&node=340852031&ref_=nav_cs_pets",
+        "node": "340852031",
+        "serpapi_link": "https://serpapi.com/search.json?amazon_domain=amazon.de&device=desktop&engine=amazon&language=en_GB&node=340852031"
+      },
+      {
+        "position": 16,
+        "name": "Baby",
+        "link": "https://www.amazon.de/-/en/baby-babyausstattung-babyartikel/b/?ie=UTF8&node=355007011&ref_=nav_cs_baby",
+        "node": "355007011",
+        "serpapi_link": "https://serpapi.com/search.json?amazon_domain=amazon.de&device=desktop&engine=amazon&language=en_GB&node=355007011"
+      },
+      {
+        "position": 17,
+        "name": "Beauty & Personal Care",
+        "link": "https://www.amazon.de/-/en/Premium-Beauty/b/?ie=UTF8&node=3765352031&ref_=nav_cs_beauty",
+        "node": "3765352031",
+        "serpapi_link": "https://serpapi.com/search.json?amazon_domain=amazon.de&device=desktop&engine=amazon&language=en_GB&node=3765352031"
+      },
+      {
+        "position": 18,
+        "name": "Free Delivery",
+        "link": "https://www.amazon.de/-/en/b/?node=27173179031&ref_=nav_cs_freeshipping",
+        "node": "27173179031",
+        "serpapi_link": "https://serpapi.com/search.json?amazon_domain=amazon.de&device=desktop&engine=amazon&language=en_GB&node=27173179031"
+      }
+    ],
+    "filters": {
+      "eligible_for_free_delivery": [
+        {
+          "position": 1,
+          "name": "Free Delivery by Amazon",
+          "description": "Free Shipping by Amazon to eligible destinations",
+          "rh": "p_n_free_shipping_eligible:20943778031",
+          "link": "https://www.amazon.de/-/en/s?k=iphone+17&rh=p_n_free_shipping_eligible%3A20943778031&dc&language=en_GB&qid=1770505579&rnid=20943777031&ref=sr_nr_p_n_free_shipping_eligible_1&ds=v1%3AVGMhCppvXWb4dVVTplXPlfuzv1YjYIQMOHoy4%2FAtAMk",
+          "serpapi_link": "https://serpapi.com/search.json?amazon_domain=amazon.de&device=desktop&engine=amazon&k=iphone+17&language=en_GB&rh=p_n_free_shipping_eligible%3A20943778031"
+        }
+      ],
+      "brands": [
+        {
+          "position": 1,
+          "name": "Apple",
+          "rh": "p_123:110955",
+          "link": "https://www.amazon.de/-/en/s?k=iphone+17&rh=p_123%3A110955&dc&language=en_GB&qid=1770505579&rnid=91049101031&ref=sr_nr_p_123_1&ds=v1%3A4sENrfEPTouldlFMuaepv3G5JfA4K41xOWY8RpsLJ8o",
+          "serpapi_link": "https://serpapi.com/search.json?amazon_domain=amazon.de&device=desktop&engine=amazon&k=iphone+17&language=en_GB&rh=p_123%3A110955"
+        }
+      ],
+      "storage_capacity": [
+        {
+          "position": 1,
+          "name": "64 GB",
+          "rh": "p_n_g-1003492455111:81335051031",
+          "link": "https://www.amazon.de/-/en/s?k=iphone+17&rh=p_n_g-1003492455111%3A81335051031&dc&language=en_GB&qid=1770505579&rnid=44358855031&ref=sr_nr_p_n_g-1003492455111_1&ds=v1%3Axn4ewUv85dRhek7wHGolZYVxVGDU3i6BlS5aeRdMBUs",
+          "serpapi_link": "https://serpapi.com/search.json?amazon_domain=amazon.de&device=desktop&engine=amazon&k=iphone+17&language=en_GB&rh=p_n_g-1003492455111%3A81335051031"
+        },
+        {
+          "position": 2,
+          "name": "128 GB",
+          "rh": "p_n_g-1003492455111:81335049031",
+          "link": "https://www.amazon.de/-/en/s?k=iphone+17&rh=p_n_g-1003492455111%3A81335049031&dc&language=en_GB&qid=1770505579&rnid=44358855031&ref=sr_nr_p_n_g-1003492455111_2&ds=v1%3A05n0%2FJhXhmfVMDFz8YpClRapCZP7tcW7hFqyIxUaPXQ",
+          "serpapi_link": "https://serpapi.com/search.json?amazon_domain=amazon.de&device=desktop&engine=amazon&k=iphone+17&language=en_GB&rh=p_n_g-1003492455111%3A81335049031"
+        },
+        {
+          "position": 3,
+          "name": "256 GB",
+          "rh": "p_n_g-1003492455111:81335050031",
+          "link": "https://www.amazon.de/-/en/s?k=iphone+17&rh=p_n_g-1003492455111%3A81335050031&dc&language=en_GB&qid=1770505579&rnid=44358855031&ref=sr_nr_p_n_g-1003492455111_3&ds=v1%3ADVI02Wg%2FY%2FeBEW3EZIoBQinPOOTEmWnmLAREmCkbEF0",
+          "serpapi_link": "https://serpapi.com/search.json?amazon_domain=amazon.de&device=desktop&engine=amazon&k=iphone+17&language=en_GB&rh=p_n_g-1003492455111%3A81335050031"
+        },
+        {
+          "position": 4,
+          "name": "512 GB & above",
+          "rh": "p_n_g-1003492455111:92070739031",
+          "link": "https://www.amazon.de/-/en/s?k=iphone+17&rh=p_n_g-1003492455111%3A92070739031&dc&language=en_GB&qid=1770505579&rnid=44358855031&ref=sr_nr_p_n_g-1003492455111_4&ds=v1%3AaG3shzC18dA12f%2BTnA0NaD%2FhTX%2Ffd7dqSiiqk2NkiE4",
+          "serpapi_link": "https://serpapi.com/search.json?amazon_domain=amazon.de&device=desktop&engine=amazon&k=iphone+17&language=en_GB&rh=p_n_g-1003492455111%3A92070739031"
+        }
+      ],
+      "condition": [
+        {
+          "position": 1,
+          "name": "Used",
+          "rh": "p_n_condition-type:776950031",
+          "link": "https://www.amazon.de/-/en/s?k=iphone+17&rh=p_n_condition-type%3A776950031&dc&language=en_GB&qid=1770505579&rnid=776942031&ref=sr_nr_p_n_condition-type_1&ds=v1%3AQ8m7d61juN5TfuUAe9y71ECejZvraoTKRtyk4ee66iM",
+          "serpapi_link": "https://serpapi.com/search.json?amazon_domain=amazon.de&device=desktop&engine=amazon&k=iphone+17&language=en_GB&rh=p_n_condition-type%3A776950031"
+        },
+        {
+          "position": 2,
+          "name": "Renewed",
+          "rh": "p_n_condition-type:15129217031",
+          "link": "https://www.amazon.de/-/en/s?k=iphone+17&rh=p_n_condition-type%3A15129217031&dc&language=en_GB&qid=1770505579&rnid=776942031&ref=sr_nr_p_n_condition-type_2&ds=v1%3AqnePE42LLh%2B06sKwBnKFKamyZ4JHhc33aK3lKb7JSN8",
+          "serpapi_link": "https://serpapi.com/search.json?amazon_domain=amazon.de&device=desktop&engine=amazon&k=iphone+17&language=en_GB&rh=p_n_condition-type%3A15129217031"
+        }
+      ],
+      "price": [
+        {
+          "position": 1,
+          "name": "All Savings",
+          "rh": "p_n_deal_type:26902994031",
+          "link": "https://www.amazon.de/-/en/s?k=iphone+17&rh=p_n_deal_type%3A26902994031&dc&language=en_GB&qid=1770505579&rnid=26902991031&ref=sr_nr_p_n_deal_type_1&ds=v1%3ABjJFLRY%2FeDvR48UdwzC%2B6ErTkv5AnRN30NVA0PNr%2BEQ",
+          "serpapi_link": "https://serpapi.com/search.json?amazon_domain=amazon.de&device=desktop&engine=amazon&k=iphone+17&language=en_GB&rh=p_n_deal_type%3A26902994031"
+        }
+      ],
+      "model_year": [
+        {
+          "position": 1,
+          "name": "2024",
+          "rh": "p_n_g-1004218864091:12419545031",
+          "link": "https://www.amazon.de/-/en/s?k=iphone+17&rh=p_n_g-1004218864091%3A12419545031&dc&language=en_GB&qid=1770505579&rnid=12419541031&ref=sr_nr_p_n_g-1004218864091_1&ds=v1%3A0FvxlaRtIOmbbgJCPnyzTJRkQJXIrrjStn5TKORy11Y",
+          "serpapi_link": "https://serpapi.com/search.json?amazon_domain=amazon.de&device=desktop&engine=amazon&k=iphone+17&language=en_GB&rh=p_n_g-1004218864091%3A12419545031"
+        },
+        {
+          "position": 2,
+          "name": "2021",
+          "rh": "p_n_g-1004218864091:12419548031",
+          "link": "https://www.amazon.de/-/en/s?k=iphone+17&rh=p_n_g-1004218864091%3A12419548031&dc&language=en_GB&qid=1770505579&rnid=12419541031&ref=sr_nr_p_n_g-1004218864091_2&ds=v1%3A4Q3%2FEU7FptwIp34ghq4MGtP9Uf9DpEgRPBWigsODDug",
+          "serpapi_link": "https://serpapi.com/search.json?amazon_domain=amazon.de&device=desktop&engine=amazon&k=iphone+17&language=en_GB&rh=p_n_g-1004218864091%3A12419548031"
+        },
+        {
+          "position": 3,
+          "name": "2019",
+          "rh": "p_n_g-1004218864091:12419550031",
+          "link": "https://www.amazon.de/-/en/s?k=iphone+17&rh=p_n_g-1004218864091%3A12419550031&dc&language=en_GB&qid=1770505579&rnid=12419541031&ref=sr_nr_p_n_g-1004218864091_3&ds=v1%3AY9HZZwqPML%2B83ySbukA9Idxv3dUHr6ICynYBGuYvCmI",
+          "serpapi_link": "https://serpapi.com/search.json?amazon_domain=amazon.de&device=desktop&engine=amazon&k=iphone+17&language=en_GB&rh=p_n_g-1004218864091%3A12419550031"
+        }
+      ],
+      "customer_review": [
+        {
+          "position": 1,
+          "name": "& Up",
+          "rh": "p_72:419117031",
+          "link": "https://www.amazon.de/-/en/s?k=iphone+17&rh=p_72%3A419117031&dc&language=en_GB&qid=1770505579&rnid=419116031&ref=sr_nr_p_72_1&ds=v1%3AKZBIsCjpoeAJUR7StBfYqAhIzYt9SG0zWEj2BBIDgjQ",
+          "serpapi_link": "https://serpapi.com/search.json?amazon_domain=amazon.de&device=desktop&engine=amazon&k=iphone+17&language=en_GB&rh=p_72%3A419117031"
+        }
+      ],
+      "operating_system": [
+        {
+          "position": 1,
+          "name": "iOS 17",
+          "rh": "p_n_g-1003517064111:206823556031",
+          "link": "https://www.amazon.de/-/en/s?k=iphone+17&rh=p_n_g-1003517064111%3A206823556031&dc&language=en_GB&qid=1770505579&rnid=51183811031&ref=sr_nr_p_n_g-1003517064111_1&ds=v1%3AmSFZSLopDChUUYXsA8%2Fu9RkoiaYSchCDpsL1Eo1M3xo",
+          "serpapi_link": "https://serpapi.com/search.json?amazon_domain=amazon.de&device=desktop&engine=amazon&k=iphone+17&language=en_GB&rh=p_n_g-1003517064111%3A206823556031"
+        },
+        {
+          "position": 2,
+          "name": "iOS 15",
+          "rh": "p_n_g-1003517064111:64984258031",
+          "link": "https://www.amazon.de/-/en/s?k=iphone+17&rh=p_n_g-1003517064111%3A64984258031&dc&language=en_GB&qid=1770505579&rnid=51183811031&ref=sr_nr_p_n_g-1003517064111_2&ds=v1%3APBca5ELUDR83Rv32upEXC44y%2FowPFY57nu5wnCUw040",
+          "serpapi_link": "https://serpapi.com/search.json?amazon_domain=amazon.de&device=desktop&engine=amazon&k=iphone+17&language=en_GB&rh=p_n_g-1003517064111%3A64984258031"
+        }
+      ],
+      "cellular_technology": [
+        {
+          "position": 1,
+          "name": "4G",
+          "rh": "p_n_g-1003469290111:33626318031",
+          "link": "https://www.amazon.de/-/en/s?k=iphone+17&rh=p_n_g-1003469290111%3A33626318031&dc&language=en_GB&qid=1770505579&rnid=33626316031&ref=sr_nr_p_n_g-1003469290111_1&ds=v1%3Asv%2Fm4IwCcwGPV%2BSNZBCJPchvm4I%2Fv%2FaZEjCwm5QECV4",
+          "serpapi_link": "https://serpapi.com/search.json?amazon_domain=amazon.de&device=desktop&engine=amazon&k=iphone+17&language=en_GB&rh=p_n_g-1003469290111%3A33626318031"
+        },
+        {
+          "position": 2,
+          "name": "5G",
+          "rh": "p_n_g-1003469290111:33626321031",
+          "link": "https://www.amazon.de/-/en/s?k=iphone+17&rh=p_n_g-1003469290111%3A33626321031&dc&language=en_GB&qid=1770505579&rnid=33626316031&ref=sr_nr_p_n_g-1003469290111_2&ds=v1%3AJRR2mV4l4LmQcelacRkHlSxpCunWVLWSxpWt6j1DBTU",
+          "serpapi_link": "https://serpapi.com/search.json?amazon_domain=amazon.de&device=desktop&engine=amazon&k=iphone+17&language=en_GB&rh=p_n_g-1003469290111%3A33626321031"
+        }
+      ],
+      "screen_size": [
+        {
+          "position": 1,
+          "name": "15 to 17.9 cm",
+          "rh": "p_n_feature_browse-bin:212264309031",
+          "link": "https://www.amazon.de/-/en/s?k=iphone+17&rh=p_n_feature_browse-bin%3A212264309031&dc&language=en_GB&qid=1770505579&rnid=212264302031&ref=sr_nr_p_n_feature_browse-bin_1&ds=v1%3Aw9MAt3dUrkyuJnptqgi1SjLJ1ZrEdIl4aV4HjbHl%2FhA",
+          "serpapi_link": "https://serpapi.com/search.json?amazon_domain=amazon.de&device=desktop&engine=amazon&k=iphone+17&language=en_GB&rh=p_n_feature_browse-bin%3A212264309031"
+        }
+      ],
+      "seller": [
+        {
+          "position": 1,
+          "name": "ZOXS GmbH",
+          "rh": "p_6:A10RUDMQMTB3T4",
+          "link": "https://www.amazon.de/-/en/s?k=iphone+17&rh=p_6%3AA10RUDMQMTB3T4&dc&language=en_GB&qid=1770505579&rnid=419115031&ref=sr_nr_p_6_1&ds=v1%3AHaaylDyHEdkRN%2FbLLXhiySCzvfZzJR97GRoPLqr9iUg",
+          "serpapi_link": "https://serpapi.com/search.json?amazon_domain=amazon.de&device=desktop&engine=amazon&k=iphone+17&language=en_GB&rh=p_6%3AA10RUDMQMTB3T4"
+        },
+        {
+          "position": 2,
+          "name": "rebuy recommerce GmbH",
+          "rh": "p_6:A15UX8GPD9OYJE",
+          "link": "https://www.amazon.de/-/en/s?k=iphone+17&rh=p_6%3AA15UX8GPD9OYJE&dc&language=en_GB&qid=1770505579&rnid=419115031&ref=sr_nr_p_6_2&ds=v1%3Ab3PbIgBnUHMmx44dEu7ny3sR%2BlgSVXka6dDLIUa1E8E",
+          "serpapi_link": "https://serpapi.com/search.json?amazon_domain=amazon.de&device=desktop&engine=amazon&k=iphone+17&language=en_GB&rh=p_6%3AA15UX8GPD9OYJE"
+        },
+        {
+          "position": 3,
+          "name": "Clevertronic",
+          "rh": "p_6:A1NB3H7LLUJG3P",
+          "link": "https://www.amazon.de/-/en/s?k=iphone+17&rh=p_6%3AA1NB3H7LLUJG3P&dc&language=en_GB&qid=1770505579&rnid=419115031&ref=sr_nr_p_6_3&ds=v1%3ACO5x4QT%2FENFcHnvTFOHgvVENTyDI%2BM4S%2BVSSlcQIY9E",
+          "serpapi_link": "https://serpapi.com/search.json?amazon_domain=amazon.de&device=desktop&engine=amazon&k=iphone+17&language=en_GB&rh=p_6%3AA1NB3H7LLUJG3P"
+        },
+        {
+          "position": 4,
+          "name": "yoused GmbH",
+          "rh": "p_6:AZE7WYFQD245Q",
+          "link": "https://www.amazon.de/-/en/s?k=iphone+17&rh=p_6%3AAZE7WYFQD245Q&dc&language=en_GB&qid=1770505579&rnid=419115031&ref=sr_nr_p_6_4&ds=v1%3AwFI88S80MXGTtomFBuBI%2FVVgqhjR71ibSsSnwprLhVA",
+          "serpapi_link": "https://serpapi.com/search.json?amazon_domain=amazon.de&device=desktop&engine=amazon&k=iphone+17&language=en_GB&rh=p_6%3AAZE7WYFQD245Q"
+        },
+        {
+          "position": 5,
+          "name": "Alloccaz",
+          "rh": "p_6:A3KG6JVZO29NS6",
+          "link": "https://www.amazon.de/-/en/s?k=iphone+17&rh=p_6%3AA3KG6JVZO29NS6&dc&language=en_GB&qid=1770505579&rnid=419115031&ref=sr_nr_p_6_5&ds=v1%3ALSslWzwf7VZ1ZZ2NPMp4a6aV0brr0WNJDw%2Fl8737NFU",
+          "serpapi_link": "https://serpapi.com/search.json?amazon_domain=amazon.de&device=desktop&engine=amazon&k=iphone+17&language=en_GB&rh=p_6%3AA3KG6JVZO29NS6"
+        },
+        {
+          "position": 6,
+          "name": "COMENOVO WIE NEU",
+          "rh": "p_6:A1T6FJJA0JNIL6",
+          "link": "https://www.amazon.de/-/en/s?k=iphone+17&rh=p_6%3AA1T6FJJA0JNIL6&dc&language=en_GB&qid=1770505579&rnid=419115031&ref=sr_nr_p_6_6&ds=v1%3AjVci%2BGInz%2Fh4UXEyux8LmBBzxWU3ajNdixH2gyPv7BA",
+          "serpapi_link": "https://serpapi.com/search.json?amazon_domain=amazon.de&device=desktop&engine=amazon&k=iphone+17&language=en_GB&rh=p_6%3AA1T6FJJA0JNIL6"
+        },
+        {
+          "position": 7,
+          "name": "Nest Green",
+          "rh": "p_6:A3QEKEO5MFEJ8S",
+          "link": "https://www.amazon.de/-/en/s?k=iphone+17&rh=p_6%3AA3QEKEO5MFEJ8S&dc&language=en_GB&qid=1770505579&rnid=419115031&ref=sr_nr_p_6_7&ds=v1%3ADxl5oSymMunNPCkxDvnucEOZGHT7fL%2Fv6j1Mi7v3CWk",
+          "serpapi_link": "https://serpapi.com/search.json?amazon_domain=amazon.de&device=desktop&engine=amazon&k=iphone+17&language=en_GB&rh=p_6%3AA3QEKEO5MFEJ8S"
+        }
+      ],
+      "sim_card_slot_count": [
+        {
+          "position": 1,
+          "name": "Single SIM",
+          "rh": "p_n_g-1002989427111:27087967031",
+          "link": "https://www.amazon.de/-/en/s?k=iphone+17&rh=p_n_g-1002989427111%3A27087967031&dc&language=en_GB&qid=1770505579&rnid=27087965031&ref=sr_nr_p_n_g-1002989427111_1&ds=v1%3AsD4jGOIr2cSuBCsezPTzocUwdt8pFq6yrWwkhy3Do8w",
+          "serpapi_link": "https://serpapi.com/search.json?amazon_domain=amazon.de&device=desktop&engine=amazon&k=iphone+17&language=en_GB&rh=p_n_g-1002989427111%3A27087967031"
+        }
+      ],
+      "connector_type": [
+        {
+          "position": 1,
+          "name": "Lightning",
+          "rh": "p_n_g-1002085485111:27403507031",
+          "link": "https://www.amazon.de/-/en/s?k=iphone+17&rh=p_n_g-1002085485111%3A27403507031&dc&language=en_GB&qid=1770505579&rnid=27403505031&ref=sr_nr_p_n_g-1002085485111_1&ds=v1%3AvFn8NU58OtBT2DzGDjF0PMRTkaW87V5T6Yg%2FRuSggzg",
+          "serpapi_link": "https://serpapi.com/search.json?amazon_domain=amazon.de&device=desktop&engine=amazon&k=iphone+17&language=en_GB&rh=p_n_g-1002085485111%3A27403507031"
+        },
+        {
+          "position": 2,
+          "name": "USB Type C",
+          "rh": "p_n_g-1002085485111:27403509031",
+          "link": "https://www.amazon.de/-/en/s?k=iphone+17&rh=p_n_g-1002085485111%3A27403509031&dc&language=en_GB&qid=1770505579&rnid=27403505031&ref=sr_nr_p_n_g-1002085485111_2&ds=v1%3AcSazWxhHB40euPjzbCflV1eU7WEJjcOQqj9exNRTmSI",
+          "serpapi_link": "https://serpapi.com/search.json?amazon_domain=amazon.de&device=desktop&engine=amazon&k=iphone+17&language=en_GB&rh=p_n_g-1002085485111%3A27403509031"
+        }
+      ],
+      "connectivity": [
+        {
+          "position": 1,
+          "name": "USB",
+          "rh": "p_n_g-1002112230111:27363294031",
+          "link": "https://www.amazon.de/-/en/s?k=iphone+17&rh=p_n_g-1002112230111%3A27363294031&dc&language=en_GB&qid=1770505579&rnid=27363292031&ref=sr_nr_p_n_g-1002112230111_1&ds=v1%3Anxv69nGwpuS6womoL8IRDh2AU1%2BsaZtgS3u79OngH%2Bc",
+          "serpapi_link": "https://serpapi.com/search.json?amazon_domain=amazon.de&device=desktop&engine=amazon&k=iphone+17&language=en_GB&rh=p_n_g-1002112230111%3A27363294031"
+        },
+        {
+          "position": 2,
+          "name": "Wi-Fi",
+          "rh": "p_n_g-1002112230111:27363296031",
+          "link": "https://www.amazon.de/-/en/s?k=iphone+17&rh=p_n_g-1002112230111%3A27363296031&dc&language=en_GB&qid=1770505579&rnid=27363292031&ref=sr_nr_p_n_g-1002112230111_2&ds=v1%3ALh%2BQpaHQ7A0OwoeLzGhRz%2F7JYmBzVUI6TnHTymY7csw",
+          "serpapi_link": "https://serpapi.com/search.json?amazon_domain=amazon.de&device=desktop&engine=amazon&k=iphone+17&language=en_GB&rh=p_n_g-1002112230111%3A27363296031"
+        }
+      ],
+      "color": [
+        {
+          "position": 1,
+          "name": "Black",
+          "image": "https://m.media-amazon.com/images/G/03/nav2/images/gui/clothingcolorsprite._CB539899461_.png",
+          "rh": "p_n_g-1004151068091:1602377031",
+          "link": "https://www.amazon.de/-/en/s?k=iphone+17&rh=p_n_g-1004151068091%3A1602377031&dc&language=en_GB&qid=1770505579&rnid=1602032031&ref=sr_nr_p_n_g-1004151068091_1&ds=v1%3ALl6gjmHHA2ecrPaVKhxh5mPDhtRSbHh2LMxWQxPgbi0",
+          "serpapi_link": "https://serpapi.com/search.json?amazon_domain=amazon.de&device=desktop&engine=amazon&k=iphone+17&language=en_GB&rh=p_n_g-1004151068091%3A1602377031"
+        },
+        {
+          "position": 2,
+          "name": "Green",
+          "image": "https://m.media-amazon.com/images/G/03/nav2/images/gui/clothingcolorsprite._CB539899461_.png",
+          "rh": "p_n_g-1004151068091:1602381031",
+          "link": "https://www.amazon.de/-/en/s?k=iphone+17&rh=p_n_g-1004151068091%3A1602381031&dc&language=en_GB&qid=1770505579&rnid=1602032031&ref=sr_nr_p_n_g-1004151068091_2&ds=v1%3AYjROldw5giiK4GLJpv3t0a%2BhgHX2eZXAk%2FJ5SHZL2uc",
+          "serpapi_link": "https://serpapi.com/search.json?amazon_domain=amazon.de&device=desktop&engine=amazon&k=iphone+17&language=en_GB&rh=p_n_g-1004151068091%3A1602381031"
+        }
+      ],
+      "battery_capacity": [
+        {
+          "position": 1,
+          "name": "Up to 2,999 mAh",
+          "rh": "p_n_g-101015098008111:91805373031",
+          "link": "https://www.amazon.de/-/en/s?k=iphone+17&rh=p_n_g-101015098008111%3A91805373031&dc&language=en_GB&qid=1770505579&rnid=91805369031&ref=sr_nr_p_n_g-101015098008111_1&ds=v1%3AKH3fA%2Fn3Pzs7IRioObXsBUjubWKQjqJa5FJIHT5GFxA",
+          "serpapi_link": "https://serpapi.com/search.json?amazon_domain=amazon.de&device=desktop&engine=amazon&k=iphone+17&language=en_GB&rh=p_n_g-101015098008111%3A91805373031"
+        },
+        {
+          "position": 2,
+          "name": "4,000 to 4,999 mAh",
+          "rh": "p_n_g-101015098008111:91805370031",
+          "link": "https://www.amazon.de/-/en/s?k=iphone+17&rh=p_n_g-101015098008111%3A91805370031&dc&language=en_GB&qid=1770505579&rnid=91805369031&ref=sr_nr_p_n_g-101015098008111_2&ds=v1%3Akc1DjpiWHNqXZfTvShBzivfDU3R4eBUAIgjHVF4cCQs",
+          "serpapi_link": "https://serpapi.com/search.json?amazon_domain=amazon.de&device=desktop&engine=amazon&k=iphone+17&language=en_GB&rh=p_n_g-101015098008111%3A91805370031"
+        }
+      ],
+      "ram_size": [
+        {
+          "position": 1,
+          "name": "4 to 5.9 GB",
+          "rh": "p_n_g-1003495121111:44908072031",
+          "link": "https://www.amazon.de/-/en/s?k=iphone+17&rh=p_n_g-1003495121111%3A44908072031&dc&language=en_GB&qid=1770505579&rnid=44908041031&ref=sr_nr_p_n_g-1003495121111_1&ds=v1%3A3NlX0pFE1sjkPH7wxUcbkCUnRVXOCTFPuovV7dpfWTw",
+          "serpapi_link": "https://serpapi.com/search.json?amazon_domain=amazon.de&device=desktop&engine=amazon&k=iphone+17&language=en_GB&rh=p_n_g-1003495121111%3A44908072031"
+        },
+        {
+          "position": 2,
+          "name": "8 to 9.9 GB",
+          "rh": "p_n_g-1003495121111:44908060031",
+          "link": "https://www.amazon.de/-/en/s?k=iphone+17&rh=p_n_g-1003495121111%3A44908060031&dc&language=en_GB&qid=1770505579&rnid=44908041031&ref=sr_nr_p_n_g-1003495121111_2&ds=v1%3A%2BRCDmQS6%2BAd%2FpxkXzfArDbNMTfvXPnMbORbaRgJOHv8",
+          "serpapi_link": "https://serpapi.com/search.json?amazon_domain=amazon.de&device=desktop&engine=amazon&k=iphone+17&language=en_GB&rh=p_n_g-1003495121111%3A44908060031"
+        }
+      ],
+      "availability": [
+        {
+          "position": 1,
+          "name": "Include Out of Stock",
+          "rh": "p_n_availability:419126031",
+          "link": "https://www.amazon.de/-/en/s?k=iphone+17&rh=p_n_availability%3A419126031&dc&language=en_GB&qid=1770505579&rnid=419124031&ref=sr_nr_p_n_availability_2&ds=v1%3A6za8eFionmxGape1jf2R4LkH1bjXFjaocsHdqf7Gpts",
+          "serpapi_link": "https://serpapi.com/search.json?amazon_domain=amazon.de&device=desktop&engine=amazon&k=iphone+17&language=en_GB&rh=p_n_availability%3A419126031"
+        }
+      ],
+      "camera_resolution": [
+        {
+          "position": 1,
+          "name": "8 to 12.9 MP",
+          "rh": "p_n_g-1004151207091:14210565031",
+          "link": "https://www.amazon.de/-/en/s?k=iphone+17&rh=p_n_g-1004151207091%3A14210565031&dc&language=en_GB&qid=1770505579&rnid=1602004031&ref=sr_nr_p_n_g-1004151207091_1&ds=v1%3A%2FEq7yJLu84%2FWHKjLYfOP%2FfAdgcuVes%2BOtweMhxjAn6s",
+          "serpapi_link": "https://serpapi.com/search.json?amazon_domain=amazon.de&device=desktop&engine=amazon&k=iphone+17&language=en_GB&rh=p_n_g-1004151207091%3A14210565031"
+        }
+      ],
+      "display_type": [
+        {
+          "position": 1,
+          "name": "LCD",
+          "rh": "p_n_g-101013595158111:66009625031",
+          "link": "https://www.amazon.de/-/en/s?k=iphone+17&rh=p_n_g-101013595158111%3A66009625031&dc&language=en_GB&qid=1770505579&rnid=66009624031&ref=sr_nr_p_n_g-101013595158111_1&ds=v1%3APRbiX%2BbaAI6gZxhnreOmhj%2B8FDwS3dWFJoVc9EXA%2Bus",
+          "serpapi_link": "https://serpapi.com/search.json?amazon_domain=amazon.de&device=desktop&engine=amazon&k=iphone+17&language=en_GB&rh=p_n_g-101013595158111%3A66009625031"
+        },
+        {
+          "position": 2,
+          "name": "OLED",
+          "rh": "p_n_g-101013595158111:66009627031",
+          "link": "https://www.amazon.de/-/en/s?k=iphone+17&rh=p_n_g-101013595158111%3A66009627031&dc&language=en_GB&qid=1770505579&rnid=66009624031&ref=sr_nr_p_n_g-101013595158111_2&ds=v1%3AyIIwX66Nh8AN2AXlKERVKRA38nRSEhD6MKUQYXqRdDE",
+          "serpapi_link": "https://serpapi.com/search.json?amazon_domain=amazon.de&device=desktop&engine=amazon&k=iphone+17&language=en_GB&rh=p_n_g-101013595158111%3A66009627031"
+        }
+      ],
+      "input": [
+        {
+          "position": 1,
+          "name": "Microphone",
+          "rh": "p_n_g-1002097072111:27362409031",
+          "link": "https://www.amazon.de/-/en/s?k=iphone+17&rh=p_n_g-1002097072111%3A27362409031&dc&language=en_GB&qid=1770505579&rnid=27362402031&ref=sr_nr_p_n_g-1002097072111_1&ds=v1%3AzBBeWi02tCXfiie0KdUQqSUxFQm46h3Hvy%2F6mZbpMtc",
+          "serpapi_link": "https://serpapi.com/search.json?amazon_domain=amazon.de&device=desktop&engine=amazon&k=iphone+17&language=en_GB&rh=p_n_g-1002097072111%3A27362409031"
+        },
+        {
+          "position": 2,
+          "name": "Touchscreen",
+          "rh": "p_n_g-1002097072111:27362404031",
+          "link": "https://www.amazon.de/-/en/s?k=iphone+17&rh=p_n_g-1002097072111%3A27362404031&dc&language=en_GB&qid=1770505579&rnid=27362402031&ref=sr_nr_p_n_g-1002097072111_2&ds=v1%3A1Gg%2FXVCJiVmfZQd0QYxdQ7aeL4GLEbwtr%2B6zvck1zbQ",
+          "serpapi_link": "https://serpapi.com/search.json?amazon_domain=amazon.de&device=desktop&engine=amazon&k=iphone+17&language=en_GB&rh=p_n_g-1002097072111%3A27362404031"
+        }
+      ],
+      "premium_brands": [
+        {
+          "position": 1,
+          "name": "Premium Brands",
+          "rh": "p_n_feature_keywords_two_browse-bin:207300310031",
+          "link": "https://www.amazon.de/-/en/s?k=iphone+17&rh=p_n_feature_keywords_two_browse-bin%3A207300310031&dc&language=en_GB&qid=1770505579&rnid=207300309031&ref=sr_nr_p_n_feature_keywords_two_browse-bin_1&ds=v1%3Ao07nSpC311L1pYOQ7mMS6G6%2F66eSbuvZff2Rey%2B8izc",
+          "serpapi_link": "https://serpapi.com/search.json?amazon_domain=amazon.de&device=desktop&engine=amazon&k=iphone+17&language=en_GB&rh=p_n_feature_keywords_two_browse-bin%3A207300310031"
+        }
+      ],
+      "video_capture_resolution": [
+        {
+          "position": 1,
+          "name": "4k",
+          "rh": "p_n_g-1003305462111:28430305031",
+          "link": "https://www.amazon.de/-/en/s?k=iphone+17&rh=p_n_g-1003305462111%3A28430305031&dc&language=en_GB&qid=1770505579&rnid=28430302031&ref=sr_nr_p_n_g-1003305462111_1&ds=v1%3AJt92loVRdNfkAR1FcF2H%2FHy%2Fl4VxCdqoLtaFQ6Ap%2FKc",
+          "serpapi_link": "https://serpapi.com/search.json?amazon_domain=amazon.de&device=desktop&engine=amazon&k=iphone+17&language=en_GB&rh=p_n_g-1003305462111%3A28430305031"
+        }
+      ],
+      "front_camera_resolution": [
+        {
+          "position": 1,
+          "name": "10.0 to 12.9 MP",
+          "rh": "p_n_g-1003565058111:61507818031",
+          "link": "https://www.amazon.de/-/en/s?k=iphone+17&rh=p_n_g-1003565058111%3A61507818031&dc&language=en_GB&qid=1770505579&rnid=61507816031&ref=sr_nr_p_n_g-1003565058111_1&ds=v1%3Acb963l4QykMbNm0q%2Fj6fRaEFEJPNk%2B3J08saBtjtEeg",
+          "serpapi_link": "https://serpapi.com/search.json?amazon_domain=amazon.de&device=desktop&engine=amazon&k=iphone+17&language=en_GB&rh=p_n_g-1003565058111%3A61507818031"
+        }
+      ],
+      "security_feature": [
+        {
+          "position": 1,
+          "name": "Face Recognition",
+          "rh": "p_n_g-1002085472111:27355992031",
+          "link": "https://www.amazon.de/-/en/s?k=iphone+17&rh=p_n_g-1002085472111%3A27355992031&dc&language=en_GB&qid=1770505579&rnid=27355987031&ref=sr_nr_p_n_g-1002085472111_1&ds=v1%3A4JmmbxIXvoTE9qpOd1Py0DqvR8JStlpE2jgjCR6JFfg",
+          "serpapi_link": "https://serpapi.com/search.json?amazon_domain=amazon.de&device=desktop&engine=amazon&k=iphone+17&language=en_GB&rh=p_n_g-1002085472111%3A27355992031"
+        }
+      ],
+      "battery_type": [
+        {
+          "position": 1,
+          "name": "Lithium-Ion",
+          "rh": "p_n_g-101015500034111:100427274031",
+          "link": "https://www.amazon.de/-/en/s?k=iphone+17&rh=p_n_g-101015500034111%3A100427274031&dc&language=en_GB&qid=1770505579&rnid=100427265031&ref=sr_nr_p_n_g-101015500034111_1&ds=v1%3AqbZ8MXoS4WsTiHTPo7Xt3fcId%2FHF%2BXvaeov48n%2FOZIQ",
+          "serpapi_link": "https://serpapi.com/search.json?amazon_domain=amazon.de&device=desktop&engine=amazon&k=iphone+17&language=en_GB&rh=p_n_g-101015500034111%3A100427274031"
+        }
+      ],
+      "sim_card_size": [
+        {
+          "position": 1,
+          "name": "eSIM",
+          "rh": "p_n_g-1002989370111:27146813031",
+          "link": "https://www.amazon.de/-/en/s?k=iphone+17&rh=p_n_g-1002989370111%3A27146813031&dc&language=en_GB&qid=1770505579&rnid=27146812031&ref=sr_nr_p_n_g-1002989370111_1&ds=v1%3AqhN20GbV%2FYyeu7XVC1roCaY5%2FWOhcTvHxHZeA64awPI",
+          "serpapi_link": "https://serpapi.com/search.json?amazon_domain=amazon.de&device=desktop&engine=amazon&k=iphone+17&language=en_GB&rh=p_n_g-1002989370111%3A27146813031"
+        }
+      ],
+      "battery_life": [
+        {
+          "position": 1,
+          "name": "19 h & Above",
+          "rh": "p_n_g-1003486052111:41836013031",
+          "link": "https://www.amazon.de/-/en/s?k=iphone+17&rh=p_n_g-1003486052111%3A41836013031&dc&language=en_GB&qid=1770505579&rnid=41835909031&ref=sr_nr_p_n_g-1003486052111_1&ds=v1%3AVym7cp6jzpYLk3ImFUm4%2BeYMHnrOvo688A4r2A0EJj4",
+          "serpapi_link": "https://serpapi.com/search.json?amazon_domain=amazon.de&device=desktop&engine=amazon&k=iphone+17&language=en_GB&rh=p_n_g-1003486052111%3A41836013031"
+        }
+      ],
+      "wireless_network_technology": [
+        {
+          "position": 1,
+          "name": "LTE",
+          "rh": "p_n_g-101015498571111:100438260031",
+          "link": "https://www.amazon.de/-/en/s?k=iphone+17&rh=p_n_g-101015498571111%3A100438260031&dc&language=en_GB&qid=1770505579&rnid=100438246031&ref=sr_nr_p_n_g-101015498571111_1&ds=v1%3AEho09ld0XrFSNRZJZGL%2BlMAnLPW8cXl6NVOx3DXrZ9U",
+          "serpapi_link": "https://serpapi.com/search.json?amazon_domain=amazon.de&device=desktop&engine=amazon&k=iphone+17&language=en_GB&rh=p_n_g-101015498571111%3A100438260031"
+        }
+      ],
+      "weight": [
+        {
+          "position": 1,
+          "name": "142 to 197.9 g",
+          "rh": "p_n_g-1003491669111:42662678031",
+          "link": "https://www.amazon.de/-/en/s?k=iphone+17&rh=p_n_g-1003491669111%3A42662678031&dc&language=en_GB&qid=1770505579&rnid=42662677031&ref=sr_nr_p_n_g-1003491669111_1&ds=v1%3Aw2oEJkwkzPwKeth8V8MsGG%2FIqYHk2uzKPInlsl1eB4c",
+          "serpapi_link": "https://serpapi.com/search.json?amazon_domain=amazon.de&device=desktop&engine=amazon&k=iphone+17&language=en_GB&rh=p_n_g-1003491669111%3A42662678031"
+        }
+      ],
+      "rear_camera_photo_sensor_resolution": [
+        {
+          "position": 1,
+          "name": "10 to 12.9 MP",
+          "rh": "p_n_g-1003477899111:42567345031",
+          "link": "https://www.amazon.de/-/en/s?k=iphone+17&rh=p_n_g-1003477899111%3A42567345031&dc&language=en_GB&qid=1770505579&rnid=42567293031&ref=sr_nr_p_n_g-1003477899111_1&ds=v1%3Ab0uGIN0zTPyDTKlmuCeIuusoH%2B%2B%2B%2FE68Q13lz%2Fqywv0",
+          "serpapi_link": "https://serpapi.com/search.json?amazon_domain=amazon.de&device=desktop&engine=amazon&k=iphone+17&language=en_GB&rh=p_n_g-1003477899111%3A42567345031"
+        }
+      ],
+      "included_components": [
+        {
+          "position": 1,
+          "name": "USB Cable",
+          "rh": "p_n_g-101013594324111:66008853031",
+          "link": "https://www.amazon.de/-/en/s?k=iphone+17&rh=p_n_g-101013594324111%3A66008853031&dc&language=en_GB&qid=1770505579&rnid=66008829031&ref=sr_nr_p_n_g-101013594324111_1&ds=v1%3ANSM9MFHLeZkKUGRP%2FAL6%2FBtvsOcnxN3u8O9dpkQVlE8",
+          "serpapi_link": "https://serpapi.com/search.json?amazon_domain=amazon.de&device=desktop&engine=amazon&k=iphone+17&language=en_GB&rh=p_n_g-101013594324111%3A66008853031"
+        }
+      ]
+    },
+    "serpapi_pagination": {
+      "current": 1,
+      "next": "https://serpapi.com/search.json?amazon_domain=amazon.de&device=desktop&engine=amazon&k=iphone+17&language=en_GB&page=2"
+    }
+  }
+}

@@ -1,0 +1,838 @@
+{
+  "meta": {
+    "timestamp": 1770504401.2186172,
+    "provider": "serpapi",
+    "cache_hit": false
+  },
+  "request": {
+    "provider": "serpapi",
+    "mode": "text",
+    "query": "iphone 17\n   switzerland",
+    "country_code": "ch",
+    "language": "en",
+    "n": 10
+  },
+  "normalized_hits": [
+    {
+      "title": "Apple iPhone 17",
+      "url": "https://www.google.com/search?ibp=oshop&q=iphone 17\n   switzerland&prds=catalogid:9654161273407090378,headlineOfferDocid:17702275244500096043,imageDocid:162026485709925364,rds:PC_6027158597472037202|PROD_PC_6027158597472037202,gpcid:14739022971413544759,mid:576462866558881327,pvt:hg&hl=en&gl=ch&udm=28",
+      "source": "MediaMarkt Schweiz",
+      "thumbnail": "https://encrypted-tbn0.gstatic.com/shopping?q=tbn:ANd9GcRh4du5i605c7QFIR7l6WgN50L5_0ab1B99AHxZ18Poj2o9wc46N-ht6i3nSypkLsAEh4bLKJ454t5Y0n9Ij4cr9ZdKIYqqD-v-TnrUTJ77pBagzNW-bx2-Ug",
+      "price_text": "CHF 799.00",
+      "price_value": 799.0,
+      "rating": 4.6,
+      "reviews": 8600,
+      "delivery_text": null,
+      "delivery_days": null,
+      "in_stock": null
+    },
+    {
+      "title": "Apple iPhone 17 Pro",
+      "url": "https://www.google.com/search?ibp=oshop&q=iphone 17\n   switzerland&prds=catalogid:913593529889486781,headlineOfferDocid:16424009395873206523,imageDocid:5878518796498235909,rds:PC_9961958114952839788|PROD_PC_9961958114952839788,gpcid:9961958114952839788,pvt:hg&hl=en&gl=ch&udm=28",
+      "source": "LDLC Suisse",
+      "thumbnail": "https://encrypted-tbn1.gstatic.com/shopping?q=tbn:ANd9GcT7cq1-DqudiuRHffL33KR_UzzH16hPMCqvpXgo7ayfdVChYeWU1xEt50-VDDVwcKOPMWI3k3wXUDtmEuOG0MBIUrontRRfn4UaAMHw22EAXOqphKZfg7KZ",
+      "price_text": "CHF 1'067.95",
+      "price_value": 1,
+      "rating": 4.4,
+      "reviews": 8700,
+      "delivery_text": null,
+      "delivery_days": null,
+      "in_stock": null
+    },
+    {
+      "title": "Apple iPhone 17 Pro Max",
+      "url": "https://www.google.com/search?ibp=oshop&q=iphone 17\n   switzerland&prds=catalogid:756780163185960877,headlineOfferDocid:14809528903578588860,imageDocid:15836689637166733946,rds:PC_5141485329231317038|PROD_PC_5141485329231317038,gpcid:5141485329231317038,mid:576462845970214900,pvt:hg&hl=en&gl=ch&udm=28",
+      "source": "MediaMarkt Suisse",
+      "thumbnail": "https://encrypted-tbn2.gstatic.com/shopping?q=tbn:ANd9GcQXh4Qj8u2xhJqVJxBch78aRJxBpp71U-exFFggt_4kJO87_Aoij23Skk8WOuhrcek2xsKJ1Ve-fzaPoHrweiiGFkIKZBfng6TpxIGDTZoXclXfSKvlo-d99Q",
+      "price_text": "CHF 1'199.00",
+      "price_value": 1,
+      "rating": 4.2,
+      "reviews": 11000,
+      "delivery_text": null,
+      "delivery_days": null,
+      "in_stock": null
+    },
+    {
+      "title": "Apple iPhone 17 Pro & Pro Max | Puce A19 Pro & Caméra 48 MP | ArtComputer",
+      "url": "https://www.google.com/search?ibp=oshop&q=iphone 17\n   switzerland&prds=productid:811233484457336071,headlineOfferDocid:811233484457336071,imageDocid:3098783292626896934,pvt:hg&hl=en&gl=ch&udm=28",
+      "source": "ART Computer",
+      "thumbnail": "https://encrypted-tbn2.gstatic.com/shopping?q=tbn:ANd9GcS6yTEsPtcsMSxKQ2GvvTyIkXdmsclDP5IAuwRx-99LQk5EWp_i0XNxJfV-Zz0kwFL4HRJ5cTAIMSzu1CWA-wOtH3vgCn1w",
+      "price_text": "CHF 1'099.00",
+      "price_value": 1,
+      "rating": null,
+      "reviews": null,
+      "delivery_text": null,
+      "delivery_days": null,
+      "in_stock": null
+    },
+    {
+      "title": "Coque iPhone 17 Pro Max - Silicone rigide noir Fête Nationale Suisse Sky Swiss Flag",
+      "url": "https://www.google.com/search?ibp=oshop&q=iphone 17\n   switzerland&prds=productid:2746324862414915757,headlineOfferDocid:2746324862414915757,imageDocid:1550845416362194228,pvt:hg&hl=en&gl=ch&udm=28",
+      "source": "PhoneLook.ch",
+      "thumbnail": "https://encrypted-tbn0.gstatic.com/shopping?q=tbn:ANd9GcRrxO_up0qbqSUKnKItfGrYqxf6oFyxbZWOd7exPaABbZFGKRlIuR7tm9d8Afdwl4eMBxmPplBqMCqCGfoEHFD1_Zz95nvPQFT0XMfPK-k5",
+      "price_text": "CHF 29.95",
+      "price_value": 29.95,
+      "rating": null,
+      "reviews": null,
+      "delivery_text": null,
+      "delivery_days": null,
+      "in_stock": null
+    },
+    {
+      "title": "iPhone 17 Pro 256Gb (2 esim)",
+      "url": "https://www.google.com/search?ibp=oshop&q=iphone 17\n   switzerland&prds=productid:17130190069621017045,headlineOfferDocid:17130190069621017045,imageDocid:13371137533296047756,rds:PC_9961958114952839788|PROD_PC_9961958114952839788,pvt:hg&hl=en&gl=ch&udm=28",
+      "source": "Evenshop",
+      "thumbnail": "https://encrypted-tbn0.gstatic.com/shopping?q=tbn:ANd9GcSkg-txWhnb238bBczIuCPH84pVdODbzvnIDPYOQr26yymZGsvkqhV3TyIqLjUUeM95x2nkB3pv4l_9uX4lCJJmB4ZAwHVCZoPVUTP3bjEJTGaUn-r5cPl0oA",
+      "price_text": "CHF 1'234.05",
+      "price_value": 1,
+      "rating": 4.4,
+      "reviews": 8700,
+      "delivery_text": null,
+      "delivery_days": null,
+      "in_stock": null
+    },
+    {
+      "title": "iPhone 17 Pro Kaufen Schweiz Tiefblau / 256GB",
+      "url": "https://www.google.com/search?ibp=oshop&q=iphone 17\n   switzerland&prds=productid:4740170917547427639,headlineOfferDocid:4740170917547427639,imageDocid:2256832806427040455,pvt:hg&hl=en&gl=ch&udm=28",
+      "source": "handy.ch",
+      "thumbnail": "https://encrypted-tbn3.gstatic.com/shopping?q=tbn:ANd9GcS78yzpIDjx59vUL6MqYI_Q57DBREk2fsfbZQdTA4M6Nv0Wr5LsXgr3A0pLUHnpJMbdVWesGEXhI1N8dLkV5qJcV6AsphP_Zl7i6yUzqede9Op3R3H6DKpzadg",
+      "price_text": "CHF 1'149.00",
+      "price_value": 1,
+      "rating": null,
+      "reviews": null,
+      "delivery_text": null,
+      "delivery_days": null,
+      "in_stock": null
+    },
+    {
+      "title": "iPhone 17 Pro Max Case Hülle - Silikon schwarz Euro 2020 Switzerland - Phonelook",
+      "url": "https://www.google.com/search?ibp=oshop&q=iphone 17\n   switzerland&prds=productid:7237693539026761347,headlineOfferDocid:7237693539026761347,imageDocid:7491271424454953158,pvt:hg&hl=en&gl=ch&udm=28",
+      "source": "PhoneLook.ch",
+      "thumbnail": "https://encrypted-tbn2.gstatic.com/shopping?q=tbn:ANd9GcRDp2_HPRtYtRLx8ogowm-n5bW7-eRVqDP8F0suSjFQdjWRab0gwgKx64yHAHTFZi5f7BVGERfqDpglGFkapM44bnnbN2wpxBj38yandmvN",
+      "price_text": "CHF 29.95",
+      "price_value": 29.95,
+      "rating": null,
+      "reviews": null,
+      "delivery_text": null,
+      "delivery_days": null,
+      "in_stock": null
+    },
+    {
+      "title": "Apple iPhone 16 Pro",
+      "url": "https://www.google.com/search?ibp=oshop&q=iphone 17\n   switzerland&prds=catalogid:2482997163498633586,headlineOfferDocid:346666223315632417,imageDocid:2996689198100047167,rds:PC_17389053388268021508|PROD_PC_17389053388268021508,gpcid:10943350843658421229,mid:576462796115543865,pvt:hg&hl=en&gl=ch&udm=28",
+      "source": "HopCash Suisse",
+      "thumbnail": "https://encrypted-tbn3.gstatic.com/shopping?q=tbn:ANd9GcRVXSsVs-ppDVIK-gWcQSHDgCgjG4vP5SnS5r9Gw1fbg3i5hpg8tMT8AexemZXo7B3fgfcFXPS6fGzGLReYaTFnfPRMBDyknw6kzIJM1P07ZrBa67ppim8v",
+      "price_text": "CHF 779.90",
+      "price_value": 779.9,
+      "rating": 4.9,
+      "reviews": 1400,
+      "delivery_text": null,
+      "delivery_days": null,
+      "in_stock": null
+    },
+    {
+      "title": "iPhone 17 Pro Max Kaufen Schweiz Silber / 256GB",
+      "url": "https://www.google.com/search?ibp=oshop&q=iphone 17\n   switzerland&prds=productid:14040419585222158974,headlineOfferDocid:14040419585222158974,imageDocid:12424667236522326997,pvt:hg&hl=en&gl=ch&udm=28",
+      "source": "handy.ch",
+      "thumbnail": "https://encrypted-tbn1.gstatic.com/shopping?q=tbn:ANd9GcTPbeVPKS3Y7C_oJqXsZb9i7qW_ZV9y6L_mdBfwQ02B4PWyWTlOmr1SmR-t6AAM7MajYQ65WheyKQEyHOksJMIgcI4geArbamrebk118q_tG0B4crKccGJo",
+      "price_text": "CHF 1'249.00",
+      "price_value": 1,
+      "rating": null,
+      "reviews": null,
+      "delivery_text": null,
+      "delivery_days": null,
+      "in_stock": null
+    }
+  ],
+  "raw": {
+    "search_metadata": {
+      "id": "6987c0c8b4ab72a0661f8c11",
+      "status": "Success",
+      "json_endpoint": "https://serpapi.com/searches/UC2Nj8ZeTz-FOyj8YQrrkg/6987c0c8b4ab72a0661f8c11.json",
+      "created_at": "2026-02-07 22:46:32 UTC",
+      "processed_at": "2026-02-07 22:46:32 UTC",
+      "google_shopping_url": "https://www.google.com/search?udm=28&q=iphone+17%0A+++switzerland&hl=en&gl=ch",
+      "raw_html_file": "https://serpapi.com/searches/UC2Nj8ZeTz-FOyj8YQrrkg/6987c0c8b4ab72a0661f8c11.html",
+      "total_time_taken": 8.53
+    },
+    "search_parameters": {
+      "engine": "google_shopping",
+      "q": "iphone 17\n   switzerland",
+      "google_domain": "google.com",
+      "hl": "en",
+      "gl": "ch",
+      "device": "desktop"
+    },
+    "search_information": {
+      "query_displayed": "iphone 17 switzerland",
+      "total_results": 10,
+      "time_taken_displayed": 0.2,
+      "shopping_results_state": "Results for exact spelling"
+    },
+    "shopping_results": [
+      {
+        "position": 1,
+        "title": "Apple iPhone 17",
+        "product_id": "9654161273407090378",
+        "product_link": "https://www.google.com/search?ibp=oshop&q=iphone 17\n   switzerland&prds=catalogid:9654161273407090378,headlineOfferDocid:17702275244500096043,imageDocid:162026485709925364,rds:PC_6027158597472037202|PROD_PC_6027158597472037202,gpcid:14739022971413544759,mid:576462866558881327,pvt:hg&hl=en&gl=ch&udm=28",
+        "immersive_product_page_token": "eyJlaSI6IjBNQ0hhY3UxQXFxZXZyMFBnNXJDOFFnIiwicHJvZHVjdGlkIjoiIiwiY2F0YWxvZ2lkIjoiOTY1NDE2MTI3MzQwNzA5MDM3OCIsImhlYWRsaW5lT2ZmZXJEb2NpZCI6IjE3NzAyMjc1MjQ0NTAwMDk2MDQzIiwiaW1hZ2VEb2NpZCI6IjE2MjAyNjQ4NTcwOTkyNTM2NCIsInJkcyI6IlBDXzYwMjcxNTg1OTc0NzIwMzcyMDJ8UFJPRF9QQ182MDI3MTU4NTk3NDcyMDM3MjAyIiwicXVlcnkiOiJpcGhvbmUrMTclMEErKytzd2l0emVybGFuZCIsImdwY2lkIjoiMTQ3MzkwMjI5NzE0MTM1NDQ3NTkiLCJtaWQiOiI1NzY0NjI4NjY1NTg4ODEzMjciLCJwdnQiOiJoZyIsInV1bGUiOm51bGwsImdsIjoiY2giLCJobCI6ImVuIn0=",
+        "serpapi_immersive_product_api": "https://serpapi.com/search.json?engine=google_immersive_product&page_token=eyJlaSI6IjBNQ0hhY3UxQXFxZXZyMFBnNXJDOFFnIiwicHJvZHVjdGlkIjoiIiwiY2F0YWxvZ2lkIjoiOTY1NDE2MTI3MzQwNzA5MDM3OCIsImhlYWRsaW5lT2ZmZXJEb2NpZCI6IjE3NzAyMjc1MjQ0NTAwMDk2MDQzIiwiaW1hZ2VEb2NpZCI6IjE2MjAyNjQ4NTcwOTkyNTM2NCIsInJkcyI6IlBDXzYwMjcxNTg1OTc0NzIwMzcyMDJ8UFJPRF9QQ182MDI3MTU4NTk3NDcyMDM3MjAyIiwicXVlcnkiOiJpcGhvbmUrMTclMEErKytzd2l0emVybGFuZCIsImdwY2lkIjoiMTQ3MzkwMjI5NzE0MTM1NDQ3NTkiLCJtaWQiOiI1NzY0NjI4NjY1NTg4ODEzMjciLCJwdnQiOiJoZyIsInV1bGUiOm51bGwsImdsIjoiY2giLCJobCI6ImVuIn0%3D",
+        "source": "MediaMarkt Schweiz",
+        "source_icon": "https://serpapi.com/searches/6987c0c8b4ab72a0661f8c11/images/vLX_bY403VSvej13D1qY6AUD1pnFO-7IMY4d5kOIFl0.png",
+        "multiple_sources": true,
+        "price": "CHF 799.00",
+        "extracted_price": 799.0,
+        "rating": 4.6,
+        "reviews": 8600,
+        "thumbnail": "https://encrypted-tbn0.gstatic.com/shopping?q=tbn:ANd9GcRh4du5i605c7QFIR7l6WgN50L5_0ab1B99AHxZ18Poj2o9wc46N-ht6i3nSypkLsAEh4bLKJ454t5Y0n9Ij4cr9ZdKIYqqD-v-TnrUTJ77pBagzNW-bx2-Ug",
+        "serpapi_thumbnail": "https://serpapi.com/images/url/EVKXCnicDcnbCoIwAADQL5ou27QJEUY3L0iZIvYSOmPTak5dpX1Vv9Pf1Hk93w9XSva2rl8E7UapLiVQhYAa61WuKqrR5q73vJGyEmzRzv9nO2FJtjTiqHzgyoSYWoeNG1k3M2UhhgE-w7yYLAlxdsNpMts3tdGQF0VmCLgyq6k4jvIa9M6aoyLwPYSRwhkUxK0R7cip9N2sbVfgCWLRJbFnWXKZs3eYgmIwQMJ-w1U7vQ",
+        "thumbnails": [
+          "https://encrypted-tbn0.gstatic.com/shopping?q=tbn:ANd9GcRh4du5i605c7QFIR7l6WgN50L5_0ab1B99AHxZ18Poj2o9wc46N-ht6i3nSypkLsAEh4bLKJ454t5Y0n9Ij4cr9ZdKIYqqD-v-TnrUTJ77pBagzNW-bx2-Ug",
+          "https://encrypted-tbn1.gstatic.com/shopping?q=tbn:ANd9GcRRn-yVLRx_NVOwvpWpPdWWpI7dnd0MnPGdu-Z3EqHaXRgkJJIbG_pyuQKLyPFbrpMoaD6cvMhAYA-zSssXfaxCcq8Tvybl2QYVWyXlP0PDgQ5u5wQV1gGj",
+          "https://encrypted-tbn3.gstatic.com/shopping?q=tbn:ANd9GcRlORbNHcHIhyS2CQS0RiDGjqIj6Q7dOLzBfy_HE2hAVgv6qftra_XFaqZqJHGYKROo1CXVGX_8C5F4dG7Gr_BEfe-vth6ebkYdmfE1jDvJPDHUKx0H-qpb",
+          "https://encrypted-tbn0.gstatic.com/shopping?q=tbn:ANd9GcS7BmlxxRGGyH4GaSRdhhPAEXfA3f6GxkHRnLJNrN3SZZQnK2_-FxMcHHB53GK9VMYf-NEOkWaCFz0jokUM9J-x5xu2n4hyi7ErGQDFrox7IhAbi4Qg3XA",
+          "https://encrypted-tbn3.gstatic.com/shopping?q=tbn:ANd9GcRGG--FMflVLinEu7Hcpfez3ZMgT62iDOOSLkSf0AzBoVsOjqyB0lwNnzoTpWjlQ49EAWDRkByXH3o03x7rQOPh4xwoF1ezS1osKkawdnHk"
+        ],
+        "serpapi_thumbnails": [
+          "https://serpapi.com/images/url/EVKXCnicDcnbCoIwAADQL5ou27QJEUY3L0iZIvYSOmPTak5dpX1Vv9Pf1Hk93w9XSva2rl8E7UapLiVQhYAa61WuKqrR5q73vJGyEmzRzv9nO2FJtjTiqHzgyoSYWoeNG1k3M2UhhgE-w7yYLAlxdsNpMts3tdGQF0VmCLgyq6k4jvIa9M6aoyLwPYSRwhkUxK0R7cip9N2sbVfgCWLRJbFnWXKZs3eYgmIwQMJ-w1U7vQ",
+          "https://serpapi.com/images/url/EAdOW3icDclJDoIwFADQEzGowSkxhojiAFrQMLgh0GJRsXxsQeqhvI-30bd9308hBPCppuUMPyWInCgiYz2VcpGKK1Zx9dB4UQFcGZ3Xs_9NzT2Z2Nj3mSIDx--SfXB4tRACImEImxFhRHcZskmjnAfLep1GPr1vt5vMTkA23s6RaJU9wa1Sa4hbtzBjU3kfOY8uabfA9fjUyqzse3EQyqhEOrKoZzTGywt61L79AInoP2Q",
+          "https://serpapi.com/images/url/KzD5H3icDclJDoIwAADAF7GIiktiDLK0ghGt0YCXBlqgoEALDREf5X_8jc51vh8mJe_XmpY1pBu5zKgi02aqFr1MZElU0tZaz1rOy6bYis3_1taRrgBBzxClR0jgno0Xwz5fdFQ6oBL7yjwvaHh47_IRQ9dg1q0YTJHLLsGRl4i78CGIAxS2Ezu6gQgv7bk3o2ABOrxz80wZJDOz9BHTOncnlTP4Jwdeg5cOFcHTHwWQPV0",
+          "https://serpapi.com/images/url/_HNep3icDcnbEkJAAADQL1qMS4aZptmKFVGYSl4a1mUlS2wzq3_qg_qbOq_n-yGMDZMpiiXF4zywsgAsp5JQTyxjDRZw34kT6YehofXqufyfCYPCQDjW192D8wih2VFRFkcFIUdoJRVUqgXirRPRvRuMgRKnaUg9-QZs7mPHWWsK8oyzf61AYB3aS7ax39K9b0--4QKu8ZdMVTI3ujWicGuPPdd3BOaNGtZKAn-W5zwn",
+          "https://serpapi.com/images/url/XRtSk3icDclJDoIwAADAF7EJkUBiDIQtkUXAgPGGZStgW2gN0Of4K3-jc53vp2eMUFOSGgSWnbCmFtgTqWJHWcUgEAF-SbTHhEDUnefT_0wrrg0fZL4vCF7UTkUIkfvWA0DahquPqLsdD9BJkjwc81a2uI0LmgzzbsvTGiOOb6QcplQzXKt0stHe74GKZXXTlzS59tq2Yk9peK5gehmrtUbB-ANBPzpY"
+        ]
+      },
+      {
+        "position": 2,
+        "title": "Apple iPhone 17 Pro",
+        "product_id": "913593529889486781",
+        "product_link": "https://www.google.com/search?ibp=oshop&q=iphone 17\n   switzerland&prds=catalogid:913593529889486781,headlineOfferDocid:16424009395873206523,imageDocid:5878518796498235909,rds:PC_9961958114952839788|PROD_PC_9961958114952839788,gpcid:9961958114952839788,pvt:hg&hl=en&gl=ch&udm=28",
+        "immersive_product_page_token": "eyJlaSI6IjBNQ0hhY3UxQXFxZXZyMFBnNXJDOFFnIiwicHJvZHVjdGlkIjoiIiwiY2F0YWxvZ2lkIjoiOTEzNTkzNTI5ODg5NDg2NzgxIiwiaGVhZGxpbmVPZmZlckRvY2lkIjoiMTY0MjQwMDkzOTU4NzMyMDY1MjMiLCJpbWFnZURvY2lkIjoiNTg3ODUxODc5NjQ5ODIzNTkwOSIsInJkcyI6IlBDXzk5NjE5NTgxMTQ5NTI4Mzk3ODh8UFJPRF9QQ185OTYxOTU4MTE0OTUyODM5Nzg4IiwicXVlcnkiOiJpcGhvbmUrMTclMEErKytzd2l0emVybGFuZCIsImdwY2lkIjoiOTk2MTk1ODExNDk1MjgzOTc4OCIsIm1pZCI6IiIsInB2dCI6ImhnIiwidXVsZSI6bnVsbCwiZ2wiOiJjaCIsImhsIjoiZW4ifQ==",
+        "serpapi_immersive_product_api": "https://serpapi.com/search.json?engine=google_immersive_product&page_token=eyJlaSI6IjBNQ0hhY3UxQXFxZXZyMFBnNXJDOFFnIiwicHJvZHVjdGlkIjoiIiwiY2F0YWxvZ2lkIjoiOTEzNTkzNTI5ODg5NDg2NzgxIiwiaGVhZGxpbmVPZmZlckRvY2lkIjoiMTY0MjQwMDkzOTU4NzMyMDY1MjMiLCJpbWFnZURvY2lkIjoiNTg3ODUxODc5NjQ5ODIzNTkwOSIsInJkcyI6IlBDXzk5NjE5NTgxMTQ5NTI4Mzk3ODh8UFJPRF9QQ185OTYxOTU4MTE0OTUyODM5Nzg4IiwicXVlcnkiOiJpcGhvbmUrMTclMEErKytzd2l0emVybGFuZCIsImdwY2lkIjoiOTk2MTk1ODExNDk1MjgzOTc4OCIsIm1pZCI6IiIsInB2dCI6ImhnIiwidXVsZSI6bnVsbCwiZ2wiOiJjaCIsImhsIjoiZW4ifQ%3D%3D",
+        "source": "LDLC Suisse",
+        "source_icon": "https://serpapi.com/searches/6987c0c8b4ab72a0661f8c11/images/vLX_bY403VSvej13D1qY6OSRp9i-0dnW0JeU_5uZu8M.png",
+        "multiple_sources": true,
+        "price": "CHF 1'067.95",
+        "extracted_price": 1,
+        "rating": 4.4,
+        "reviews": 8700,
+        "thumbnail": "https://encrypted-tbn1.gstatic.com/shopping?q=tbn:ANd9GcT7cq1-DqudiuRHffL33KR_UzzH16hPMCqvpXgo7ayfdVChYeWU1xEt50-VDDVwcKOPMWI3k3wXUDtmEuOG0MBIUrontRRfn4UaAMHw22EAXOqphKZfg7KZ",
+        "serpapi_thumbnail": "https://serpapi.com/images/url/aYz0xHicDclhCoIwGADQE5lNKymIMJUMM0WaWn_Cptskmlt-Znqo7tNt6v193w8HkO1K1ytBnoOEqtTgJtCEtVBATSakeegtb6SsBduo9f9W9rFc7sjJIgpprurKukt8Sg-mGSRXPI4-WvA4dNRL5qyxioGWqcPPVYbR24P5VEtdN-1JEMVhtjfvZp9jFx5eF-2m4XaPn42AJKFihgs79HvD8Ow8UpIHF8qs4PIDHUY9pw",
+        "thumbnails": [
+          "https://encrypted-tbn1.gstatic.com/shopping?q=tbn:ANd9GcT7cq1-DqudiuRHffL33KR_UzzH16hPMCqvpXgo7ayfdVChYeWU1xEt50-VDDVwcKOPMWI3k3wXUDtmEuOG0MBIUrontRRfn4UaAMHw22EAXOqphKZfg7KZ",
+          "https://encrypted-tbn1.gstatic.com/shopping?q=tbn:ANd9GcRG2Dz5Pf2slWQBN2wmWfN5c8ykVNU56KrkKBWCiORTI3GRDOgq6hUJp-hmHLZMANXPG0iu7XOouDLq1vi6QOmWh1-IYvzEJdyEkWsJHUb__U_kQXkcsmk-",
+          "https://encrypted-tbn0.gstatic.com/shopping?q=tbn:ANd9GcRGKET1Kw8hDftT9OkoByH-CXHEXtCsfExGs4ECCay2TMDFfi4Vj0PrEjsYYUtMKJzjswi_8yo87cONQBv30M4wObQNO9ZzRthwEQ6F7fBTN1Tkqy71-5_0NQ",
+          "https://encrypted-tbn2.gstatic.com/shopping?q=tbn:ANd9GcT6XQiO_JtIqm6U12Ym2WacD_9AL5mpKaMoAJ63s_Ui7HHIPZzkZSAVcB5DMIPq-X0m414TvaAT4XExDTf3hAm74muBbFhwAeyh0WP5YKxfjs8k7mxPA8Se",
+          "https://encrypted-tbn2.gstatic.com/shopping?q=tbn:ANd9GcTCiWh2dr5Mh7u1mI_Y_hxfd4SjDo3NjO5IOjpvPY3NMzCjI3kJ9jamV3GAvWNT1fxEGj9nPgfQqI5XVxYJvera1JAfDg19uXkCnyfYJZk"
+        ],
+        "serpapi_thumbnails": [
+          "https://serpapi.com/images/url/aYz0xHicDclhCoIwGADQE5lNKymIMJUMM0WaWn_Cptskmlt-Znqo7tNt6v193w8HkO1K1ytBnoOEqtTgJtCEtVBATSakeegtb6SsBduo9f9W9rFc7sjJIgpprurKukt8Sg-mGSRXPI4-WvA4dNRL5qyxioGWqcPPVYbR24P5VEtdN-1JEMVhtjfvZp9jFx5eF-2m4XaPn42AJKFihgs79HvD8Ow8UpIHF8qs4PIDHUY9pw",
+          "https://serpapi.com/images/url/0t1ABXicDcn_EkIwAADgJ0J09OOu64hT1MSlqX9cRrZbY2zq9FC9T29T37_f94Ol5GKpaVWD-pHLqlRk0ehqLeRNEqSilmkCt5yTpl53q_8tbVAufJT4hvs2j3dDPGDsAOPF4B2YaD7SM0hNK-xp6MANiZLTbuonblR3Fk4DrmC23V8PNsiO_oQMsyxqB3ff6U9ixRGDWFd2l-fbC8rRo1AE27TI8zSncUaRYFT5AdQgPX4",
+          "https://serpapi.com/images/url/U6S_Y3icDclJDoIwFADQEzEpypAYI1ghEoqQasANgSpjZOqPWE_ldbyNvu37fiqAgZmSdO_oxAe43wTIO1ksGWRQU5H2D4lV_TDUXbkdN_8zd_hmODRyPEQUb9arfQHECNre4q5gxy6KwWYFejlMRbad8QXx94eiVi-NfJpQw5LkDL53fDdsrlOd97pGAxxaz6Xsq3OQhzgwru8IqhmF64NWWAQrpB25pgirVMbhD26qPWo",
+          "https://serpapi.com/images/url/G4Bs6HicDclJDoIwAADAFyH7IokxJagsohhBkQvBshRJodiq4KP8j7_Ruc73gxgj1OT5soP3ibCy4Ni1k2Y1ZTlr4Az2mKeoJ6Tp6uWw-J8JdsV8AyMtOTT7zGPugLVYlC5YOufQzuZgq2Li50EPPE2mWdzojuOG6btNj-AELdUO3HDgEgErohI9cxApyWq0o0pGAOsKfljXNXqBckLCOVQv_ljdqNHqeAyBcSx_ry08aA",
+          "https://serpapi.com/images/url/sIrNPnicDclRDkMwAADQE43QyUKyLMIiJMoyYfYj1mqroooSdpsda7fZ3u_7fphScnZ0vRFo2qVq8EG9hKnRWdWqRRoaen1mg5StoJfx_D_HhdgOUOa1BTPxZMXstBh9WJUV2wg-3rk_AMgTK0y4XNMSwPjt8RB0kc3rPgeBuxYwM8h2DbgtUkpuY2g98q2M1maqjcglPjXs5dF5Yidl9Ox-EJQ5wA"
+        ]
+      },
+      {
+        "position": 3,
+        "title": "Apple iPhone 17 Pro Max",
+        "product_id": "756780163185960877",
+        "product_link": "https://www.google.com/search?ibp=oshop&q=iphone 17\n   switzerland&prds=catalogid:756780163185960877,headlineOfferDocid:14809528903578588860,imageDocid:15836689637166733946,rds:PC_5141485329231317038|PROD_PC_5141485329231317038,gpcid:5141485329231317038,mid:576462845970214900,pvt:hg&hl=en&gl=ch&udm=28",
+        "immersive_product_page_token": "eyJlaSI6IjBNQ0hhY3UxQXFxZXZyMFBnNXJDOFFnIiwicHJvZHVjdGlkIjoiIiwiY2F0YWxvZ2lkIjoiNzU2NzgwMTYzMTg1OTYwODc3IiwiaGVhZGxpbmVPZmZlckRvY2lkIjoiMTQ4MDk1Mjg5MDM1Nzg1ODg4NjAiLCJpbWFnZURvY2lkIjoiMTU4MzY2ODk2MzcxNjY3MzM5NDYiLCJyZHMiOiJQQ181MTQxNDg1MzI5MjMxMzE3MDM4fFBST0RfUENfNTE0MTQ4NTMyOTIzMTMxNzAzOCIsInF1ZXJ5IjoiaXBob25lKzE3JTBBKysrc3dpdHplcmxhbmQiLCJncGNpZCI6IjUxNDE0ODUzMjkyMzEzMTcwMzgiLCJtaWQiOiI1NzY0NjI4NDU5NzAyMTQ5MDAiLCJwdnQiOiJoZyIsInV1bGUiOm51bGwsImdsIjoiY2giLCJobCI6ImVuIn0=",
+        "serpapi_immersive_product_api": "https://serpapi.com/search.json?engine=google_immersive_product&page_token=eyJlaSI6IjBNQ0hhY3UxQXFxZXZyMFBnNXJDOFFnIiwicHJvZHVjdGlkIjoiIiwiY2F0YWxvZ2lkIjoiNzU2NzgwMTYzMTg1OTYwODc3IiwiaGVhZGxpbmVPZmZlckRvY2lkIjoiMTQ4MDk1Mjg5MDM1Nzg1ODg4NjAiLCJpbWFnZURvY2lkIjoiMTU4MzY2ODk2MzcxNjY3MzM5NDYiLCJyZHMiOiJQQ181MTQxNDg1MzI5MjMxMzE3MDM4fFBST0RfUENfNTE0MTQ4NTMyOTIzMTMxNzAzOCIsInF1ZXJ5IjoiaXBob25lKzE3JTBBKysrc3dpdHplcmxhbmQiLCJncGNpZCI6IjUxNDE0ODUzMjkyMzEzMTcwMzgiLCJtaWQiOiI1NzY0NjI4NDU5NzAyMTQ5MDAiLCJwdnQiOiJoZyIsInV1bGUiOm51bGwsImdsIjoiY2giLCJobCI6ImVuIn0%3D",
+        "source": "MediaMarkt Suisse",
+        "source_icon": "https://serpapi.com/searches/6987c0c8b4ab72a0661f8c11/images/vLX_bY403VSvej13D1qY6EfnWxw7wVSvYgdCJHfR7JE.png",
+        "multiple_sources": true,
+        "price": "CHF 1'199.00",
+        "extracted_price": 1,
+        "rating": 4.2,
+        "reviews": 11000,
+        "thumbnail": "https://encrypted-tbn2.gstatic.com/shopping?q=tbn:ANd9GcQXh4Qj8u2xhJqVJxBch78aRJxBpp71U-exFFggt_4kJO87_Aoij23Skk8WOuhrcek2xsKJ1Ve-fzaPoHrweiiGFkIKZBfng6TpxIGDTZoXclXfSKvlo-d99Q",
+        "serpapi_thumbnail": "https://serpapi.com/images/url/tk3AUHicDcltCoIwAADQE6lkkh8QoYSmQmaaiX_C5tzmzC1dtTpV1-k2-e_B-32xEHxyNA0OYHxzARtFXAddRZOoBQEqYDdtwoxzMqDNfT2f4-4bOwBpiY20sx66xNG9iKQHsGnVxxmcm4uTAqXvIyQuBo0Sy7y4jHT6MqPUOicPPAJIdTnF0aKASvupD2w3viAhgU_DuPLaAa1yLsNgm1esBH3ZZvGzZ0pj2-kfuw0_WQ",
+        "thumbnails": [
+          "https://encrypted-tbn2.gstatic.com/shopping?q=tbn:ANd9GcQXh4Qj8u2xhJqVJxBch78aRJxBpp71U-exFFggt_4kJO87_Aoij23Skk8WOuhrcek2xsKJ1Ve-fzaPoHrweiiGFkIKZBfng6TpxIGDTZoXclXfSKvlo-d99Q",
+          "https://encrypted-tbn3.gstatic.com/shopping?q=tbn:ANd9GcRR9J2QWXvbkH86Bi9Rg7HgRBDlMmgvaIJxdphd1VGRXy2I9Y98nhDZkKnKEAInK-7yQd-UxpCBKS4U8x6ebZTQQ0ZxS_FJ-HgXcLT6s5EBOtOi6AWKlmHm5w",
+          "https://encrypted-tbn2.gstatic.com/shopping?q=tbn:ANd9GcQYkAdPqCdM7Qj8v2jEuXEmF_K_xm23fKQD4mo-JvOBARmHmTxZX82jvbM8XwfyxUQzaFqA1EqMVSz075aSntCgO3XBV7r6BiIUBiRd0G4p1LoDWgvzivjx",
+          "https://encrypted-tbn1.gstatic.com/shopping?q=tbn:ANd9GcQxmZqIUJymD-MKRbIKkcuWJ6ynrlmOF-RtB_ru5Zurky-Cnvmw8jM0l0Ggfo0fjPLlg_ne63kuh_l9t9MbJfYMihyJC4bqc7bBUZscxqilbe5aYJVOoLHHtw",
+          "https://encrypted-tbn3.gstatic.com/shopping?q=tbn:ANd9GcRnrVTXy318IknvK-JmTpG7Bn7LZ4HVl13E1UPkThFyM8tXdt44PAfgeg1P2kPEwdARgk8bAi4Z1jqaWg_E3GysjboVi2VuIgA9e0iFzMA"
+        ],
+        "serpapi_thumbnails": [
+          "https://serpapi.com/images/url/tk3AUHicDcltCoIwAADQE6lkkh8QoYSmQmaaiX_C5tzmzC1dtTpV1-k2-e_B-32xEHxyNA0OYHxzARtFXAddRZOoBQEqYDdtwoxzMqDNfT2f4-4bOwBpiY20sx66xNG9iKQHsGnVxxmcm4uTAqXvIyQuBo0Sy7y4jHT6MqPUOicPPAJIdTnF0aKASvupD2w3viAhgU_DuPLaAa1yLsNgm1esBH3ZZvGzZ0pj2-kfuw0_WQ",
+          "https://serpapi.com/images/url/RfA7j3icDcnbEkJAAADQL0KpsGaahshlu4zVRV4ads0yWFt2xF_1O_1Nndfz_ZRC8N5UlILh18RFQSSRs4VMe5GJCsu4a5W-7DivGN081_8zrSMBHkYIhGp0S4a89g3NrgCiuk-R7TSHlg5ZEI6El2R-9VAyqQG4A4OVTlpDBl0rYFDSp4hIl5FvbRgvL8aoFXl6jqJZOsaPXSj5NMH7s9avXPskTpVm3WDT-u3q_QNC5T0S",
+          "https://serpapi.com/images/url/jfYcKXicDcnbEkJAAADQL5JrkZmmQdJNtYrUi5F1Wc2ysm34qP6nv6nzer6fglLS6jyfVsmzJzSFHL1X0ihvaUxRMkpqzLdFTQiq8nkz-59u7OHUScD1YcBjY0FXBaXGpNJ-hTZeRtuow5KcbcFCwTW3YQfT8PAKn7tbqEklu7ta-M76zgdDvGwM0W7c4DQI6jg-VdTKD3JoBupzYqK1byIPCo5CxF29uORsQKzsfhRWPe0",
+          "https://serpapi.com/images/url/QzP-PXicDclJDoIwFADQEzEYFYXEGMUIVBElUQMbQstMW6aP2Ft5HW-jb_u-nwKgHQxFSTnpRQtpIgHmMzkfIIaSyKRhylA0bVvyfNtt_mfsLolukdubhZ1zR4IdJPfkY-dUk_GJNMF7yryj5MM-6sdlOPa1kEz-YtO6clWqWnnWqFl1PdM84qk2r8ciojroLkZZ4JaFQOYCd2SF9_dwIO-upDhdxgF6eM3ZtmH6AR1dQLU",
+          "https://serpapi.com/images/url/tKbdO3icDcltCoIwAADQE6nNCX5AxAI1K2OImfgndNqcyzl1FXabjtVt6v1930-rlJw9w2gEmRapmlpTlYA6nVWpGNHJ0BtzO0jJBN2M6_956FS7IUnElKX5AoETcfE8aPs-laG9FfaxsHbZHUAfnDFP22CJHZXXyrIwutGGAmxy7L9qlFDuVIhZBejG8kKvPgyXuauGjJnZI6LIbVYseMfoB9i7OL4"
+        ]
+      },
+      {
+        "position": 4,
+        "title": "Apple iPhone 17 Pro & Pro Max | Puce A19 Pro & Caméra 48 MP | ArtComputer",
+        "product_id": "811233484457336071",
+        "product_link": "https://www.google.com/search?ibp=oshop&q=iphone 17\n   switzerland&prds=productid:811233484457336071,headlineOfferDocid:811233484457336071,imageDocid:3098783292626896934,pvt:hg&hl=en&gl=ch&udm=28",
+        "immersive_product_page_token": "eyJlaSI6IjBNQ0hhY3UxQXFxZXZyMFBnNXJDOFFnIiwicHJvZHVjdGlkIjoiODExMjMzNDg0NDU3MzM2MDcxIiwiY2F0YWxvZ2lkIjoiIiwiaGVhZGxpbmVPZmZlckRvY2lkIjoiODExMjMzNDg0NDU3MzM2MDcxIiwiaW1hZ2VEb2NpZCI6IjMwOTg3ODMyOTI2MjY4OTY5MzQiLCJyZHMiOiIiLCJxdWVyeSI6ImlwaG9uZSsxNyUwQSsrK3N3aXR6ZXJsYW5kIiwiZ3BjaWQiOiIiLCJtaWQiOiIiLCJwdnQiOiJoZyIsInV1bGUiOm51bGwsImdsIjoiY2giLCJobCI6ImVuIn0=",
+        "serpapi_immersive_product_api": "https://serpapi.com/search.json?engine=google_immersive_product&page_token=eyJlaSI6IjBNQ0hhY3UxQXFxZXZyMFBnNXJDOFFnIiwicHJvZHVjdGlkIjoiODExMjMzNDg0NDU3MzM2MDcxIiwiY2F0YWxvZ2lkIjoiIiwiaGVhZGxpbmVPZmZlckRvY2lkIjoiODExMjMzNDg0NDU3MzM2MDcxIiwiaW1hZ2VEb2NpZCI6IjMwOTg3ODMyOTI2MjY4OTY5MzQiLCJyZHMiOiIiLCJxdWVyeSI6ImlwaG9uZSsxNyUwQSsrK3N3aXR6ZXJsYW5kIiwiZ3BjaWQiOiIiLCJtaWQiOiIiLCJwdnQiOiJoZyIsInV1bGUiOm51bGwsImdsIjoiY2giLCJobCI6ImVuIn0%3D",
+        "source": "ART Computer",
+        "source_icon": "https://serpapi.com/searches/6987c0c8b4ab72a0661f8c11/images/vLX_bY403VSvej13D1qY6Cfxh-PAyKoZrk0ogPeG_oE.png",
+        "price": "CHF 1'099.00",
+        "extracted_price": 1,
+        "thumbnail": "https://encrypted-tbn2.gstatic.com/shopping?q=tbn:ANd9GcS6yTEsPtcsMSxKQ2GvvTyIkXdmsclDP5IAuwRx-99LQk5EWp_i0XNxJfV-Zz0kwFL4HRJ5cTAIMSzu1CWA-wOtH3vgCn1w",
+        "serpapi_thumbnail": "https://serpapi.com/images/url/ORPhKXicDclJDoIwAADAF5VNMYHEmAaRRUC2CPFitCAQpFRbKPAQ_-ZvdK7z_dSMEaqLYonReyasLAC7Y0WoKLuxBgmo70Ra94Q0uNq9tv_TYVBoFko2c2rSkCHqJ9MxUqxxTGenzYuOouc-VB048HgCmuZFrWpm5NpIeTC5jzO4LFLLD97ajl0VpdDxk2WQjQwCfmL2aqwMLPMfwMs1rg"
+      },
+      {
+        "position": 5,
+        "title": "Coque iPhone 17 Pro Max - Silicone rigide noir Fête Nationale Suisse Sky Swiss Flag",
+        "product_id": "2746324862414915757",
+        "product_link": "https://www.google.com/search?ibp=oshop&q=iphone 17\n   switzerland&prds=productid:2746324862414915757,headlineOfferDocid:2746324862414915757,imageDocid:1550845416362194228,pvt:hg&hl=en&gl=ch&udm=28",
+        "immersive_product_page_token": "eyJlaSI6IjBNQ0hhY3UxQXFxZXZyMFBnNXJDOFFnIiwicHJvZHVjdGlkIjoiMjc0NjMyNDg2MjQxNDkxNTc1NyIsImNhdGFsb2dpZCI6IiIsImhlYWRsaW5lT2ZmZXJEb2NpZCI6IjI3NDYzMjQ4NjI0MTQ5MTU3NTciLCJpbWFnZURvY2lkIjoiMTU1MDg0NTQxNjM2MjE5NDIyOCIsInJkcyI6IiIsInF1ZXJ5IjoiaXBob25lKzE3JTBBKysrc3dpdHplcmxhbmQiLCJncGNpZCI6IiIsIm1pZCI6IiIsInB2dCI6ImhnIiwidXVsZSI6bnVsbCwiZ2wiOiJjaCIsImhsIjoiZW4ifQ==",
+        "serpapi_immersive_product_api": "https://serpapi.com/search.json?engine=google_immersive_product&page_token=eyJlaSI6IjBNQ0hhY3UxQXFxZXZyMFBnNXJDOFFnIiwicHJvZHVjdGlkIjoiMjc0NjMyNDg2MjQxNDkxNTc1NyIsImNhdGFsb2dpZCI6IiIsImhlYWRsaW5lT2ZmZXJEb2NpZCI6IjI3NDYzMjQ4NjI0MTQ5MTU3NTciLCJpbWFnZURvY2lkIjoiMTU1MDg0NTQxNjM2MjE5NDIyOCIsInJkcyI6IiIsInF1ZXJ5IjoiaXBob25lKzE3JTBBKysrc3dpdHplcmxhbmQiLCJncGNpZCI6IiIsIm1pZCI6IiIsInB2dCI6ImhnIiwidXVsZSI6bnVsbCwiZ2wiOiJjaCIsImhsIjoiZW4ifQ%3D%3D",
+        "source": "PhoneLook.ch",
+        "source_icon": "https://serpapi.com/searches/6987c0c8b4ab72a0661f8c11/images/vLX_bY403VSvej13D1qY6I6jrIafBIrNLGw1eMuwSFI.png",
+        "price": "CHF 29.95",
+        "extracted_price": 29.95,
+        "thumbnail": "https://encrypted-tbn0.gstatic.com/shopping?q=tbn:ANd9GcRrxO_up0qbqSUKnKItfGrYqxf6oFyxbZWOd7exPaABbZFGKRlIuR7tm9d8Afdwl4eMBxmPplBqMCqCGfoEHFD1_Zz95nvPQFT0XMfPK-k5",
+        "serpapi_thumbnail": "https://serpapi.com/images/url/NfNHDnicDcn_DkJAAADgJwptSWytochMLtUq_5hzDov7wanT4_RWvU19_37fTy0EGyxVLUnRT0yUaCYg0ZRqELloCqWgnTrUlLGGVBu-_p9lH5DpF0kv42xkGof8dAlJGAjs93cu8ZJ6k4TpNUZGKUFuOzD1_DBpgzExRGeilY3Rq12UkSM7wFqHRy53fUx3e287z9K3qZMnOHpn7RZhEM4e-g-8fjqp",
+        "thumbnails": [
+          "https://encrypted-tbn0.gstatic.com/shopping?q=tbn:ANd9GcRrxO_up0qbqSUKnKItfGrYqxf6oFyxbZWOd7exPaABbZFGKRlIuR7tm9d8Afdwl4eMBxmPplBqMCqCGfoEHFD1_Zz95nvPQFT0XMfPK-k5",
+          "https://encrypted-tbn1.gstatic.com/shopping?q=tbn:ANd9GcQ_V_GqbUUC0crYgRb0peAlrijCSkaDBV4YRLKVwVkxxYdwEINep06KYdcWKkXkQCc4mC5orvoglm5ycydxFqgls_67tGkjftb4OAqGOzxtfdytAjzHMv59",
+          "https://encrypted-tbn2.gstatic.com/shopping?q=tbn:ANd9GcQDk0SuKRgOXLJ8RI0NxcR-dtAUPmLq69q0RxMhSGo40WcMN7kPVD0GHp0p19RibqBoPbO5PVrLQXrWH4Fl2gmLeDqmzcv_H6o2S9-BQtR5tn2Nw8lsDoSagA",
+          "https://encrypted-tbn2.gstatic.com/shopping?q=tbn:ANd9GcSrNfs1HwGI-ZRDCbPswEeyjsUmlyi0n3Ault3ydM-COI_u_dAGGWEHFgHJehjhzlb9eNNTjYvKsKWxGzya9MvQMIGt5Lc0I6fESuXGxEb5reItyY3ucA5KLA",
+          "https://encrypted-tbn1.gstatic.com/shopping?q=tbn:ANd9GcRS8KQ5MdJv7dvmfxo4N9Y-BHswQEWqqIqOlEkgjM-XmH6UgGsUVInhaxQOX-3RAqMF0Z21K7L6-Qxht3QN06gltfoy1w6TcrCaSkcY9CCjQYYOQiAbG25tyA"
+        ],
+        "serpapi_thumbnails": [
+          "https://serpapi.com/images/url/NfNHDnicDcn_DkJAAADgJwptSWytochMLtUq_5hzDov7wanT4_RWvU19_37fTy0EGyxVLUnRT0yUaCYg0ZRqELloCqWgnTrUlLGGVBu-_p9lH5DpF0kv42xkGof8dAlJGAjs93cu8ZJ6k4TpNUZGKUFuOzD1_DBpgzExRGeilY3Rq12UkSM7wFqHRy53fUx3e287z9K3qZMnOHpn7RZhEM4e-g-8fjqp",
+          "https://serpapi.com/images/url/pJcdwHicDcntDkJQGADgKwptaGytnVRqitEov4xzODg-Dt75uqjup7up5-_z_eQAfNBFMW1wv3BIyQaSZivQAWIosIDbWhzylvOioYdu_z8d2UQzsRsFkdklvm9IuA-pl0g8RVVflMaTxadjIIfe3QqmgM1zSKbzzU65pFohwS-LvZlrYLk2lLYfW1rVyoIXMl86Wg2RugOTlRkksoM601lnyMgCqFyvj1HRfo46QFA",
+          "https://serpapi.com/images/url/J5wkt3icDcndCoIwGADQJ1KXlLkgQpG0UtON1LvQKVNKt-nX71P1Or1Nndvz_bQAcloZRjOw8SWhqTWoBlPnE5TQMZ2J3phaIWU38I1a_2_lxDX2WepdEL0dCD8W4d4mOxQ_GdFqcE5JHyoLK0SeUUt9MUc5i-LlJck85AcSyRkmXaVckVTHRZKNYVqMeTDfXk3eh42n-je7nwNLmBRrbgpkAYMZP-zr5AlacucHPC09cw",
+          "https://serpapi.com/images/url/BaE273icDclJDoIwFADQEzEowQQSYxrFUhmcg7ghUMoURKSfoZ7K63gbfdv3_RQALTcVhTW0Ey2wVIKkmcs5hxhKKtPnQ-HFs23LJl-9lv8zkZ8amJ47P-Mze8REup826-TAR4uJil8ftSjVRkN9DZpIPWm9J1EfpQjjwLK3ub1jRVW868Rgvn-pwsHhTjDht4gNbzh6BIPuUpUsMuvc3_BkJXrHCIhQ6ynSHRf9AO3RP2w",
+          "https://serpapi.com/images/url/tULiXXicDclJDoIwFADQE5XBAYXEGCSKqECqouIOCpQZSn8YbuV1vI2-7ft-UoCWa6IY16SbWogjBGEtC5RDABkRSFOJPG3aNqvplm3-p-lOpJrkeluf8dKOTv0q6qtkbBaO6qPdkQ94_2TMYm65L2huo1d1VDxqcu9h1WkwYveF5led2QfpPZPPq4uC8JjCHDuSQktImkkelDvpjOBWEF81jBz7voszPTRnS5j0H3e9Pbk"
+        ]
+      },
+      {
+        "position": 6,
+        "title": "iPhone 17 Pro 256Gb (2 esim)",
+        "product_id": "17130190069621017045",
+        "product_link": "https://www.google.com/search?ibp=oshop&q=iphone 17\n   switzerland&prds=productid:17130190069621017045,headlineOfferDocid:17130190069621017045,imageDocid:13371137533296047756,rds:PC_9961958114952839788|PROD_PC_9961958114952839788,pvt:hg&hl=en&gl=ch&udm=28",
+        "immersive_product_page_token": "eyJlaSI6IjBNQ0hhY3UxQXFxZXZyMFBnNXJDOFFnIiwicHJvZHVjdGlkIjoiMTcxMzAxOTAwNjk2MjEwMTcwNDUiLCJjYXRhbG9naWQiOiIiLCJoZWFkbGluZU9mZmVyRG9jaWQiOiIxNzEzMDE5MDA2OTYyMTAxNzA0NSIsImltYWdlRG9jaWQiOiIxMzM3MTEzNzUzMzI5NjA0Nzc1NiIsInJkcyI6IlBDXzk5NjE5NTgxMTQ5NTI4Mzk3ODh8UFJPRF9QQ185OTYxOTU4MTE0OTUyODM5Nzg4IiwicXVlcnkiOiJpcGhvbmUrMTclMEErKytzd2l0emVybGFuZCIsImdwY2lkIjoiIiwibWlkIjoiIiwicHZ0IjoiaGciLCJ1dWxlIjpudWxsLCJnbCI6ImNoIiwiaGwiOiJlbiJ9",
+        "serpapi_immersive_product_api": "https://serpapi.com/search.json?engine=google_immersive_product&page_token=eyJlaSI6IjBNQ0hhY3UxQXFxZXZyMFBnNXJDOFFnIiwicHJvZHVjdGlkIjoiMTcxMzAxOTAwNjk2MjEwMTcwNDUiLCJjYXRhbG9naWQiOiIiLCJoZWFkbGluZU9mZmVyRG9jaWQiOiIxNzEzMDE5MDA2OTYyMTAxNzA0NSIsImltYWdlRG9jaWQiOiIxMzM3MTEzNzUzMzI5NjA0Nzc1NiIsInJkcyI6IlBDXzk5NjE5NTgxMTQ5NTI4Mzk3ODh8UFJPRF9QQ185OTYxOTU4MTE0OTUyODM5Nzg4IiwicXVlcnkiOiJpcGhvbmUrMTclMEErKytzd2l0emVybGFuZCIsImdwY2lkIjoiIiwibWlkIjoiIiwicHZ0IjoiaGciLCJ1dWxlIjpudWxsLCJnbCI6ImNoIiwiaGwiOiJlbiJ9",
+        "source": "Evenshop",
+        "source_icon": "https://serpapi.com/searches/6987c0c8b4ab72a0661f8c11/images/vLX_bY403VSvej13D1qY6EqcgzEVEjj0CNTEtJ8_snI.png",
+        "price": "CHF 1'234.05",
+        "extracted_price": 1,
+        "rating": 4.4,
+        "reviews": 8700,
+        "thumbnail": "https://encrypted-tbn0.gstatic.com/shopping?q=tbn:ANd9GcSkg-txWhnb238bBczIuCPH84pVdODbzvnIDPYOQr26yymZGsvkqhV3TyIqLjUUeM95x2nkB3pv4l_9uX4lCJJmB4ZAwHVCZoPVUTP3bjEJTGaUn-r5cPl0oA",
+        "serpapi_thumbnail": "https://serpapi.com/images/url/lBk4WXicDclXDoIwAADQEzHCMEBiDMMwolIjoPJjaCHsUqAgcCqv4230_b7vp6CUjBrHZRgNK6FZylCIeTYfaUJLxKKu5caiI6TE-aHf_0_TL6lqo1udM3S5FxgKogINtLmTCRxFIlHqW3CbsWuBp38dhN26trE9znVfRGKwuv2pCsPsrMqLgGtDJLPUvNTpITWm57WGFOtvJzLjDkRhAERYHb3ATkLMDDICDd_pP83mPrg"
+      },
+      {
+        "position": 7,
+        "title": "iPhone 17 Pro Kaufen Schweiz Tiefblau / 256GB",
+        "product_id": "4740170917547427639",
+        "product_link": "https://www.google.com/search?ibp=oshop&q=iphone 17\n   switzerland&prds=productid:4740170917547427639,headlineOfferDocid:4740170917547427639,imageDocid:2256832806427040455,pvt:hg&hl=en&gl=ch&udm=28",
+        "immersive_product_page_token": "eyJlaSI6IjBNQ0hhY3UxQXFxZXZyMFBnNXJDOFFnIiwicHJvZHVjdGlkIjoiNDc0MDE3MDkxNzU0NzQyNzYzOSIsImNhdGFsb2dpZCI6IiIsImhlYWRsaW5lT2ZmZXJEb2NpZCI6IjQ3NDAxNzA5MTc1NDc0Mjc2MzkiLCJpbWFnZURvY2lkIjoiMjI1NjgzMjgwNjQyNzA0MDQ1NSIsInJkcyI6IiIsInF1ZXJ5IjoiaXBob25lKzE3JTBBKysrc3dpdHplcmxhbmQiLCJncGNpZCI6IiIsIm1pZCI6IiIsInB2dCI6ImhnIiwidXVsZSI6bnVsbCwiZ2wiOiJjaCIsImhsIjoiZW4ifQ==",
+        "serpapi_immersive_product_api": "https://serpapi.com/search.json?engine=google_immersive_product&page_token=eyJlaSI6IjBNQ0hhY3UxQXFxZXZyMFBnNXJDOFFnIiwicHJvZHVjdGlkIjoiNDc0MDE3MDkxNzU0NzQyNzYzOSIsImNhdGFsb2dpZCI6IiIsImhlYWRsaW5lT2ZmZXJEb2NpZCI6IjQ3NDAxNzA5MTc1NDc0Mjc2MzkiLCJpbWFnZURvY2lkIjoiMjI1NjgzMjgwNjQyNzA0MDQ1NSIsInJkcyI6IiIsInF1ZXJ5IjoiaXBob25lKzE3JTBBKysrc3dpdHplcmxhbmQiLCJncGNpZCI6IiIsIm1pZCI6IiIsInB2dCI6ImhnIiwidXVsZSI6bnVsbCwiZ2wiOiJjaCIsImhsIjoiZW4ifQ%3D%3D",
+        "source": "handy.ch",
+        "source_icon": "https://serpapi.com/searches/6987c0c8b4ab72a0661f8c11/images/vLX_bY403VSvej13D1qY6P8lYCCtk3Ya7iEFbPNp-_c.png",
+        "price": "CHF 1'149.00",
+        "extracted_price": 1,
+        "thumbnail": "https://encrypted-tbn3.gstatic.com/shopping?q=tbn:ANd9GcS78yzpIDjx59vUL6MqYI_Q57DBREk2fsfbZQdTA4M6Nv0Wr5LsXgr3A0pLUHnpJMbdVWesGEXhI1N8dLkV5qJcV6AsphP_Zl7i6yUzqede9Op3R3H6DKpzadg",
+        "serpapi_thumbnail": "https://serpapi.com/images/url/D-_xFXicDclJDoIwFADQEwkqUsDEmBoIg4AjOGwMtGUQhQ9tjHArj-Nt9G3f91MIAXwuy6wmXQ-C0ZFIa0XKuUhESSTSPGVeNABlnS_bxf_mOKSGTQ6a3g_gmve3arwiHwXtxb3tVM1c7a1qmvEsve7oEc8CFL7Gp071-TnvFDwGP3Jq8IKUxifGbetcuJNQp34Vq61HYoQ5FNvb9aGVqI-GllFmbEDZKw4y1zAkNP8Bpic-dw",
+        "thumbnails": [
+          "https://encrypted-tbn3.gstatic.com/shopping?q=tbn:ANd9GcS78yzpIDjx59vUL6MqYI_Q57DBREk2fsfbZQdTA4M6Nv0Wr5LsXgr3A0pLUHnpJMbdVWesGEXhI1N8dLkV5qJcV6AsphP_Zl7i6yUzqede9Op3R3H6DKpzadg",
+          "https://encrypted-tbn3.gstatic.com/shopping?q=tbn:ANd9GcSRQd__NhlImuTFHbPwv2T1CBebzrSU5nqzvhUxhYJW3d4BLAndaRuVz8DhCUCiM7ZCMlTTwBwtQ14YlB3sUZPTmNRf2mCt-vf6vIs3n6bz2ngCqCR6k_4mq9Vq",
+          "https://encrypted-tbn1.gstatic.com/shopping?q=tbn:ANd9GcTqp1cG-UGX7r5hLur-7nrvUEG0WltKiBrZlI4hTnG8U6mDwwrwYhSOHqEcpY2PZA2PLcgl3c2OnBAr4ajXok98z3uV9IDSkRoMZeta8poXw_nAZXDF-p-WZw",
+          "https://encrypted-tbn2.gstatic.com/shopping?q=tbn:ANd9GcQcA9MMfEEKPngxwg5-1_S-K6w-vD3jmWjnmUyqeN_3GQ_VmaTWFrXTlUabwjuU6twcyUDEmRgdR4tBZqGpenirbCOFaYwRyAya6h24d6doI9PxXb0pH1JH",
+          "https://encrypted-tbn0.gstatic.com/shopping?q=tbn:ANd9GcSBPkTHDZB4rGfMRGpQdzyAhue862eEm2mS6DCmVFeigAzZIm8yNPHqluJAxvUt_dGuU65q2TEuzpRaUZEThSyvGGajZPDoVjvWG3Ym3r47mwtsCDRV3Z5r"
+        ],
+        "serpapi_thumbnails": [
+          "https://serpapi.com/images/url/D-_xFXicDclJDoIwFADQEwkqUsDEmBoIg4AjOGwMtGUQhQ9tjHArj-Nt9G3f91MIAXwuy6wmXQ-C0ZFIa0XKuUhESSTSPGVeNABlnS_bxf_mOKSGTQ6a3g_gmve3arwiHwXtxb3tVM1c7a1qmvEsve7oEc8CFL7Gp071-TnvFDwGP3Jq8IKUxifGbetcuJNQp34Vq61HYoQ5FNvb9aGVqI-GllFmbEDZKw4y1zAkNP8Bpic-dw",
+          "https://serpapi.com/images/url/KqOVWHicDcltDoIgAADQE6XzI0u31pRW2cqVYS3_OBEVl5AIYXmsbtNt6v193w-RshOerpes6N-dLPFEImZptZC5bAqteFBdkEfXNaxe8sX_PD_C7qY4xyecZRFpQ_qE6y06DsqEBghKNPbnZMr4qEjyIrfd1cJ2sPcZzuPnZZyvCEhAc5il4NBCOASDPBn2rQ0skaRHSKO4MimQE1U5KhQWc9BoshpwEDv3zKbcvfAfZFQ_-g",
+          "https://serpapi.com/images/url/-r_aBXicDcltDoIgAADQE6FpltrWmk4jl30sM5U_zdCJZYBIsTpV1-k29f6-74dIyYeZrtcUixeXdQXkhRpaM8hStljD7K4PhHHe0mbRz_8387aVC_Gx5waGIIW5LSYkfghgU_FMQzjKOrlufYG6yCJHCp10eg-UEqogyW7Vh5gX5h555j7GTTfG5o76nrDKa85urvMeP05uFCS3A9ugWpYOZ7k6Uw_lwRJwkCH1A6IpPsQ",
+          "https://serpapi.com/images/url/YJMWvnicDclJDoIwAADAFwEKSIKJMSiLS1RAEPRCSosFYkuBau2n_I-_0bnO91Nzzsa5plUUDpLxCim8pLqKRw54A1XYEW2sO8Yaipf94n9z54jsAEbQsQ-Hu-ftQ4rfAs-UaXFW9pZQXq7RkqylJJV9dSyMICouBCSZP-TJIwWlaJ-pxQWUqeuRGKPY5KtbH7CKNkO5PvngKmLpSGDVuoks1G3t8J2XE7aZ7jY_TMU-ug",
+          "https://serpapi.com/images/url/hI6vNHicDclJDoIwAADAFwmGTSQxBigWTSTIZuzFIFQWLRQoaHmU__E3Otf5fkrG6GCIIm6ynlOG8wW7NUuhGFjKqkzIWiIOZUtp1RTbbvM_w_TyNcxCy39ELkCW0sP7MYD0lM_cLEesaxJ2iERCDdgk2eGqMGe0Jzr3fLd7jgfzPcXsmsMx1tROipxxpkEaIycqQz5BmNbIB21ST2coX4jcKyvyYoMNgkRGav8DPK0-ng"
+        ]
+      },
+      {
+        "position": 8,
+        "title": "iPhone 17 Pro Max Case Hülle - Silikon schwarz Euro 2020 Switzerland - Phonelook",
+        "product_id": "7237693539026761347",
+        "product_link": "https://www.google.com/search?ibp=oshop&q=iphone 17\n   switzerland&prds=productid:7237693539026761347,headlineOfferDocid:7237693539026761347,imageDocid:7491271424454953158,pvt:hg&hl=en&gl=ch&udm=28",
+        "immersive_product_page_token": "eyJlaSI6IjBNQ0hhY3UxQXFxZXZyMFBnNXJDOFFnIiwicHJvZHVjdGlkIjoiNzIzNzY5MzUzOTAyNjc2MTM0NyIsImNhdGFsb2dpZCI6IiIsImhlYWRsaW5lT2ZmZXJEb2NpZCI6IjcyMzc2OTM1MzkwMjY3NjEzNDciLCJpbWFnZURvY2lkIjoiNzQ5MTI3MTQyNDQ1NDk1MzE1OCIsInJkcyI6IiIsInF1ZXJ5IjoiaXBob25lKzE3JTBBKysrc3dpdHplcmxhbmQiLCJncGNpZCI6IiIsIm1pZCI6IiIsInB2dCI6ImhnIiwidXVsZSI6bnVsbCwiZ2wiOiJjaCIsImhsIjoiZW4ifQ==",
+        "serpapi_immersive_product_api": "https://serpapi.com/search.json?engine=google_immersive_product&page_token=eyJlaSI6IjBNQ0hhY3UxQXFxZXZyMFBnNXJDOFFnIiwicHJvZHVjdGlkIjoiNzIzNzY5MzUzOTAyNjc2MTM0NyIsImNhdGFsb2dpZCI6IiIsImhlYWRsaW5lT2ZmZXJEb2NpZCI6IjcyMzc2OTM1MzkwMjY3NjEzNDciLCJpbWFnZURvY2lkIjoiNzQ5MTI3MTQyNDQ1NDk1MzE1OCIsInJkcyI6IiIsInF1ZXJ5IjoiaXBob25lKzE3JTBBKysrc3dpdHplcmxhbmQiLCJncGNpZCI6IiIsIm1pZCI6IiIsInB2dCI6ImhnIiwidXVsZSI6bnVsbCwiZ2wiOiJjaCIsImhsIjoiZW4ifQ%3D%3D",
+        "source": "PhoneLook.ch",
+        "source_icon": "https://serpapi.com/searches/6987c0c8b4ab72a0661f8c11/images/vLX_bY403VSvej13D1qY6NsEWnUVHwPrh1ydYZWU5qM.png",
+        "price": "CHF 29.95",
+        "extracted_price": 29.95,
+        "thumbnail": "https://encrypted-tbn2.gstatic.com/shopping?q=tbn:ANd9GcRDp2_HPRtYtRLx8ogowm-n5bW7-eRVqDP8F0suSjFQdjWRab0gwgKx64yHAHTFZi5f7BVGERfqDpglGFkapM44bnnbN2wpxBj38yandmvN",
+        "serpapi_thumbnail": "https://serpapi.com/images/url/zlvyrXicDcnbCoIwAADQL_KCaZoQoZgKldgKpV5iF51abrOt1N_pr_qbOq_n-2mUEtI3jIrh5yxURTSFmKVTqaBqsY55b8iGC9EyuhnW__ODjKwSDCJh3dIcqIsC-8njlI-9xhxUuloFiiHKvdiUr1MXH0lXAohMOtLdtLTnNEjP8bV1ajcski2oh0jQRxLfoTjYNmIMZdYoprBbeDNkpH9nP1JUOlY",
+        "thumbnails": [
+          "https://encrypted-tbn2.gstatic.com/shopping?q=tbn:ANd9GcRDp2_HPRtYtRLx8ogowm-n5bW7-eRVqDP8F0suSjFQdjWRab0gwgKx64yHAHTFZi5f7BVGERfqDpglGFkapM44bnnbN2wpxBj38yandmvN",
+          "https://encrypted-tbn0.gstatic.com/shopping?q=tbn:ANd9GcSTJg_CgcOjXIoBBrBWKpSHpZvdYTDa8s0Pe4C5id0hq8TukdGSp8OG8scVEDodYBvkvuEesEIVuxCYloUbDs1ex5YUjOeIzkIeE2uFAMKIsmxt6JS8zDYjbQ",
+          "https://encrypted-tbn2.gstatic.com/shopping?q=tbn:ANd9GcQDk0SuKRgOXLJ8RI0NxcR-dtAUPmLq69q0RxMhSGo40WcMN7kPVD0GHp0p19RibqBoPbO5PVrLQXrWH4Fl2gmLeDqmzcv_H6o2S9-BQtR5tn2Nw8lsDoSagA",
+          "https://encrypted-tbn2.gstatic.com/shopping?q=tbn:ANd9GcSrNfs1HwGI-ZRDCbPswEeyjsUmlyi0n3Ault3ydM-COI_u_dAGGWEHFgHJehjhzlb9eNNTjYvKsKWxGzya9MvQMIGt5Lc0I6fESuXGxEb5reItyY3ucA5KLA",
+          "https://encrypted-tbn1.gstatic.com/shopping?q=tbn:ANd9GcRS8KQ5MdJv7dvmfxo4N9Y-BHswQEWqqIqOlEkgjM-XmH6UgGsUVInhaxQOX-3RAqMF0Z21K7L6-Qxht3QN06gltfoy1w6TcrCaSkcY9CCjQYYOQiAbG25tyA"
+        ],
+        "serpapi_thumbnails": [
+          "https://serpapi.com/images/url/zlvyrXicDcnbCoIwAADQL_KCaZoQoZgKldgKpV5iF51abrOt1N_pr_qbOq_n-2mUEtI3jIrh5yxURTSFmKVTqaBqsY55b8iGC9EyuhnW__ODjKwSDCJh3dIcqIsC-8njlI-9xhxUuloFiiHKvdiUr1MXH0lXAohMOtLdtLTnNEjP8bV1ajcski2oh0jQRxLfoTjYNmIMZdYoprBbeDNkpH9nP1JUOlY",
+          "https://serpapi.com/images/url/Yt4U0XicDcnbCoIwAADQL0otMpYQkZdsSllo1noJ3Ya3dNNNMb-q3-lv6rye7yeXkgtDVWmDuzeXlMxk2mhKJmQiC6xgVqsiZ5wXTbZtN_8zdieydnEYednTynBQ3iEzzc68-Tw88MdAUGQnQGhnurT0gmh5C6K-Im7IQeACgWPHZgSZQzX0DhUOjPvRQi92TW0xp6OOrmVA4VRB6iz6_e7oQ1GPcuWFYLJRmV5-y98_jA",
+          "https://serpapi.com/images/url/J5wkt3icDcndCoIwGADQJ1KXlLkgQpG0UtON1LvQKVNKt-nX71P1Or1Nndvz_bQAcloZRjOw8SWhqTWoBlPnE5TQMZ2J3phaIWU38I1a_2_lxDX2WepdEL0dCD8W4d4mOxQ_GdFqcE5JHyoLK0SeUUt9MUc5i-LlJck85AcSyRkmXaVckVTHRZKNYVqMeTDfXk3eh42n-je7nwNLmBRrbgpkAYMZP-zr5AlacucHPC09cw",
+          "https://serpapi.com/images/url/BaE273icDclJDoIwFADQEzEowQQSYxrFUhmcg7ghUMoURKSfoZ7K63gbfdv3_RQALTcVhTW0Ey2wVIKkmcs5hxhKKtPnQ-HFs23LJl-9lv8zkZ8amJ47P-Mze8REup826-TAR4uJil8ftSjVRkN9DZpIPWm9J1EfpQjjwLK3ub1jRVW868Rgvn-pwsHhTjDht4gNbzh6BIPuUpUsMuvc3_BkJXrHCIhQ6ynSHRf9AO3RP2w",
+          "https://serpapi.com/images/url/tULiXXicDclJDoIwFADQE5XBAYXEGCSKqECqouIOCpQZSn8YbuV1vI2-7ft-UoCWa6IY16SbWogjBGEtC5RDABkRSFOJPG3aNqvplm3-p-lOpJrkeluf8dKOTv0q6qtkbBaO6qPdkQ94_2TMYm65L2huo1d1VDxqcu9h1WkwYveF5led2QfpPZPPq4uC8JjCHDuSQktImkkelDvpjOBWEF81jBz7voszPTRnS5j0H3e9Pbk"
+        ]
+      },
+      {
+        "position": 9,
+        "title": "Apple iPhone 16 Pro",
+        "product_id": "2482997163498633586",
+        "product_link": "https://www.google.com/search?ibp=oshop&q=iphone 17\n   switzerland&prds=catalogid:2482997163498633586,headlineOfferDocid:346666223315632417,imageDocid:2996689198100047167,rds:PC_17389053388268021508|PROD_PC_17389053388268021508,gpcid:10943350843658421229,mid:576462796115543865,pvt:hg&hl=en&gl=ch&udm=28",
+        "immersive_product_page_token": "eyJlaSI6IjBNQ0hhY3UxQXFxZXZyMFBnNXJDOFFnIiwicHJvZHVjdGlkIjoiIiwiY2F0YWxvZ2lkIjoiMjQ4Mjk5NzE2MzQ5ODYzMzU4NiIsImhlYWRsaW5lT2ZmZXJEb2NpZCI6IjM0NjY2NjIyMzMxNTYzMjQxNyIsImltYWdlRG9jaWQiOiIyOTk2Njg5MTk4MTAwMDQ3MTY3IiwicmRzIjoiUENfMTczODkwNTMzODgyNjgwMjE1MDh8UFJPRF9QQ18xNzM4OTA1MzM4ODI2ODAyMTUwOCIsInF1ZXJ5IjoiaXBob25lKzE3JTBBKysrc3dpdHplcmxhbmQiLCJncGNpZCI6IjEwOTQzMzUwODQzNjU4NDIxMjI5IiwibWlkIjoiNTc2NDYyNzk2MTE1NTQzODY1IiwicHZ0IjoiaGciLCJ1dWxlIjpudWxsLCJnbCI6ImNoIiwiaGwiOiJlbiJ9",
+        "serpapi_immersive_product_api": "https://serpapi.com/search.json?engine=google_immersive_product&page_token=eyJlaSI6IjBNQ0hhY3UxQXFxZXZyMFBnNXJDOFFnIiwicHJvZHVjdGlkIjoiIiwiY2F0YWxvZ2lkIjoiMjQ4Mjk5NzE2MzQ5ODYzMzU4NiIsImhlYWRsaW5lT2ZmZXJEb2NpZCI6IjM0NjY2NjIyMzMxNTYzMjQxNyIsImltYWdlRG9jaWQiOiIyOTk2Njg5MTk4MTAwMDQ3MTY3IiwicmRzIjoiUENfMTczODkwNTMzODgyNjgwMjE1MDh8UFJPRF9QQ18xNzM4OTA1MzM4ODI2ODAyMTUwOCIsInF1ZXJ5IjoiaXBob25lKzE3JTBBKysrc3dpdHplcmxhbmQiLCJncGNpZCI6IjEwOTQzMzUwODQzNjU4NDIxMjI5IiwibWlkIjoiNTc2NDYyNzk2MTE1NTQzODY1IiwicHZ0IjoiaGciLCJ1dWxlIjpudWxsLCJnbCI6ImNoIiwiaGwiOiJlbiJ9",
+        "source": "HopCash Suisse",
+        "source_icon": "https://serpapi.com/searches/6987c0c8b4ab72a0661f8c11/images/vLX_bY403VSvej13D1qY6Ff-1106mog6WETBoK9mfC4.png",
+        "price": "CHF 779.90",
+        "extracted_price": 779.9,
+        "second_hand_condition": "pre-owned",
+        "rating": 4.9,
+        "reviews": 1400,
+        "thumbnail": "https://encrypted-tbn3.gstatic.com/shopping?q=tbn:ANd9GcRVXSsVs-ppDVIK-gWcQSHDgCgjG4vP5SnS5r9Gw1fbg3i5hpg8tMT8AexemZXo7B3fgfcFXPS6fGzGLReYaTFnfPRMBDyknw6kzIJM1P07ZrBa67ppim8v",
+        "serpapi_thumbnail": "https://serpapi.com/images/url/PomiwHicDc7LDYIwAADQiQAJ8pHEGJFQUTFICSI3KG1BQ6m0AXUo93EbOb_L-30bKblwNQ0zNLy5xLUiK2aoVMhStkhFfaeJpue8ZXTzXM_mbs_1CqAky6HIhMK5n4VHhV7RBe59uqN3sBxjEzJoDisw6aSiRms2nDoySp0tfuGuyHvbMwglKMhjaBHwAacE38o0YCROIs9_P9hkPT7hIdLjhV0MXmnZ86Bzxj8Vkj3L",
+        "thumbnails": [
+          "https://encrypted-tbn3.gstatic.com/shopping?q=tbn:ANd9GcRVXSsVs-ppDVIK-gWcQSHDgCgjG4vP5SnS5r9Gw1fbg3i5hpg8tMT8AexemZXo7B3fgfcFXPS6fGzGLReYaTFnfPRMBDyknw6kzIJM1P07ZrBa67ppim8v",
+          "https://encrypted-tbn3.gstatic.com/shopping?q=tbn:ANd9GcQNW-wmXXBwjDwphp8yQ7xs7ZauXXvLRlq7gl32LjrhuuoR0gCkR-G8V65AHGNE4Pw3S9nNZtjidwSFbkPk2oiPwNU4MebtMkS9zYH-QaZSgGGuz6uUaQTIDA",
+          "https://encrypted-tbn3.gstatic.com/shopping?q=tbn:ANd9GcQObxZFbc17wHAdsgZgeTHmzf_uvU2mkxO6iLMqTuMwz2A5TBN2wjxNkRwxjTrZ2nFM_-AoJQFsn62-YlY2aT1wY4FSvZzEV2fo_W0hpUE7ECTIkN4Th9sN4g",
+          "https://encrypted-tbn1.gstatic.com/shopping?q=tbn:ANd9GcSaIZwlGF7Qavjrd-BA5_0Xvuvbdna20tlhFPYvlqou5tT61Eh9AqbwxiGHK5qqnecnLmFKpi3RQ9bM-xUTawin47wixGZdRzPKVhNbDWSnljE0onP4Zt5PnA",
+          "https://encrypted-tbn2.gstatic.com/shopping?q=tbn:ANd9GcQcHj0TT5Q4TCI-2FqJmPlL6aaNV114TWD6LicbAgzIYULU6P0dvP7uvpHZvdyKjxoTJ0T4ufhHNBkEKH8RUkSc9aUGS62oFlRX3-hN84zg754r_d2yACar"
+        ],
+        "serpapi_thumbnails": [
+          "https://serpapi.com/images/url/PomiwHicDc7LDYIwAADQiQAJ8pHEGJFQUTFICSI3KG1BQ6m0AXUo93EbOb_L-30bKblwNQ0zNLy5xLUiK2aoVMhStkhFfaeJpue8ZXTzXM_mbs_1CqAky6HIhMK5n4VHhV7RBe59uqN3sBxjEzJoDisw6aSiRms2nDoySp0tfuGuyHvbMwglKMhjaBHwAacE38o0YCROIs9_P9hkPT7hIdLjhV0MXmnZ86Bzxj8Vkj3L",
+          "https://serpapi.com/images/url/kINxS3icDclJDoIwAADAFwEGkC0xBkWLCTQsosiNLWWnQGvFV_kdf6Nzne-nIgQvhiCUQz6vmJQFR7JB4tFCUlLnfD72wlKNGNcD2k-7_xkmLHSQ-_DOsT6OD6yxGK6wtvrqa1GTlMbx0wm6SUWdJDrNXFE6Bht0bAMOaDdla9oAnmSPSaE-wIQ0dcHCc9Z6rTjWHoOR7JYZcdtQfz9szk-TEAFA3wqNUv96scwf4Yc_KQ",
+          "https://serpapi.com/images/url/_kwGbXicDcltDoIgAADQE6lFZtOtNWrax5JWUU3_OEVFMxGFwjxV1-k29f6-76eQkgvHMDJGujeXWarJhE10KmQsS6KTpjZE0XBeMrpo5_9zIErtNTkekj70EjKeqQ1MBQ1phjf1kEfP1wXUVX-wyr3f4qevBgCneImAuveoOqn-jrsQMM-PNNjsjp5gFtCCRwBiPFaB6Z1f4eBeQd5Et1HBL-7MXeFthUxc2AKZ9Af2Oj7v",
+          "https://serpapi.com/images/url/sQ9rGHicDclbCoJAFADQFfmotDCIMEoLS-xd_sQ8pBmx64ze1FpV22k3dX7P9yMQVT22rAxY9VKYcQMp9Mx7jQQlM1n5sGpRKiXhPtWT_439mHsh25NV2hZhMNqSJq-4MfPdm31png3lQPo2FiJIrk2hy6eLh2FvITxf07aT4TJytYaMwfoRREoOdluPbozueCCtBGfUyi5M-e6dRCcR0_l5D0W-sEtInBTdBPwf-HQ_7w",
+          "https://serpapi.com/images/url/KVpPKnicDcltE4EwAADgX5ReTOHOuYSGbldZ3r642WiFNrU69aP8H_-G5-vz_XClZDXW9WtBy1aqK9PUpbB6aaWIymiPiqdecSFlVqTT1-R_YxexkU8jCnMD40EEsLfSrOVr_QwfgU0I2pkmwPu5HWT04qbd6pgEiR0arAmdupHw1LB2k78FXhsY1DcO0ey-2MBhnNy3dEQSf2tbYvmID32NoyHoUmcAyjOzWtcj5Q-fAzwL"
+        ]
+      },
+      {
+        "position": 10,
+        "title": "iPhone 17 Pro Max Kaufen Schweiz Silber / 256GB",
+        "product_id": "14040419585222158974",
+        "product_link": "https://www.google.com/search?ibp=oshop&q=iphone 17\n   switzerland&prds=productid:14040419585222158974,headlineOfferDocid:14040419585222158974,imageDocid:12424667236522326997,pvt:hg&hl=en&gl=ch&udm=28",
+        "immersive_product_page_token": "eyJlaSI6IjBNQ0hhY3UxQXFxZXZyMFBnNXJDOFFnIiwicHJvZHVjdGlkIjoiMTQwNDA0MTk1ODUyMjIxNTg5NzQiLCJjYXRhbG9naWQiOiIiLCJoZWFkbGluZU9mZmVyRG9jaWQiOiIxNDA0MDQxOTU4NTIyMjE1ODk3NCIsImltYWdlRG9jaWQiOiIxMjQyNDY2NzIzNjUyMjMyNjk5NyIsInJkcyI6IiIsInF1ZXJ5IjoiaXBob25lKzE3JTBBKysrc3dpdHplcmxhbmQiLCJncGNpZCI6IiIsIm1pZCI6IiIsInB2dCI6ImhnIiwidXVsZSI6bnVsbCwiZ2wiOiJjaCIsImhsIjoiZW4ifQ==",
+        "serpapi_immersive_product_api": "https://serpapi.com/search.json?engine=google_immersive_product&page_token=eyJlaSI6IjBNQ0hhY3UxQXFxZXZyMFBnNXJDOFFnIiwicHJvZHVjdGlkIjoiMTQwNDA0MTk1ODUyMjIxNTg5NzQiLCJjYXRhbG9naWQiOiIiLCJoZWFkbGluZU9mZmVyRG9jaWQiOiIxNDA0MDQxOTU4NTIyMjE1ODk3NCIsImltYWdlRG9jaWQiOiIxMjQyNDY2NzIzNjUyMjMyNjk5NyIsInJkcyI6IiIsInF1ZXJ5IjoiaXBob25lKzE3JTBBKysrc3dpdHplcmxhbmQiLCJncGNpZCI6IiIsIm1pZCI6IiIsInB2dCI6ImhnIiwidXVsZSI6bnVsbCwiZ2wiOiJjaCIsImhsIjoiZW4ifQ%3D%3D",
+        "source": "handy.ch",
+        "source_icon": "https://serpapi.com/searches/6987c0c8b4ab72a0661f8c11/images/vLX_bY403VSvej13D1qY6Dwb0eRkGouM4wuQsCc2S-s.png",
+        "price": "CHF 1'249.00",
+        "extracted_price": 1,
+        "thumbnail": "https://encrypted-tbn1.gstatic.com/shopping?q=tbn:ANd9GcTPbeVPKS3Y7C_oJqXsZb9i7qW_ZV9y6L_mdBfwQ02B4PWyWTlOmr1SmR-t6AAM7MajYQ65WheyKQEyHOksJMIgcI4geArbamrebk118q_tG0B4crKccGJo",
+        "serpapi_thumbnail": "https://serpapi.com/images/url/aMfUp3icDcnbCoIwAADQL8pLmaYQoRGmZmqKpi_i5ppm87INYj_V__Q3dV7P99NxPjNLltEIqZg5alccjKqEGW94DyU4EZl10zz3Iz4s-_9Z9rU1XZjFAOVxkG5K41hP_nJnFTB7YynqKjeFfqlJ6zzeibJ2tLgQRfaKCFVTcltx3bZDI2yeZaJviw6JIDmJczQwP_Qw9DSMbAoaQhEYVHW31NxVHA3SAELXn34EIz2P",
+        "thumbnails": [
+          "https://encrypted-tbn1.gstatic.com/shopping?q=tbn:ANd9GcTPbeVPKS3Y7C_oJqXsZb9i7qW_ZV9y6L_mdBfwQ02B4PWyWTlOmr1SmR-t6AAM7MajYQ65WheyKQEyHOksJMIgcI4geArbamrebk118q_tG0B4crKccGJo",
+          "https://encrypted-tbn0.gstatic.com/shopping?q=tbn:ANd9GcRoIBNb9uo31smMTg-0sKSlB39Qz2XPfpmlV-54TQmgXlodtnY-0ee1iVJfIde3QYnBrSgDKwBQKxT34IhrIF4c0GlY_xEj3M9Gk01NEeidT0UnWE_nDnxa",
+          "https://encrypted-tbn2.gstatic.com/shopping?q=tbn:ANd9GcS9KCOlFe8T8SYEKu4FqUVxXyHulNUJU2Ky3BLSIKhGmKx4S7U-MwfT-h2yQPf8UWOSlHSSckHUUcdylLbj0caT7iylqml8aWOPKXBTpvuQaH4q_IWlJdsJMQ",
+          "https://encrypted-tbn2.gstatic.com/shopping?q=tbn:ANd9GcTShuM0Kl2sKtDrvJAnY2-OsOtERvviiy4SZhUIYXRjNp7ch5XvZRJCGSeSUxtU5TuuDhNrY_L1e21WfsjHclDFmC4l-Ey7EOXtZTHtxIzmit-EnZUxsN9_Fw",
+          "https://encrypted-tbn0.gstatic.com/shopping?q=tbn:ANd9GcTTGwjogMA7eaSQvAMSdb9aVO9G-JOeXdpcXRevEBfWn5j4tWckT4NdaKRk8uFW_Mey2Ua1OLY44K7Mvoj4T1yGrjlBOJHTsu17agOGiMA7KANFepOqk0xj"
+        ],
+        "serpapi_thumbnails": [
+          "https://serpapi.com/images/url/aMfUp3icDcnbCoIwAADQL8pLmaYQoRGmZmqKpi_i5ppm87INYj_V__Q3dV7P99NxPjNLltEIqZg5alccjKqEGW94DyU4EZl10zz3Iz4s-_9Z9rU1XZjFAOVxkG5K41hP_nJnFTB7YynqKjeFfqlJ6zzeibJ2tLgQRfaKCFVTcltx3bZDI2yeZaJviw6JIDmJczQwP_Qw9DSMbAoaQhEYVHW31NxVHA3SAELXn34EIz2P",
+          "https://serpapi.com/images/url/c77ArHicDcnhEkIwAADgJ8I0_eCu63Lk5LhE4pdjm1Fsy9alHqr36W3q-_t9P71SQjqGQRiaX0IRrKmWAZ1K1agB6YhPhuy5EAOj2_vmf84uwXaATjx0k9Z-cGjKKc6pBmSUjS600_eqPHZiGgttbeXpRMuRY8UqDRBiDsWhCzGBacXcOaNe9HTTaMmhFfZzuLcQCMaqXvwrjO3gBszEJwPOwZld_Jp5bGl-7Ow9HA",
+          "https://serpapi.com/images/url/gHl4ZHicDclJDoIwAADAFwEGSVgSY9TIVtaUCp4MlFULFClKf-V3_I3Odb6fljE6G5JUDfjJKatKgRWDLDYzy1mHRTz20tyOlHZDs592_zMOQalbGOrgFBKz0hINXs9gUcwJXdaM2wsJkItkwLdHDzqgtXqwKlBFgv-uE6GVeRzVGkpDSGwI8cNGCJeceMV9g_NE7TiZeqLlaRiB7JjQ1xLntjLdnJS45ez68Q9rpD6a",
+          "https://serpapi.com/images/url/o58wKXicDcndCoIwGADQJzJrKJEQIf70YymoI92N1FptoWu5T9Oeqtfpbercnu-HAyjtmCaTtB0VsIsBZ4kmNw0nEHRCH42p-UMpIW-r5_J_jhtfFmuaZ7w7TKMa6Qj8tt-5skRGohMI0r4XYrQywvG2LNJ7rOaU20VP0p23zliGB8B23nU-j9uy2s8Ymh2v-r6htR82nlUbwTgPkgJIvoFh-24EGIEkeNDxogpfP9hXP6E",
+          "https://serpapi.com/images/url/tMFi93icDcxRDoIgAADQE5nZaKZba7oVLUNWUdZXIyAUC1HR8lLdp9vU99ve95Nba9rQdYVmzWCs4I696fFItpbago1Y9XTbvDKm0HJRz_8WRikPICMEvlQlUeQLetj1ETrwW0BPOIDOBoszN-y8F_0yvmd6qoDNWElAymmyL2fdKrsiMUyO1MPbCwCJj_pKAeINsFGPGG_WpO08n0oMi_-fROlKGFyX47f6ARVfPYI"
+        ]
+      },
+      {
+        "position": 11,
+        "title": "iPhone 17 Pro Max Case Hülle - Silikon schwarz Schweiz Away personalisierbares Fussballtrikot - Phonelook",
+        "product_id": "5099639756344843395",
+        "product_link": "https://www.google.com/search?ibp=oshop&q=iphone 17\n   switzerland&prds=productid:5099639756344843395,headlineOfferDocid:5099639756344843395,imageDocid:18434908120734906712,pvt:hg&hl=en&gl=ch&udm=28",
+        "immersive_product_page_token": "eyJlaSI6IjBNQ0hhY3UxQXFxZXZyMFBnNXJDOFFnIiwicHJvZHVjdGlkIjoiNTA5OTYzOTc1NjM0NDg0MzM5NSIsImNhdGFsb2dpZCI6IiIsImhlYWRsaW5lT2ZmZXJEb2NpZCI6IjUwOTk2Mzk3NTYzNDQ4NDMzOTUiLCJpbWFnZURvY2lkIjoiMTg0MzQ5MDgxMjA3MzQ5MDY3MTIiLCJyZHMiOiIiLCJxdWVyeSI6ImlwaG9uZSsxNyUwQSsrK3N3aXR6ZXJsYW5kIiwiZ3BjaWQiOiIiLCJtaWQiOiIiLCJwdnQiOiJoZyIsInV1bGUiOm51bGwsImdsIjoiY2giLCJobCI6ImVuIn0=",
+        "serpapi_immersive_product_api": "https://serpapi.com/search.json?engine=google_immersive_product&page_token=eyJlaSI6IjBNQ0hhY3UxQXFxZXZyMFBnNXJDOFFnIiwicHJvZHVjdGlkIjoiNTA5OTYzOTc1NjM0NDg0MzM5NSIsImNhdGFsb2dpZCI6IiIsImhlYWRsaW5lT2ZmZXJEb2NpZCI6IjUwOTk2Mzk3NTYzNDQ4NDMzOTUiLCJpbWFnZURvY2lkIjoiMTg0MzQ5MDgxMjA3MzQ5MDY3MTIiLCJyZHMiOiIiLCJxdWVyeSI6ImlwaG9uZSsxNyUwQSsrK3N3aXR6ZXJsYW5kIiwiZ3BjaWQiOiIiLCJtaWQiOiIiLCJwdnQiOiJoZyIsInV1bGUiOm51bGwsImdsIjoiY2giLCJobCI6ImVuIn0%3D",
+        "source": "PhoneLook.ch",
+        "source_icon": "https://serpapi.com/searches/6987c0c8b4ab72a0661f8c11/images/vLX_bY403VSvej13D1qY6AGp6xuiCTRACnoROqLczfA.png",
+        "price": "CHF 29.95",
+        "extracted_price": 29.95,
+        "thumbnail": "https://encrypted-tbn0.gstatic.com/shopping?q=tbn:ANd9GcSXAmrlcyN-Pay0RdB5KP6d-zBrokEgLVKhHIztuDWWt71su2BZQ0Piwp1qgC4OkSo-1nqdNo1ZPQWX9uySITGvMjQPlVBbUqzTtRNIuvk",
+        "serpapi_thumbnail": "https://serpapi.com/images/url/J6o883icDclJDoIwFADQEzEZh0BijFWDBMUyCIQdtASQoQU-mHIbj-Vt9G3f91MC8NFQlLwjg-CQUwmyTpWLEVKoiExYq4wl47zqikO__59xdKhuEj8-tkNDhCPhVKgeRRsbb6m0oIHVl-IW2uXVWmA6RxHstHFaocRVcfXmWl-c1o_aZ5LW9dRhWoLdKNYn4VuBOd9fLm5ClD37JQDPsaa5_gEeGDo-",
+        "thumbnails": [
+          "https://encrypted-tbn0.gstatic.com/shopping?q=tbn:ANd9GcSXAmrlcyN-Pay0RdB5KP6d-zBrokEgLVKhHIztuDWWt71su2BZQ0Piwp1qgC4OkSo-1nqdNo1ZPQWX9uySITGvMjQPlVBbUqzTtRNIuvk",
+          "https://encrypted-tbn2.gstatic.com/shopping?q=tbn:ANd9GcTvugiC2R9k9MArvKcaAMXS6U3MVro8PDbp8Z_wKQbGFQHeXo1MjeY7qFX-M86TOudQXYF0gZEtUNxW_87fo7Trtw8PbI-IJcztzxl54NlhplT-EC6pbD8hrg",
+          "https://encrypted-tbn2.gstatic.com/shopping?q=tbn:ANd9GcQDk0SuKRgOXLJ8RI0NxcR-dtAUPmLq69q0RxMhSGo40WcMN7kPVD0GHp0p19RibqBoPbO5PVrLQXrWH4Fl2gmLeDqmzcv_H6o2S9-BQtR5tn2Nw8lsDoSagA",
+          "https://encrypted-tbn2.gstatic.com/shopping?q=tbn:ANd9GcSrNfs1HwGI-ZRDCbPswEeyjsUmlyi0n3Ault3ydM-COI_u_dAGGWEHFgHJehjhzlb9eNNTjYvKsKWxGzya9MvQMIGt5Lc0I6fESuXGxEb5reItyY3ucA5KLA",
+          "https://encrypted-tbn1.gstatic.com/shopping?q=tbn:ANd9GcRS8KQ5MdJv7dvmfxo4N9Y-BHswQEWqqIqOlEkgjM-XmH6UgGsUVInhaxQOX-3RAqMF0Z21K7L6-Qxht3QN06gltfoy1w6TcrCaSkcY9CCjQYYOQiAbG25tyA"
+        ],
+        "serpapi_thumbnails": [
+          "https://serpapi.com/images/url/J6o883icDclJDoIwFADQEzEZh0BijFWDBMUyCIQdtASQoQU-mHIbj-Vt9G3f91MC8NFQlLwjg-CQUwmyTpWLEVKoiExYq4wl47zqikO__59xdKhuEj8-tkNDhCPhVKgeRRsbb6m0oIHVl-IW2uXVWmA6RxHstHFaocRVcfXmWl-c1o_aZ5LW9dRhWoLdKNYn4VuBOd9fLm5ClD37JQDPsaa5_gEeGDo-",
+          "https://serpapi.com/images/url/zw76xXicDclJDoIwFADQEyGOUEyMITI4pCiKCm4ILVhQpLV8cDiV1_E2-rbv-8kBRD1W1ayi8iUgSxUgVb_DakigoB3Kb2qdcyGKik3vk_-NTS81XBq0DStm_a1xNbAp2xVNTBzutP0AHyRHG4sIdIofK5-4jj_PQt7DlyzS706oYKQF6yb1w8jpspMNe-95jJF-5nog4YE2ZKEslvQN72c5GnplLspAsWeaIBbKJfsBfQQ-Rw",
+          "https://serpapi.com/images/url/J5wkt3icDcndCoIwGADQJ1KXlLkgQpG0UtON1LvQKVNKt-nX71P1Or1Nndvz_bQAcloZRjOw8SWhqTWoBlPnE5TQMZ2J3phaIWU38I1a_2_lxDX2WepdEL0dCD8W4d4mOxQ_GdFqcE5JHyoLK0SeUUt9MUc5i-LlJck85AcSyRkmXaVckVTHRZKNYVqMeTDfXk3eh42n-je7nwNLmBRrbgpkAYMZP-zr5AlacucHPC09cw",
+          "https://serpapi.com/images/url/BaE273icDclJDoIwFADQEzEowQQSYxrFUhmcg7ghUMoURKSfoZ7K63gbfdv3_RQALTcVhTW0Ey2wVIKkmcs5hxhKKtPnQ-HFs23LJl-9lv8zkZ8amJ47P-Mze8REup826-TAR4uJil8ftSjVRkN9DZpIPWm9J1EfpQjjwLK3ub1jRVW868Rgvn-pwsHhTjDht4gNbzh6BIPuUpUsMuvc3_BkJXrHCIhQ6ynSHRf9AO3RP2w",
+          "https://serpapi.com/images/url/tULiXXicDclJDoIwFADQE5XBAYXEGCSKqECqouIOCpQZSn8YbuV1vI2-7ft-UoCWa6IY16SbWogjBGEtC5RDABkRSFOJPG3aNqvplm3-p-lOpJrkeluf8dKOTv0q6qtkbBaO6qPdkQ94_2TMYm65L2huo1d1VDxqcu9h1WkwYveF5led2QfpPZPPq4uC8JjCHDuSQktImkkelDvpjOBWEF81jBz7voszPTRnS5j0H3e9Pbk"
+        ]
+      }
+    ],
+    "filters": [
+      {
+        "type": "Refine results",
+        "input_type": "link_with_icon",
+        "options": [
+          {
+            "text": "New",
+            "shoprs": "CAEYCioVaXBob25lIDE3IHN3aXR6ZXJsYW5kMgcIChIDTmV3WImqIGAC",
+            "serpapi_link": "https://serpapi.com/search.json?device=desktop&engine=google_shopping&gl=ch&google_domain=google.com&hl=en&q=new+iphone+17%0A+++switzerland&shoprs=CAEYCioVaXBob25lIDE3IHN3aXR6ZXJsYW5kMgcIChIDTmV3WImqIGAC"
+          },
+          {
+            "text": "Used",
+            "shoprs": "CAEYCioVaXBob25lIDE3IHN3aXR6ZXJsYW5kMggIChIEVXNlZFiJqiBgAg",
+            "serpapi_link": "https://serpapi.com/search.json?device=desktop&engine=google_shopping&gl=ch&google_domain=google.com&hl=en&q=used+iphone+17%0A+++switzerland&shoprs=CAEYCioVaXBob25lIDE3IHN3aXR6ZXJsYW5kMggIChIEVXNlZFiJqiBgAg"
+          },
+          {
+            "text": "Nearby",
+            "shoprs": "CAEYAyoVaXBob25lIDE3IHN3aXR6ZXJsYW5kMgwIAxIGTmVhcmJ5GAJYiaogYAI",
+            "serpapi_link": "https://serpapi.com/search.json?device=desktop&engine=google_shopping&gl=ch&google_domain=google.com&hl=en&q=iphone+17%0A+++switzerland+nearby&shoprs=CAEYAyoVaXBob25lIDE3IHN3aXR6ZXJsYW5kMgwIAxIGTmVhcmJ5GAJYiaogYAI"
+          }
+        ]
+      },
+      {
+        "type": "Sort by",
+        "input_type": "link",
+        "options": [
+          {
+            "text": "Relevance",
+            "shoprs": "CAEYFyoVaXBob25lIDE3IHN3aXR6ZXJsYW5kMgoIFyoEEAEYAVAEYAI",
+            "serpapi_link": "https://serpapi.com/search.json?device=desktop&engine=google_shopping&gl=ch&google_domain=google.com&hl=en&q=iphone+17+switzerland&shoprs=CAEYFyoVaXBob25lIDE3IHN3aXR6ZXJsYW5kMgoIFyoEEAEYAVAEYAI"
+          },
+          {
+            "text": "Price: low to high",
+            "shoprs": "CAEYFyoVaXBob25lIDE3IHN3aXR6ZXJsYW5kMh4IFxISUHJpY2U6IGxvdyB0byBoaWdoKgQQARgBUAFgAogBAQ",
+            "serpapi_link": "https://serpapi.com/search.json?device=desktop&engine=google_shopping&gl=ch&google_domain=google.com&hl=en&q=iphone+17+switzerland&shoprs=CAEYFyoVaXBob25lIDE3IHN3aXR6ZXJsYW5kMh4IFxISUHJpY2U6IGxvdyB0byBoaWdoKgQQARgBUAFgAogBAQ"
+          },
+          {
+            "text": "Price: high to low",
+            "shoprs": "CAEYFyoVaXBob25lIDE3IHN3aXR6ZXJsYW5kMh4IFxISUHJpY2U6IGhpZ2ggdG8gbG93KgQQARgBUAJgAogBAg",
+            "serpapi_link": "https://serpapi.com/search.json?device=desktop&engine=google_shopping&gl=ch&google_domain=google.com&hl=en&q=iphone+17+switzerland&shoprs=CAEYFyoVaXBob25lIDE3IHN3aXR6ZXJsYW5kMh4IFxISUHJpY2U6IGhpZ2ggdG8gbG93KgQQARgBUAJgAogBAg"
+          },
+          {
+            "text": "Rating: high to low",
+            "shoprs": "CAEYFyoVaXBob25lIDE3IHN3aXR6ZXJsYW5kMh8IFxITUmF0aW5nOiBoaWdoIHRvIGxvdyoEEAEYAVADYAKIAQM",
+            "serpapi_link": "https://serpapi.com/search.json?device=desktop&engine=google_shopping&gl=ch&google_domain=google.com&hl=en&q=iphone+17+switzerland&shoprs=CAEYFyoVaXBob25lIDE3IHN3aXR6ZXJsYW5kMh8IFxITUmF0aW5nOiBoaWdoIHRvIGxvdyoEEAEYAVADYAKIAQM"
+          }
+        ]
+      },
+      {
+        "type": "Product Rating",
+        "input_type": "link",
+        "options": [
+          {
+            "text": "4 and up",
+            "shoprs": "CAESBWIDCJADGB4qFWlwaG9uZSAxNyBzd2l0emVybGFuZDIVCB4SCDQgYW5kIHVwIgViAwiQA0AEYAI",
+            "serpapi_link": "https://serpapi.com/search.json?device=desktop&engine=google_shopping&gl=ch&google_domain=google.com&hl=en&q=iphone+17%0A+++switzerland&shoprs=CAESBWIDCJADGB4qFWlwaG9uZSAxNyBzd2l0emVybGFuZDIVCB4SCDQgYW5kIHVwIgViAwiQA0AEYAI"
+          }
+        ]
+      },
+      {
+        "type": "Price",
+        "input_type": "price_range",
+        "options": [
+          {
+            "text": "Under CHF 1'000",
+            "shoprs": "CAESDRILEQAAAABlzc1BGAEYBSoVaXBob25lIDE3IHN3aXR6ZXJsYW5kMikIBRIQVW5kZXIgQ0hGwqAxJzAwMBgCIg0SCxEAAAAAZc3NQRgBKgIYAViJqiBgAg",
+            "serpapi_link": "https://serpapi.com/search.json?device=desktop&engine=google_shopping&gl=ch&google_domain=google.com&hl=en&q=iphone+17%0A+++switzerland+under+CHF%C2%A01%27000&shoprs=CAESDRILEQAAAABlzc1BGAEYBSoVaXBob25lIDE3IHN3aXR6ZXJsYW5kMikIBRIQVW5kZXIgQ0hGwqAxJzAwMBgCIg0SCxEAAAAAZc3NQRgBKgIYAViJqiBgAg"
+          },
+          {
+            "text": "Over CHF 1'000",
+            "shoprs": "CAESDRILCQAAAABlzc1BGAEYBSoVaXBob25lIDE3IHN3aXR6ZXJsYW5kMigIBRIPT3ZlciBDSEbCoDEnMDAwGAIiDRILCQAAAABlzc1BGAEqAhgBWImqIGAC",
+            "serpapi_link": "https://serpapi.com/search.json?device=desktop&engine=google_shopping&gl=ch&google_domain=google.com&hl=en&q=iphone+17%0A+++switzerland+over+CHF%C2%A01%27000&shoprs=CAESDRILCQAAAABlzc1BGAEYBSoVaXBob25lIDE3IHN3aXR6ZXJsYW5kMigIBRIPT3ZlciBDSEbCoDEnMDAwGAIiDRILCQAAAABlzc1BGAEqAhgBWImqIGAC"
+          }
+        ]
+      },
+      {
+        "type": "Storage Capacity",
+        "input_type": "link",
+        "options": [
+          {
+            "text": "256 GB",
+            "shoprs": "CAESGioYCKuEPRISCQAAAAAAAHBAEQAAAAAAAHBAGAEqFWlwaG9uZSAxNyBzd2l0emVybGFuZDI0CAESBjI1NiBHQiIaKhgIq4Q9EhIJAAAAAAAAcEARAAAAAAAAcEAqAhgBOggIq4Q9EAAwBliJqiBgAg",
+            "serpapi_link": "https://serpapi.com/search.json?device=desktop&engine=google_shopping&gl=ch&google_domain=google.com&hl=en&q=256+gb+iphone+17+switzerland&shoprs=CAESGioYCKuEPRISCQAAAAAAAHBAEQAAAAAAAHBAGAEqFWlwaG9uZSAxNyBzd2l0emVybGFuZDI0CAESBjI1NiBHQiIaKhgIq4Q9EhIJAAAAAAAAcEARAAAAAAAAcEAqAhgBOggIq4Q9EAAwBliJqiBgAg"
+          },
+          {
+            "text": "512 GB",
+            "shoprs": "CAESGioYCKuEPRISCQAAAAAAAIBAEQAAAAAAAIBAGAEqFWlwaG9uZSAxNyBzd2l0emVybGFuZDI0CAESBjUxMiBHQiIaKhgIq4Q9EhIJAAAAAAAAgEARAAAAAAAAgEAqAhgBOggIq4Q9EAAwBliJqiBgAg",
+            "serpapi_link": "https://serpapi.com/search.json?device=desktop&engine=google_shopping&gl=ch&google_domain=google.com&hl=en&q=512+gb+iphone+17+switzerland&shoprs=CAESGioYCKuEPRISCQAAAAAAAIBAEQAAAAAAAIBAGAEqFWlwaG9uZSAxNyBzd2l0emVybGFuZDI0CAESBjUxMiBHQiIaKhgIq4Q9EhIJAAAAAAAAgEARAAAAAAAAgEAqAhgBOggIq4Q9EAAwBliJqiBgAg"
+          },
+          {
+            "text": "1 TB",
+            "shoprs": "CAESGioYCKuEPRISCQAAAAAAQI9AEQAAAAAAQI9AGAEqFWlwaG9uZSAxNyBzd2l0emVybGFuZDIyCAESBDEgVEIiGioYCKuEPRISCQAAAAAAQI9AEQAAAAAAQI9AKgIYAToICKuEPRAAMAZYiaogYAI",
+            "serpapi_link": "https://serpapi.com/search.json?device=desktop&engine=google_shopping&gl=ch&google_domain=google.com&hl=en&q=1+tb+iphone+17+switzerland&shoprs=CAESGioYCKuEPRISCQAAAAAAQI9AEQAAAAAAQI9AGAEqFWlwaG9uZSAxNyBzd2l0emVybGFuZDIyCAESBDEgVEIiGioYCKuEPRISCQAAAAAAQI9AEQAAAAAAQI9AKgIYAToICKuEPRAAMAZYiaogYAI"
+          }
+        ]
+      },
+      {
+        "type": "Features",
+        "input_type": "checkbox",
+        "options": [
+          {
+            "text": "Smartphone",
+            "shoprs": "CAEYASoVaXBob25lIDE3IHN3aXR6ZXJsYW5kMhoIARIKU21hcnRwaG9uZToKCLvdLBC83SwwA1iJqiBgAg",
+            "serpapi_link": "https://serpapi.com/search.json?device=desktop&engine=google_shopping&gl=ch&google_domain=google.com&hl=en&q=smartphone+iphone+17+switzerland&shoprs=CAEYASoVaXBob25lIDE3IHN3aXR6ZXJsYW5kMhoIARIKU21hcnRwaG9uZToKCLvdLBC83SwwA1iJqiBgAg"
+          },
+          {
+            "text": "Quad-band",
+            "shoprs": "CAEYASoVaXBob25lIDE3IHN3aXR6ZXJsYW5kMhkIARIJUXVhZC1iYW5kOgoIivc8EJH3PDADWImqIGAC",
+            "serpapi_link": "https://serpapi.com/search.json?device=desktop&engine=google_shopping&gl=ch&google_domain=google.com&hl=en&q=quad-band+iphone+17+switzerland&shoprs=CAEYASoVaXBob25lIDE3IHN3aXR6ZXJsYW5kMhkIARIJUXVhZC1iYW5kOgoIivc8EJH3PDADWImqIGAC"
+          },
+          {
+            "text": "Water Resistant",
+            "shoprs": "CAEYASoVaXBob25lIDE3IHN3aXR6ZXJsYW5kMh8IARIPV2F0ZXIgUmVzaXN0YW50OgoIsf1pELL9aTADWImqIGAC",
+            "serpapi_link": "https://serpapi.com/search.json?device=desktop&engine=google_shopping&gl=ch&google_domain=google.com&hl=en&q=water+resistant+iphone+17+switzerland&shoprs=CAEYASoVaXBob25lIDE3IHN3aXR6ZXJsYW5kMh8IARIPV2F0ZXIgUmVzaXN0YW50OgoIsf1pELL9aTADWImqIGAC"
+          },
+          {
+            "text": "Wireless Charging",
+            "shoprs": "CAEYASoVaXBob25lIDE3IHN3aXR6ZXJsYW5kMiEIARIRV2lyZWxlc3MgQ2hhcmdpbmc6Cgi9_WkQvv1pMANYiaogYAI",
+            "serpapi_link": "https://serpapi.com/search.json?device=desktop&engine=google_shopping&gl=ch&google_domain=google.com&hl=en&q=wireless+charging+iphone+17+switzerland&shoprs=CAEYASoVaXBob25lIDE3IHN3aXR6ZXJsYW5kMiEIARIRV2lyZWxlc3MgQ2hhcmdpbmc6Cgi9_WkQvv1pMANYiaogYAI"
+          },
+          {
+            "text": "With Fast Charging",
+            "shoprs": "CAEYASoVaXBob25lIDE3IHN3aXR6ZXJsYW5kMiYIARISV2l0aCBGYXN0IENoYXJnaW5nGAI6DAjuruoBEO-u6gEwA1iJqiBgAg",
+            "serpapi_link": "https://serpapi.com/search.json?device=desktop&engine=google_shopping&gl=ch&google_domain=google.com&hl=en&q=iphone+17+switzerland+with+fast+charging&shoprs=CAEYASoVaXBob25lIDE3IHN3aXR6ZXJsYW5kMiYIARISV2l0aCBGYXN0IENoYXJnaW5nGAI6DAjuruoBEO-u6gEwA1iJqiBgAg"
+          },
+          {
+            "text": "With OLED Display",
+            "shoprs": "CAEYASoVaXBob25lIDE3IHN3aXR6ZXJsYW5kMiUIARIRV2l0aCBPTEVEIERpc3BsYXkYAjoMCIOZ6wEQhJnrATADWImqIGAC",
+            "serpapi_link": "https://serpapi.com/search.json?device=desktop&engine=google_shopping&gl=ch&google_domain=google.com&hl=en&q=iphone+17+switzerland+with+oled+display&shoprs=CAEYASoVaXBob25lIDE3IHN3aXR6ZXJsYW5kMiUIARIRV2l0aCBPTEVEIERpc3BsYXkYAjoMCIOZ6wEQhJnrATADWImqIGAC"
+          },
+          {
+            "text": "With 4K Video",
+            "shoprs": "CAEYASoVaXBob25lIDE3IHN3aXR6ZXJsYW5kMiEIARINV2l0aCA0SyBWaWRlbxgCOgwIs7mwAhC0ubACMANYiaogYAI",
+            "serpapi_link": "https://serpapi.com/search.json?device=desktop&engine=google_shopping&gl=ch&google_domain=google.com&hl=en&q=iphone+17+switzerland+with+4k+video&shoprs=CAEYASoVaXBob25lIDE3IHN3aXR6ZXJsYW5kMiEIARINV2l0aCA0SyBWaWRlbxgCOgwIs7mwAhC0ubACMANYiaogYAI"
+          }
+        ]
+      },
+      {
+        "type": "SIM Slots",
+        "input_type": "checkbox",
+        "options": [
+          {
+            "text": "Dual SIM",
+            "shoprs": "CAEYASoVaXBob25lIDE3IHN3aXR6ZXJsYW5kMhgIARIIRHVhbCBTSU06Cgi0yjsQtso7MABYiaogYAI",
+            "serpapi_link": "https://serpapi.com/search.json?device=desktop&engine=google_shopping&gl=ch&google_domain=google.com&hl=en&q=dual+sim+iphone+17+switzerland&shoprs=CAEYASoVaXBob25lIDE3IHN3aXR6ZXJsYW5kMhgIARIIRHVhbCBTSU06Cgi0yjsQtso7MABYiaogYAI"
+          },
+          {
+            "text": "Single SIM",
+            "shoprs": "CAEYASoVaXBob25lIDE3IHN3aXR6ZXJsYW5kMhoIARIKU2luZ2xlIFNJTToKCLTKOxC1yjswAFiJqiBgAg",
+            "serpapi_link": "https://serpapi.com/search.json?device=desktop&engine=google_shopping&gl=ch&google_domain=google.com&hl=en&q=single+sim+iphone+17+switzerland&shoprs=CAEYASoVaXBob25lIDE3IHN3aXR6ZXJsYW5kMhoIARIKU2luZ2xlIFNJTToKCLTKOxC1yjswAFiJqiBgAg"
+          }
+        ]
+      },
+      {
+        "type": "Screen Size",
+        "input_type": "link",
+        "options": [
+          {
+            "text": "6.3 – 6.7 inches screen",
+            "shoprs": "CAESGioYCKX9PBISCQAAACCDADBAEQAAAKCbBDFAGAEqFWlwaG9uZSAxNyBzd2l0emVybGFuZDJvCAESGTYuMyDigJMgNi43IGluY2hlcyBzY3JlZW4iGioYCKX9PBISCQAAACCDADBAEQAAAKCbBDFAKioKJjYuMyBpbmNoZXMgc2NyZWVuIHRvIDYuNyBpbmNoZXMgc2NyZWVuGAE6CAil_TwQADAGWImqIGAC",
+            "serpapi_link": "https://serpapi.com/search.json?device=desktop&engine=google_shopping&gl=ch&google_domain=google.com&hl=en&q=6.3+inches+screen+to+6.7+inches+screen+iphone+17+switzerland&shoprs=CAESGioYCKX9PBISCQAAACCDADBAEQAAAKCbBDFAGAEqFWlwaG9uZSAxNyBzd2l0emVybGFuZDJvCAESGTYuMyDigJMgNi43IGluY2hlcyBzY3JlZW4iGioYCKX9PBISCQAAACCDADBAEQAAAKCbBDFAKioKJjYuMyBpbmNoZXMgc2NyZWVuIHRvIDYuNyBpbmNoZXMgc2NyZWVuGAE6CAil_TwQADAGWImqIGAC"
+          },
+          {
+            "text": "6.7 – 6.9 inches screen",
+            "shoprs": "CAESGioYCKX9PBISCQAAAKCbBDFAEQAAAOCnhjFAGAEqFWlwaG9uZSAxNyBzd2l0emVybGFuZDJvCAESGTYuNyDigJMgNi45IGluY2hlcyBzY3JlZW4iGioYCKX9PBISCQAAAKCbBDFAEQAAAOCnhjFAKioKJjYuNyBpbmNoZXMgc2NyZWVuIHRvIDYuOSBpbmNoZXMgc2NyZWVuGAE6CAil_TwQADAGWImqIGAC",
+            "serpapi_link": "https://serpapi.com/search.json?device=desktop&engine=google_shopping&gl=ch&google_domain=google.com&hl=en&q=6.7+inches+screen+to+6.9+inches+screen+iphone+17+switzerland&shoprs=CAESGioYCKX9PBISCQAAAKCbBDFAEQAAAOCnhjFAGAEqFWlwaG9uZSAxNyBzd2l0emVybGFuZDJvCAESGTYuNyDigJMgNi45IGluY2hlcyBzY3JlZW4iGioYCKX9PBISCQAAAKCbBDFAEQAAAOCnhjFAKioKJjYuNyBpbmNoZXMgc2NyZWVuIHRvIDYuOSBpbmNoZXMgc2NyZWVuGAE6CAil_TwQADAGWImqIGAC"
+          }
+        ]
+      },
+      {
+        "type": "Weight",
+        "input_type": "link",
+        "options": [
+          {
+            "text": "177 – 204 grams",
+            "shoprs": "CAESGioYCKqEPRISCQAAAAAAIGZAEQAAAAAAgGlAGAEqFWlwaG9uZSAxNyBzd2l0emVybGFuZDJXCAESETE3NyDigJMgMjA0IGdyYW1zIhoqGAiqhD0SEgkAAAAAACBmQBEAAAAAAIBpQCoaChYxNzcgZ3JhbXMgdG8gMjA0IGdyYW1zGAE6CAiqhD0QADAGWImqIGAC",
+            "serpapi_link": "https://serpapi.com/search.json?device=desktop&engine=google_shopping&gl=ch&google_domain=google.com&hl=en&q=177+grams+to+204+grams+iphone+17+switzerland&shoprs=CAESGioYCKqEPRISCQAAAAAAIGZAEQAAAAAAgGlAGAEqFWlwaG9uZSAxNyBzd2l0emVybGFuZDJXCAESETE3NyDigJMgMjA0IGdyYW1zIhoqGAiqhD0SEgkAAAAAACBmQBEAAAAAAIBpQCoaChYxNzcgZ3JhbXMgdG8gMjA0IGdyYW1zGAE6CAiqhD0QADAGWImqIGAC"
+          },
+          {
+            "text": "204 – 231 grams",
+            "shoprs": "CAESGioYCKqEPRISCQAAAAAAgGlAEQAAAAAA4GxAGAEqFWlwaG9uZSAxNyBzd2l0emVybGFuZDJXCAESETIwNCDigJMgMjMxIGdyYW1zIhoqGAiqhD0SEgkAAAAAAIBpQBEAAAAAAOBsQCoaChYyMDQgZ3JhbXMgdG8gMjMxIGdyYW1zGAE6CAiqhD0QADAGWImqIGAC",
+            "serpapi_link": "https://serpapi.com/search.json?device=desktop&engine=google_shopping&gl=ch&google_domain=google.com&hl=en&q=204+grams+to+231+grams+iphone+17+switzerland&shoprs=CAESGioYCKqEPRISCQAAAAAAgGlAEQAAAAAA4GxAGAEqFWlwaG9uZSAxNyBzd2l0emVybGFuZDJXCAESETIwNCDigJMgMjMxIGdyYW1zIhoqGAiqhD0SEgkAAAAAAIBpQBEAAAAAAOBsQCoaChYyMDQgZ3JhbXMgdG8gMjMxIGdyYW1zGAE6CAiqhD0QADAGWImqIGAC"
+          }
+        ]
+      },
+      {
+        "type": "Front Camera Resolution",
+        "input_type": "link",
+        "options": [
+          {
+            "text": "12 MP Front Camera",
+            "shoprs": "CAESGioYCOuHPRISCQAAAAAAAChAEQAAAAAAAChAGAEqFWlwaG9uZSAxNyBzd2l0emVybGFuZDJACAESEjEyIE1QIEZyb250IENhbWVyYSIaKhgI64c9EhIJAAAAAAAAKEARAAAAAAAAKEAqAhgBOggI64c9EAAwBliJqiBgAg",
+            "serpapi_link": "https://serpapi.com/search.json?device=desktop&engine=google_shopping&gl=ch&google_domain=google.com&hl=en&q=12+mp+front+camera+iphone+17+switzerland&shoprs=CAESGioYCOuHPRISCQAAAAAAAChAEQAAAAAAAChAGAEqFWlwaG9uZSAxNyBzd2l0emVybGFuZDJACAESEjEyIE1QIEZyb250IENhbWVyYSIaKhgI64c9EhIJAAAAAAAAKEARAAAAAAAAKEAqAhgBOggI64c9EAAwBliJqiBgAg"
+          },
+          {
+            "text": "18 MP Front Camera",
+            "shoprs": "CAESGioYCOuHPRISCQAAAAAAADJAEQAAAAAAADJAGAEqFWlwaG9uZSAxNyBzd2l0emVybGFuZDJACAESEjE4IE1QIEZyb250IENhbWVyYSIaKhgI64c9EhIJAAAAAAAAMkARAAAAAAAAMkAqAhgBOggI64c9EAAwBliJqiBgAg",
+            "serpapi_link": "https://serpapi.com/search.json?device=desktop&engine=google_shopping&gl=ch&google_domain=google.com&hl=en&q=18+mp+front+camera+iphone+17+switzerland&shoprs=CAESGioYCOuHPRISCQAAAAAAADJAEQAAAAAAADJAGAEqFWlwaG9uZSAxNyBzd2l0emVybGFuZDJACAESEjE4IE1QIEZyb250IENhbWVyYSIaKhgI64c9EhIJAAAAAAAAMkARAAAAAAAAMkAqAhgBOggI64c9EAAwBliJqiBgAg"
+          },
+          {
+            "text": "48 MP Front Camera",
+            "shoprs": "CAESGioYCOuHPRISCQAAAAAAAEhAEQAAAAAAAEhAGAEqFWlwaG9uZSAxNyBzd2l0emVybGFuZDJACAESEjQ4IE1QIEZyb250IENhbWVyYSIaKhgI64c9EhIJAAAAAAAASEARAAAAAAAASEAqAhgBOggI64c9EAAwBliJqiBgAg",
+            "serpapi_link": "https://serpapi.com/search.json?device=desktop&engine=google_shopping&gl=ch&google_domain=google.com&hl=en&q=48+mp+front+camera+iphone+17+switzerland&shoprs=CAESGioYCOuHPRISCQAAAAAAAEhAEQAAAAAAAEhAGAEqFWlwaG9uZSAxNyBzd2l0emVybGFuZDJACAESEjQ4IE1QIEZyb250IENhbWVyYSIaKhgI64c9EhIJAAAAAAAASEARAAAAAAAASEAqAhgBOggI64c9EAAwBliJqiBgAg"
+          }
+        ]
+      },
+      {
+        "type": "Cellular Network",
+        "input_type": "checkbox",
+        "options": [
+          {
+            "text": "GSM Network",
+            "shoprs": "CAEYASoVaXBob25lIDE3IHN3aXR6ZXJsYW5kMhsIARILR1NNIE5ldHdvcms6CgiRqz4Qkqs-MABYiaogYAI",
+            "serpapi_link": "https://serpapi.com/search.json?device=desktop&engine=google_shopping&gl=ch&google_domain=google.com&hl=en&q=gsm+network+iphone+17+switzerland&shoprs=CAEYASoVaXBob25lIDE3IHN3aXR6ZXJsYW5kMhsIARILR1NNIE5ldHdvcms6CgiRqz4Qkqs-MABYiaogYAI"
+          },
+          {
+            "text": "CDMA Network",
+            "shoprs": "CAEYASoVaXBob25lIDE3IHN3aXR6ZXJsYW5kMhwIARIMQ0RNQSBOZXR3b3JrOgoIkas-EJOrPjAAWImqIGAC",
+            "serpapi_link": "https://serpapi.com/search.json?device=desktop&engine=google_shopping&gl=ch&google_domain=google.com&hl=en&q=cdma+network+iphone+17+switzerland&shoprs=CAEYASoVaXBob25lIDE3IHN3aXR6ZXJsYW5kMhwIARIMQ0RNQSBOZXR3b3JrOgoIkas-EJOrPjAAWImqIGAC"
+          }
+        ]
+      },
+      {
+        "type": "Colour",
+        "input_type": "color",
+        "options": [
+          {
+            "text": "Silver",
+            "shoprs": "CAEYASoVaXBob25lIDE3IHN3aXR6ZXJsYW5kMhYIARIGU2lsdmVyOgoIhbBREJWwUTAAWImqIGAC",
+            "serpapi_link": "https://serpapi.com/search.json?device=desktop&engine=google_shopping&gl=ch&google_domain=google.com&hl=en&q=silver+iphone+17+switzerland&shoprs=CAEYASoVaXBob25lIDE3IHN3aXR6ZXJsYW5kMhYIARIGU2lsdmVyOgoIhbBREJWwUTAAWImqIGAC"
+          },
+          {
+            "text": "Black",
+            "shoprs": "CAEYASoVaXBob25lIDE3IHN3aXR6ZXJsYW5kMhUIARIFQmxhY2s6CgiFsFEQh7BRMABYiaogYAI",
+            "serpapi_link": "https://serpapi.com/search.json?device=desktop&engine=google_shopping&gl=ch&google_domain=google.com&hl=en&q=black+iphone+17+switzerland&shoprs=CAEYASoVaXBob25lIDE3IHN3aXR6ZXJsYW5kMhUIARIFQmxhY2s6CgiFsFEQh7BRMABYiaogYAI"
+          }
+        ]
+      },
+      {
+        "type": "Security Features",
+        "input_type": "checkbox",
+        "options": [
+          {
+            "text": "Facial Recognition",
+            "shoprs": "CAEYASoVaXBob25lIDE3IHN3aXR6ZXJsYW5kMiIIARISRmFjaWFsIFJlY29nbml0aW9uOgoIuP1pELn9aTAAWImqIGAC",
+            "serpapi_link": "https://serpapi.com/search.json?device=desktop&engine=google_shopping&gl=ch&google_domain=google.com&hl=en&q=facial+recognition+iphone+17+switzerland&shoprs=CAEYASoVaXBob25lIDE3IHN3aXR6ZXJsYW5kMiIIARISRmFjaWFsIFJlY29nbml0aW9uOgoIuP1pELn9aTAAWImqIGAC"
+          },
+          {
+            "text": "Fingerprint Scanner",
+            "shoprs": "CAEYASoVaXBob25lIDE3IHN3aXR6ZXJsYW5kMiMIARITRmluZ2VycHJpbnQgU2Nhbm5lcjoKCLj9aRC7_WkwAFiJqiBgAg",
+            "serpapi_link": "https://serpapi.com/search.json?device=desktop&engine=google_shopping&gl=ch&google_domain=google.com&hl=en&q=fingerprint+scanner+iphone+17+switzerland&shoprs=CAEYASoVaXBob25lIDE3IHN3aXR6ZXJsYW5kMiMIARITRmluZ2VycHJpbnQgU2Nhbm5lcjoKCLj9aRC7_WkwAFiJqiBgAg"
+          }
+        ]
+      },
+      {
+        "type": "Lens Quality",
+        "input_type": "checkbox",
+        "options": [
+          {
+            "text": "Triple Lens",
+            "shoprs": "CAEYASoVaXBob25lIDE3IHN3aXR6ZXJsYW5kMh0IARILVHJpcGxlIExlbnM6DAjqruoBEOyu6gEwAFiJqiBgAg",
+            "serpapi_link": "https://serpapi.com/search.json?device=desktop&engine=google_shopping&gl=ch&google_domain=google.com&hl=en&q=triple+lens+iphone+17+switzerland&shoprs=CAEYASoVaXBob25lIDE3IHN3aXR6ZXJsYW5kMh0IARILVHJpcGxlIExlbnM6DAjqruoBEOyu6gEwAFiJqiBgAg"
+          },
+          {
+            "text": "Dual Lens",
+            "shoprs": "CAEYASoVaXBob25lIDE3IHN3aXR6ZXJsYW5kMhsIARIJRHVhbCBMZW5zOgwI6q7qARDrruoBMABYiaogYAI",
+            "serpapi_link": "https://serpapi.com/search.json?device=desktop&engine=google_shopping&gl=ch&google_domain=google.com&hl=en&q=dual+lens+iphone+17+switzerland&shoprs=CAEYASoVaXBob25lIDE3IHN3aXR6ZXJsYW5kMhsIARIJRHVhbCBMZW5zOgwI6q7qARDrruoBMABYiaogYAI"
+          }
+        ]
+      },
+      {
+        "type": "Lens Type",
+        "input_type": "checkbox",
+        "options": [
+          {
+            "text": "Ultra Wide Angle",
+            "shoprs": "CAEYASoVaXBob25lIDE3IHN3aXR6ZXJsYW5kMiIIARIQVWx0cmEgV2lkZSBBbmdsZToMCJ7XsAIQoNewAjAAWImqIGAC",
+            "serpapi_link": "https://serpapi.com/search.json?device=desktop&engine=google_shopping&gl=ch&google_domain=google.com&hl=en&q=ultra+wide+angle+iphone+17+switzerland&shoprs=CAEYASoVaXBob25lIDE3IHN3aXR6ZXJsYW5kMiIIARIQVWx0cmEgV2lkZSBBbmdsZToMCJ7XsAIQoNewAjAAWImqIGAC"
+          },
+          {
+            "text": "Telephoto",
+            "shoprs": "CAEYASoVaXBob25lIDE3IHN3aXR6ZXJsYW5kMhsIARIJVGVsZXBob3RvOgwIntewAhCi17ACMABYiaogYAI",
+            "serpapi_link": "https://serpapi.com/search.json?device=desktop&engine=google_shopping&gl=ch&google_domain=google.com&hl=en&q=telephoto+iphone+17+switzerland&shoprs=CAEYASoVaXBob25lIDE3IHN3aXR6ZXJsYW5kMhsIARIJVGVsZXBob3RvOgwIntewAhCi17ACMABYiaogYAI"
+          }
+        ]
+      },
+      {
+        "type": "Stores",
+        "input_type": "link",
+        "options": [
+          {
+            "text": "MediaMarkt Schweiz",
+            "shoprs": "CAEYAioVaXBob25lIDE3IHN3aXR6ZXJsYW5kMhYIAhISTWVkaWFNYXJrdCBTY2h3ZWl6WImqIGAC",
+            "serpapi_link": "https://serpapi.com/search.json?device=desktop&engine=google_shopping&gl=ch&google_domain=google.com&hl=en&q=mediamarkt+schweiz+iphone+17+switzerland&shoprs=CAEYAioVaXBob25lIDE3IHN3aXR6ZXJsYW5kMhYIAhISTWVkaWFNYXJrdCBTY2h3ZWl6WImqIGAC"
+          },
+          {
+            "text": "LDLC Suisse",
+            "shoprs": "CAEYAioVaXBob25lIDE3IHN3aXR6ZXJsYW5kMg8IAhILTERMQyBTdWlzc2VYiaogYAI",
+            "serpapi_link": "https://serpapi.com/search.json?device=desktop&engine=google_shopping&gl=ch&google_domain=google.com&hl=en&q=ldlc+suisse+iphone+17+switzerland&shoprs=CAEYAioVaXBob25lIDE3IHN3aXR6ZXJsYW5kMg8IAhILTERMQyBTdWlzc2VYiaogYAI"
+          },
+          {
+            "text": "MediaMarkt Suisse",
+            "shoprs": "CAEYAioVaXBob25lIDE3IHN3aXR6ZXJsYW5kMhUIAhIRTWVkaWFNYXJrdCBTdWlzc2VYiaogYAI",
+            "serpapi_link": "https://serpapi.com/search.json?device=desktop&engine=google_shopping&gl=ch&google_domain=google.com&hl=en&q=mediamarkt+suisse+iphone+17+switzerland&shoprs=CAEYAioVaXBob25lIDE3IHN3aXR6ZXJsYW5kMhUIAhIRTWVkaWFNYXJrdCBTdWlzc2VYiaogYAI"
+          },
+          {
+            "text": "PhoneLook.ch",
+            "shoprs": "CAEYAioVaXBob25lIDE3IHN3aXR6ZXJsYW5kMhAIAhIMUGhvbmVMb29rLmNoWImqIGAC",
+            "serpapi_link": "https://serpapi.com/search.json?device=desktop&engine=google_shopping&gl=ch&google_domain=google.com&hl=en&q=phonelook.ch+iphone+17+switzerland&shoprs=CAEYAioVaXBob25lIDE3IHN3aXR6ZXJsYW5kMhAIAhIMUGhvbmVMb29rLmNoWImqIGAC"
+          }
+        ]
+      },
+      {
+        "type": "Carousel Filters",
+        "options": [
+          {
+            "text": "New",
+            "shoprs": "CAEYCioVaXBob25lIDE3IHN3aXR6ZXJsYW5kMgcIChIDTmV3WImqIGAB",
+            "serpapi_link": "https://serpapi.com/search.json?device=desktop&engine=google_shopping&gl=ch&google_domain=google.com&hl=en&q=new+iphone+17%0A+++switzerland&shoprs=CAEYCioVaXBob25lIDE3IHN3aXR6ZXJsYW5kMgcIChIDTmV3WImqIGAB",
+            "input_type": "link_with_icon"
+          },
+          {
+            "text": "Used",
+            "shoprs": "CAEYCioVaXBob25lIDE3IHN3aXR6ZXJsYW5kMggIChIEVXNlZFiJqiBgAQ",
+            "serpapi_link": "https://serpapi.com/search.json?device=desktop&engine=google_shopping&gl=ch&google_domain=google.com&hl=en&q=used+iphone+17%0A+++switzerland&shoprs=CAEYCioVaXBob25lIDE3IHN3aXR6ZXJsYW5kMggIChIEVXNlZFiJqiBgAQ",
+            "input_type": "link_with_icon"
+          },
+          {
+            "text": "Under CHF 1'000",
+            "shoprs": "CAESDRILEQAAAABlzc1BGAEYBSoVaXBob25lIDE3IHN3aXR6ZXJsYW5kMikIBRIQVW5kZXIgQ0hGwqAxJzAwMBgCIg0SCxEAAAAAZc3NQRgBKgIYAViJqiBgAQ",
+            "serpapi_link": "https://serpapi.com/search.json?device=desktop&engine=google_shopping&gl=ch&google_domain=google.com&hl=en&q=iphone+17%0A+++switzerland+under+CHF%C2%A01%27000&shoprs=CAESDRILEQAAAABlzc1BGAEYBSoVaXBob25lIDE3IHN3aXR6ZXJsYW5kMikIBRIQVW5kZXIgQ0hGwqAxJzAwMBgCIg0SCxEAAAAAZc3NQRgBKgIYAViJqiBgAQ",
+            "input_type": "price_range"
+          },
+          {
+            "text": "Nearby",
+            "shoprs": "CAEYAyoVaXBob25lIDE3IHN3aXR6ZXJsYW5kMgwIAxIGTmVhcmJ5GAJYiaogYAE",
+            "serpapi_link": "https://serpapi.com/search.json?device=desktop&engine=google_shopping&gl=ch&google_domain=google.com&hl=en&q=iphone+17%0A+++switzerland+nearby&shoprs=CAEYAyoVaXBob25lIDE3IHN3aXR6ZXJsYW5kMgwIAxIGTmVhcmJ5GAJYiaogYAE",
+            "input_type": "link_with_icon"
+          },
+          {
+            "text": "MediaMarkt Schweiz",
+            "shoprs": "CAEYAioVaXBob25lIDE3IHN3aXR6ZXJsYW5kMhYIAhISTWVkaWFNYXJrdCBTY2h3ZWl6WImqIGAB",
+            "serpapi_link": "https://serpapi.com/search.json?device=desktop&engine=google_shopping&gl=ch&google_domain=google.com&hl=en&q=mediamarkt+schweiz+iphone+17+switzerland&shoprs=CAEYAioVaXBob25lIDE3IHN3aXR6ZXJsYW5kMhYIAhISTWVkaWFNYXJrdCBTY2h3ZWl6WImqIGAB",
+            "input_type": "link"
+          },
+          {
+            "text": "LDLC Suisse",
+            "shoprs": "CAEYAioVaXBob25lIDE3IHN3aXR6ZXJsYW5kMg8IAhILTERMQyBTdWlzc2VYiaogYAE",
+            "serpapi_link": "https://serpapi.com/search.json?device=desktop&engine=google_shopping&gl=ch&google_domain=google.com&hl=en&q=ldlc+suisse+iphone+17+switzerland&shoprs=CAEYAioVaXBob25lIDE3IHN3aXR6ZXJsYW5kMg8IAhILTERMQyBTdWlzc2VYiaogYAE",
+            "input_type": "link"
+          },
+          {
+            "text": "MediaMarkt Suisse",
+            "shoprs": "CAEYAioVaXBob25lIDE3IHN3aXR6ZXJsYW5kMhUIAhIRTWVkaWFNYXJrdCBTdWlzc2VYiaogYAE",
+            "serpapi_link": "https://serpapi.com/search.json?device=desktop&engine=google_shopping&gl=ch&google_domain=google.com&hl=en&q=mediamarkt+suisse+iphone+17+switzerland&shoprs=CAEYAioVaXBob25lIDE3IHN3aXR6ZXJsYW5kMhUIAhIRTWVkaWFNYXJrdCBTdWlzc2VYiaogYAE",
+            "input_type": "link"
+          },
+          {
+            "text": "PhoneLook.ch",
+            "shoprs": "CAEYAioVaXBob25lIDE3IHN3aXR6ZXJsYW5kMhAIAhIMUGhvbmVMb29rLmNoWImqIGAB",
+            "serpapi_link": "https://serpapi.com/search.json?device=desktop&engine=google_shopping&gl=ch&google_domain=google.com&hl=en&q=phonelook.ch+iphone+17+switzerland&shoprs=CAEYAioVaXBob25lIDE3IHN3aXR6ZXJsYW5kMhAIAhIMUGhvbmVMb29rLmNoWImqIGAB",
+            "input_type": "link"
+          }
+        ]
+      }
+    ],
+    "serpapi_pagination": {
+      "next": "https://serpapi.com/search.json?device=desktop&engine=google_shopping&gl=ch&google_domain=google.com&hl=en&q=iphone+17%0A+++switzerland&start=10"
+    }
+  }
+}

@@ -1,0 +1,484 @@
+{
+  "meta": {
+    "timestamp": 1770505633.3076632,
+    "provider": null,
+    "cache_hit": false
+  },
+  "request": {
+    "engine": "duckduckgo",
+    "mode": "text",
+    "query": "iphone 17 kaufen schweiz",
+    "country_code": "ch",
+    "language": "de",
+    "n": 10
+  },
+  "normalized_hits": [
+    {
+      "title": "iPhone 17 kaufen - Apple (CH)",
+      "url": "https://www.apple.com/ch-de/shop/buy-iphone/iphone-17",
+      "source": null,
+      "thumbnail": "https://external-content.duckduckgo.com/ip3/www.apple.com.ico",
+      "price_text": null,
+      "price_value": null,
+      "rating": null,
+      "reviews": null,
+      "delivery_text": null,
+      "delivery_days": 2,
+      "in_stock": null
+    },
+    {
+      "title": "APPLE iPhone 17 ab CHF 759.00 bei Toppreise.ch",
+      "url": "https://www.toppreise.ch/produktserie/iPhone_17-pc-s88074",
+      "source": null,
+      "thumbnail": "https://external-content.duckduckgo.com/ip3/www.toppreise.ch.ico",
+      "price_text": null,
+      "price_value": null,
+      "rating": null,
+      "reviews": null,
+      "delivery_text": null,
+      "delivery_days": 7,
+      "in_stock": null
+    },
+    {
+      "title": "Apple iPhone 17 kaufen | MediaMarkt",
+      "url": "https://www.mediamarkt.ch/de/category/iphone-17-202509092020.html",
+      "source": null,
+      "thumbnail": "https://external-content.duckduckgo.com/ip3/www.mediamarkt.ch.ico",
+      "price_text": null,
+      "price_value": null,
+      "rating": null,
+      "reviews": null,
+      "delivery_text": null,
+      "delivery_days": 5,
+      "in_stock": null
+    },
+    {
+      "title": "Apple iPhone 17 (256 GB, Sage, 6.30\", Dual SIM, 5G) - Digitec",
+      "url": "https://www.digitec.ch/de/s1/product/apple-iphone-17-256-gb-sage-630-dual-sim-5g-smartphone-61962909",
+      "source": null,
+      "thumbnail": "https://external-content.duckduckgo.com/ip3/www.digitec.ch.ico",
+      "price_text": null,
+      "price_value": null,
+      "rating": null,
+      "reviews": null,
+      "delivery_text": null,
+      "delivery_days": 2,
+      "in_stock": null
+    },
+    {
+      "title": "Apple iPhone 17 5G günstig kaufen + Gratisversand - mobilezone.ch",
+      "url": "https://www.mobilezone.ch/de/mobilgeraete/handys/apple/iphone-17-5g",
+      "source": null,
+      "thumbnail": "https://external-content.duckduckgo.com/ip3/www.mobilezone.ch.ico",
+      "price_text": null,
+      "price_value": null,
+      "rating": null,
+      "reviews": null,
+      "delivery_text": null,
+      "delivery_days": 2,
+      "in_stock": null
+    },
+    {
+      "title": "Apple iPhone 17 512GB Smartphone | online kaufen - MANOR",
+      "url": "https://www.manor.ch/de/p/10003833194",
+      "source": null,
+      "thumbnail": "https://external-content.duckduckgo.com/ip3/www.manor.ch.ico",
+      "price_text": null,
+      "price_value": null,
+      "rating": null,
+      "reviews": null,
+      "delivery_text": null,
+      "delivery_days": 3,
+      "in_stock": null
+    },
+    {
+      "title": "APPLE iPhone 17 (256 GB, Schwarz, 6.3\", 48 MP, 5G)",
+      "url": "https://www.interdiscount.ch/de/product/apple-iphone-17-256-gb-schwarz-6-3-48-mp-5g-0014344333",
+      "source": null,
+      "thumbnail": "https://external-content.duckduckgo.com/ip3/www.interdiscount.ch.ico",
+      "price_text": null,
+      "price_value": null,
+      "rating": null,
+      "reviews": null,
+      "delivery_text": null,
+      "delivery_days": 4,
+      "in_stock": null
+    },
+    {
+      "title": "Apple iPhone 17 lavender 256 GB mit Abo - Smartphones",
+      "url": "https://www.swisscom.ch/de/privatkunden/produkte/smartphones/details.html/apple-iphone-17-11072824",
+      "source": null,
+      "thumbnail": "https://external-content.duckduckgo.com/ip3/www.swisscom.ch.ico",
+      "price_text": null,
+      "price_value": null,
+      "rating": null,
+      "reviews": null,
+      "delivery_text": null,
+      "delivery_days": 4,
+      "in_stock": null
+    },
+    {
+      "title": "Apple iPhone 17 kaufen | Fust",
+      "url": "https://www.fust.ch/handy-pc-tablet/smartphone-handy/apple-iphone/apple-iphone-17/c/f_iphone_17",
+      "source": null,
+      "thumbnail": "https://external-content.duckduckgo.com/ip3/www.fust.ch.ico",
+      "price_text": null,
+      "price_value": null,
+      "rating": null,
+      "reviews": null,
+      "delivery_text": null,
+      "delivery_days": 5,
+      "in_stock": null
+    },
+    {
+      "title": "Apple iPhone 17 Pro kaufen | MediaMarkt",
+      "url": "https://www.mediamarkt.de/de/brand/apple/iphone/iphone-17-pro",
+      "source": null,
+      "thumbnail": "https://external-content.duckduckgo.com/ip3/www.mediamarkt.de.ico",
+      "price_text": null,
+      "price_value": null,
+      "rating": null,
+      "reviews": null,
+      "delivery_text": null,
+      "delivery_days": 3,
+      "in_stock": null
+    }
+  ],
+  "raw": {
+    "search_metadata": {
+      "id": "6987c59f827031cabe7e802a",
+      "status": "Success",
+      "json_endpoint": "https://serpapi.com/searches/qdTFBA7_o_HzB67NvDFmXQ/6987c59f827031cabe7e802a.json",
+      "created_at": "2026-02-07 23:07:11 UTC",
+      "processed_at": "2026-02-07 23:07:11 UTC",
+      "duckduckgo_url": "https://duckduckgo.com/?q=iphone+17+kaufen+schweiz&kl=ch-de",
+      "raw_html_file": "https://serpapi.com/searches/qdTFBA7_o_HzB67NvDFmXQ/6987c59f827031cabe7e802a.html",
+      "prettify_html_file": "https://serpapi.com/searches/qdTFBA7_o_HzB67NvDFmXQ/6987c59f827031cabe7e802a.prettify",
+      "total_time_taken": 1.83
+    },
+    "search_parameters": {
+      "engine": "duckduckgo",
+      "q": "iphone 17 kaufen schweiz",
+      "kl": "ch-de"
+    },
+    "search_information": {
+      "organic_results_state": "Results for exact spelling"
+    },
+    "ads": [
+      {
+        "position": 1,
+        "title": "Apple iPhone 17 | IPhone 17 | T-Mobile® Official Site",
+        "link": "https://duckduckgo.com/y.js?ad_domain=t%2Dmobile.com&ad_provider=bingv7aa&ad_type=txad&click_metadata=kk1Xns6J6lp0hRQ_NNG9Gv3vUaLjAopR7YHq63yVvScB%2D6rU_Oe27CwdMI2NFn4RW4owHCaMOauDSxF6SPvo0jtDGPi%2D3LvVlcPbxB%2DIvPkYq9Af6CM0tTJDvpWINWJZFEkpvc_JL6lruzoLtzFE1g.b__oNM35gJM%2Dq79RXIwQOg&eddgt=VR3n7hlvRjkOBaOG_C89zA%3D%3D&rut=ae008d74b290b03786275f9202bb0bda4fb7246c9f03b13791d646d7e0d60060&u3=https%3A%2F%2Fwww.bing.com%2Faclick%3Fld%3De8FJ4BMF0nLXT6iIWNrtd4zjVUCUzLIWHkxZk8yjdNS8CWWzZ17ztn8uyKxpCtig1Zx79LLGM4aJt1gOtCtteiPAAJNQZXnEWF7U5M_eqH6WJqF_4Gg_LUeM0SrXjgFFALJH4lRgxFiOa3P1dTlUUkPicmT93LihhcyCecgwCDXz3sH8Y0OiTh9JXSPVmYFBzq5yimEaEIsNP1nC67OomZp_Hk8Uc%26u%3DaHR0cHMlM2ElMmYlMmZhZC5kb3VibGVjbGljay5uZXQlMmZzZWFyY2hhZHMlMmZsaW5rJTJmY2xpY2slM2ZsaWQlM2Q1ODcwMDAwODc1Mjg1OTEyMiUyNmRzX2FfY2lkJTNkNjY2NjYyMzA3JTI2ZHNfYV9jYWlkJTNkMjE2MjM4OTg3MDklMjYlMjZkc19lX2FkaWQlM2Q3ODgyMTQ1NzIzMzA3NyUyNmRzX2VfdGFyZ2V0X2lkJTNka3dkLTIzMzA2MjEwNTQxNzEzODglM2Fsb2MtMTkwJTI2JTI2ZHNfZV9uZXR3b3JrJTNkbyUyNmRzX3VybF92JTNkMiUyNmRzX2Rlc3RfdXJsJTNkaHR0cHMlM2ElMmYlMmZ3d3cudC1tb2JpbGUuY29tJTJmY2VsbC1waG9uZSUyZmFwcGxlLWlwaG9uZS0xNyUzZmNtcGlkJTNkTUdQT19QTV9QXzI2UFBJMTc0MjUlZTIlODAlOGJfX18lMjZnY2xpZCUzZDBiZGE4NjY0MWFmOTFhNjY4MTcyZWZlM2RmNTkxODhkJTI2Z2Nsc3JjJTNkM3AuZHMlMjYlMjZtc2Nsa2lkJTNkMGJkYTg2NjQxYWY5MWE2NjgxNzJlZmUzZGY1OTE4OGQ%26rlid%3D0bda86641af91a668172efe3df59188d&vqd=4-296696022388770440340169988691103681938&iurl=%7B1%7DIG%3D5F1A473CEC554B0AA757772BFDF0B38C%26CID%3D2DDFD478C57E6D5C3049C281C4F56CEF%26ID%3DDevEx%2C5054.1",
+        "source": "t-mobile.com",
+        "snippet": "Switch to T-Mobile® & get onto America's Largest 5G Network. See why it's better over here. Get latest iPhone 17 deal at T-Mobile®. For new and existing customers. Limited time offer",
+        "sitelinks": [
+          {
+            "title": "Get Deals When You Switch",
+            "link": "https://duckduckgo.com/y.js?ad_domain=t%2Dmobile.com&ad_provider=bingv7aa&ad_type=txad&click_metadata=jjecm9XaNyshQRa4TFjDrC8CurlYHk8Q5W7ApxOF_QzrT0oq2_tV3Z4YcEoVi6KoC8zgbmkx3Trh5Ujgop7ixKZRM5F_dJFyqxlxr89ugSUjUaqYMMQCputbHYYgj2yz54cby5MTxKXTYo1VVUCcEw.%2DbNJ1lTIZzeJDapEoq5%2DSg&eddgt=VR3n7hlvRjkOBaOG_C89zA%3D%3D&rut=eb2f942f00281eb9eab0f120927f49d53456ee32e35fbfec4e43d37b2b8cd65b&u3=https%3A%2F%2Fwww.bing.com%2Faclick%3Fld%3De8zV6kQXmet%2DWmt66VCT181zVUCUzuGo47mw3IJvi6ullVqemY2TP8DiC9m12ib28PFFUyhWX4vTN%2DgxsnLryPyIGHsnXaKZEaX6TCOKbLs9NCOIA0B832oVkZdEz7VqCthlqfNtWOQdVnulPWOkrNSBfdAfcVU2gSSOjqCFiC38Qd_1qZOikAX5wFFrt__rCDu49AohGFAIzZGvkNaAFOQVyJEdY%26u%3DaHR0cHMlM2ElMmYlMmZhZC5kb3VibGVjbGljay5uZXQlMmZzZWFyY2hhZHMlMmZsaW5rJTJmY2xpY2slM2ZsaWQlM2Q1ODcwMDAwODc1Mjg1OTEyMiUyNmRzX2FfY2lkJTNkNjY2NjYyMzA3JTI2ZHNfYV9jYWlkJTNkMjE2MjM4OTg3MDklMjZkc194X2FkeGlkJTNkODM3MDAwMjY0Mzc3NzA1NDUlMjZkc194X2FkeHR5cGUlM2QxJTI2ZHNfYV9jaWQlM2Q2NjY2NjIzMDclMjZkc19hX2V4dGlkJTNkMjYyNTk5MTUxODExJTI2ZHNfZV9hZGlkJTNkNzg4MjE0NTcyMzMwNzclMjZkc19lX3RhcmdldF9pZCUzZGt3ZC0yMzMwNjIxMDU0MTcxMzg4JTNhbG9jLTE5MCUyNiUyNmRzX2VfbmV0d29yayUzZG8lMjZkc191cmxfdiUzZDIlMjZkc19kZXN0X3VybCUzZGh0dHBzJTNhJTJmJTJmd3d3LnQtbW9iaWxlLmNvbSUyZm9mZmVycyUzZmNtcGlkJTNkTUdQT19QTV9QX0VWR1JOUFNUUERfXyUyNmdjbGlkJTNkMDA2ZTY3MzIzNmMzMTdmYWIzYjQwZWI1ZjM2MzEyMDIlMjZnY2xzcmMlM2QzcC5kcyUyNiUyNm1zY2xraWQlM2QwMDZlNjczMjM2YzMxN2ZhYjNiNDBlYjVmMzYzMTIwMg%26rlid%3D006e673236c317fab3b40eb5f3631202&vqd=4-145596722932911538087374271751350920319&iurl=%7B1%7DIG%3D5F1A473CEC554B0AA757772BFDF0B38C%26CID%3D2DDFD478C57E6D5C3049C281C4F56CEF%26ID%3DDevEx%2C5059.1",
+            "snippet": "Shop our best deals on phones, plans and more. Switch today."
+          },
+          {
+            "title": "See Our Amazing Benefits",
+            "link": "https://duckduckgo.com/y.js?ad_domain=t%2Dmobile.com&ad_provider=bingv7aa&ad_type=txad&click_metadata=wK4mu1afoEcwnvhzlbafoqfczlhmJP7tRosa6N2lEA0SCG8J%2Dzw63ZFzZzp9WgGAjjEZK57%2DSxwA9jfze4w0qArpxZi4HAxfiRQd0erbddn8iEgGSuZ4cCZl%2DOQVyhbXlibc3vMauIl6j5CUdK0V4w.qsedZd771hgZv1NYjcDL9g&eddgt=VR3n7hlvRjkOBaOG_C89zA%3D%3D&rut=611213f5718d733563cb9465b19a59253d0568eb055ba5aba57c8083f2905a3c&u3=https%3A%2F%2Fwww.bing.com%2Faclick%3Fld%3De86c8XuL9CSr0zV5FJYscHfDVUCUxaj_y%2Dxs396u4gFijRYLWdpx0ldSbK0XUoZmn_raRf0LFtGkbvtASyVHd4F_cpCjrC0pg6v16eLonhqMmtw3wIHpquQyRsggA_HNjsL_VSgxyJVLW58Jn3%2DPWh_3_6EdgS11CDvFLGxjKVkyGv5CBYz3cDNtorb33hdsUwxolC3Q3Xgh0WAtjahqmmtcB0TX0%26u%3DaHR0cHMlM2ElMmYlMmZhZC5kb3VibGVjbGljay5uZXQlMmZzZWFyY2hhZHMlMmZsaW5rJTJmY2xpY2slM2ZsaWQlM2Q1ODcwMDAwODc1Mjg1OTEyMiUyNmRzX2FfY2lkJTNkNjY2NjYyMzA3JTI2ZHNfYV9jYWlkJTNkMjE2MjM4OTg3MDklMjZkc194X2FkeGlkJTNkODM3MDAwMjY0Mzc3NzA1NDglMjZkc194X2FkeHR5cGUlM2QxJTI2ZHNfYV9jaWQlM2Q2NjY2NjIzMDclMjZkc19hX2V4dGlkJTNkMjYyNTk5MTUxODE0JTI2ZHNfZV9hZGlkJTNkNzg4MjE0NTcyMzMwNzclMjZkc19lX3RhcmdldF9pZCUzZGt3ZC0yMzMwNjIxMDU0MTcxMzg4JTNhbG9jLTE5MCUyNiUyNmRzX2VfbmV0d29yayUzZG8lMjZkc191cmxfdiUzZDIlMjZkc19kZXN0X3VybCUzZGh0dHBzJTNhJTJmJTJmd3d3LnQtbW9iaWxlLmNvbSUyZmJlbmVmaXRzJTNmY21waWQlM2RNR1BPX1BNX1BfRVZHUk5QU1RQRF9fJTI2Z2NsaWQlM2RmM2Y5MDUyMjk4MjAxYmExN2E1MDZjYTU1ZDgwMjNlNyUyNmdjbHNyYyUzZDNwLmRzJTI2JTI2bXNjbGtpZCUzZGYzZjkwNTIyOTgyMDFiYTE3YTUwNmNhNTVkODAyM2U3%26rlid%3Df3f9052298201ba17a506ca55d8023e7&vqd=4-248201939033030235549870491368937542524&iurl=%7B1%7DIG%3D5F1A473CEC554B0AA757772BFDF0B38C%26CID%3D2DDFD478C57E6D5C3049C281C4F56CEF%26ID%3DDevEx%2C5061.1",
+            "snippet": "Experience benefits in streaming, travel, entertainment, and more."
+          }
+        ]
+      },
+      {
+        "position": 2,
+        "title": "Interdiscount Online-Shop | Nr. 1 für Heimelektronik",
+        "link": "https://duckduckgo.com/y.js?ad_domain=interdiscount.ch&ad_provider=bingv7aa&ad_type=txad&click_metadata=AuSPDy2nAn8lwQeoN4nXSNE7RQis7MFe0OXRHgZLeyBRR89tzYbypenvLzF8BAQjEu1gLi3MtdQr0oa1ubhfynOcxh%2D7zeq3mryhRms6RB6Wv2jRrzHM0kzJlKbLgdXplGDqA3CoqCmF1kmMCBJLBg.mS1GAlwZIgxmJCdG8FRxqg&eddgt=VR3n7hlvRjkOBaOG_C89zA%3D%3D&rut=5eada050caa60f70c7dccd8839c3001f8b1b848b8850004bcdb42cea2f0b0647&u3=https%3A%2F%2Fwww.bing.com%2Faclick%3Fld%3De8DRyCs2QOeDqmkqih6WkizjVUCUxHf72i6uUwEUrPwk8EF_FBBRp4ZrSpOPE6EaR9gYYKBB1HpQ1RFGwiz2li15oI8j44N5jOJ1gTm1hjNoHsogbL3SRHOqrXaoLS6En3YbbcNOQEuu2vjS6dvjbKmw9y2deGIFAFkx04EHXmd7RRQqDuA1s222WFZ2zjB8txz9AAT0XcstCIuhPFqmSyn0F1S08%26u%3DaHR0cHMlM2ElMmYlMmZhZC5kb3VibGVjbGljay5uZXQlMmZzZWFyY2hhZHMlMmZsaW5rJTJmY2xpY2slM2ZsaWQlM2Q0MzcwMDA2NzI1MzM3MTMyMSUyNmRzX3Nfa3dnaWQlM2Q1ODcwMDAwNjk0ODQ2NDA3NSUyNmRzX2FfY2lkJTNkNjY3MzE0NjQyJTI2ZHNfYV9jYWlkJTNkNDE4MjAxNTY5JTI2ZHNfYV9hZ2lkJTNkMTMzMzcwODQxNDkxMTM5NSUyNmRzX2FfZmlpZCUzZCUyNmRzX2FfbGlkJTNka3dkLTgzMzU3ODkyNTAzNzI2JTNhbG9jLTE3NSUyNmRzX2FfZXh0aWQlM2QlN2JleHRlbnNpb25pZCU3ZCUyNiUyNmRzX2VfYWRpZCUzZCUyNmRzX2VfbWF0Y2h0eXBlJTNkc2VhcmNoJTI2ZHNfZV9kZXZpY2UlM2RjJTI2ZHNfZV9uZXR3b3JrJTNkbyUyNiUyNmRzX3VybF92JTNkMiUyNmRzX2Rlc3RfdXJsJTNkaHR0cHMlM2ElMmYlMmZ3d3cuaW50ZXJkaXNjb3VudC5jaCUyZmRlJTNmZ2Nsc3JjJTNkM3AuZHMlMjYlMjZtc2Nsa2lkJTNkOWVlZjU5YjJhOTgyMTIwYzM2ZjQzMDM1NmMyMjRhNWQ%26rlid%3D9eef59b2a982120c36f430356c224a5d&vqd=4-261049477280615836868014222469433360418&iurl=%7B1%7DIG%3D5F1A473CEC554B0AA757772BFDF0B38C%26CID%3D2DDFD478C57E6D5C3049C281C4F56CEF%26ID%3DDevEx%2C5063.1",
+        "source": "interdiscount.ch",
+        "snippet": "Top-Service und grosse Auswahl bei Interdiscount - Einkaufen wie es dir gefällt. Jede Woche von neuen Deals profitieren. Versandkostenfrei bei Heimlieferung ab CHF 49.-.",
+        "sitelinks": [
+          {
+            "title": "Aktionen & Angebote",
+            "link": "https://duckduckgo.com/y.js?ad_domain=interdiscount.ch&ad_provider=bingv7aa&ad_type=txad&click_metadata=vKzf7edIh1EWBPOnYUXv2xQexESQ1W4hx_q9IDVKJp4Qmh2ByiYUn0BAjdDVzzHIlxKngbAVwzsVutPvUkyScI4yhsBd_mbOFrGbANKjILjZtB0UBZ1QpORmprCcFCj2C2_hXCVNbEayiwgcVhZKLQ.3oB%2DqpQ6X4IRZWnbIqkJww&eddgt=VR3n7hlvRjkOBaOG_C89zA%3D%3D&rut=19850e362de541cc983bf6d2d9f296c6430330588660de1020fc218b60178424&u3=https%3A%2F%2Fwww.bing.com%2Faclick%3Fld%3De8F7Pzwj48nGlOfw1tFJHQpjVUCUwtF4rjNJs_X1E6ioztY%2DvInTc4HQVRbPIaPDhqgG3gurym2Ts1IE4_Hpwy_ZP97VpyHWik4q4QQsT9u3UBY1y8Pfs7K_aHr0C3_bsbba11fTV4aS_QyWZc1D7gso1yeHipIKSWNIExL07iM3fe8LLRTvtGttypb6qOkeuLzhoSmVMjASraiUXMV_if4hUtnv0%26u%3DaHR0cHMlM2ElMmYlMmZhZC5kb3VibGVjbGljay5uZXQlMmZzZWFyY2hhZHMlMmZsaW5rJTJmY2xpY2slM2ZsaWQlM2Q0MzcwMDA2NzI1MzM3MTMyMSUyNmRzX3Nfa3dnaWQlM2Q1ODcwMDAwNjk0ODQ2NDA3NSUyNmRzX2FfY2lkJTNkNjY3MzE0NjQyJTI2ZHNfYV9jYWlkJTNkNDE4MjAxNTY5JTI2ZHNfYV9hZ2lkJTNkMTMzMzcwODQxNDkxMTM5NSUyNmRzX2FfZmlpZCUzZCUyNmRzX2FfbGlkJTNka3dkLTgzMzU3ODkyNTAzNzI2JTNhbG9jLTE3NSUyNmRzX2FfZXh0aWQlM2QlN2JleHRlbnNpb25pZCU3ZCUyNiUyNmRzX2VfYWRpZCUzZCUyNmRzX2VfbWF0Y2h0eXBlJTNkc2VhcmNoJTI2ZHNfZV9kZXZpY2UlM2RjJTI2ZHNfZV9uZXR3b3JrJTNkbyUyNiUyNmRzX3VybF92JTNkMiUyNmRzX2Rlc3RfdXJsJTNkaHR0cHMlM2ElMmYlMmZ3d3cuaW50ZXJkaXNjb3VudC5jaCUyZmRlJTJmcHJvbW90aW9ucyUzZm1zY2xraWQlM2RlMGE5NzZhZjYyOTMxM2I5NGQ5NzFmMjhhNzMzZjMzNg%26rlid%3De0a976af629313b94d971f28a733f336&vqd=4-217519273153939406099838955778278523754&iurl=%7B1%7DIG%3D5F1A473CEC554B0AA757772BFDF0B38C%26CID%3D2DDFD478C57E6D5C3049C281C4F56CEF%26ID%3DDevEx%2C5068.1"
+          },
+          {
+            "title": "Standorte &...",
+            "link": "https://duckduckgo.com/y.js?ad_domain=interdiscount.ch&ad_provider=bingv7aa&ad_type=txad&click_metadata=WvA5TAOe9_XEPHojVoI7dUWPc_4wOyodcDd0pT3wA0zPdQCx7XAECFGajLcPE88pouWXDImaJ8uBaKqDKxZohqKuJ2Ucj2bDxGHxrMMM0TbYwHC6987TTvrRCv4hRVF7iGcdkLKM0hOtrKCGIjDEFA.MZ_mVbMxUQt4kZLueam6Yg&eddgt=VR3n7hlvRjkOBaOG_C89zA%3D%3D&rut=26462c41e22d176aa663b7c4fe6df1319c41a0cb95e5302b0aab159084932bdf&u3=https%3A%2F%2Fwww.bing.com%2Faclick%3Fld%3De85K_4oo1JRY2vP%2DS8Wn0trDVUCUxXQ1TuMtojGPGikKt9Ciu4NuEt0dIHvhO7frW3nxxnlG1MfweTbhgtPPDukxkWQCqNJ1wqlXG5x1piyYC_XueRjurhzhRNnNk1fdMcuOoXLrYWL%2DnvwZtgNi1cpUaDRpcChtLdfWXoPRRRu5%2DUw7q4TD8ieVaqzDEIhx3t7CswBIpSXck0yFWWdvaKbRPM9MU%26u%3DaHR0cHMlM2ElMmYlMmZhZC5kb3VibGVjbGljay5uZXQlMmZzZWFyY2hhZHMlMmZsaW5rJTJmY2xpY2slM2ZsaWQlM2Q0MzcwMDA2NzI1MzM3MTMyMSUyNmRzX3Nfa3dnaWQlM2Q1ODcwMDAwNjk0ODQ2NDA3NSUyNmRzX2FfY2lkJTNkNjY3MzE0NjQyJTI2ZHNfYV9jYWlkJTNkNDE4MjAxNTY5JTI2ZHNfYV9hZ2lkJTNkMTMzMzcwODQxNDkxMTM5NSUyNmRzX2FfZmlpZCUzZCUyNmRzX2FfbGlkJTNka3dkLTgzMzU3ODkyNTAzNzI2JTNhbG9jLTE3NSUyNmRzX2FfZXh0aWQlM2QlN2JleHRlbnNpb25pZCU3ZCUyNiUyNmRzX2VfYWRpZCUzZCUyNmRzX2VfbWF0Y2h0eXBlJTNkc2VhcmNoJTI2ZHNfZV9kZXZpY2UlM2RjJTI2ZHNfZV9uZXR3b3JrJTNkbyUyNiUyNmRzX3VybF92JTNkMiUyNmRzX2Rlc3RfdXJsJTNkaHR0cHMlM2ElMmYlMmZ3d3cuaW50ZXJkaXNjb3VudC5jaCUyZmRlJTJmc3RvcmVmaW5kZXIlM2Ztc2Nsa2lkJTNkZjA0OTgxODU3NWJhMWI1ZTQxNWFlODAyYjAxYTgzYzY%26rlid%3Df049818575ba1b5e415ae802b01a83c6&vqd=4-224632653762057479045265197094346242070&iurl=%7B1%7DIG%3D5F1A473CEC554B0AA757772BFDF0B38C%26CID%3D2DDFD478C57E6D5C3049C281C4F56CEF%26ID%3DDevEx%2C5070.1"
+          },
+          {
+            "title": "TV & Audio",
+            "link": "https://duckduckgo.com/y.js?ad_domain=interdiscount.ch&ad_provider=bingv7aa&ad_type=txad&click_metadata=wlcFHBW86QpauVUGxH7Y%2D9t71lOeIaGOmobislluCNejCZUic_m2D3jxQzUW6%2DI7A4RJ4GHR7ZUbV2VlzHjhAEvTFimFyl9YLHuJkrNHuO9dwDmpyWl2oOc%2DzWiBAUngBfRjN70XGP%2DvwiFevmQQkQ.mrO6cSrPe9zfGlgmVjpYqw&eddgt=VR3n7hlvRjkOBaOG_C89zA%3D%3D&rut=dd6f5a2671b07b85e4c6df9c3ecfbc3ca063dba89fbeb903cb52301fb9775e5b&u3=https%3A%2F%2Fwww.bing.com%2Faclick%3Fld%3De8mH5MwwtwRgmM_8OBN%2D97ZDVUCUznWCsoCYRuAHgXxHoT_66DrYNedICBN3M5iEEByZ2wc54MOmWVjldO5OKX7LExZqtbw%2DF5tfEMIEiyRYO0d7ZM4d4vgr4gaCt%2DDIM8JXmHPAOzDKrnMF2GXzvlX0K6A91MuRF4Qsk_VXE0JwjQfx_HE9gEf671GI9n3eUYexWuHW7JIoMAfvpcy59uaBR7_78%26u%3DaHR0cHMlM2ElMmYlMmZhZC5kb3VibGVjbGljay5uZXQlMmZzZWFyY2hhZHMlMmZsaW5rJTJmY2xpY2slM2ZsaWQlM2Q0MzcwMDA2NzI1MzM3MTMyMSUyNmRzX3Nfa3dnaWQlM2Q1ODcwMDAwNjk0ODQ2NDA3NSUyNmRzX2FfY2lkJTNkNjY3MzE0NjQyJTI2ZHNfYV9jYWlkJTNkNDE4MjAxNTY5JTI2ZHNfYV9hZ2lkJTNkMTMzMzcwODQxNDkxMTM5NSUyNmRzX2FfZmlpZCUzZCUyNmRzX2FfbGlkJTNka3dkLTgzMzU3ODkyNTAzNzI2JTNhbG9jLTE3NSUyNmRzX2FfZXh0aWQlM2QlN2JleHRlbnNpb25pZCU3ZCUyNiUyNmRzX2VfYWRpZCUzZCUyNmRzX2VfbWF0Y2h0eXBlJTNkc2VhcmNoJTI2ZHNfZV9kZXZpY2UlM2RjJTI2ZHNfZV9uZXR3b3JrJTNkbyUyNiUyNmRzX3VybF92JTNkMiUyNmRzX2Rlc3RfdXJsJTNkaHR0cHMlM2ElMmYlMmZ3d3cuaW50ZXJkaXNjb3VudC5jaCUyZmRlJTJmdHYtYXVkaW8tLWMxMDAlM2Ztc2Nsa2lkJTNkMzEyOTdjOWU0NWI3MTQzZTgyNmYxNTE5ODAxNzc3NGQ%26rlid%3D31297c9e45b7143e826f15198017774d&vqd=4-277026968161637803970660350857836734192&iurl=%7B1%7DIG%3D5F1A473CEC554B0AA757772BFDF0B38C%26CID%3D2DDFD478C57E6D5C3049C281C4F56CEF%26ID%3DDevEx%2C5072.1"
+          },
+          {
+            "title": "Der Elektronik-Shop",
+            "link": "https://duckduckgo.com/y.js?ad_domain=interdiscount.ch&ad_provider=bingv7aa&ad_type=txad&click_metadata=tEHgSZ4ejm5ruMbB6ZT2hfsP5HADvMCgpKcfpXCXyOguZq_87RxstXaFbIL7RDQ5V9TVqEA%2DGEev_mv_huxwUSt_3HikBYxAY0UZphMVK0z6ucY_T0h_9X%2DBtouHWu96COnShofS5LhWBmcwJfaaaQ.J%2DeqqY4IbweWCpN7SR0oIA&eddgt=VR3n7hlvRjkOBaOG_C89zA%3D%3D&rut=c2219e3c99fcef8f2f1fcea795f959597cfddea21f45541cd83dca2fcedae083&u3=https%3A%2F%2Fwww.bing.com%2Faclick%3Fld%3De8I7iIKR2gH5ZaRi3ld95uSzVUCUxpkI%2D9cZ25nCDfV5B2WWtVgw8IIzmaN8kdmGjDYviaqHNpuWjjQ1z7ex8tODWSlqr61BB59J9vsSY6W0Nodyr9MwF3l33yv94oAbbY_vd2MlRVnuM97vNtF%2DDxjvzw8bpDEsX2qRRxor%2D3%2DoI_8I%2DheexxAeWXm%2DxXJXIF4o7LPqS%2DQiYlVbxkcxNcvSDmHxU%26u%3DaHR0cHMlM2ElMmYlMmZhZC5kb3VibGVjbGljay5uZXQlMmZzZWFyY2hhZHMlMmZsaW5rJTJmY2xpY2slM2ZsaWQlM2Q0MzcwMDA2NzI1MzM3MTMyMSUyNmRzX3Nfa3dnaWQlM2Q1ODcwMDAwNjk0ODQ2NDA3NSUyNmRzX2FfY2lkJTNkNjY3MzE0NjQyJTI2ZHNfYV9jYWlkJTNkNDE4MjAxNTY5JTI2ZHNfYV9hZ2lkJTNkMTMzMzcwODQxNDkxMTM5NSUyNmRzX2FfZmlpZCUzZCUyNmRzX2FfbGlkJTNka3dkLTgzMzU3ODkyNTAzNzI2JTNhbG9jLTE3NSUyNmRzX2FfZXh0aWQlM2QlN2JleHRlbnNpb25pZCU3ZCUyNiUyNmRzX2VfYWRpZCUzZCUyNmRzX2VfbWF0Y2h0eXBlJTNkc2VhcmNoJTI2ZHNfZV9kZXZpY2UlM2RjJTI2ZHNfZV9uZXR3b3JrJTNkbyUyNiUyNmRzX3VybF92JTNkMiUyNmRzX2Rlc3RfdXJsJTNkaHR0cHMlM2ElMmYlMmZ3d3cuaW50ZXJkaXNjb3VudC5jaCUyZmRlJTJmaGF1c2hhbHQtayUyNUMzJTI1QkNjaGUtLWM2MDAlM2Ztc2Nsa2lkJTNkY2FjODgwOGM0YmI5MTdhNjVlMTRlOTBiOGUxOTY1MzA%26rlid%3Dcac8808c4bb917a65e14e90b8e196530&vqd=4-14563339784097597874506115308648928798&iurl=%7B1%7DIG%3D5F1A473CEC554B0AA757772BFDF0B38C%26CID%3D2DDFD478C57E6D5C3049C281C4F56CEF%26ID%3DDevEx%2C5074.1"
+          }
+        ]
+      },
+      {
+        "position": 3,
+        "title": "neueste iphone 17 | Billigster Preis",
+        "link": "https://duckduckgo.com/y.js?ad_domain=konsumentenecho.de&ad_provider=bingv7aa&ad_type=txad&click_metadata=wybrddHelInd292jIHzpfQ2jnBd4MIKiTaOnaXeejwWuVqAnAr3HMjenTlYy6VHOeK5WDEG%2D3jv38_pYHht1UjkYSrhNZS87SAg_7ZTX4clkj39Ci9rhf75h_NABzgpjwFxz6pIu2BPQ7TIu0o9WmA.4BjonmjXA3NKXqE4zdupfg&eddgt=VR3n7hlvRjkOBaOG_C89zA%3D%3D&rut=ec23ff2c105efc91be9556a1b7ba79d822c24e1518a353242097d494a6478eb4&u3=https%3A%2F%2Fwww.bing.com%2Faclick%3Fld%3De8kmsmifzzYr6x3q9UbVEvcjVUCUwpn1_e8%2DYw705B6y7S8UKnHV1sTYwP6Czb2uK7C4aA6IuuIzBIxdRWnnIvQdHbeq_O792HKhqulbUVctaFQzmUUywYtwm5YB_kYm305CNA9cdxYefoETN8773Q45Vij6oVbfbBTBTUYqF5hxnenklYRJbw_ieDXBqJhcGU80wg3gwdbEmVnp3m0b7KKJiVWj4%26u%3DaHR0cHMlM2ElMmYlMmZyZXZpZXdzLmtvbnN1bWVudGVuZWNoby5kZSUyZnByb2R1Y3QlMmZuZXVlc3RlLWlwaG9uZS0xNyUyZiUzZm1zY2xraWQlM2RmNDhkZGM1NTFlYTkxNGQxNzEwZmI1ZDJkYjA5YmRiMiUyNnV0bV9zb3VyY2UlM2RiaW5nJTI2dXRtX21lZGl1bSUzZGNwYyUyNnV0bV9jYW1wYWlnbiUzZEJpbmdfZ2VvJTI1M0FXVyUyNTIwJTI1N0MlMjUyMHNpdGUlMjUzQUNFX1NTUl9UMyUyNTIwJTI1N0MlMjUyMHR5cGUlMjUzQUtXJTI1N0MlMjUyMGNhdGVnb3J5JTI1M0FBTEwlMjZ1dG1fdGVybSUzZG5ldWVzdGUlMjUyMGlwaG9uZSUyNTIwMTclMjZ1dG1fY29udGVudCUzZGFkJTI1MjBncm91cCUyNTIwMTA%26rlid%3Df48ddc551ea914d1710fb5d2db09bdb2&vqd=4-35814514888599835685782627203490757490&iurl=%7B1%7DIG%3D5F1A473CEC554B0AA757772BFDF0B38C%26CID%3D2DDFD478C57E6D5C3049C281C4F56CEF%26ID%3DDevEx%2C5084.1",
+        "source": "konsumentenecho.de",
+        "snippet": "Finden Sie die besten Neueste iphone 17 Angebote: Wir suchen das Web ab. Erhalten Sie die neuesten Neueste iphone 17 und genießen Sie jede Minute!",
+        "sitelinks": [
+          {
+            "title": "Fernseher testsieger 2025",
+            "link": "https://duckduckgo.com/y.js?ad_domain=konsumentenecho.de&ad_provider=bingv7aa&ad_type=txad&click_metadata=onAoyN7Vn8%2D3%2D_yMjEQC5Nqv3Otd6gYmL3iWaX7%2DxP4yU5lQu9YNBHppUMF86ULcOf5FYR%2DLo%2DPERMAOlOA%2D2Aa7pUBdoECpH7sZvhYy50S%2DNpGcwewVqc7yDwh2NUnoiIjwvv2QSl2t9WguGn8%2D8A.4FtFBt3JhdmqF6rdaMvNlA&eddgt=VR3n7hlvRjkOBaOG_C89zA%3D%3D&rut=6aa23c181e75427958c57a527f601cd98e791290b1ec86cee83adcedbe2fe415&u3=https%3A%2F%2Fwww.bing.com%2Faclick%3Fld%3De8pScjTleEz%2Dneqh0vCVrhJzVUCUzhgE%2DDr6gBrLBOUqobDEwrqYdl5gcTD5MO0qVJgCwuyz9M5Ej3w4CiuNWZk%2DABm6fQRzT0CYbCRyYjjujAu6jpk3d5eh0ZA8dfWddYHJ4ayO7ajpNSnXulNPRXoyD5W%2DiUIeQLagaqLqSYNUwDnS853U2hLfhWx_I7qucZPMTLq7Ib9uic7FkXQr0H00E1J2o%26u%3DaHR0cHMlM2ElMmYlMmZyZXZpZXdzLmtvbnN1bWVudGVuZWNoby5kZSUyZnByb2R1Y3QlMmZmZXJuc2VoZXIlMmYlM2Ztc2Nsa2lkJTNkMzdhMmRmMDI2NDU4MTFiZGFhOGRiNjg1YTFmODAxYzglMjZ1dG1fc291cmNlJTNkYmluZyUyNnV0bV9tZWRpdW0lM2RjcGMlMjZ1dG1fY2FtcGFpZ24lM2RCaW5nX2dlbyUyNTNBV1clMjUyMCUyNTdDJTI1MjBzaXRlJTI1M0FDRV9TU1JfVDMlMjUyMCUyNTdDJTI1MjB0eXBlJTI1M0FLVyUyNTdDJTI1MjBjYXRlZ29yeSUyNTNBQUxMJTI2dXRtX3Rlcm0lM2RuZXVlc3RlJTI1MjBpcGhvbmUlMjUyMDE3JTI2dXRtX2NvbnRlbnQlM2RhZCUyNTIwZ3JvdXAlMjUyMDEw%26rlid%3D37a2df02645811bdaa8db685a1f801c8&vqd=4-138275561297186664375993156389694193259&iurl=%7B1%7DIG%3D5F1A473CEC554B0AA757772BFDF0B38C%26CID%3D2DDFD478C57E6D5C3049C281C4F56CEF%26ID%3DDevEx%2C5090.1"
+          },
+          {
+            "title": "Beste Deals",
+            "link": "https://duckduckgo.com/y.js?ad_domain=konsumentenecho.de&ad_provider=bingv7aa&ad_type=txad&click_metadata=K6PuTmUaDrqh7W7XeVSBPtFkp117V%2DxlPM7IYKBKQs%2D3yFkQCcovJotvVgbOHw0vqn16r%2D182n_wRLPOevhpJBcH3L2w1V4FWGEqQ0V%2D%2D6srRK4oZF2cp35vV%2Dyh9NGejPMjzaPxBTw1du1UBoO4cA.ubBLuAAqnBvnIt_9leurYg&eddgt=VR3n7hlvRjkOBaOG_C89zA%3D%3D&rut=7bb36be1c2d8e7ff02833e060dc268ff464e276ae29a0dd023f28de89a81934e&u3=https%3A%2F%2Fwww.bing.com%2Faclick%3Fld%3De8VFDXk%2DI_vWW6jlzkwT4zijVUCUwTjAL5MyZTbDduD5jSaCmlhtJV0kQsus_yFznBxVsKcMotMOxufrD5d%2DjXYshzCfGAkanYkG6wjZ16QUQm%2D50bpoHuLEaPdjbNDKy_qlUCO8z5ttcYVXHwD12sq%2DYI%2D3HCKiGnscE85xpMXjoNyVdeLtZjCqEd0CBLPtm8qs%2DPoPRkyh%2DBxTcyR5gpxhG43o8%26u%3DaHR0cHMlM2ElMmYlMmZyZXZpZXdzLmtvbnN1bWVudGVuZWNoby5kZSUyZnByb2R1Y3QlMmZkZWFscyUyZiUzZm1zY2xraWQlM2RmYTlmNjEzNmE0N2UxMTk3NDQ4MjA4YjE2MWRlZDM3YiUyNnV0bV9zb3VyY2UlM2RiaW5nJTI2dXRtX21lZGl1bSUzZGNwYyUyNnV0bV9jYW1wYWlnbiUzZEJpbmdfZ2VvJTI1M0FXVyUyNTIwJTI1N0MlMjUyMHNpdGUlMjUzQUNFX1NTUl9UMyUyNTIwJTI1N0MlMjUyMHR5cGUlMjUzQUtXJTI1N0MlMjUyMGNhdGVnb3J5JTI1M0FBTEwlMjZ1dG1fdGVybSUzZG5ldWVzdGUlMjUyMGlwaG9uZSUyNTIwMTclMjZ1dG1fY29udGVudCUzZGFkJTI1MjBncm91cCUyNTIwMTA%26rlid%3Dfa9f6136a47e1197448208b161ded37b&vqd=4-60305271670572557997174966130636579775&iurl=%7B1%7DIG%3D5F1A473CEC554B0AA757772BFDF0B38C%26CID%3D2DDFD478C57E6D5C3049C281C4F56CEF%26ID%3DDevEx%2C5092.1"
+          },
+          {
+            "title": "Die besten Laptops 2025",
+            "link": "https://duckduckgo.com/y.js?ad_domain=konsumentenecho.de&ad_provider=bingv7aa&ad_type=txad&click_metadata=LAydv_FLVI_QMWKZLbTCRn6wciPIfGVLsjTMTYsk7Zuy1YlVRUYW2g4jIHd6SWPUBn_zkGqWG0Bx0z%2DKQCAbrrz5xknppAaFKBnNWZh_ShlyxhK485rLS85AAfaSZPlUPLVYxT_1oUUKoOpDJlxDEw.pMFCSOz3zbdpd5VbnzEfYw&eddgt=VR3n7hlvRjkOBaOG_C89zA%3D%3D&rut=772943ef7af318dfbf41b3412a231a76de49d1e81804733895ca47129dd6e77d&u3=https%3A%2F%2Fwww.bing.com%2Faclick%3Fld%3De8JWbXnC_7fr_d9uCY7fAnHTVUCUzHFUQzLN4zv56jLTt2as2HPHrvOp%2DUiUj1Oag_x51t%2D8H6KGFxaDXe_k9sUYLEBx62FoSRAKMrSwZf8zneN2d0WVl1180f4lqP5i6U4DNWnmTMc5Gpd6PjEJoOnwWL4aGLwFLL3gGNQgvFPPX1p4co5qHs%2DBX5Rcd9zEPOjEhhBvZgBnutBiFhohtOOMBAqSE%26u%3DaHR0cHMlM2ElMmYlMmZyZXZpZXdzLmtvbnN1bWVudGVuZWNoby5kZSUyZnByb2R1Y3QlMmZsYXB0b3AlMmYlM2Ztc2Nsa2lkJTNkMTcwMjY4MzUzMDE4MWFmOGFjMGUwMWIyZjViODNmYTklMjZ1dG1fc291cmNlJTNkYmluZyUyNnV0bV9tZWRpdW0lM2RjcGMlMjZ1dG1fY2FtcGFpZ24lM2RCaW5nX2dlbyUyNTNBV1clMjUyMCUyNTdDJTI1MjBzaXRlJTI1M0FDRV9TU1JfVDMlMjUyMCUyNTdDJTI1MjB0eXBlJTI1M0FLVyUyNTdDJTI1MjBjYXRlZ29yeSUyNTNBQUxMJTI2dXRtX3Rlcm0lM2RuZXVlc3RlJTI1MjBpcGhvbmUlMjUyMDE3JTI2dXRtX2NvbnRlbnQlM2RhZCUyNTIwZ3JvdXAlMjUyMDEw%26rlid%3D1702683530181af8ac0e01b2f5b83fa9&vqd=4-27949913832006734588994498281654073915&iurl=%7B1%7DIG%3D5F1A473CEC554B0AA757772BFDF0B38C%26CID%3D2DDFD478C57E6D5C3049C281C4F56CEF%26ID%3DDevEx%2C5094.1"
+          },
+          {
+            "title": "Pfannenset Wabenstruktur",
+            "link": "https://duckduckgo.com/y.js?ad_domain=konsumentenecho.de&ad_provider=bingv7aa&ad_type=txad&click_metadata=G0CqkYnPhaGKlgSsrGFBVJGDGuYeqC2eaQ_UxutKzVdZj7miE_9B2lFQ0mHxPBHI887I78KN54K4YXdTBHCQzArqJXKhWwdQ1edlmj4r5vgJfiw%2DiH8gPKbC1n88JReXHswd13j6q_Gk_2tubzqYyA.5W1a38CfLIz62Co0Gp5hdg&eddgt=VR3n7hlvRjkOBaOG_C89zA%3D%3D&rut=24cb61e9e67334c1e45909d0ee0a6df94c6fb6c5f2c336665c7682785f06e688&u3=https%3A%2F%2Fwww.bing.com%2Faclick%3Fld%3De8O8RgKJG7O%2D093a7Kpx_LzzVUCUzURq1InGB8NeHvw0C9QsJhRYpShfF8CRhMFQXeU0oZEZxnnm6ybmciA2VZV5V66V4xvizcEM9DMn7g5xYPxyboJAucCz__qVFgc%2DCa5b7VWw6a8yJv9%2DkMtUeZQ6dwbC0RnlhBIK0S7dR3d%2DUjt4BPhVzPjK%2DNg8aXeoCOcEHs_0AS_aZFxxYA7JzcSKIOjgE%26u%3DaHR0cHMlM2ElMmYlMmZyZXZpZXdzLmtvbnN1bWVudGVuZWNoby5kZSUyZnByb2R1Y3QlMmZQZmFubmVuc2V0LVdhYmVuc3RydWt0dXIlMmYlM2Ztc2Nsa2lkJTNkZTBiYjllZjQyYjdhMTE5Nzc1NjhmNzczZWVkYWE3N2ElMjZ1dG1fc291cmNlJTNkYmluZyUyNnV0bV9tZWRpdW0lM2RjcGMlMjZ1dG1fY2FtcGFpZ24lM2RCaW5nX2dlbyUyNTNBV1clMjUyMCUyNTdDJTI1MjBzaXRlJTI1M0FDRV9TU1JfVDMlMjUyMCUyNTdDJTI1MjB0eXBlJTI1M0FLVyUyNTdDJTI1MjBjYXRlZ29yeSUyNTNBQUxMJTI2dXRtX3Rlcm0lM2RuZXVlc3RlJTI1MjBpcGhvbmUlMjUyMDE3JTI2dXRtX2NvbnRlbnQlM2RhZCUyNTIwZ3JvdXAlMjUyMDEw%26rlid%3De0bb9ef42b7a11977568f773eedaa77a&vqd=4-4595237430214018586645594252685689336&iurl=%7B1%7DIG%3D5F1A473CEC554B0AA757772BFDF0B38C%26CID%3D2DDFD478C57E6D5C3049C281C4F56CEF%26ID%3DDevEx%2C5096.1"
+          }
+        ]
+      }
+    ],
+    "organic_results": [
+      {
+        "position": 1,
+        "title": "iPhone 17 kaufen - Apple (CH)",
+        "link": "https://www.apple.com/ch-de/shop/buy-iphone/iphone-17",
+        "snippet": "Erhalte CHF 50.- bis CHF 435.- Rabatt auf ein neues iPhone 17, wenn du ein iPhone 12 oder neuer in Zahlung gibst. 0 % Finanzierung möglich. Jetzt mit Gratisversand kaufen.",
+        "favicon": "https://external-content.duckduckgo.com/ip3/www.apple.com.ico",
+        "sitelinks": [
+          {
+            "title": "iPhone - Apple (CH)",
+            "link": "https://www.apple.com/chde/iphone/",
+            "snippet": "Guthaben für ein neues iPhone 17, wenn du dein iPhone 13 oder neuer in Zahlung gibst. Erfahre in einer kostenlosen persön­lichen Session, wie du alles aus deinem neuen iPhone herausholst. Schütze dein iPhone und mach es ganz zu deinem. Mit farbigen Cases, dem neuen Crossbody Band und mehr."
+          },
+          {
+            "title": "iPhone 17 - Apple (CH)",
+            "link": "https://www.apple.com/chde/iphone-17/",
+            "snippet": "Erhalte bis zu CHF 90.- bis CHF 435.- Guthaben für ein neues iPhone 17, wenn du dein iPhone 13 oder neuer in Zahlung gibst."
+          },
+          {
+            "title": "iPhone 17 kaufen - Business - Apple (CH)",
+            "link": "https://www.apple.com/ch-de-business/shop/buy-iphone/iphone-17",
+            "snippet": "Erhalte CHF 40.- bis CHF 480.- Rabatt auf ein neues iPhone 17, wenn du ein iPhone 12 mini oder neuer in Zahlung gibst. 0 % Finanzierung möglich. Jetzt mit Gratisversand kaufen."
+          },
+          {
+            "title": "iPhone kaufen - Apple (CH)",
+            "link": "https://www.apple.com/ch-de/shop/buy-iphone",
+            "snippet": "Kauf die neuesten iPhone Modelle und Zubehörprodukte. Und nutze flexible monatliche Raten, die für dich passen. Lass dich gleich beraten."
+          }
+        ]
+      },
+      {
+        "position": 2,
+        "title": "APPLE iPhone 17 ab CHF 759.00 bei Toppreise.ch",
+        "link": "https://www.toppreise.ch/produktserie/iPhone_17-pc-s88074",
+        "snippet": "Apple iPhone 17 256 GB Space Black, Energieeffizienzklasse EnEV 2020: A, EPREL-Nummer: 2402623, Bildschirmdiagonale: 6.3 \", Betriebssystem: iOS, Detailfarbe: Schwarz, Speicherkapazität...",
+        "favicon": "https://external-content.duckduckgo.com/ip3/www.toppreise.ch.ico"
+      },
+      {
+        "position": 3,
+        "title": "Apple iPhone 17 kaufen | MediaMarkt",
+        "link": "https://www.mediamarkt.ch/de/category/iphone-17-202509092020.html",
+        "snippet": "Das iPhone 17 bietet dir ein komplett neues Design, ein brillantes Super Retina XDR Display und eine 48 MP Kamera für gestochen scharfe Fotos. Mit Apple Intelligence unterstützt dich die künstliche Intelligenz direkt auf deinem iPhone.",
+        "favicon": "https://external-content.duckduckgo.com/ip3/www.mediamarkt.ch.ico"
+      },
+      {
+        "position": 4,
+        "title": "Apple iPhone 17 (256 GB, Sage, 6.30\", Dual SIM, 5G) - Digitec",
+        "link": "https://www.digitec.ch/de/s1/product/apple-iphone-17-256-gb-sage-630-dual-sim-5g-smartphone-61962909",
+        "snippet": "GEMACHT, UM ZU HALTEN. − Das iPhone 17 kommt in fünf fantastischen Farben, einem helleren 6,3\" Display und einer Vorderseite mit Ceramic Shield für eine 3x bessere Kratzfestigkeit.",
+        "favicon": "https://external-content.duckduckgo.com/ip3/www.digitec.ch.ico"
+      },
+      {
+        "position": 5,
+        "title": "Apple iPhone 17 5G günstig kaufen + Gratisversand - mobilezone.ch",
+        "link": "https://www.mobilezone.ch/de/mobilgeraete/handys/apple/iphone-17-5g",
+        "snippet": "Erhältlich ist das iPhone 17 in den eleganten Farbvarianten Lavender, Mist Blue, Sage, White und Black mit wahlweise 256 GB oder 512 GB internem Speicher.",
+        "favicon": "https://external-content.duckduckgo.com/ip3/www.mobilezone.ch.ico"
+      },
+      {
+        "position": 6,
+        "title": "Apple iPhone 17 512GB Smartphone | online kaufen - MANOR",
+        "link": "https://www.manor.ch/de/p/10003833194",
+        "snippet": "Apple iPhone 17 512GB Smartphone in Black für 999.00 CHF bei Manor Profitieren Sie: Schneller Versand 30 Tage Rückgaberecht",
+        "favicon": "https://external-content.duckduckgo.com/ip3/www.manor.ch.ico"
+      },
+      {
+        "position": 7,
+        "title": "APPLE iPhone 17 (256 GB, Schwarz, 6.3\", 48 MP, 5G)",
+        "link": "https://www.interdiscount.ch/de/product/apple-iphone-17-256-gb-schwarz-6-3-48-mp-5g-0014344333",
+        "snippet": "Entdecken Sie den führenden Elektronik-Shop der Schweiz. Bis 20 Uhr bestellt, morgen geliefert! Abholung in rund 170 Filialen möglich.",
+        "favicon": "https://external-content.duckduckgo.com/ip3/www.interdiscount.ch.ico"
+      },
+      {
+        "position": 8,
+        "title": "Apple iPhone 17 lavender 256 GB mit Abo - Smartphones",
+        "link": "https://www.swisscom.ch/de/privatkunden/produkte/smartphones/details.html/apple-iphone-17-11072824",
+        "snippet": "Apple iPhone 17 lavender 256 GB ab 18.00/Mt. Jetzt online kaufen bei Swisscom Kostenlose Lieferung 24 Monate Garantie Zahlung per Rechnung",
+        "favicon": "https://external-content.duckduckgo.com/ip3/www.swisscom.ch.ico"
+      },
+      {
+        "position": 9,
+        "title": "Apple iPhone 17 kaufen | Fust",
+        "link": "https://www.fust.ch/handy-pc-tablet/smartphone-handy/apple-iphone/apple-iphone-17/c/f_iphone_17",
+        "snippet": "Apple iPhone 17 jetzt online bestellen. Machen Sie den Test! Schnelle Lieferung Online kaufen mit Service Installation und Reparatur.",
+        "favicon": "https://external-content.duckduckgo.com/ip3/www.fust.ch.ico"
+      },
+      {
+        "position": 10,
+        "title": "Apple iPhone 17 Pro kaufen | MediaMarkt",
+        "link": "https://www.mediamarkt.de/de/brand/apple/iphone/iphone-17-pro",
+        "snippet": "Europas Elektromarkt Nummer 1! Entdecken Sie jetzt das große Angebot und bestellen Sie direkt online.",
+        "favicon": "https://external-content.duckduckgo.com/ip3/www.mediamarkt.de.ico"
+      },
+      {
+        "position": 11,
+        "title": "iPhone 17 - Apple (CH)",
+        "link": "https://www.apple.com/chde/iphone-17/",
+        "snippet": "Erhalte bis zu CHF 90.- bis CHF 435.- Guthaben für ein neues iPhone 17, wenn du dein iPhone 13 oder neuer in Zahlung gibst.",
+        "favicon": "https://external-content.duckduckgo.com/ip3/www.apple.com.ico"
+      },
+      {
+        "position": 12,
+        "title": "Apple iPhone 17 Pro (256 GB, Silver, 6.30\", Dual SIM, 5G)",
+        "link": "https://www.galaxus.ch/de/s1/product/apple-iphone-17-pro-256-gb-silver-630-dual-sim-5g-smartphone-61962956",
+        "snippet": "DAS ULTIMATIVE PRO KAMERA-SYSTEM − Mit 48 MP Rückkameras und 8x Zoom in optischer Qualität - dem grössten Zoombereich, den es je bei einem iPhone gab. Das ist wie 8 Pro Objektive in deiner Hosentasche.",
+        "favicon": "https://external-content.duckduckgo.com/ip3/www.galaxus.ch.ico"
+      },
+      {
+        "position": 13,
+        "title": "Apple iPhone 17 Pro ab 1.147,98 € (Februar 2026 Preise ... - idealo",
+        "link": "https://www.idealo.de/preisvergleich/OffersOfProduct/207644441_-iphone-17-pro-apple.html",
+        "date_raw": "2025-09-10T00:00:00.0000000",
+        "date": "Sep 10, 2025",
+        "snippet": "Bereits ab 1.147,98 € Große Shopvielfalt Testberichte & Meinungen | Jetzt Apple iPhone 17 Pro günstig kaufen bei idealo.de",
+        "favicon": "https://external-content.duckduckgo.com/ip3/www.idealo.de.ico"
+      },
+      {
+        "position": 14,
+        "title": "APPLE iPhone 17 from CHF 775.05 at Toppreise.ch",
+        "link": "https://www.toppreise.ch/productcollection/iPhone_17-pc-s88074",
+        "snippet": "300 offers from CHF 775.05 (last updated: 04.02.2026) immediately available product ratings & extensive product information prices and information for iPhone 17 on Switzerland's largest price comparison | Toppreise.ch",
+        "favicon": "https://external-content.duckduckgo.com/ip3/www.toppreise.ch.ico"
+      },
+      {
+        "position": 15,
+        "title": "iPhone 17 Pro | Jetzt mit oder ohne Abo kaufen - mobilezone.ch",
+        "link": "https://www.mobilezone.ch/de/apple-iphone-17",
+        "snippet": "Ja, bei uns kannst du das iPhone 17 und iPhone Air in Kombination mit diversen Abos aller grossen Provider wie Swisscom, Sunrise, Salt oder TalkTalk beziehen. Komm in einem von unseren 125 mobilezone Shops vorbei und finde das passende Angebot für dich.",
+        "favicon": "https://external-content.duckduckgo.com/ip3/www.mobilezone.ch.ico"
+      },
+      {
+        "position": 16,
+        "title": "Apple iPhone 17 (Februar 2026 Preise) - billiger.de",
+        "link": "https://www.billiger.de/baseproducts/114326-apple-iphone-17",
+        "snippet": "Schon ab 819,90 € - 306 Angebote Aktuelle Preise vergleichen Geprüfte Shops Apple iPhone 17 günstig kaufen bei billiger.de",
+        "favicon": "https://external-content.duckduckgo.com/ip3/www.billiger.de.ico"
+      },
+      {
+        "position": 17,
+        "title": "iPhone - Apple (CH)",
+        "link": "https://www.apple.com/chde/iphone/",
+        "snippet": "Guthaben für ein neues iPhone 17, wenn du dein iPhone 13 oder neuer in Zahlung gibst. Erfahre in einer kostenlosen persön­lichen Session, wie du alles aus deinem neuen iPhone herausholst. Schütze dein iPhone und mach es ganz zu deinem. Mit farbigen Cases, dem neuen Crossbody Band und mehr.",
+        "favicon": "https://external-content.duckduckgo.com/ip3/www.apple.com.ico"
+      },
+      {
+        "position": 18,
+        "title": "Handys & Smartphones kaufen | Swisscom",
+        "link": "https://www.swisscom.ch/de/privatkunden/produkte/smartphones.html",
+        "snippet": "Alle Smartphone- & Handy-Angebote bei Swisscom ️ Mit Abo schon ab CHF 1.-. ️ Die neuesten Handys & Smartphones in der Schweiz kaufen",
+        "favicon": "https://external-content.duckduckgo.com/ip3/www.swisscom.ch.ico"
+      },
+      {
+        "position": 19,
+        "title": "iPhone kaufen - Apple (CH)",
+        "link": "https://www.apple.com/ch-de/shop/buy-iphone",
+        "snippet": "Kauf die neuesten iPhone Modelle und Zubehörprodukte. Und nutze flexible monatliche Raten, die für dich passen. Lass dich gleich beraten.",
+        "favicon": "https://external-content.duckduckgo.com/ip3/www.apple.com.ico"
+      },
+      {
+        "position": 20,
+        "title": "iPhone 17 kaufen - Business - Apple (CH)",
+        "link": "https://www.apple.com/ch-de-business/shop/buy-iphone/iphone-17",
+        "snippet": "Erhalte CHF 40.- bis CHF 480.- Rabatt auf ein neues iPhone 17, wenn du ein iPhone 12 mini oder neuer in Zahlung gibst. 0 % Finanzierung möglich. Jetzt mit Gratisversand kaufen.",
+        "favicon": "https://external-content.duckduckgo.com/ip3/www.apple.com.ico"
+      },
+      {
+        "position": 21,
+        "title": "iPhone 17 - Apple (DE)",
+        "link": "https://www.apple.com/de/iphone-17/",
+        "snippet": "iPhone 17. Center Stage Frontkamera. Ceramic Shield der neuesten Generation. 6,3\" ProMotion Display. A19 Chip. Fünf fantastische Farben.",
+        "favicon": "https://external-content.duckduckgo.com/ip3/www.apple.com.ico"
+      },
+      {
+        "position": 22,
+        "title": "iPhone 17 kaufen - Apple (DE)",
+        "link": "https://www.apple.com/de/shop/buy-iphone/iphone-17",
+        "snippet": "iPhone 17 schon ab 39,54 €/Monat mit 0 % eff. Zins p.a. Es gelten Bedingungen. Und senke mit einer Inzahlungnahme deine monatlichen Raten.",
+        "favicon": "https://external-content.duckduckgo.com/ip3/www.apple.com.ico"
+      },
+      {
+        "position": 23,
+        "title": "Store List - Apple Store - Apple",
+        "link": "https://www.apple.com/retail/storelist/",
+        "snippet": "Browse a list of every Apple Store throughout the world and view store hours, get directions, and more.",
+        "favicon": "https://external-content.duckduckgo.com/ip3/www.apple.com.ico"
+      },
+      {
+        "position": 24,
+        "title": "Show Your Colors | CASETiFY",
+        "link": "https://www.casetify.com/",
+        "snippet": "CASETiFY: We create protective, customized, and sustainable phone cases for iPhone 17, iPhone Air, iPhone 17 Pro, iPhone 17 Pro Max and tech accessories.",
+        "favicon": "https://external-content.duckduckgo.com/ip3/www.casetify.com.ico"
+      },
+      {
+        "position": 25,
+        "title": "iphones verizon - Best Buy",
+        "link": "https://www.bestbuy.com/site/searchpage.jsp?id=pcat17071&st=iphones+verizon",
+        "snippet": "Find low everyday prices and buy online for delivery or in-store pick-up.",
+        "favicon": "https://external-content.duckduckgo.com/ip3/www.bestbuy.com.ico"
+      },
+      {
+        "position": 26,
+        "title": "Apple Store - Find a Store - Apple (CA)",
+        "link": "https://www.apple.com/ca/retail/",
+        "snippet": "We'll help you find a carrier plan and activate your new iPhone in person. Every store has dedicated teams for support, learning and more. Join free sessions at the Apple Store and go further with the products you love.",
+        "favicon": "https://external-content.duckduckgo.com/ip3/www.apple.com.ico"
+      }
+    ],
+    "related_searches": [
+      {
+        "query": "iphone 17 preis neu",
+        "link": "https://duckduckgo.com/?q=iphone%2017%20preis%20neu"
+      },
+      {
+        "query": "iphone 17 media markt",
+        "link": "https://duckduckgo.com/?q=iphone%2017%20media%20markt"
+      },
+      {
+        "query": "iphone 17 neu media markt",
+        "link": "https://duckduckgo.com/?q=iphone%2017%20neu%20media%20markt"
+      },
+      {
+        "query": "iphone 17 preis schweiz",
+        "link": "https://duckduckgo.com/?q=iphone%2017%20preis%20schweiz"
+      },
+      {
+        "query": "iphone 17 preisvergleich",
+        "link": "https://duckduckgo.com/?q=iphone%2017%20preisvergleich"
+      },
+      {
+        "query": "iphone 17 256gb neu",
+        "link": "https://duckduckgo.com/?q=iphone%2017%20256gb%20neu"
+      },
+      {
+        "query": "iphone 17 preisvergleich toppreise",
+        "link": "https://duckduckgo.com/?q=iphone%2017%20preisvergleich%20toppreise"
+      },
+      {
+        "query": "apple iphone 17 preisvergleich",
+        "link": "https://duckduckgo.com/?q=apple%20iphone%2017%20preisvergleich"
+      }
+    ],
+    "serpapi_pagination": {
+      "next": "https://serpapi.com/search.json?engine=duckduckgo&kl=ch-de&q=iphone+17+kaufen+schweiz&start=26"
+    }
+  }
+}

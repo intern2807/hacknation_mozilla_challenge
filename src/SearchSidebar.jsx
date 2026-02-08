@@ -12,6 +12,11 @@ const SearchSidebar = () => {
   const [resultMeta, setResultMeta] = useState(null);
   const [view, setView] = useState('settings'); // 'settings' | 'results'
   const [error, setError] = useState(null);
+  const [openHelp, setOpenHelp] = useState(null); // e.g. 'priority' | 'location' | 'privacy'
+
+  const toggleHelp = (key) => {
+    setOpenHelp((prev) => (prev === key ? null : key));
+  };
 
   // Browser API helper (Firefox vs Chrome)
   const getBrowser = useCallback(() => {
@@ -26,9 +31,12 @@ const SearchSidebar = () => {
     if (!b) return;
 
     const listener = (message) => {
-      if (message.type === 'SEARCH_DATA') {
+      if (message.type === 'SEARCH_DATA') { // Adjusted message type to avoid confusion with search results
         const data = message.data?.data || message.data;
-        const query = data?.selectionText || data?.pageTitle || '';
+        const selection = data?.selectionText || '';
+        const fallback = data?.pageTitle || '';
+        const query = selection || fallback || '';
+
         if (query) {
           setSearchQuery(query);
         }
@@ -132,9 +140,6 @@ const SearchSidebar = () => {
 
             <h1>Results</h1>
           </div>
-          {searchQuery && (
-            <p className="tagline">Searching: "{searchQuery.substring(0, 40)}{searchQuery.length > 40 ? '...' : ''}"</p>
-          )}
           {resultMeta?.provider && (
             <p className="tagline result-meta">
               Source: {resultMeta.provider === 'local_api' ? 'Local API' : 'Fallback'}{resultMeta.count ? ` • ${resultMeta.count} results` : ''}
@@ -147,7 +152,7 @@ const SearchSidebar = () => {
             <div className="no-results">
               <span className="no-results-icon">&#128269;</span>
               <p>No products found yet.</p>
-              <p className="no-results-hint">Right-click selected text on any page and choose "Search with Harbor" to find products.</p>
+              <p className="no-results-hint">Right-click selected text on any page and choose "Shop with Harbor" to find products.</p>
             </div>
           ) : (
             <div className="results-list">
@@ -214,29 +219,12 @@ const SearchSidebar = () => {
           
           <div className="harbor-icon" role="img" aria-label="Shopping bag">🛍️</div>
 
-          <h1>Shop on your terms</h1>
+          <h1>Shop On Your Terms</h1>
         </div>
         <p className="tagline">Powered by Mozilla</p>
       </div>
 
       <div className="sidebar-content">
-        {/* Search Query Display */}
-        {searchQuery && (
-          <section className="setting-section query-section">
-            <h2 className="section-title">Selected Text</h2>
-            <div className="query-display">
-              <span className="query-text">{searchQuery}</span>
-              <button
-                className="query-clear"
-                onClick={() => setSearchQuery('')}
-                title="Clear selection"
-              >
-                &times;
-              </button>
-            </div>
-          </section>
-        )}
-
         {/* Manual search input */}
         <section className="setting-section">
           <h2 className="section-title">Search</h2>
@@ -257,8 +245,27 @@ const SearchSidebar = () => {
         </section>
 
         {/* Delivery Optimization */}
+        {/* Delivery / Priority */}
         <section className="setting-section">
-          <h2 className="section-title">Optimization</h2>
+          <div className="section-title-row">
+            <h2 className="section-title">Choose your priority</h2>
+            <button
+              type="button"
+              className="info-button"
+              onClick={() => toggleHelp('priority')}
+              aria-label="What does this mean?"
+              aria-expanded={openHelp === 'priority'}
+            >
+              <span className="info-icon">i</span>
+            </button>
+          </div>
+
+          {openHelp === 'priority' && (
+            <p className="help-text">
+              Choose what matters most. “Fastest” may cost more. “Cheapest” prioritizes the lowest total price when available.
+            </p>
+          )}
+
           <div className="option-group">
             <label className={`option-card ${deliveryOption === 'fastest' ? 'active' : ''}`}>
               <input
@@ -271,7 +278,7 @@ const SearchSidebar = () => {
               <div className="option-content">
                 <span className="option-icon">&#9889;</span>
                 <div className="option-text">
-                  <span className="option-label">Fast Delivery</span>
+                  <span className="option-label">Fastest Delivery</span>
                   <span className="option-description">Get it quickly</span>
                 </div>
               </div>
@@ -427,7 +434,7 @@ const SearchSidebar = () => {
         {/* Info Footer */}
         <div className="sidebar-footer">
           <p className="footer-text">
-            Right-click selected text on any page and choose "Search with Harbor" to find products
+            Right-click selected text on any page and choose "Shop with Harbor" to find products
           </p>
         </div>
       </div>

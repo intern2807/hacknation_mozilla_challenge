@@ -12,6 +12,7 @@ const SearchSidebar = () => {
   const [resultMeta, setResultMeta] = useState(null);
   const [view, setView] = useState('settings'); // 'settings' | 'results'
   const [error, setError] = useState(null);
+  const [queryFromSelection, setQueryFromSelection] = useState(false); // Track if query was set from context menu selection
 
   // Browser API helper (Firefox vs Chrome)
   const getBrowser = useCallback(() => {
@@ -26,11 +27,15 @@ const SearchSidebar = () => {
     if (!b) return;
 
     const listener = (message) => {
-      if (message.type === 'SEARCH_DATA') {
+      if (message.type === 'SEARCH_DATA') { // Adjusted message type to avoid confusion with search results
         const data = message.data?.data || message.data;
-        const query = data?.selectionText || data?.pageTitle || '';
+        const selection = data?.selectionText || '';
+        const fallback = data?.pageTitle || '';
+        const query = selection || fallback || '';
+
         if (query) {
           setSearchQuery(query);
+          setQueryFromSelection(Boolean(selection)); // true only if user selected text
         }
       }
       if (message.type === 'SEARCH_RESULTS') {
@@ -132,8 +137,20 @@ const SearchSidebar = () => {
 
             <h1>Results</h1>
           </div>
-          {searchQuery && (
-            <p className="tagline">Searching: "{searchQuery.substring(0, 40)}{searchQuery.length > 40 ? '...' : ''}"</p>
+          {queryFromSelection && searchQuery && ( // Only show if query came from context menu selection
+            <section className="setting-section query-section">
+              <h2 className="section-title">Selected Text</h2>
+              <div className="query-display">
+                <span className="query-text">{searchQuery}</span>
+                <button
+                  className="query-clear"
+                  onClick={() => { setSearchQuery(''); setQueryFromSelection(false); }}
+                  title="Clear selection"
+                >
+                  &times;
+                </button>
+              </div>
+            </section>
           )}
           {resultMeta?.provider && (
             <p className="tagline result-meta">
@@ -246,7 +263,10 @@ const SearchSidebar = () => {
               className="location-input search-input"
               placeholder="Enter product to search for..."
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              onChange={(e) => {
+                setSearchQuery(e.target.value);
+                setQueryFromSelection(false);
+              }}
               onKeyDown={(e) => {
                 if (e.key === 'Enter' && searchQuery && (locationSharing || customLocation)) {
                   handleLetsGo();

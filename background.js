@@ -10,7 +10,7 @@ const DEFAULT_API_SERVER_URL = 'http://127.0.0.1:8765';
 browser.runtime.onInstalled.addListener(() => {
   browser.contextMenus.create({
     id: 'harbor-search',
-    title: 'Search with Harbor',
+    title: 'Shop with Harbor',
     contexts: ['selection', 'page', 'link', 'image']
   });
 });

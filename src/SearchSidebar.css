@@ -1,15 +1,15 @@
 /* Harbor Search Sidebar Styles */
 
 :root {
-  --harbor-primary: #1a4d6d;
-  --harbor-secondary: #2d7aa8;
-  --harbor-accent: #ff6b35;
-  --harbor-success: #00b894;
-  --harbor-bg: #f8f9fa;
+  --harbor-primary: #073072;
+  --harbor-secondary: #00B3F5;
+  --harbor-accent: #C60184;
+  --harbor-success: #2BC4A2;
+  --harbor-bg: #E6DFFF;
   --harbor-surface: #ffffff;
-  --harbor-border: #e1e8ed;
-  --harbor-text-primary: #2c3e50;
-  --harbor-text-secondary: #7f8c8d;
+  --harbor-border: #E6DFFF;
+  --harbor-text-primary: #0A214D;
+  --harbor-text-secondary: #46278E;
   --harbor-shadow: rgba(0, 0, 0, 0.08);
   --harbor-shadow-hover: rgba(0, 0, 0, 0.12);
 }
@@ -164,7 +164,7 @@
 }
 
 .query-clear:hover {
-  background: #e74c3c;
+  background: #C60184;
   color: white;
 }
 
@@ -404,7 +404,7 @@
 .lets-go-button {
   width: 100%;
   padding: 16px;
-  background: linear-gradient(135deg, var(--harbor-accent) 0%, #e55a2b 100%);
+  background: linear-gradient(135deg, var(--harbor-accent) 0%, #C60184 100%);
   color: white;
   border: none;
   border-radius: 12px;

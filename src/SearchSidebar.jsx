@@ -12,8 +12,7 @@ const SearchSidebar = () => {
   const [resultMeta, setResultMeta] = useState(null);
   const [view, setView] = useState('settings'); // 'settings' | 'results'
   const [error, setError] = useState(null);
-  const [queryFromSelection, setQueryFromSelection] = useState(false); // Track if query was set from context menu selection
-  const [openHelp, setOpenHelp] = useState(null); // e.g. 'selected' | 'search' | 'priority' | 'location' | 'privacy'
+  const [openHelp, setOpenHelp] = useState(null); // e.g. 'priority' | 'location' | 'privacy'
 
   const toggleHelp = (key) => {
     setOpenHelp((prev) => (prev === key ? null : key));
@@ -40,7 +39,6 @@ const SearchSidebar = () => {
 
         if (query) {
           setSearchQuery(query);
-          setQueryFromSelection(Boolean(selection)); // true only if user selected text
         }
       }
       if (message.type === 'SEARCH_RESULTS') {
@@ -142,40 +140,6 @@ const SearchSidebar = () => {
 
             <h1>Results</h1>
           </div>
-          {queryFromSelection && searchQuery && (
-            <section className="setting-section query-section">
-              <div className="section-title-row">
-                <h2 className="section-title">Selected Text</h2>
-                <button
-                  type="button"
-                  className="info-button"
-                  onClick={() => toggleHelp('selected')}
-                  aria-label="What is selected text?"
-                  aria-expanded={openHelp === 'selected'}
-                >
-                 <span className="info-icon">i</span>
-                
-                </button>
-              </div>
-
-              {openHelp === 'selected' && (
-                <p className="help-text">
-                  This is the text you highlighted on the page. We’ll use it as your search query.
-                </p>
-              )}
-
-              <div className="query-display">
-                <span className="query-text">{searchQuery}</span>
-                <button
-                  className="query-clear"
-                  onClick={() => { setSearchQuery(''); setQueryFromSelection(false); }}
-                  title="Clear selection"
-                >
-                  &times;
-                </button>
-              </div>
-            </section>
-          )}
           {resultMeta?.provider && (
             <p className="tagline result-meta">
               Source: {resultMeta.provider === 'local_api' ? 'Local API' : 'Fallback'}{resultMeta.count ? ` • ${resultMeta.count} results` : ''}
@@ -261,41 +225,6 @@ const SearchSidebar = () => {
       </div>
 
       <div className="sidebar-content">
-        {/* Selected Text (only when it came from highlight + right click) */}
-          {queryFromSelection && searchQuery && (
-            <section className="setting-section query-section">
-              <div className="section-title-row">
-                <h2 className="section-title">Selected Text</h2>
-                <button
-                  type="button"
-                  className="info-button"
-                  onClick={() => toggleHelp('selected')}
-                  aria-label="What is selected text?"
-                  aria-expanded={openHelp === 'selected'}
-                >
-                 <span className="info-icon">i</span>
-                </button>
-              </div>
-
-              {openHelp === 'selected' && (
-                <p className="help-text">
-                  This is the text you highlighted on the page. We will use it as your search query.
-                </p>
-              )}
-
-              <div className="query-display">
-                <span className="query-text">{searchQuery}</span>
-                <button
-                  className="query-clear"
-                  onClick={() => { setSearchQuery(''); setQueryFromSelection(false); setOpenHelp(null); }}
-                  title="Clear selection"
-                >
-                  &times;
-                </button>
-              </div>
-            </section>
-          )}
-
         {/* Manual search input */}
         <section className="setting-section">
           <h2 className="section-title">Search</h2>
@@ -305,10 +234,7 @@ const SearchSidebar = () => {
               className="location-input search-input"
               placeholder="Enter product to search for..."
               value={searchQuery}
-              onChange={(e) => {
-                setSearchQuery(e.target.value);
-                setQueryFromSelection(false);
-              }}
+              onChange={(e) => setSearchQuery(e.target.value)}
               onKeyDown={(e) => {
                 if (e.key === 'Enter' && searchQuery && (locationSharing || customLocation)) {
                   handleLetsGo();

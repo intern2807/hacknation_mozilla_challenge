@@ -254,7 +254,7 @@ const SearchSidebar = () => {
           
           <div className="harbor-icon" role="img" aria-label="Shopping bag">🛍️</div>
 
-          <h1>Shop on your terms</h1>
+          <h1>Shop On Your Terms</h1>
         </div>
         <p className="tagline">Powered by Mozilla</p>
       </div>

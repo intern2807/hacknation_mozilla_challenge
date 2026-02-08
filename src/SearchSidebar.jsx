@@ -153,7 +153,8 @@ const SearchSidebar = () => {
                   aria-label="What is selected text?"
                   aria-expanded={openHelp === 'selected'}
                 >
-                  ℹ️
+                 <span className="info-icon">i</span>
+                
                 </button>
               </div>
 
@@ -272,7 +273,7 @@ const SearchSidebar = () => {
                   aria-label="What is selected text?"
                   aria-expanded={openHelp === 'selected'}
                 >
-                  ℹ️
+                 <span className="info-icon">i</span>
                 </button>
               </div>
 
@@ -329,7 +330,7 @@ const SearchSidebar = () => {
               aria-label="What does this mean?"
               aria-expanded={openHelp === 'priority'}
             >
-              ℹ️
+              <span className="info-icon">i</span>
             </button>
           </div>
 

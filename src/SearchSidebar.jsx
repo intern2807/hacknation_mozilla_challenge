@@ -128,7 +128,7 @@ const SearchSidebar = () => {
           </button>
           <div className="logo-area">
             
-            <div className="harbor-icon" role="img" aria-label="Shopping cart">🛒</div>
+            <div className="harbor-icon" role="img" aria-label="Shopping bag">🛍️</div>
 
             <h1>Results</h1>
           </div>
@@ -212,11 +212,11 @@ const SearchSidebar = () => {
       <div className="sidebar-header">
         <div className="logo-area">
           
-          <div className="harbor-icon" role="img" aria-label="Shopping cart">🛒</div>
-          
-          <h1>Harbor Search</h1>
+          <div className="harbor-icon" role="img" aria-label="Shopping bag">🛍️</div>
+
+          <h1>Shop on your terms</h1>
         </div>
-        <p className="tagline">Find the best deals, your way</p>
+        <p className="tagline">Powered by Mozilla</p>
       </div>
 
       <div className="sidebar-content">

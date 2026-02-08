@@ -1,8 +1,9 @@
-# Harbor Product Search
+# Shop With Harber (by the team OwnShopping)
 
-A Firefox browser extension that helps you find the best deals across multiple shopping sources. Right-click any product or selected text to compare prices from Google Shopping, Amazon, DuckDuckGo, eBay, and more.
+A Firefox browser extension that helps you find the best deals across multiple shopping sources. Right-click any product or selected text to compare prices from Google Shopping, Amazon, DuckDuckGo, eBay, and more. A more detailed description on the motivation of the solution can be found under Final Submission Hack-Nation Pdf.
+<img width="1056" height="992" alt="Shop_on_your_terms" src="https://github.com/user-attachments/assets/2b6c30c5-0af3-443b-b623-7c2d7928d7ba" />
 
-## Architecture
+## Architecture (Enterprise Outline can be found in the Tech Report pdf)
 
 ```
 Firefox Sidebar (React) → background.js → API Server (:8765) → search.py → SerpAPI
@@ -136,4 +137,6 @@ uv run python src/search.py --replay data/google_shopping_iphone17.json
 ├── data/                  # Cached API response snapshots
 ├── .env                   # API keys (not committed)
 └── pyproject.toml         # Python dependencies
-```
+```<img width="1056" height="992" alt="harborsearch_logo" src="https://github.com/user-attachments/assets/3ea08cfd-dff3-4e4f-8404-86ceccfc2c6d" />
+
+Happy Shopping!

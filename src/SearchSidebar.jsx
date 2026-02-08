@@ -13,6 +13,11 @@ const SearchSidebar = () => {
   const [view, setView] = useState('settings'); // 'settings' | 'results'
   const [error, setError] = useState(null);
   const [queryFromSelection, setQueryFromSelection] = useState(false); // Track if query was set from context menu selection
+  const [openHelp, setOpenHelp] = useState(null); // e.g. 'selected' | 'search' | 'priority' | 'location' | 'privacy'
+
+  const toggleHelp = (key) => {
+    setOpenHelp((prev) => (prev === key ? null : key));
+  };
 
   // Browser API helper (Firefox vs Chrome)
   const getBrowser = useCallback(() => {
@@ -137,9 +142,27 @@ const SearchSidebar = () => {
 
             <h1>Results</h1>
           </div>
-          {queryFromSelection && searchQuery && ( // Only show if query came from context menu selection
+          {queryFromSelection && searchQuery && (
             <section className="setting-section query-section">
-              <h2 className="section-title">Selected Text</h2>
+              <div className="section-title-row">
+                <h2 className="section-title">Selected Text</h2>
+                <button
+                  type="button"
+                  className="info-button"
+                  onClick={() => toggleHelp('selected')}
+                  aria-label="What is selected text?"
+                  aria-expanded={openHelp === 'selected'}
+                >
+                  ℹ️
+                </button>
+              </div>
+
+              {openHelp === 'selected' && (
+                <p className="help-text">
+                  This is the text you highlighted on the page. We’ll use it as your search query.
+                </p>
+              )}
+
               <div className="query-display">
                 <span className="query-text">{searchQuery}</span>
                 <button
@@ -237,22 +260,40 @@ const SearchSidebar = () => {
       </div>
 
       <div className="sidebar-content">
-        {/* Search Query Display */}
-        {searchQuery && (
-          <section className="setting-section query-section">
-            <h2 className="section-title">Selected Text</h2>
-            <div className="query-display">
-              <span className="query-text">{searchQuery}</span>
-              <button
-                className="query-clear"
-                onClick={() => setSearchQuery('')}
-                title="Clear selection"
-              >
-                &times;
-              </button>
-            </div>
-          </section>
-        )}
+        {/* Selected Text (only when it came from highlight + right click) */}
+          {queryFromSelection && searchQuery && (
+            <section className="setting-section query-section">
+              <div className="section-title-row">
+                <h2 className="section-title">Selected Text</h2>
+                <button
+                  type="button"
+                  className="info-button"
+                  onClick={() => toggleHelp('selected')}
+                  aria-label="What is selected text?"
+                  aria-expanded={openHelp === 'selected'}
+                >
+                  ℹ️
+                </button>
+              </div>
+
+              {openHelp === 'selected' && (
+                <p className="help-text">
+                  This is the text you highlighted on the page. We will use it as your search query.
+                </p>
+              )}
+
+              <div className="query-display">
+                <span className="query-text">{searchQuery}</span>
+                <button
+                  className="query-clear"
+                  onClick={() => { setSearchQuery(''); setQueryFromSelection(false); setOpenHelp(null); }}
+                  title="Clear selection"
+                >
+                  &times;
+                </button>
+              </div>
+            </section>
+          )}
 
         {/* Manual search input */}
         <section className="setting-section">
@@ -277,8 +318,27 @@ const SearchSidebar = () => {
         </section>
 
         {/* Delivery Optimization */}
+        {/* Delivery / Priority */}
         <section className="setting-section">
-          <h2 className="section-title">Optimization</h2>
+          <div className="section-title-row">
+            <h2 className="section-title">Choose your priority</h2>
+            <button
+              type="button"
+              className="info-button"
+              onClick={() => toggleHelp('priority')}
+              aria-label="What does this mean?"
+              aria-expanded={openHelp === 'priority'}
+            >
+              ℹ️
+            </button>
+          </div>
+
+          {openHelp === 'priority' && (
+            <p className="help-text">
+              Choose what matters most. “Fastest” may cost more. “Cheapest” prioritizes the lowest total price when available.
+            </p>
+          )}
+
           <div className="option-group">
             <label className={`option-card ${deliveryOption === 'fastest' ? 'active' : ''}`}>
               <input
@@ -291,7 +351,7 @@ const SearchSidebar = () => {
               <div className="option-content">
                 <span className="option-icon">&#9889;</span>
                 <div className="option-text">
-                  <span className="option-label">Fast Delivery</span>
+                  <span className="option-label">Fastest Delivery</span>
                   <span className="option-description">Get it quickly</span>
                 </div>
               </div>

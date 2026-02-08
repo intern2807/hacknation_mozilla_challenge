@@ -426,6 +426,35 @@ chmod +x scripts/*.js
 
 ## Getting Additional Help
 
+### Local Search API (FastAPI)
+
+The extension background script now calls a local API server instead of building static search URLs.
+
+### Start the API server
+
+```bash
+cd src
+python3 api_server.py
+```
+
+Or with uvicorn:
+
+```bash
+uvicorn api_server:app --host 127.0.0.1 --port 8765
+```
+
+### Environment variables
+
+- `SERPAPI_API_KEY`: Required for live provider calls.
+- `HARBOR_API_HOST`: Default `127.0.0.1`.
+- `HARBOR_API_PORT`: Default `8765`.
+- `HARBOR_API_CORS_ORIGINS`: Comma-separated allowed origins. Default includes localhost origins.
+
+### Extension API URL
+
+By default the extension calls `http://127.0.0.1:8765/search`.
+You can override it by setting `apiServerUrl` in extension local storage.
+
 ### Check Logs
 
 1. **Browser Console** (F12 in Firefox)

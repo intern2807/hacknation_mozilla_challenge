@@ -73,6 +73,12 @@
   font-weight: 400;
 }
 
+.result-meta {
+  margin-top: 4px;
+  font-size: 12px;
+  opacity: 0.95;
+}
+
 /* Back Button */
 .back-button {
   display: inline-flex;
@@ -596,6 +602,25 @@
   font-size: 12px;
   color: var(--harbor-success);
   font-weight: 500;
+}
+
+.result-rating {
+  font-size: 12px;
+  color: var(--harbor-text-secondary);
+  font-weight: 500;
+}
+
+.result-stock {
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.result-stock.in-stock {
+  color: var(--harbor-success);
+}
+
+.result-stock.out-of-stock {
+  color: #c0392b;
 }
 
 /* Footer */

@@ -4,6 +4,7 @@
 // Store the latest search data so the sidebar can request it on load
 let pendingSearchData = null;
 let currentConfig = null;
+const DEFAULT_API_SERVER_URL = 'http://127.0.0.1:8765';
 
 // Create context menu on installation
 browser.runtime.onInstalled.addListener(() => {
@@ -123,21 +124,104 @@ async function executeSearch(tab, config) {
   }
 }
 
-// Handle product data from content script - build comparison results
-function handleProductResults(productData, config) {
-  const query = productData.title || pendingSearchData?.selectionText || '';
-  const results = buildSearchResults(query, productData, config);
+async function getApiServerUrl() {
+  try {
+    const stored = await browser.storage.local.get(['apiServerUrl']);
+    return stored?.apiServerUrl || DEFAULT_API_SERVER_URL;
+  } catch (err) {
+    console.warn('Unable to read apiServerUrl from storage:', err);
+    return DEFAULT_API_SERVER_URL;
+  }
+}
 
-  // Send results to sidebar
-  browser.runtime.sendMessage({
-    type: 'SEARCH_RESULTS',
-    results: results,
-    query: query
-  }).catch(err => console.error('Failed to send results to sidebar:', err));
+function mapResultFromApi(item) {
+  return {
+    title: item?.title || 'Untitled product',
+    url: item?.url || '#',
+    source: item?.source || 'Unknown',
+    delivery: item?.delivery || null,
+    price: item?.price || null,
+    image: item?.image || null,
+    rating: item?.rating ?? null,
+    reviews: item?.reviews ?? null,
+    inStock: item?.inStock ?? null
+  };
+}
+
+async function fetchSearchResults(query, productData, config) {
+  const apiServerUrl = await getApiServerUrl();
+  const payload = {
+    query,
+    delivery: config?.delivery || 'cheapest',
+    privacy: config?.privacy || 'limited',
+    location: config?.location || '',
+    product_title: productData?.title || null,
+    product_image_url: productData?.images?.[0] || null,
+    n: 12
+  };
+
+  const response = await fetch(`${apiServerUrl}/search`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload)
+  });
+
+  if (!response.ok) {
+    let detail = '';
+    try {
+      const errJson = await response.json();
+      detail = errJson?.detail || '';
+    } catch (e) {
+      // ignore parse errors
+    }
+    throw new Error(`Search API failed (${response.status}): ${detail}`);
+  }
+
+  const body = await response.json();
+  const apiResults = Array.isArray(body?.results) ? body.results : [];
+  return {
+    results: apiResults.map(mapResultFromApi),
+    meta: {
+      provider: 'local_api',
+      apiServerUrl,
+      ...body?.meta
+    }
+  };
+}
+
+// Handle product data from content script - fetch comparison results from API
+async function handleProductResults(productData, config) {
+  const query = productData.title || pendingSearchData?.selectionText || '';
+  if (!query) {
+    browser.runtime.sendMessage({
+      type: 'SEARCH_ERROR',
+      error: 'No product information found on the page.'
+    }).catch(() => {});
+    return;
+  }
+
+  try {
+    const apiData = await fetchSearchResults(query, productData, config);
+    browser.runtime.sendMessage({
+      type: 'SEARCH_RESULTS',
+      results: apiData.results,
+      query,
+      meta: apiData.meta
+    }).catch(err => console.error('Failed to send API results to sidebar:', err));
+  } catch (apiError) {
+    console.error('Search API failed, falling back to static URL mode:', apiError);
+    const fallbackResults = buildSearchResults(query, productData, config);
+    browser.runtime.sendMessage({
+      type: 'SEARCH_RESULTS',
+      results: fallbackResults,
+      query,
+      meta: { provider: 'fallback_static_urls', error: apiError.message }
+    }).catch(err => console.error('Failed to send fallback results to sidebar:', err));
+  }
 }
 
 // Handle text-based search query
-function handleSearchQuery(query, config) {
+async function handleSearchQuery(query, config) {
   if (!query) {
     browser.runtime.sendMessage({
       type: 'SEARCH_ERROR',
@@ -146,13 +230,24 @@ function handleSearchQuery(query, config) {
     return;
   }
 
-  const results = buildSearchResults(query, null, config);
-
-  browser.runtime.sendMessage({
-    type: 'SEARCH_RESULTS',
-    results: results,
-    query: query
-  }).catch(err => console.error('Failed to send results to sidebar:', err));
+  try {
+    const apiData = await fetchSearchResults(query, null, config);
+    browser.runtime.sendMessage({
+      type: 'SEARCH_RESULTS',
+      results: apiData.results,
+      query,
+      meta: apiData.meta
+    }).catch(err => console.error('Failed to send API results to sidebar:', err));
+  } catch (apiError) {
+    console.error('Search API failed, falling back to static URL mode:', apiError);
+    const fallbackResults = buildSearchResults(query, null, config);
+    browser.runtime.sendMessage({
+      type: 'SEARCH_RESULTS',
+      results: fallbackResults,
+      query,
+      meta: { provider: 'fallback_static_urls', error: apiError.message }
+    }).catch(err => console.error('Failed to send fallback results to sidebar:', err));
+  }
 }
 
 // Build search result links based on config

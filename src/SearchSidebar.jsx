@@ -9,6 +9,7 @@ const SearchSidebar = () => {
   const [isSearching, setIsSearching] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [results, setResults] = useState([]);
+  const [resultMeta, setResultMeta] = useState(null);
   const [view, setView] = useState('settings'); // 'settings' | 'results'
   const [error, setError] = useState(null);
 
@@ -34,6 +35,10 @@ const SearchSidebar = () => {
       }
       if (message.type === 'SEARCH_RESULTS') {
         setResults(message.results || []);
+        setResultMeta(message.meta || null);
+        if (message.query) {
+          setSearchQuery(message.query);
+        }
         setIsSearching(false);
         setView('results');
       }
@@ -72,6 +77,7 @@ const SearchSidebar = () => {
   const handleLetsGo = async () => {
     setIsSearching(true);
     setError(null);
+    setResultMeta(null);
 
     const searchConfig = {
       delivery: deliveryOption,
@@ -99,7 +105,7 @@ const SearchSidebar = () => {
 
   const handleBackToSettings = () => {
     setView('settings');
-    setResults([]);
+    setResultMeta(null);
     setError(null);
   };
 
@@ -126,6 +132,11 @@ const SearchSidebar = () => {
           </div>
           {searchQuery && (
             <p className="tagline">Searching: "{searchQuery.substring(0, 40)}{searchQuery.length > 40 ? '...' : ''}"</p>
+          )}
+          {resultMeta?.provider && (
+            <p className="tagline result-meta">
+              Source: {resultMeta.provider === 'local_api' ? 'Local API' : 'Fallback'}{resultMeta.count ? ` • ${resultMeta.count} results` : ''}
+            </p>
           )}
         </div>
 
@@ -164,6 +175,17 @@ const SearchSidebar = () => {
                     )}
                     {product.delivery && (
                       <span className="result-delivery">{product.delivery}</span>
+                    )}
+                    {(product.rating || product.reviews) && (
+                      <span className="result-rating">
+                        {product.rating ? `Rating: ${product.rating}` : 'Rating: N/A'}
+                        {product.reviews ? ` (${product.reviews} reviews)` : ''}
+                      </span>
+                    )}
+                    {product.inStock !== null && product.inStock !== undefined && (
+                      <span className={`result-stock ${product.inStock ? 'in-stock' : 'out-of-stock'}`}>
+                        {product.inStock ? 'In stock' : 'Out of stock'}
+                      </span>
                     )}
                   </div>
                 </div>

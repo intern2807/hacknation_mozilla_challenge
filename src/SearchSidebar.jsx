@@ -187,7 +187,7 @@ const SearchSidebar = () => {
             <div className="no-results">
               <span className="no-results-icon">&#128269;</span>
               <p>No products found yet.</p>
-              <p className="no-results-hint">Right-click selected text on any page and choose "Search with Harbor" to find products.</p>
+              <p className="no-results-hint">Right-click selected text on any page and choose "Shop with Harbor" to find products.</p>
             </div>
           ) : (
             <div className="results-list">
@@ -507,7 +507,7 @@ const SearchSidebar = () => {
         {/* Info Footer */}
         <div className="sidebar-footer">
           <p className="footer-text">
-            Right-click selected text on any page and choose "Search with Harbor" to find products
+            Right-click selected text on any page and choose "Shop with Harbor" to find products
           </p>
         </div>
       </div>

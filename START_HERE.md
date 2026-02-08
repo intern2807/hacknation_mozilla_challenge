@@ -26,21 +26,9 @@ A Firefox browser extension that adds a **beautiful sidebar** for product search
 
 → **[COMMANDS.md](COMMANDS.md)** - All commands in one place
 
-### 🎨 Want to Customize?
-
-→ **[DESIGN_GUIDE.md](DESIGN_GUIDE.md)** - Colors, fonts, and UI elements
-
-### 🔌 Integrating with Harbor?
-
-→ **[HARBOR_INTEGRATION.md](HARBOR_INTEGRATION.md)** - Complete integration guide
-
-### 📚 Want Full Documentation?
-
-→ **[README.md](README.md)** - Comprehensive guide with everything
 
 ### 🏗️ Understanding the Code?
 
-→ **[PROJECT_STRUCTURE.md](PROJECT_STRUCTURE.md)** - File organization and architecture
 
 ---
 
@@ -71,11 +59,8 @@ harbor-search-sidebar/
 │
 ├── 📄 START_HERE.md          ← You are here!
 ├── 📖 README.md               ← Full documentation
-├── 🚀 QUICKSTART.md          ← 10-minute setup
 ├── 🛠️ SETUP.md              ← Platform-specific setup
 ├── 💻 COMMANDS.md            ← Command reference
-├── 🎨 DESIGN_GUIDE.md        ← UI/UX guide
-├── 🔌 HARBOR_INTEGRATION.md  ← Harbor integration
 ├── 🏗️ PROJECT_STRUCTURE.md  ← Code organization
 │
 ├── src/                      ← React components
@@ -157,46 +142,6 @@ npm run build:firefox
 3. **Check extension logs** - about:debugging → Inspect
 4. **Rebuild** - `npm run build:firefox`
 
-### 💬 Have Questions?
-
-- **Quick answers**: Check [COMMANDS.md](COMMANDS.md)
-- **Integration**: See [HARBOR_INTEGRATION.md](HARBOR_INTEGRATION.md)
-- **Code structure**: Read [PROJECT_STRUCTURE.md](PROJECT_STRUCTURE.md)
-
-### 🤝 Want to Contribute?
-
-→ **[CONTRIBUTING.md](CONTRIBUTING.md)** - Contribution guidelines
-
----
-
-## Next Steps
-
-Choose your path:
-
-### Path 1: I just want to use it
-1. Read [QUICKSTART.md](QUICKSTART.md)
-2. Run install script or `npm run build:firefox`
-3. Load in Firefox
-4. Start using!
-
-### Path 2: I want to customize it
-1. Read [DESIGN_GUIDE.md](DESIGN_GUIDE.md)
-2. Edit `src/SearchSidebar.css` for colors
-3. Modify `src/SearchSidebar.jsx` for functionality
-4. Rebuild and test
-
-### Path 3: I want to integrate with Harbor
-1. Read [HARBOR_INTEGRATION.md](HARBOR_INTEGRATION.md)
-2. Install Harbor extension
-3. Configure cross-extension messaging
-4. Use Harbor's AI and MCP features
-
-### Path 4: I want to contribute
-1. Read [CONTRIBUTING.md](CONTRIBUTING.md)
-2. Fork the repository
-3. Make your changes
-4. Submit a pull request
-
 ---
 
 ## Key Features Explained
@@ -253,8 +198,6 @@ Choose your path:
 ## Support
 
 - 📖 **Documentation**: You're looking at it!
-- 🐛 **Issues**: [GitHub Issues](../../issues)
-- 💬 **Discussions**: [GitHub Discussions](../../discussions)
 - 🔗 **Harbor**: https://github.com/r/Harbor
 
 ---
@@ -263,8 +206,4 @@ Choose your path:
 
 MIT License - See [LICENSE](LICENSE)
 
----
 
-**Ready to start?** Pick a guide above and dive in! 🎉
-
-The most common starting point is **[QUICKSTART.md](QUICKSTART.md)** ➡️

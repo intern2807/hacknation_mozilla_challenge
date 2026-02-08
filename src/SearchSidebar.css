@@ -5,9 +5,9 @@
   --harbor-secondary: #00B3F5;
   --harbor-accent: #C60184;
   --harbor-success: #2BC4A2;
-  --harbor-bg: #E6DFFF;
+  --harbor-bg: #ffffff;
   --harbor-surface: #ffffff;
-  --harbor-border: #E6DFFF;
+  --harbor-border: #ffffff;
   --harbor-text-primary: #0A214D;
   --harbor-text-secondary: #46278E;
   --harbor-shadow: rgba(0, 0, 0, 0.08);
@@ -216,7 +216,7 @@
 .option-card.active,
 .privacy-card.active {
   border-color: var(--harbor-accent);
-  background: linear-gradient(135deg, #fff 0%, #fff8f6 100%);
+  background: linear-gradient(135deg, #fff 0%, #ffffff 100%);
   box-shadow: 0 4px 16px rgba(255, 107, 53, 0.15);
 }
 
@@ -302,7 +302,7 @@
 .toggle-switch {
   width: 48px;
   height: 26px;
-  background: #dfe6e9;
+  background: #ffffff;
   border-radius: 13px;
   position: relative;
   transition: all 0.3s ease;
@@ -391,7 +391,7 @@
 /* Error Message */
 .error-message {
   padding: 12px;
-  background: #ffeef0;
+  background: #ffffff;
   border-left: 3px solid #e74c3c;
   border-radius: 6px;
   animation: slideIn 0.3s ease;

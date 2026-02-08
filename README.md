@@ -137,6 +137,10 @@ uv run python src/search.py --replay data/google_shopping_iphone17.json
 ├── data/                  # Cached API response snapshots
 ├── .env                   # API keys (not committed)
 └── pyproject.toml         # Python dependencies
-```<img width="1056" height="992" alt="harborsearch_logo" src="https://github.com/user-attachments/assets/3ea08cfd-dff3-4e4f-8404-86ceccfc2c6d" />
+```
+
+
+
 
 Happy Shopping!
+<img width="1056" height="992" alt="harborsearch_logo" src="https://github.com/user-attachments/assets/02aa620e-eeac-46a4-aa3b-035e221996f0" />

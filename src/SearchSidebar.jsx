@@ -118,7 +118,7 @@ const SearchSidebar = () => {
     }
   };
 
-  // Results view
+  // Results view <div className="harbor-icon">&#9875;</div>
   if (view === 'results') {
     return (
       <div className="search-sidebar">
@@ -127,7 +127,9 @@ const SearchSidebar = () => {
             <span className="back-arrow">&larr;</span> Settings
           </button>
           <div className="logo-area">
-            <div className="harbor-icon">&#9875;</div>
+            
+            <div className="harbor-icon" role="img" aria-label="Shopping cart">🛒</div>
+
             <h1>Results</h1>
           </div>
           {searchQuery && (
@@ -204,12 +206,14 @@ const SearchSidebar = () => {
     );
   }
 
-  // Settings view (default)
+  // Settings view (default) <div className="harbor-icon">&#9875;</div>
   return (
     <div className="search-sidebar">
       <div className="sidebar-header">
         <div className="logo-area">
-          <div className="harbor-icon">&#9875;</div>
+          
+          <div className="harbor-icon" role="img" aria-label="Shopping cart">🛒</div>
+          
           <h1>Harbor Search</h1>
         </div>
         <p className="tagline">Find the best deals, your way</p>

@@ -1,0 +1,63 @@
+{
+  "manifest_version": 2,
+  "name": "Harbor Product Search",
+  "version": "1.0.0",
+  "description": "Find the best product deals with customizable search preferences",
+  "author": "Harbor Team",
+  
+  "icons": {
+    "48": "icons/icon-48.png",
+    "96": "icons/icon-96.png"
+  },
+
+  "permissions": [
+    "activeTab",
+    "contextMenus",
+    "storage",
+    "tabs",
+    "<all_urls>"
+  ],
+
+  "background": {
+    "scripts": ["background.js"],
+    "persistent": false
+  },
+
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"],
+      "run_at": "document_idle"
+    }
+  ],
+
+  "sidebar_action": {
+    "default_title": "Harbor Search",
+    "default_panel": "sidebar.html",
+    "default_icon": {
+      "48": "icons/icon-48.png"
+    }
+  },
+
+  "commands": {
+    "open-harbor-search": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+H",
+        "mac": "Command+Shift+H"
+      },
+      "description": "Open Harbor search sidebar"
+    }
+  },
+
+  "browser_action": {
+    "default_icon": {
+      "48": "icons/icon-48.png"
+    },
+    "default_title": "Open Harbor Search",
+    "default_popup": "popup.html"
+  },
+
+  "web_accessible_resources": [
+    "icons/*"
+  ]
+}
